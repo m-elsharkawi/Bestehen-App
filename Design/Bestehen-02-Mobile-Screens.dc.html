@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+:root,[data-theme="light"]{color-scheme:light;
+--paper:#F1F4F8;--paper-95:rgba(241,244,248,.95);--raised:#FFFFFF;--sunken:#E8ECF3;--mist:#E2E8F0;
+--ink:#14213D;--ink-hover:#1E2C4C;--on-ink:#EDF1F7;--on-ink-2:#98A6C0;--amber-on-ink:#F0D9A8;
+--text:#14213D;--text-body:#2C3A5C;--text-2:#4A5670;--muted:#68738A;--system:#8790A3;
+--border:#D6DCE6;--border-strong:#B8C2D1;--divider:#E7EBF2;--quote:#FAFBFD;
+--track-border:#CDD6E2;--range-a:#C6D0DF;--range-b:#DCE2EC;--range-risk-a:#E0C4C4;--range-risk-b:#EFDCDC;
+--accent:#2A9D6F;--accent-text:#1D6F50;--accent-on-ink:#3FB484;--accent-tint:#E3F1EA;--accent-border:#A6CDBA;
+--amber:#D99A2B;--amber-text:#8A6113;--amber-tint:#FBF1DC;--amber-border:#E3C583;--amber-text-deep:#5E4A16;
+--risk:#B64B4B;--risk-text:#A83F3F;--risk-tint:#F8E9E9;--risk-border:#C08A8A;--risk-text-deep:#7A2F2F;--mark:#F6DDDD;
+--shadow-1:rgba(20,33,61,.07);--shadow-2:rgba(20,33,61,.12);--swatch-edge:rgba(20,33,61,.18)}
+[data-theme="dark"]{color-scheme:dark;
+--paper:#0F1621;--paper-95:rgba(15,22,33,.95);--raised:#17202D;--sunken:#131C28;--mist:#1E2834;
+--ink:#070C15;--ink-hover:#0E1826;--on-ink:#E7EDF5;--on-ink-2:#93A2B8;--amber-on-ink:#F0D9A8;
+--text:#E9EEF5;--text-body:#CBD5E2;--text-2:#A7B3C4;--muted:#8A97AB;--system:#6E7C90;
+--border:#2A3542;--border-strong:#3E4A5C;--divider:#222C39;--quote:#121A25;
+--track-border:#33404F;--range-a:#303E4F;--range-b:#26313E;--range-risk-a:#4A2B2B;--range-risk-b:#382222;
+--accent:#33B183;--accent-text:#54C698;--accent-on-ink:#4CC492;--accent-tint:#112620;--accent-border:#2C5C47;
+--amber:#DDA749;--amber-text:#E8C079;--amber-tint:#241C0E;--amber-border:#57431E;--amber-text-deep:#EACB92;
+--risk:#C95F5F;--risk-text:#F0908F;--risk-tint:#2A1618;--risk-border:#5E3131;--risk-text-deep:#F0908F;--mark:#4A2327;
+--shadow-1:rgba(0,0,0,.4);--shadow-2:rgba(0,0,0,.55);--swatch-edge:rgba(233,238,245,.22)}
+body{margin:0;background:var(--paper);-webkit-font-smoothing:antialiased;text-wrap:pretty}
+a{color:var(--accent-text);text-decoration:none}
+a:hover{color:var(--text)}
+@keyframes bh-rec{0%{opacity:1}50%{opacity:.35}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true"><defs>
+<symbol id="bh-mark" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M25 20 V80"></path><path d="M25 20 H44 a15 15 0 0 1 0 30 H25"></path><path d="M25 50 H46 a15 15 0 0 1 0 30 H25"></path></g><path d="M6 50 H94" fill="none" stroke="var(--ac,currentColor)" stroke-width="11"></path></symbol>
+<symbol id="i-coach" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5a6.5 6.5 0 0 1-6.5 6.5H9l-4 3v-3.6A6.5 6.5 0 0 1 8.5 6h5A6.5 6.5 0 0 1 20 12.5z"></path><path d="M9 11h7M9 14.5h4"></path></symbol>
+<symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 17a9 9 0 1 1 17 0"></path><path d="M12 13l4-3.5"></path><circle cx="12" cy="14" r="1.4"></circle></symbol>
+<symbol id="i-train" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></symbol>
+<symbol id="i-progress" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5.5-5.5 3.5 3.5L21 6"></path><path d="M15 6h6v6"></path></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="10" rx="3"></rect><path d="M6 11a6 6 0 0 0 12 0"></path><path d="M12 17v4M9 21h6"></path></symbol>
+<symbol id="i-head" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"></path><rect x="2.5" y="14" width="4.5" height="6" rx="2"></rect><rect x="17" y="14" width="4.5" height="6" rx="2"></rect></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4.5l4.5 4.5L9 19.5H4.5V15z"></path><path d="M13 20h8"></path></symbol>
+<symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8.5 4.5 4 4.5v13c4.5 0 6.5.5 8 2 1.5-1.5 3.5-2 8-2v-13c-4.5 0-6.5.5-8 2z"></path><path d="M12 6.5v13"></path></symbol>
+<symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2"></path><path d="M9 2h6"></path></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16 9.5"></path></symbol>
+<symbol id="i-tri" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8.5 15h-17z"></path><path d="M12 10v4M12 17h.01"></path></symbol>
+<symbol id="i-oct" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 3h7L21 8.5v7L15.5 21h-7L3 15.5v-7z"></path><path d="M12 8v4M12 16h.01"></path></symbol>
+<symbol id="i-dashed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 1 6.4 2.6M21 12a9 9 0 0 1-2.6 6.4M12 21a9 9 0 0 1-6.4-2.6M3 12a9 9 0 0 1 2.6-6.4"></path></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-13.7-4.6L4 8.5"></path><path d="M4 4v4.5h4.5"></path><path d="M4 13a8 8 0 0 0 13.7 4.6L20 15.5"></path><path d="M20 20v-4.5h-4.5"></path></symbol>
+<symbol id="i-wifioff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"></path><path d="M8.5 13.5a5 5 0 0 1 6.2-.8"></path><path d="M5 10a10 10 0 0 1 3-2M16 8a10 10 0 0 1 3 2"></path><path d="M12 19h.01"></path></symbol>
+<symbol id="i-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="4.5" width="13" height="16" rx="2"></rect><path d="M9 4.5V3h6v1.5"></path><path d="M9 13l2 2 4-4"></path></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path><path d="M9 15.5l2 2 4-4"></path></symbol>
+<symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="M11 6l-6 6 6 6"></path></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></symbol>
+<symbol id="i-play" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.5l11 6.5-11 6.5z"></path></symbol>
+<symbol id="i-more" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5.5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18.5" cy="12" r="1.6"></circle></symbol>
+</defs></svg>
+
+<div data-theme="{{ theme }}" style="min-height:100vh;background:var(--paper);color:var(--text);font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif">
+
+<div style="position:sticky;top:0;z-index:60;background:var(--paper-95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)">
+<div style="max-width:1560px;margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:10px;margin-right:auto">
+<svg viewBox="0 0 100 100" width="24" height="24" style="display:block;--ac:var(--accent)"><use href="#bh-mark"></use></svg>
+<span style="font-weight:600;font-size:15.5px;letter-spacing:-.02em">Bestehen</span>
+<span style="font-size:15.5px;color:var(--accent)">/</span>
+<span style="font-size:15.5px;color:var(--text-2)">App</span>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em">
+<a href="Bestehen-01-Design-System.dc.html" style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;color:var(--text-2)">01 SYSTEM</a>
+<span style="padding:6px 10px;border-radius:5px;background:var(--ink);color:var(--on-ink)">02 MOBILE</span>
+<a href="Bestehen-03-Desktop-Responsive.dc.html" style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;color:var(--text-2)">03 DESKTOP</a>
+<a href="Bestehen-04-Flows-Handoff.dc.html" style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;color:var(--text-2)">04 FLOWS · A11Y · HANDOFF</a>
+</div>
+<div style="display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em">
+<button onClick="{{ setLight }}" style="font-family:inherit;font-size:10.5px;letter-spacing:.06em;padding:7px 12px;border:0;background:{{ lightBg }};color:{{ lightFg }};cursor:pointer">LIGHT</button>
+<button onClick="{{ setDark }}" style="font-family:inherit;font-size:10.5px;letter-spacing:.06em;padding:7px 12px;border:0;border-left:1px solid var(--border);background:{{ darkBg }};color:{{ darkFg }};cursor:pointer">DARK</button>
+</div>
+</div>
+<div style="max-width:1560px;margin:0 auto;padding:0 32px 10px;display:flex;gap:18px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--muted)">
+<a href="#a1" style="color:var(--muted)">A1 ARRIVAL</a>
+<a href="#a2" style="color:var(--muted)">A2 THE DAILY LOOP</a>
+<a href="#a3" style="color:var(--muted)">A3 FOUR MORE SKILLS</a>
+<a href="#a4" style="color:var(--muted)">A4 READINESS &amp; MOCKS</a>
+<a href="#a5" style="color:var(--muted)">A5 EDGES &amp; HONESTY</a>
+</div>
+</div>
+
+<div style="max-width:1560px;margin:0 auto;padding:56px 32px 140px">
+
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">02 — Mobile screen system · 390 × 844 · 24 screens</div>
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:52px;line-height:1.03;letter-spacing:-.035em;font-weight:600;margin:0 0 20px;max-width:24ch">The whole product, in the order a learner meets it.</h1>
+<p style="font-size:18px;line-height:1.6;color:var(--text-2);max-width:66ch;margin:0 0 14px">Mobile is the primary surface, so it is designed first and completely — including the screens nobody demos: a denied microphone, an interrupted mock, a six-week absence, a deletion. Each frame is annotated with the decision it encodes and the state model from <a href="Bestehen-01-Design-System.dc.html#s03">01 §3</a> it obeys.</p>
+<p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:66ch;margin:0 0 48px">Device corners are 22px because they are a bezel, not a UI surface — inside the frame nothing exceeds the 12px sheet radius. Every primary action clears 48px; the sticky action area reserves 84px plus the safe-area inset.</p>
+
+<section id="a1" data-screen-label="A1 Arrival">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">ACT 1 · ARRIVAL AND PLACEMENT</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:32px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 14px;max-width:30ch">Earn the first attempt before asking for a commitment.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:70ch;margin:0">No account wall, no ten-question survey, no promise of a score. The first session produces one honest observation and one visible consequence — which is the only thing that makes the second session likely.</p>
+</div>
+
+<div style="display:flex;gap:36px;flex-wrap:wrap">
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">1.1 · LANDING</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px;display:inline-block"></span></span></div>
+<div style="flex:1;padding:56px 26px 26px;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:11px;margin-bottom:48px;--ac:var(--accent)"><svg viewBox="0 0 100 100" width="26" height="26"><use href="#bh-mark"></use></svg><span style="font-size:19px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:38px;line-height:1.05;letter-spacing:-.03em;font-weight:600;margin:0 0 18px">Train for the exam. Know when you're ready.</h1>
+<p style="font-size:16.5px;line-height:1.6;color:var(--text-2);margin:0 0 28px">TELC B1 has two gates: 135 of 225 written, 45 of 75 oral. We train both, and we tell you where you actually stand — never a probability.</p>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:18px 20px;margin-bottom:auto">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px">FIRST SESSION · 6 MINUTES</div>
+<div style="font-size:15px;line-height:1.6;color:var(--text-body)">One short reading task and one spoken answer. At the end you'll see what we observed and what we cannot yet claim.</div>
+</div>
+<div style="display:grid;gap:10px;padding-top:22px">
+<button style="font-family:inherit;font-size:16.5px;font-weight:600;padding:15px 20px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Start the first session</button>
+<button style="font-family:inherit;font-size:15px;font-weight:600;padding:13px 20px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:46px">I already have an exam date</button>
+</div>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">The pass rule appears before any marketing claim. The mark is the only branding on the screen, at 26px.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">1.2 · GOAL &amp; DATE · planning only</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>9:43</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 20px 10px"><svg width="24" height="24" style="color:var(--text)"><use href="#i-back"></use></svg><div style="height:3px;background:var(--mist);border-radius:2px;flex:1;overflow:hidden"><div style="width:33%;height:100%;background:var(--text)"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">1/3</span></div>
+<div style="flex:1;padding:14px 22px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:27px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 10px">When is your exam?</h1>
+<p style="font-size:15.5px;line-height:1.6;color:var(--text-2);margin:0 0 22px">Used for planning only. A date does not change your Readiness — and no date is a perfectly good answer.</p>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:18px;margin-bottom:14px">
+<label style="display:block;font-size:13.5px;font-weight:600;margin-bottom:7px">Exam date</label>
+<div style="display:flex;align-items:center;gap:10px;border:1px solid var(--border-strong);border-radius:6px;padding:12px 14px;background:var(--raised)"><svg width="20" height="20" style="color:var(--muted)"><use href="#i-cal"></use></svg><span style="font-size:16px;font-weight:500">14.11.2026</span></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:9px">86 DAYS · WE PLAN IN WEEKS, NOT COUNTDOWNS</div>
+</div>
+<div style="display:grid;gap:8px;margin-bottom:14px">
+<div style="display:flex;justify-content:space-between;align-items:center;background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:14px 16px"><span style="font-size:15px">No date yet</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">FINE</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:14px 16px"><span style="font-size:15px">Booked, waiting for confirmation</span><svg width="20" height="20" style="color:var(--muted)"><use href="#i-chev"></use></svg></div>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:15px 17px">
+<div style="font-size:14.5px;line-height:1.6;color:var(--text-body)"><strong style="font-weight:600">How much time per session?</strong> You can change this any day, and changing it is not a failure.</div>
+<div style="display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:12px;background:var(--raised)">
+<span style="flex:1;text-align:center;font-size:14px;font-weight:600;padding:12px 4px;background:var(--ink);color:var(--on-ink)">10</span>
+<span style="flex:1;text-align:center;font-size:14px;padding:12px 4px;border-left:1px solid var(--border)">25</span>
+<span style="flex:1;text-align:center;font-size:14px;padding:12px 4px;border-left:1px solid var(--border)">45</span>
+<span style="flex:1;text-align:center;font-size:14px;padding:12px 4px;border-left:1px solid var(--border)">Custom</span>
+</div>
+</div>
+</div>
+<div style="padding:16px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Continue</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Learner-controlled inputs (§3.5) get plain controls and no warnings. “No date yet” is labelled FINE so skipping doesn't feel like non-compliance.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">1.3 · FIRST PROBE · with help, open timing</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>9:46</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="padding:14px 22px 12px;border-bottom:1px solid var(--border)">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><svg width="20" height="20" style="color:var(--muted)"><use href="#i-book"></use></svg><span style="font-size:15px;font-weight:600">Reading · notice board</span><span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">1 OF 2</span></div>
+<div style="display:flex;gap:7px;flex-wrap:wrap">
+<span style="padding:5px 9px;border-radius:6px;background:var(--mist);border:1px solid var(--track-border);font-size:12px;color:var(--text-body)">With help</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Open timing</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Fresh task</span>
+</div>
+</div>
+<div style="flex:1;padding:18px 22px;overflow:hidden">
+<div lang="de" style="font-size:16.5px;line-height:1.75;color:var(--text-body);background:var(--quote);border:1px solid var(--border);border-radius:7px;padding:16px;margin-bottom:18px">Sprachkurs im Bürgerhaus: Der Kurs findet nur werktags von 18 bis 20 Uhr statt. Eine Anmeldung ist bis zum 30. September erforderlich.</div>
+<div style="font-size:15.5px;font-weight:600;margin-bottom:12px" lang="de">Was ist richtig?</div>
+<div style="display:grid;gap:8px">
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">a</span><span style="font-size:15px;line-height:1.5" lang="de">Der Kurs ist auch am Wochenende.</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:2px solid var(--text);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500">b</span><span style="font-size:15px;line-height:1.5;font-weight:500" lang="de">Man muss sich anmelden.</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">c</span><span style="font-size:15px;line-height:1.5" lang="de">Der Kurs kostet nichts.</span></div>
+</div>
+<div style="margin-top:16px;border:1px solid var(--border);border-radius:7px;background:var(--raised);padding:14px 16px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14.5px;font-weight:600;color:var(--accent-text)">Show a hint</span><svg width="20" height="20" style="color:var(--accent-text)"><use href="#i-chev"></use></svg></div>
+<div style="font-size:13px;line-height:1.55;color:var(--muted);margin-top:6px">Help stays available here, so this attempt won't count toward your Reading Readiness.</div>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Check answer</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">The consequence of using help is stated once, factually, next to the help itself — not in a dialog, and never twice.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">1.4 · PLACEMENT RESULT · evidence building</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>9:52</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:26px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:27px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 16px">What we saw, and what we can't say yet</h1>
+<div style="background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:7px;padding:17px 18px;margin-bottom:16px">
+<div style="font-size:15.5px;line-height:1.65;color:var(--text-body)"><strong style="font-weight:600">You read for the topic accurately and missed the restriction “nur werktags”.</strong> That is a scanning habit, not a vocabulary gap. Your spoken answer stayed on topic for 40 seconds with simple connectors.</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:18px;margin-bottom:16px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--text-2)"><svg width="18" height="18"><use href="#i-dashed"></use></svg><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em">EVIDENCE BUILDING</span></div>
+<div style="margin-bottom:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px"><span style="font-size:15px;font-weight:600">Written</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">NO ESTIMATE</span></div>
+<div style="position:relative;height:26px;border:1px dashed var(--border-strong);border-radius:5px;background:transparent"><div style="position:absolute;left:60%;top:-6px;bottom:-6px;width:2px;background:var(--text)"></div></div>
+</div>
+<div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px"><span style="font-size:15px;font-weight:600">Oral</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">NO ESTIMATE</span></div>
+<div style="position:relative;height:26px;border:1px dashed var(--border-strong);border-radius:5px;background:transparent"><div style="position:absolute;left:60%;top:-6px;bottom:-6px;width:2px;background:var(--text)"></div></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:14px">Two tasks cannot support a component estimate. The pass line is drawn so you can see what we're aiming at; the number arrives after about a week of real attempts.</div>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:16px 18px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px">STARTING POINT</div>
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body)">Reading and Listening start at guided A2 with support visible. Speaking starts one step lower — we'd rather move you up on evidence than start you where you'll stall.</div>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:grid;gap:9px">
+<button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Set up my first week</button>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:11px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:44px">Why can't you estimate yet?</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">The band that most products fake. Dashed empty tracks, the pass line still drawn, no 0, no grey fill, no encouragement to compensate.</div>
+</div>
+
+</div>
+</section>
+
+
+<section id="a2" data-screen-label="A2 Daily loop" style="padding-top:60px">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">ACT 2 · THE DAILY LOOP · observe → attempt → diagnose → repair → retry → remember</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:32px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 14px;max-width:30ch">Six screens, one decision each.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:70ch;margin:0">This is the loop the product is built around, drawn end to end for a single Reading weakness. The same six screens serve all five skills — only the input region changes.</p>
+</div>
+
+<div style="display:flex;gap:36px;flex-wrap:wrap">
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">2.1 · COACH HOME · today's plan</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>7:15</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;gap:10px;padding:14px 20px 12px;border-bottom:1px solid var(--border)">
+<svg viewBox="0 0 100 100" width="22" height="22" style="--ac:var(--accent)"><use href="#bh-mark"></use></svg>
+<span style="font-size:15px;font-weight:600;letter-spacing:-.02em">Bestehen</span>
+<span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">EXAM IN 12 WEEKS</span>
+<svg width="22" height="22" style="color:var(--text-2)"><use href="#i-more"></use></svg>
+</div>
+<div style="flex:1;padding:20px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 14px">Today: 25 minutes on Speaking</h1>
+<div style="background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:7px;padding:16px 18px;margin-bottom:16px">
+<div style="font-size:15.5px;line-height:1.65;color:var(--text-body)"><strong style="font-weight:600">Oral is 12 points below the pass line — your only blocker.</strong> Interaction dropped in your last two attempts, not vocabulary. We'll do 12 minutes on disagreeing politely, then two Listening rechecks.</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;box-shadow:0 1px 2px var(--shadow-1);overflow:hidden;margin-bottom:14px">
+<div style="display:flex;gap:12px;align-items:center;padding:15px 17px;border-bottom:1px solid var(--divider)"><svg width="22" height="22" style="color:var(--text)"><use href="#i-mic"></use></svg><div style="flex:1"><div style="font-size:15px;font-weight:600">Speaking S2 · disagreeing</div><div style="font-size:13px;color:var(--text-2)">12 min · on your own · fresh task</div></div><svg width="20" height="20" style="color:var(--muted)"><use href="#i-chev"></use></svg></div>
+<div style="display:flex;gap:12px;align-items:center;padding:15px 17px;border-bottom:1px solid var(--divider)"><svg width="22" height="22" style="color:var(--text)"><use href="#i-head"></use></svg><div style="flex:1"><div style="font-size:15px;font-weight:600">Listening recheck · 2 items</div><div style="font-size:13px;color:var(--text-2)">6 min · 21-day check</div></div><svg width="20" height="20" style="color:var(--muted)"><use href="#i-chev"></use></svg></div>
+<div style="display:flex;gap:12px;align-items:center;padding:15px 17px"><svg width="22" height="22" style="color:var(--text)"><use href="#i-book"></use></svg><div style="flex:1"><div style="font-size:15px;font-weight:600">Reading R3 · restrictions</div><div style="font-size:13px;color:var(--text-2)">7 min · overdue by 3 days</div></div><svg width="20" height="20" style="color:var(--muted)"><use href="#i-chev"></use></svg></div>
+</div>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:12px;border-radius:6px;background:var(--raised);border:1px solid var(--text);color:var(--text);min-height:46px;margin-bottom:12px">Adjust today's plan</button>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">Yesterday you finished 2 of 3 items. Nothing is lost — the third moved here.</div>
+</div>
+<div style="padding:12px 22px 14px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Start today's plan</button></div>
+<div style="display:flex;border-top:1px solid var(--border);background:var(--raised);padding-bottom:16px">
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid var(--text)"><svg width="22" height="22" style="color:var(--text)"><use href="#i-coach"></use></svg><div style="font-size:11px;font-weight:600;margin-top:3px">Coach</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-gauge"></use></svg><div style="font-size:11px;margin-top:3px">Readiness</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-train"></use></svg><div style="font-size:11px;margin-top:3px">Train</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-progress"></use></svg><div style="font-size:11px;margin-top:3px">Progress</div></div>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">One dominant action, one reason, three named items with durations. No streak, no completion ring, no “welcome back”.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">2.2 · ATTEMPT · focus shell, nav hidden</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>7:22</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:var(--on-ink);padding:11px 20px;margin-top:12px">
+<span style="font-size:14px;font-weight:500">Reading R2 · 4 items</span>
+<span style="display:flex;align-items:center;gap:9px"><svg width="17" height="17" style="color:var(--on-ink-2)"><use href="#i-timer"></use></svg><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-variant-numeric:tabular-nums">06:41</span></span>
+</div>
+<div style="padding:13px 22px 11px;border-bottom:1px solid var(--border);display:flex;gap:7px;flex-wrap:wrap">
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">On your own</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Practice timing</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Fresh task</span>
+</div>
+<div style="flex:1;padding:16px 22px;overflow:hidden">
+<div lang="de" style="font-size:16px;line-height:1.75;color:var(--text-body);background:var(--quote);border:1px solid var(--border);border-radius:7px;padding:15px;margin-bottom:16px;hyphens:auto">Stadtbibliothek — Öffnungszeiten geändert: Ab dem 1. Oktober öffnet die Bibliothek nur werktags von 10 bis 18 Uhr. Am Wochenende bleibt der Lesesaal geschlossen; die Rückgabebox ist täglich zugänglich.</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px"><span style="font-size:15.5px;font-weight:600" lang="de">3. Was stimmt?</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">3 OF 4</span></div>
+<div style="display:grid;gap:8px">
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">a</span><span style="font-size:15px;line-height:1.5" lang="de">Die Bibliothek ist am Samstag geöffnet.</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:2px solid var(--text);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500">b</span><span style="font-size:15px;line-height:1.5;font-weight:500" lang="de">Bücher kann man jeden Tag zurückgeben.</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">c</span><span style="font-size:15px;line-height:1.5" lang="de">Der Lesesaal öffnet ab 8 Uhr.</span></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:16px">
+<span style="flex:1;height:4px;border-radius:2px;background:var(--text)"></span>
+<span style="flex:1;height:4px;border-radius:2px;background:var(--text)"></span>
+<span style="flex:1;height:4px;border-radius:2px;background:var(--text)"></span>
+<span style="flex:1;height:4px;border-radius:2px;background:var(--mist)"></span>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:flex;gap:10px">
+<button style="font-family:inherit;font-size:15px;font-weight:600;padding:14px 16px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);color:var(--text-2);min-height:50px">Hide timer</button>
+<button style="flex:1;font-family:inherit;font-size:16.5px;font-weight:600;padding:14px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Next</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Bottom nav is gone: an attempt is a place you are in. Conditions sit in a fixed row that never scrolls away, and <em>Hide timer</em> never changes the timing.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">2.3 · DIAGNOSE · evidence before advice</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>7:29</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:22px;overflow:hidden">
+<div style="display:flex;align-items:baseline;gap:11px;margin-bottom:8px"><span style="font-size:40px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums">3</span><span style="font-size:16px;color:var(--text-2)">/ 4 · Reading R2</span></div>
+<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px">
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">On your own</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Practice timing</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Counts as evidence</span>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:17px 18px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px">DECISIVE EVIDENCE · ITEM 3</div>
+<div lang="de" style="font-size:15px;line-height:1.7;color:var(--text-body);background:var(--quote);border-left:3px solid var(--risk);border-radius:0 5px 5px 0;padding:12px 13px">„Ab dem 1. Oktober öffnet die Bibliothek <mark style="background:var(--mark);color:var(--text);padding:0 3px">nur werktags</mark> …“</div>
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-2);margin-top:12px">Your answer was tempting because the text does mention the weekend — in the sentence about the reading room, not opening hours.</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:16px 18px;margin-bottom:14px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+<div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:3px">LIKELY CAUSE</div><div style="font-size:15px;font-weight:600">Scanning for restrictions</div></div>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent-text);border:1px solid var(--accent-border);border-radius:5px;background:var(--accent-tint);padding:5px 8px;flex:none">MEDIUM</span>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:10px">Seen in 3 of your last 4 Reading attempts. Confidence is medium because two of those were with help.</div>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:15px 17px">
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body)"><strong style="font-weight:600">The other three were right, including the one with two negatives.</strong> That part is holding.</div>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:grid;gap:9px">
+<button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Repair this · 4 min</button>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:11px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:44px">See all four items</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Score, then the quote that decided it, then the cause with its confidence. Praise is attached to the observation that earned it, never floated on its own.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">2.4 · REPAIR · one pattern, skippable</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>7:31</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:22px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px"><h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:25px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0">Repair · 4 minutes</h1><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">1 OF 1</span></div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:18px;margin-bottom:14px">
+<div style="font-size:15.5px;line-height:1.7;color:var(--text-body);margin-bottom:14px">Restrictions decide these questions. Find the word that limits the statement before you choose:</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap" lang="de">
+<span style="padding:7px 12px;border-radius:999px;background:var(--sunken);border:1px solid var(--border);font-size:14px;font-weight:500">nur</span>
+<span style="padding:7px 12px;border-radius:999px;background:var(--sunken);border:1px solid var(--border);font-size:14px;font-weight:500">außer</span>
+<span style="padding:7px 12px;border-radius:999px;background:var(--sunken);border:1px solid var(--border);font-size:14px;font-weight:500">ab</span>
+<span style="padding:7px 12px;border-radius:999px;background:var(--sunken);border:1px solid var(--border);font-size:14px;font-weight:500">bis</span>
+<span style="padding:7px 12px;border-radius:999px;background:var(--sunken);border:1px solid var(--border);font-size:14px;font-weight:500">werktags</span>
+<span style="padding:7px 12px;border-radius:999px;background:var(--sunken);border:1px solid var(--border);font-size:14px;font-weight:500">montags</span>
+</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:18px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:11px">PRACTICE · 1 OF 3</div>
+<div lang="de" style="font-size:15.5px;line-height:1.7;color:var(--text-body);margin-bottom:14px">„Das Schwimmbad ist außer sonntags täglich geöffnet.“ — Wann ist geschlossen?</div>
+<div style="display:grid;gap:8px">
+<div style="display:flex;gap:11px;padding:13px 15px;border:1px solid var(--accent-border);border-radius:6px;background:var(--accent-tint)"><svg width="18" height="18" style="color:var(--accent-text);flex:none"><use href="#i-check"></use></svg><span style="font-size:15px;line-height:1.5;color:var(--accent-text);font-weight:500" lang="de">Sonntags</span></div>
+<div style="display:flex;gap:11px;padding:13px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">b</span><span style="font-size:15px;line-height:1.5" lang="de">Täglich</span></div>
+</div>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:15px 17px">
+<div style="font-size:14px;line-height:1.65;color:var(--text-2)">Skipping repair is allowed and records nothing negative — the obligation simply returns on its normal schedule.</div>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:flex;gap:10px">
+<button style="font-family:inherit;font-size:15px;font-weight:600;padding:14px 18px;border-radius:6px;background:var(--raised);border:1px solid var(--text);color:var(--text);min-height:50px">Skip repair</button>
+<button style="flex:1;font-family:inherit;font-size:16.5px;font-weight:600;padding:14px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Continue</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Repair teaches the pattern, not the item. Correctness carries the closed-check icon and the word, never colour alone.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">2.5 · RETRY · fresh check, no help</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>7:36</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="margin:12px 22px 0;border:1px solid var(--accent-border);border-radius:7px;background:var(--accent-tint);padding:14px 16px;display:flex;gap:11px;align-items:flex-start">
+<svg width="19" height="19" style="color:var(--accent-text);flex:none;margin-top:1px"><use href="#i-check"></use></svg>
+<div><div style="font-size:14.5px;font-weight:600;color:var(--text);margin-bottom:3px">Fresh check · new text, same skill</div><div style="font-size:13.5px;line-height:1.6;color:var(--text-body)">Different notice, same kind of restriction. No help this time — this is the attempt that counts.</div></div>
+</div>
+<div style="padding:14px 22px 11px;display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">On your own</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Fresh task</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--accent-tint);border:1px solid var(--accent-border);font-size:12px;color:var(--accent-text);font-weight:500">Counts as evidence</span>
+</div>
+<div style="flex:1;padding:16px 22px;overflow:hidden">
+<div lang="de" style="font-size:16px;line-height:1.75;color:var(--text-body);background:var(--quote);border:1px solid var(--border);border-radius:7px;padding:15px;margin-bottom:16px;hyphens:auto">Hausordnung: Die Waschküche darf ab 7 Uhr benutzt werden, außer an Sonn- und Feiertagen. Fahrräder dürfen nur im Keller abgestellt werden.</div>
+<div style="font-size:15.5px;font-weight:600;margin-bottom:11px" lang="de">Wo dürfen Fahrräder stehen?</div>
+<div style="display:grid;gap:8px">
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">a</span><span style="font-size:15px;line-height:1.5" lang="de">Im Hof</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">b</span><span style="font-size:15px;line-height:1.5" lang="de">Nur im Keller</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">c</span><span style="font-size:15px;line-height:1.5" lang="de">Überall im Haus</span></div>
+</div>
+<div style="margin-top:18px;font-size:13.5px;line-height:1.6;color:var(--muted)">Hints are not offered on a fresh check. If we don't have an unseen task, we say so instead of reusing one.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Submit</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Same shell as 2.2, one banner different. Transfer is the claim being tested, so the task must be one the learner has never seen.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">2.6 · REMEMBER · what changed</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>7:41</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:26px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 18px">Session done · 26 minutes</h1>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="padding:15px 17px;border-bottom:1px solid var(--divider);display:flex;gap:12px;align-items:flex-start"><svg width="19" height="19" style="color:var(--accent-text);flex:none;margin-top:2px"><use href="#i-check"></use></svg><div><div style="font-size:15px;font-weight:600;margin-bottom:3px">Restrictions in notices · repaired today</div><div style="font-size:13.5px;line-height:1.55;color:var(--text-2)">Repaired, not yet retained. Returns Thursday on a different text.</div></div></div>
+<div style="padding:15px 17px;border-bottom:1px solid var(--divider);display:flex;gap:12px;align-items:flex-start"><svg width="19" height="19" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-refresh"></use></svg><div><div style="font-size:15px;font-weight:600;margin-bottom:3px">Dates &amp; times in Listening · confirmed</div><div style="font-size:13.5px;line-height:1.55;color:var(--text-2)">Second clean check in a row. Next look in 21 days.</div></div></div>
+<div style="padding:15px 17px;display:flex;gap:12px;align-items:flex-start"><svg width="19" height="19" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-mic"></use></svg><div><div style="font-size:15px;font-weight:600;margin-bottom:3px">Speaking S2 · still your blocker</div><div style="font-size:13.5px;line-height:1.55;color:var(--text-2)">One good turn today. It takes three under exam conditions to move Oral.</div></div></div>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:16px 18px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px">NEXT SESSION</div>
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body)">Thursday: the Reading fresh check plus one S3 attempt. About 20 minutes.</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">No score for the session, no percentage complete, no badge. The session ends with what is true now.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:grid;gap:9px">
+<button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Done for today</button>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:11px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:44px">Practise something extra</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">The retention screen most apps skip. It names what moved, what is only repaired, and when each thing comes back.</div>
+</div>
+
+</div>
+</section>
+
+<section id="a3" data-screen-label="A3 Four more skills" style="padding-top:60px">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">ACT 3 · THE OTHER FOUR SKILLS · same shell, different input region</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:32px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 14px;max-width:32ch">Listening, Writing and Speaking change the input — nothing else.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:70ch;margin:0">Timer position, conditions row, sticky action and result grammar are identical to Reading. That is what keeps a five-skill product learnable, and it is why Speaking — the hardest to build — feels like the rest of the app rather than a separate product.</p>
+</div>
+
+<div style="display:flex;gap:36px;flex-wrap:wrap">
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">3.1 · LISTENING H2 · one replay</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>18:02</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:var(--on-ink);padding:11px 20px;margin-top:12px">
+<span style="font-size:14px;font-weight:500">Listening H2 · 5 items</span>
+<span style="display:flex;align-items:center;gap:9px"><svg width="17" height="17" style="color:var(--on-ink-2)"><use href="#i-timer"></use></svg><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-variant-numeric:tabular-nums">09:12</span></span>
+</div>
+<div style="padding:13px 22px 11px;border-bottom:1px solid var(--border);display:flex;gap:7px;flex-wrap:wrap">
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">On your own</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--accent-tint);border:1px solid var(--accent-border);font-size:12px;color:var(--accent-text);font-weight:500">Exam conditions</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Fresh task</span>
+</div>
+<div style="flex:1;padding:18px 22px;overflow:hidden">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:18px;margin-bottom:16px">
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+<button aria-label="Play" style="width:52px;height:52px;border-radius:999px;border:0;background:var(--ink);color:var(--on-ink);flex:none;display:flex;align-items:center;justify-content:center"><svg width="22" height="22"><use href="#i-play"></use></svg></button>
+<div style="flex:1">
+<div style="height:6px;background:var(--mist);border:1px solid var(--track-border);border-radius:4px;overflow:hidden"><div style="width:38%;height:100%;background:var(--text)"></div></div>
+<div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:7px"><span>0:47</span><span>2:03</span></div>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;color:var(--text-2);border-top:1px solid var(--divider);padding-top:12px"><span>Replays left: <strong style="color:var(--text);font-weight:600">1 of 1</strong></span><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted)">EXAM PLAYBACK</span></div>
+</div>
+<div style="font-size:15px;line-height:1.6;color:var(--text-body);margin-bottom:12px" lang="de">Sie hören eine Ansage am Bahnhof. Welcher Bahnsteig?</div>
+<div style="display:grid;gap:8px">
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">a</span><span style="font-size:15px">Gleis 4</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">b</span><span style="font-size:15px">Gleis 7</span></div>
+<div style="display:flex;gap:11px;padding:14px 15px;border:1px solid var(--border);border-radius:6px;background:var(--raised)"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">c</span><span style="font-size:15px">Gleis 14</span></div>
+</div>
+<div style="margin-top:16px;background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:13px 15px;font-size:13.5px;line-height:1.6;color:var(--text-2)">Instructions are always available as text as well as audio. The transcript appears in the result, never during the attempt.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Next</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Replay budget is stated as a count, not hidden in a disabled button. Exam-conditions label is earned here because playback follows exam rules.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">3.2 · WRITING SB3 · autosave, content points</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>18:24</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:var(--on-ink);padding:11px 20px;margin-top:12px">
+<span style="font-size:14px;font-weight:500">Writing · e-mail</span>
+<span style="display:flex;align-items:center;gap:9px"><svg width="17" height="17" style="color:var(--on-ink-2)"><use href="#i-timer"></use></svg><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-variant-numeric:tabular-nums">14:38</span></span>
+</div>
+<div style="padding:13px 22px 11px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px">
+<div style="display:flex;gap:7px;flex-wrap:wrap">
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">On your own</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">Practice timing</span>
+</div>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent-text);flex:none">SAVED 18:24</span>
+</div>
+<div style="flex:1;padding:16px 22px;overflow:hidden;display:flex;flex-direction:column">
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:14px 16px;margin-bottom:12px">
+<div lang="de" style="font-size:14.5px;line-height:1.65;color:var(--text-body)">Ihr Kurs beginnt später. Schreiben Sie an Frau Weber: bedanken, neuen Termin vorschlagen, nach Material fragen, Montag absagen.</div>
+</div>
+<div style="display:grid;gap:6px;margin-bottom:12px">
+<div style="display:flex;gap:9px;align-items:center;font-size:13.5px"><svg width="17" height="17" style="color:var(--accent-text);flex:none"><use href="#i-check"></use></svg><span>Danken</span></div>
+<div style="display:flex;gap:9px;align-items:center;font-size:13.5px"><svg width="17" height="17" style="color:var(--accent-text);flex:none"><use href="#i-check"></use></svg><span>Termin vorschlagen</span></div>
+<div style="display:flex;gap:9px;align-items:center;font-size:13.5px;color:var(--text-2)"><svg width="17" height="17" style="color:var(--system);flex:none"><use href="#i-dashed"></use></svg><span>Material erfragen</span></div>
+<div style="display:flex;gap:9px;align-items:center;font-size:13.5px;color:var(--text-2)"><svg width="17" height="17" style="color:var(--system);flex:none"><use href="#i-dashed"></use></svg><span>Montag absagen</span></div>
+</div>
+<div lang="de" style="flex:1;background:var(--raised);border:1px solid var(--border-strong);border-radius:6px;padding:14px;font-size:15.5px;line-height:1.75;color:var(--text-body)">Liebe Frau Weber,<br/><br/>vielen Dank für Ihre Nachricht. Ich freue mich, dass der Kurs stattfindet. Könnten wir uns am Mittwoch um 18 Uhr treffen?<span style="display:inline-block;width:2px;height:19px;background:var(--text);vertical-align:-4px;margin-left:2px"></span></div>
+<div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:9px"><span>2 OF 4 POINTS COVERED</span><span>58 WORDS</span></div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Submit for evaluation</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Content points are tracked because task completeness costs more marks than grammar. Autosave is a mono label, never a modal; the count is coverage, not a score.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">3.3 · SPEAKING · microphone pre-flight</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>19:05</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:26px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 14px">Before we record</h1>
+<p style="font-size:15.5px;line-height:1.65;color:var(--text-2);margin:0 0 18px">Your audio is used to evaluate this task and then deleted. It is never used to train anything, and it is never shared.</p>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:18px;margin-bottom:14px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><svg width="22" height="22" style="color:var(--text)"><use href="#i-mic"></use></svg><div style="flex:1"><div style="font-size:15px;font-weight:600">iPhone microphone</div><div style="font-size:13px;color:var(--text-2)">Change device</div></div><svg width="20" height="20" style="color:var(--muted)"><use href="#i-chev"></use></svg></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">SAY “HALLO” TO CHECK THE LEVEL</div>
+<div style="display:flex;gap:3px;align-items:flex-end;height:34px">
+<span style="flex:1;height:30%;background:var(--accent);border-radius:2px"></span><span style="flex:1;height:55%;background:var(--accent);border-radius:2px"></span><span style="flex:1;height:80%;background:var(--accent);border-radius:2px"></span><span style="flex:1;height:60%;background:var(--accent);border-radius:2px"></span><span style="flex:1;height:38%;background:var(--accent);border-radius:2px"></span><span style="flex:1;height:22%;background:var(--mist);border-radius:2px"></span><span style="flex:1;height:15%;background:var(--mist);border-radius:2px"></span><span style="flex:1;height:20%;background:var(--mist);border-radius:2px"></span>
+</div>
+<div style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13.5px;color:var(--accent-text);font-weight:500"><svg width="17" height="17"><use href="#i-check"></use></svg>We can hear you clearly</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:16px 18px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px">WHAT HAPPENS</div>
+<div style="display:grid;gap:8px;font-size:14px;line-height:1.6;color:var(--text-body)">
+<div>30 seconds to prepare, then four turns.</div>
+<div>A partner speaks between your turns — that is part of S2.</div>
+<div>You can stop at any point; a stopped attempt stays practice.</div>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">Prefer not to speak today? A typed rehearsal is available and is labelled learning-only.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:grid;gap:9px">
+<button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">I'm ready · start S2</button>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:11px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:44px">Type my answer instead</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Pre-flight exists so a failed attempt never becomes invalid evidence: if the level meter fails, the attempt never starts.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">3.4 · SPEAKING S2 · recording, turn 2 of 4</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>19:08</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:var(--on-ink);padding:11px 20px;margin-top:12px">
+<span style="font-size:14px;font-weight:500">Speaking S2 · planning together</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--on-ink-2)">TURN 2 / 4</span>
+</div>
+<div style="padding:13px 22px 11px;border-bottom:1px solid var(--border);display:flex;gap:7px;flex-wrap:wrap">
+<span style="padding:5px 9px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);font-size:12px;color:var(--text-body)">On your own</span>
+<span style="padding:5px 9px;border-radius:6px;background:var(--accent-tint);border:1px solid var(--accent-border);font-size:12px;color:var(--accent-text);font-weight:500">Exam conditions</span>
+</div>
+<div style="flex:1;padding:18px 22px;overflow:hidden">
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:15px 16px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px">YOUR PARTNER SAID</div>
+<div lang="de" style="font-size:15px;line-height:1.7;color:var(--text-body)">„Ich finde, wir sollten das Fest am Samstagabend machen. Dann haben alle Zeit.“</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 16px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px">YOUR TURN</div>
+<div style="font-size:15px;line-height:1.65;color:var(--text-body)">Disagree politely and suggest a different time. Give one reason.</div>
+</div>
+<div style="border:1px solid var(--risk-border);background:var(--risk-tint);border-radius:7px;padding:15px 16px;display:flex;align-items:center;gap:11px;margin-bottom:14px">
+<span style="width:12px;height:12px;border-radius:999px;background:var(--risk);animation:bh-rec 1.6s infinite;flex:none"></span>
+<span style="font-size:15px;font-weight:600;color:var(--risk-text)">Recording · your turn</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:15px;margin-left:auto;font-variant-numeric:tabular-nums;color:var(--risk-text-deep)">0:24</span>
+</div>
+<div style="display:flex;gap:3px;align-items:flex-end;height:44px;margin-bottom:14px">
+<span style="flex:1;height:24%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:58%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:88%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:46%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:72%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:34%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:62%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:28%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:50%;background:var(--border-strong);border-radius:2px"></span><span style="flex:1;height:20%;background:var(--border-strong);border-radius:2px"></span>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">No hints are shown while recording. Deleted after evaluation.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:flex;gap:10px">
+<button style="font-family:inherit;font-size:15px;font-weight:600;padding:14px 18px;border-radius:6px;background:var(--raised);border:1px solid var(--border-strong);color:var(--text-2);min-height:50px">Stop</button>
+<button style="flex:1;font-family:inherit;font-size:16.5px;font-weight:600;padding:14px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Done with my turn</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Recording state is never ambiguous: dot, word, timer and level all present. Under reduced motion the dot stops pulsing and stays solid.</div>
+</div>
+
+</div>
+</section>
+
+<section id="a4" data-screen-label="A4 Readiness and mocks" style="padding-top:60px">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">ACT 4 · READINESS, TRAINING AND MOCKS</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:32px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 14px;max-width:30ch">Two gates, never averaged into one number.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:70ch;margin:0">Written and Oral each get their own scale, their own confidence and their own evidence age. The overall line is the weaker of the two, stated as a bottleneck. Nowhere in this act does a probability of passing appear.</p>
+</div>
+
+<div style="display:flex;gap:36px;flex-wrap:wrap">
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">4.1 · READINESS · both components</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>12:30</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:20px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 6px">Readiness</h1>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px">TELC B1 · 60% NEEDED IN EACH COMPONENT</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:17px 18px;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px"><span style="font-size:16px;font-weight:600">Written</span><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;background:var(--accent-tint);border:1px solid var(--accent-border);font-size:12px;color:var(--accent-text);font-weight:600"><svg width="14" height="14"><use href="#i-check"></use></svg>Safe</span></div>
+<div style="display:flex;align-items:baseline;gap:9px;margin-bottom:11px"><span style="font-size:32px;font-weight:600;font-variant-numeric:tabular-nums">64</span><span style="font-size:14px;color:var(--text-2)">% of 225 · range 60–68</span></div>
+<div style="position:relative;height:26px;background:var(--mist);border:1px solid var(--track-border);border-radius:5px"><div style="position:absolute;left:60%;right:32%;top:0;bottom:0;background:repeating-linear-gradient(135deg,var(--range-a) 0 4px,var(--range-b) 4px 8px)"></div><div style="position:absolute;left:64%;top:-3px;bottom:-3px;width:3px;background:var(--accent-text)"></div><div style="position:absolute;left:60%;top:-7px;bottom:-7px;width:2px;background:var(--text)"></div></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:8px">PASS LINE 60 · CONFIDENCE MEDIUM · 6 DAYS OLD</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:17px 18px;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px"><span style="font-size:16px;font-weight:600">Oral</span><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;background:var(--risk-tint);border:1px solid var(--risk-border);font-size:12px;color:var(--risk-text);font-weight:600"><svg width="14" height="14"><use href="#i-oct"></use></svg>Not ready</span></div>
+<div style="display:flex;align-items:baseline;gap:9px;margin-bottom:11px"><span style="font-size:32px;font-weight:600;font-variant-numeric:tabular-nums">48</span><span style="font-size:14px;color:var(--text-2)">% of 75 · range 42–55</span></div>
+<div style="position:relative;height:26px;background:var(--mist);border:1px solid var(--track-border);border-radius:5px"><div style="position:absolute;left:42%;right:45%;top:0;bottom:0;background:repeating-linear-gradient(135deg,var(--range-risk-a) 0 4px,var(--range-risk-b) 4px 8px)"></div><div style="position:absolute;left:48%;top:-3px;bottom:-3px;width:3px;background:var(--risk)"></div><div style="position:absolute;left:60%;top:-7px;bottom:-7px;width:2px;background:var(--text)"></div></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:8px">PASS LINE 60 · CONFIDENCE LOW · S3 NO EVIDENCE</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:7px;padding:15px 17px;margin-bottom:12px">
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body)"><strong style="font-weight:600">Oral is the bottleneck.</strong> Each component is passed separately, so strong Written cannot compensate. S3 has never been attempted under exam conditions.</div>
+</div>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:12px;border-radius:6px;background:var(--raised);border:1px solid var(--text);color:var(--text);min-height:46px">Show evidence as text</button>
+</div>
+<div style="display:flex;border-top:1px solid var(--border);background:var(--raised);padding-bottom:16px">
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-coach"></use></svg><div style="font-size:11px;margin-top:3px">Coach</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid var(--text)"><svg width="22" height="22" style="color:var(--text)"><use href="#i-gauge"></use></svg><div style="font-size:11px;font-weight:600;margin-top:3px">Readiness</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-train"></use></svg><div style="font-size:11px;margin-top:3px">Train</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-progress"></use></svg><div style="font-size:11px;margin-top:3px">Progress</div></div>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Hatched planning range, solid estimate marker, ink pass line taller than the track. Evidence age is on the card, because a number without a date is not evidence.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">4.2 · ORAL DETAIL · text alternative open</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>12:33</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 20px 12px;border-bottom:1px solid var(--border)"><svg width="24" height="24" style="color:var(--text)"><use href="#i-back"></use></svg><span style="font-size:16px;font-weight:600">Oral</span></div>
+<div style="flex:1;padding:18px 22px;overflow:hidden">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:16px 18px;margin-bottom:12px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px">EVIDENCE AS TEXT</div>
+<div style="font-size:14.5px;line-height:1.7;color:var(--text-body)">Oral: estimated 48% of 75 points, planning range 42 to 55, pass line 60. Below the pass line; the range does not reach it. Confidence low: three attempts, one under exam conditions, none for S3.</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--divider);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--muted)"><span>SECTION</span><span>ESTIMATE</span></div>
+<div style="display:flex;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--divider);font-size:14.5px"><span>S1 · introducing yourself</span><span style="font-variant-numeric:tabular-nums;font-weight:500">62%</span></div>
+<div style="display:flex;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--divider);font-size:14.5px"><span>S2 · planning together</span><span style="font-variant-numeric:tabular-nums;font-weight:500;color:var(--risk-text)">41%</span></div>
+<div style="display:flex;justify-content:space-between;padding:13px 16px;font-size:14.5px"><span>S3 · presenting a topic</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-2)">NO EVIDENCE</span></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:16px 18px;margin-bottom:12px">
+<div style="font-size:15px;font-weight:600;margin-bottom:7px">What would change this fastest</div>
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body)">One S3 attempt under exam conditions. It would narrow the range by roughly 6 points either way — which is the difference between planning and guessing.</div>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:14px 16px;display:flex;gap:11px;align-items:flex-start">
+<svg width="18" height="18" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-refresh"></use></svg>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2)">Your S1 evidence is 19 days old. It still counts, but it will be marked stale at 30 days.</div>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Attempt S3 · 9 min</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Every chart in the product ships with this table. “No evidence” is a real value here — it is never rendered as 0%.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">4.3 · TRAIN · sessions, review, mocks</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>12:40</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:20px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 16px">Train</h1>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:16px 18px;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px"><span style="font-size:15px;font-weight:600">Due today · 3 checks</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">~9 MIN</span></div>
+<div style="display:grid;gap:9px">
+<div style="display:flex;justify-content:space-between;gap:10px;font-size:14.5px;padding-bottom:9px;border-bottom:1px solid var(--divider)"><span>Restrictions in notices</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);flex:none">7-DAY</span></div>
+<div style="display:flex;justify-content:space-between;gap:10px;font-size:14.5px;padding-bottom:9px;border-bottom:1px solid var(--divider)"><span>Numbers &amp; dates in H2</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);flex:none">21-DAY</span></div>
+<div style="display:flex;justify-content:space-between;gap:10px;font-size:14.5px"><span lang="de">Phrases for disagreeing</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber-text);flex:none">OVERDUE 3D</span></div>
+</div>
+</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin:16px 0 10px">PRACTISE A SKILL</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:14px 15px"><svg width="20" height="20" style="color:var(--text)"><use href="#i-book"></use></svg><div style="font-size:14.5px;font-weight:600;margin-top:8px">Reading</div><div style="font-size:12.5px;color:var(--text-2)">Independent B1</div></div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:14px 15px"><svg width="20" height="20" style="color:var(--text)"><use href="#i-head"></use></svg><div style="font-size:14.5px;font-weight:600;margin-top:8px">Listening</div><div style="font-size:12.5px;color:var(--text-2)">Independent B1</div></div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:14px 15px"><svg width="20" height="20" style="color:var(--text)"><use href="#i-pen"></use></svg><div style="font-size:14.5px;font-weight:600;margin-top:8px">Writing</div><div style="font-size:12.5px;color:var(--text-2)">A2/B1 bridge</div></div>
+<div style="background:var(--raised);border:1px solid var(--amber-border);border-radius:7px;padding:14px 15px"><svg width="20" height="20" style="color:var(--text)"><use href="#i-mic"></use></svg><div style="font-size:14.5px;font-weight:600;margin-top:8px">Speaking</div><div style="font-size:12.5px;color:var(--amber-text);font-weight:500">Your blocker</div></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 17px;display:flex;gap:12px;align-items:flex-start">
+<svg width="20" height="20" style="color:var(--text);flex:none;margin-top:2px"><use href="#i-timer"></use></svg>
+<div style="flex:1"><div style="font-size:15px;font-weight:600;margin-bottom:3px">Mock exam</div><div style="font-size:13.5px;line-height:1.55;color:var(--text-2)">Written block 2h20 · Oral 15 min. Last taken 18 days ago.</div></div>
+<svg width="20" height="20" style="color:var(--muted);flex:none"><use href="#i-chev"></use></svg>
+</div>
+</div>
+<div style="display:flex;border-top:1px solid var(--border);background:var(--raised);padding-bottom:16px">
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-coach"></use></svg><div style="font-size:11px;margin-top:3px">Coach</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-gauge"></use></svg><div style="font-size:11px;margin-top:3px">Readiness</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid var(--text)"><svg width="22" height="22" style="color:var(--text)"><use href="#i-train"></use></svg><div style="font-size:11px;font-weight:600;margin-top:3px">Train</div></div>
+<div style="flex:1;padding:9px 4px;text-align:center;border-top:2px solid transparent;color:var(--muted)"><svg width="22" height="22"><use href="#i-progress"></use></svg><div style="font-size:11px;margin-top:3px">Progress</div></div>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Review and Mocks live here rather than as extra tabs. Due items are obligations with intervals, never a deck count or a debt total.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">4.4 · MOCK PRE-FLIGHT · consequences first</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>10:02</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:24px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 8px">Full written mock</h1>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:18px">2 H 20 MIN · ONE SITTING · EXAM CONDITIONS</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="padding:14px 17px;border-bottom:1px solid var(--divider);display:flex;gap:11px;align-items:flex-start"><svg width="18" height="18" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-timer"></use></svg><div style="font-size:14.5px;line-height:1.6;color:var(--text-body)">Timing is exam timing. Pausing ends the exam-conditions claim for the block you are in.</div></div>
+<div style="padding:14px 17px;border-bottom:1px solid var(--divider);display:flex;gap:11px;align-items:flex-start"><svg width="18" height="18" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-clip"></use></svg><div style="font-size:14.5px;line-height:1.6;color:var(--text-body)">No help, no hints, no dictionary. Listening plays to exam replay rules.</div></div>
+<div style="padding:14px 17px;display:flex;gap:11px;align-items:flex-start"><svg width="18" height="18" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-refresh"></use></svg><div style="font-size:14.5px;line-height:1.6;color:var(--text-body)">Writing goes to an evaluator afterwards; the rest is scored immediately.</div></div>
+</div>
+<div style="background:var(--amber-tint);border:1px solid var(--amber-border);border-radius:7px;padding:15px 16px;margin-bottom:14px;display:flex;gap:11px;align-items:flex-start">
+<svg width="19" height="19" style="color:var(--amber-text);flex:none;margin-top:1px"><use href="#i-tri"></use></svg>
+<div style="font-size:14px;line-height:1.6;color:var(--amber-text-deep)">You have 1 h 55 min before your calendar's next event. A short mock would fit; the full one would not.</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 17px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px">ALTERNATIVE</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div style="font-size:15px;font-weight:600">Reading + Language Elements only</div><div style="font-size:13px;color:var(--text-2)">65 min · still exam conditions</div></div><svg width="20" height="20" style="color:var(--muted);flex:none"><use href="#i-chev"></use></svg></div>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:grid;gap:9px">
+<button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Start the full mock</button>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:11px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:44px">Schedule it for Saturday</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Pre-flight states what a pause costs <em>before</em> it happens. The learner may still start early or in the wrong window — that is their call to make.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">4.5 · MOCK RESULT · validity, then priorities</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>12:26</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:25px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 14px">Written mock · 2 h 18 min</h1>
+<div style="background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:7px;padding:14px 16px;margin-bottom:14px;display:flex;gap:11px;align-items:flex-start">
+<svg width="19" height="19" style="color:var(--accent-text);flex:none;margin-top:1px"><use href="#i-check"></use></svg>
+<div><div style="font-size:14.5px;font-weight:600;margin-bottom:3px">Valid under exam conditions</div><div style="font-size:13.5px;line-height:1.6;color:var(--text-body)">No pauses, no help, timing kept. This is decision-grade evidence.</div></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:15px 17px;border-bottom:1px solid var(--divider)"><span style="font-size:15px;font-weight:600">Written total</span><span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums">147<span style="font-size:14px;color:var(--text-2);font-weight:400"> / 225</span></span></div>
+<div style="display:flex;justify-content:space-between;padding:12px 17px;border-bottom:1px solid var(--divider);font-size:14px"><span>Reading</span><span style="font-variant-numeric:tabular-nums">48 / 75</span></div>
+<div style="display:flex;justify-content:space-between;padding:12px 17px;border-bottom:1px solid var(--divider);font-size:14px"><span>Language Elements</span><span style="font-variant-numeric:tabular-nums">21 / 30</span></div>
+<div style="display:flex;justify-content:space-between;padding:12px 17px;border-bottom:1px solid var(--divider);font-size:14px"><span>Listening</span><span style="font-variant-numeric:tabular-nums">54 / 75</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 17px;font-size:14px"><span>Writing</span><span style="display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber-text)"><svg width="14" height="14"><use href="#i-tri"></use></svg>PENDING</span></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 17px;margin-bottom:12px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px">TWO PRIORITIES FROM THIS MOCK</div>
+<div style="display:grid;gap:10px;font-size:14.5px;line-height:1.6;color:var(--text-body)">
+<div><strong style="font-weight:600">1 · Reading part 2 timing.</strong> You spent 19 minutes on a 12-minute part and rushed the last text.</div>
+<div><strong style="font-weight:600">2 · Language Elements: prepositions.</strong> 6 of your 9 losses were in one pattern.</div>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">Written passed the line at 147. Oral is unchanged by this mock and remains your blocker.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Put these in my plan</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Validity is stated before any score, and a pending section is amber and non-blocking. Exactly two priorities — a mock that produces ten produces none.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">4.6 · READY TO BOOK · a gate, not a score</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>08:12</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:24px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 8px">Not ready to book yet</h1>
+<p style="font-size:15.5px;line-height:1.65;color:var(--text-2);margin:0 0 18px">Four conditions have to hold at the same time. Three do. This is a checklist, not a rating.</p>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="display:flex;gap:12px;padding:15px 17px;border-bottom:1px solid var(--divider);align-items:flex-start"><svg width="19" height="19" style="color:var(--accent-text);flex:none;margin-top:1px"><use href="#i-check"></use></svg><div><div style="font-size:14.5px;font-weight:600">Written above the line</div><div style="font-size:13px;color:var(--text-2);margin-top:2px">147/225 in a valid mock, 18 days ago</div></div></div>
+<div style="display:flex;gap:12px;padding:15px 17px;border-bottom:1px solid var(--divider);align-items:flex-start"><svg width="19" height="19" style="color:var(--accent-text);flex:none;margin-top:1px"><use href="#i-check"></use></svg><div><div style="font-size:14.5px;font-weight:600">All four written sections attempted at target conditions</div><div style="font-size:13px;color:var(--text-2);margin-top:2px">Breadth complete</div></div></div>
+<div style="display:flex;gap:12px;padding:15px 17px;border-bottom:1px solid var(--divider);align-items:flex-start"><svg width="19" height="19" style="color:var(--accent-text);flex:none;margin-top:1px"><use href="#i-check"></use></svg><div><div style="font-size:14.5px;font-weight:600">Current exam format</div><div style="font-size:13px;color:var(--text-2);margin-top:2px">Blueprint unchanged since your last mock</div></div></div>
+<div style="display:flex;gap:12px;padding:15px 17px;align-items:flex-start;background:var(--risk-tint)"><svg width="19" height="19" style="color:var(--risk-text);flex:none;margin-top:1px"><use href="#i-oct"></use></svg><div><div style="font-size:14.5px;font-weight:600;color:var(--risk-text)">Oral above the line</div><div style="font-size:13px;color:var(--risk-text-deep);margin-top:2px">48% estimated, range 42–55, and S3 unattempted</div></div></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:7px;padding:15px 17px;margin-bottom:12px">
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body)"><strong style="font-weight:600">The shortest honest path is three S-attempts under exam conditions.</strong> If two of them clear 60%, this gate opens on evidence rather than optimism.</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">You can book anyway — it's your exam. We'll keep planning for the date you set.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:grid;gap:9px">
+<button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Plan the three S-attempts</button>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:11px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:44px">I've already booked · 14.11.</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">The one place where red is allowed to sit in a list: a failing gate is named exactly, with its numbers, and the alternative path is offered without moralising.</div>
+</div>
+
+</div>
+</section>
+
+<section id="a5" data-screen-label="A5 Edges" style="padding-top:60px">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">ACT 5 · EDGES AND HONESTY · the screens nobody demos</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:32px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 14px;max-width:32ch">Failure has a named owner, and it is often us.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:70ch;margin:0">Six situations from the recovery table in <a href="Bestehen-01-Design-System.dc.html#s03">01 §3.6</a>. All six use the neutral system family — grey, dashed, never red — because a technical fault must not be mistakable for a bad score. Copy starts by saying who is responsible.</p>
+</div>
+
+<div style="display:flex;gap:36px;flex-wrap:wrap">
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">5.1 · MICROPHONE DENIED</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>19:05</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:26px 22px;overflow:hidden">
+<div style="border:1px dashed var(--system);background:var(--mist);border-radius:7px;padding:18px;margin-bottom:16px">
+<div style="display:flex;gap:11px;align-items:flex-start"><svg width="20" height="20" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-mic"></use></svg><div><div style="font-size:16px;font-weight:600;margin-bottom:5px">We can't reach your microphone</div><div style="font-size:14.5px;line-height:1.65;color:var(--text-body)">Your device is blocking access, so no oral evidence was created and your Oral record is unchanged.</div></div></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:17px 18px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:11px">HOW TO ALLOW IT</div>
+<div style="display:grid;gap:9px;font-size:14.5px;line-height:1.6;color:var(--text-body)">
+<div>1 · Open Settings › Safari › Microphone</div>
+<div>2 · Set Bestehen to <strong style="font-weight:600">Allow</strong></div>
+<div>3 · Come back and tap Try again</div>
+</div>
+<div style="display:flex;gap:10px;margin-top:14px">
+<button style="flex:1;font-family:inherit;font-size:15px;font-weight:600;padding:13px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:48px">Try again</button>
+<button style="font-family:inherit;font-size:15px;font-weight:600;padding:13px 16px;border-radius:6px;background:var(--raised);border:1px solid var(--text);color:var(--text);min-height:48px">Other device</button>
+</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:17px 18px;margin-bottom:14px">
+<div style="font-size:15px;font-weight:600;margin-bottom:6px">Or work on Speaking without recording</div>
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body);margin-bottom:12px">Type the answer you would say. This builds the phrases you need; it is labelled learning-only and never counted as weak oral evidence.</div>
+<button style="width:100%;font-family:inherit;font-size:15px;font-weight:600;padding:13px;border-radius:6px;background:var(--raised);border:1px solid var(--text);color:var(--text);min-height:48px">Type my answer</button>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--text-2)">Today's Listening and Reading items still work. We won't rebuild the whole plan around one blocked permission.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:15px;font-weight:600;padding:14px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:48px">Skip Speaking today</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Permission failure is not an error page: it explains, offers two repairs, offers a non-recorded alternative, and protects the record.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">5.2 · AUDIO FAILED · not counted</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>18:07</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:var(--on-ink);padding:11px 20px;margin-top:12px">
+<span style="font-size:14px;font-weight:500">Listening H2</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--on-ink-2)">PAUSED</span>
+</div>
+<div style="flex:1;padding:20px 22px;overflow:hidden">
+<div style="border:1px dashed var(--system);background:var(--mist);border-radius:7px;padding:18px;margin-bottom:16px">
+<div style="display:flex;gap:11px;align-items:flex-start"><svg width="20" height="20" style="color:var(--text-2);flex:none;margin-top:2px"><use href="#i-wifioff"></use></svg><div><div style="font-size:16px;font-weight:600;margin-bottom:5px">This wasn't you.</div><div style="font-size:14.5px;line-height:1.65;color:var(--text-body)">The audio failed to load, so this task doesn't count as evidence. Your Listening record is exactly as it was.</div></div></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="display:flex;gap:12px;align-items:center;padding:15px 17px;border-bottom:1px solid var(--divider)"><svg width="20" height="20" style="color:var(--text)"><use href="#i-head"></use></svg><div style="flex:1"><div style="font-size:15px;font-weight:600">Try a different Listening task</div><div style="font-size:13px;color:var(--text-2)">Same section, new audio · 6 min</div></div><svg width="20" height="20" style="color:var(--muted)"><use href="#i-chev"></use></svg></div>
+<div style="display:flex;gap:12px;align-items:center;padding:15px 17px"><svg width="20" height="20" style="color:var(--text)"><use href="#i-book"></use></svg><div style="flex:1"><div style="font-size:15px;font-weight:600">Do the Reading recheck instead</div><div style="font-size:13px;color:var(--text-2)">Was due tomorrow · 7 min</div></div><svg width="20" height="20" style="color:var(--muted)"><use href="#i-chev"></use></svg></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 17px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">IN YOUR HISTORY</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-size:14.5px">Listening H2 · 18:04</span><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;background:var(--mist);border:1px dashed var(--system);font-size:12px;color:var(--text-2)">Not counted · our fault</span></div>
+<div style="font-size:13px;line-height:1.6;color:var(--text-2);margin-top:9px">It stays visible so your history is complete — but it is never scored and never shown as a low result.</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">If this keeps happening we'll tell you, rather than letting you conclude your Listening got worse.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Try the replacement task</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">The invalid family is grey and dashed on purpose. Red here would teach the learner that our outage was their failure.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">5.3 · OFFLINE MID-WRITING</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>18:31</span><span style="display:flex;gap:6px;align-items:center"><svg width="13" height="13"><use href="#i-wifioff"></use></svg><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:var(--on-ink);padding:11px 20px;margin-top:12px">
+<span style="font-size:14px;font-weight:500">Writing · e-mail</span>
+<span style="display:flex;align-items:center;gap:9px"><svg width="17" height="17" style="color:var(--on-ink-2)"><use href="#i-timer"></use></svg><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-variant-numeric:tabular-nums">08:02</span></span>
+</div>
+<div style="padding:12px 22px;border-bottom:1px solid var(--border);background:var(--mist);display:flex;gap:10px;align-items:center">
+<svg width="17" height="17" style="color:var(--text-2);flex:none"><use href="#i-wifioff"></use></svg>
+<span style="font-size:13.5px;line-height:1.5;color:var(--text-body)">Offline · saved on this device 18:31. Keep writing.</span>
+</div>
+<div style="flex:1;padding:16px 22px;overflow:hidden;display:flex;flex-direction:column">
+<div lang="de" style="flex:1;background:var(--raised);border:1px solid var(--border-strong);border-radius:6px;padding:14px;font-size:15.5px;line-height:1.75;color:var(--text-body)">Liebe Frau Weber,<br/><br/>vielen Dank für Ihre Nachricht. Ich freue mich, dass der Kurs stattfindet. Könnten wir uns am Mittwoch um 18 Uhr treffen? Außerdem wollte ich fragen, ob Sie mir das Material schicken können.<span style="display:inline-block;width:2px;height:19px;background:var(--text);vertical-align:-4px;margin-left:2px"></span></div>
+<div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:9px"><span>3 OF 4 POINTS COVERED</span><span>84 WORDS</span></div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:7px;padding:14px 16px;margin-top:12px;font-size:13.5px;line-height:1.6;color:var(--text-2)">Your timing claim is kept — the clock is local. When you reconnect we'll send this for evaluation and record the submission time.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Finish · send when online</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Never a blocking modal. The loss bound is roughly five seconds, and the recovery message says when the draft was saved.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">5.4 · MOCK INTERRUPTED · resume choice</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>10:47</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:24px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:25px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 8px">The mock was interrupted</h1>
+<p style="font-size:15px;line-height:1.65;color:var(--text-2);margin:0 0 16px">You left the app for 6 minutes during the Listening block. Here is exactly what that costs, before you choose.</p>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 17px;border-bottom:1px solid var(--divider)"><div><div style="font-size:14.5px;font-weight:600">Reading + Language Elements</div><div style="font-size:13px;color:var(--text-2)">Completed before the interruption</div></div><span style="display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent-text);flex:none"><svg width="14" height="14"><use href="#i-check"></use></svg>VALID</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 17px"><div><div style="font-size:14.5px;font-weight:600">Listening</div><div style="font-size:13px;color:var(--text-2)">Exam-conditions claim lost for this block</div></div><span style="display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-2);flex:none"><svg width="14" height="14"><use href="#i-dashed"></use></svg>PRACTICE</span></div>
+</div>
+<div style="display:grid;gap:9px;margin-bottom:14px">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 17px"><div style="font-size:15px;font-weight:600;margin-bottom:4px">Continue as practice</div><div style="font-size:13.5px;line-height:1.6;color:var(--text-body)">Finish the block now. It counts as practice evidence and the two valid sections keep their claim.</div></div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 17px"><div style="font-size:15px;font-weight:600;margin-bottom:4px">Redo Listening later at exam conditions</div><div style="font-size:13.5px;line-height:1.6;color:var(--text-body)">Keeps the mock's decision-grade value. About 30 minutes, on a fresh set.</div></div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:15px 17px"><div style="font-size:15px;font-weight:600;margin-bottom:4px">Stop here</div><div style="font-size:13.5px;line-height:1.6;color:var(--text-body)">Nothing is deleted. The two valid sections still update Written.</div></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">Partially valid is a real state: the sections you completed cleanly are unaffected by what happened after them.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper)"><button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Redo Listening later</button></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Three options, each with its evidence consequence spelled out. No option is framed as cheating and none is hidden behind a warning.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">5.5 · RETURN AFTER SIX WEEKS</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>21:14</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="flex:1;padding:26px 22px;overflow:hidden">
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:600;margin:0 0 14px">Your work is still here</h1>
+<div style="background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:7px;padding:16px 18px;margin-bottom:14px">
+<div style="font-size:15.5px;line-height:1.65;color:var(--text-body)">Six weeks is a normal gap. Nothing was deleted and nothing was scored down — but some evidence is old enough that we won't claim it still holds.</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 17px;border-bottom:1px solid var(--divider)"><div style="font-size:14.5px">Written · Reading, Listening</div><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;background:var(--mist);border:1px dashed var(--system);font-size:11.5px;color:var(--text-2);flex:none"><svg width="13" height="13"><use href="#i-refresh"></use></svg>Stale</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 17px;border-bottom:1px solid var(--divider)"><div style="font-size:14.5px">Language Elements</div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent-text);flex:none">CURRENT</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:14px 17px"><div style="font-size:14.5px">Oral</div><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;background:var(--mist);border:1px dashed var(--system);font-size:11.5px;color:var(--text-2);flex:none"><svg width="13" height="13"><use href="#i-refresh"></use></svg>Stale</span></div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;padding:16px 18px;margin-bottom:14px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px">SMALLEST USEFUL RESTART</div>
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-body);margin-bottom:12px">One Reading task and one spoken turn — 11 minutes. That is enough to refresh both estimates; there is no backlog to clear first.</div>
+<div style="display:flex;gap:9px;flex-wrap:wrap"><span style="padding:5px 10px;border-radius:6px;background:var(--sunken);border:1px solid var(--border);font-size:12.5px">Reading · 6 min</span><span style="padding:5px 10px;border-radius:6px;background:var(--sunken);border:1px solid var(--border);font-size:12.5px">Speaking S1 · 5 min</span></div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--muted)">Your exam date has passed, so planning is paused until you tell us the new one.</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);display:grid;gap:9px">
+<button style="width:100%;font-family:inherit;font-size:16.5px;font-weight:600;padding:15px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:50px">Do the 11-minute recheck</button>
+<button style="width:100%;font-family:inherit;font-size:14.5px;font-weight:600;padding:11px;border-radius:6px;background:transparent;border:0;color:var(--accent-text);min-height:44px">Set a new exam date</button>
+</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">No “we missed you”, no accumulated-debt count, no guilt. Stale is a claim about age, not about the learner.</div>
+</div>
+
+<div style="width:390px;flex:none">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:9px">5.6 · YOUR DATA · deletion</div>
+<div style="height:844px;background:var(--paper);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 8px 24px var(--shadow-2);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)"><span>21:20</span><span style="width:16px;height:8px;border:1px solid var(--muted);border-radius:2px"></span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 20px 12px;border-bottom:1px solid var(--border)"><svg width="24" height="24" style="color:var(--text)"><use href="#i-back"></use></svg><span style="font-size:16px;font-weight:600">Your data</span></div>
+<div style="flex:1;padding:20px 22px;overflow:hidden">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:14px">
+<div style="padding:15px 17px;border-bottom:1px solid var(--divider)"><div style="font-size:14.5px;font-weight:600;margin-bottom:3px">Attempts and evidence</div><div style="font-size:13px;line-height:1.55;color:var(--text-2)">Kept while you use the app. Used to estimate Readiness and choose tasks.</div></div>
+<div style="padding:15px 17px;border-bottom:1px solid var(--divider)"><div style="font-size:14.5px;font-weight:600;margin-bottom:3px">Speaking audio</div><div style="font-size:13px;line-height:1.55;color:var(--text-2)">Deleted after evaluation, and always within 7 days.</div></div>
+<div style="padding:15px 17px"><div style="font-size:14.5px;font-weight:600;margin-bottom:3px">Writing drafts</div><div style="font-size:13px;line-height:1.55;color:var(--text-2)">Kept so you can see corrections and revisions over time.</div></div>
+</div>
+<div style="display:grid;gap:9px;margin-bottom:14px">
+<button style="width:100%;text-align:left;font-family:inherit;font-size:15px;font-weight:600;padding:14px 16px;border-radius:6px;background:var(--raised);border:1px solid var(--text);color:var(--text);min-height:48px">Export everything · JSON</button>
+<button style="width:100%;text-align:left;font-family:inherit;font-size:15px;font-weight:600;padding:14px 16px;border-radius:6px;background:var(--raised);border:1px solid var(--risk-border);color:var(--risk-text);min-height:48px">Delete all my data</button>
+</div>
+<div style="border:1px solid var(--risk-border);background:var(--raised);border-radius:7px;padding:17px 18px">
+<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px"><svg width="19" height="19" style="color:var(--risk-text);flex:none;margin-top:1px"><use href="#i-oct"></use></svg><div><div style="font-size:15px;font-weight:600;color:var(--risk-text);margin-bottom:4px">Delete all your data?</div><div style="font-size:13.5px;line-height:1.6;color:var(--text-body)">This removes your attempts, evidence, Readiness, mistake history and Writing. It cannot be undone and there is no backup.</div></div></div>
+<div style="border:1px solid var(--border-strong);border-radius:6px;padding:12px 14px;background:var(--raised);font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--muted);margin-bottom:10px">Type DELETE</div>
+<button style="width:100%;font-family:inherit;font-size:15px;font-weight:600;padding:13px;border-radius:6px;background:var(--raised);border:1px solid var(--risk-border);color:var(--risk-text);min-height:48px">Delete permanently</button>
+</div>
+</div>
+<div style="padding:14px 22px 30px;border-top:1px solid var(--border);background:var(--paper);font-size:13px;line-height:1.6;color:var(--muted)">No advertising, no third-party analytics on your German, no model training on your speech.</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:var(--text-2);margin-top:11px">Destructive confirmation requires typed intent and states the absence of a backup. The retention promise made at the microphone is repeated here.</div>
+</div>
+
+</div>
+</section>
+
+<div style="border-top:1px solid var(--border);margin-top:70px;padding-top:34px;display:flex;gap:26px;flex-wrap:wrap;align-items:center">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--muted)">24 SCREENS · 5 ACTS · 390 × 844</div>
+<div style="margin-left:auto;display:flex;gap:20px;font-size:15px;font-weight:600">
+<a href="Bestehen-01-Design-System.dc.html">← 01 System</a>
+<a href="Bestehen-03-Desktop-Responsive.dc.html">03 Desktop &amp; responsive →</a>
+</div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1560,&quot;height&quot;:900},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;\&quot;auto\&quot; | \&quot;light\&quot; | \&quot;dark\&quot;&quot;}}">
+class Component extends DCLogic {
+  state = { theme: null, os: null };
+  componentDidMount() {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const set = () => this.setState({ os: mq.matches ? "dark" : "light" });
+    set(); this.syncBody();
+    mq.addEventListener("change", set);
+    this._mq = [mq, set];
+  }
+  componentDidUpdate() { this.syncBody(); }
+  componentWillUnmount() { if (this._mq) this._mq[0].removeEventListener("change", this._mq[1]); }
+  syncBody() { document.body.style.background = this.theme === "dark" ? "#0F1621" : "#F1F4F8"; }
+  get theme() {
+    if (this.state.theme) return this.state.theme;
+    const p = this.props.theme;
+    if (p === "light" || p === "dark") return p;
+    return this.state.os || "light";
+  }
+  renderVals() {
+    const on = this.theme === "dark";
+    return {
+      theme: this.theme,
+      setLight: () => this.setState({ theme: "light" }),
+      setDark: () => this.setState({ theme: "dark" }),
+      lightBg: on ? "var(--raised)" : "var(--ink)",
+      lightFg: on ? "var(--text-2)" : "var(--on-ink)",
+      darkBg: on ? "var(--ink)" : "var(--raised)",
+      darkFg: on ? "var(--on-ink)" : "var(--text-2)"
+    };
+  }
+}
+
+</script>
+</body>
+</html>

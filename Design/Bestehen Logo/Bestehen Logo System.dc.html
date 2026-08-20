@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+body{margin:0;background:#F7F4EE;-webkit-font-smoothing:antialiased;text-wrap:pretty}
+a{color:#1D6F50;text-decoration:none;border-bottom:1px solid rgba(29,111,80,.35)}
+a:hover{color:#14213D;border-bottom-color:#14213D}
+@keyframes bh-rise{from{transform:translateY(4px);opacity:.4}to{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true"><defs>
+
+<symbol id="mk-t1" viewBox="0 0 100 100"><g fill="currentColor"><rect x="14" y="70" width="13" height="18"></rect><rect x="32" y="52" width="13" height="36"></rect><rect x="50" y="38" width="13" height="50"></rect><rect x="68" y="22" width="13" height="66"></rect></g><path d="M6 58 H94" fill="none" stroke="var(--ac,currentColor)" stroke-width="9"></path></symbol>
+
+<symbol id="mk-t2" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" style="stroke-width:var(--sw,11)"><path d="M25 20 V80"></path><path d="M25 20 H44 a15 15 0 0 1 0 30 H25"></path><path d="M25 50 H46 a15 15 0 0 1 0 30 H25"></path></g><path d="M6 50 H94" fill="none" stroke="var(--ac,currentColor)" style="stroke-width:var(--sw,11)"></path></symbol>
+
+<symbol id="mk-t3" viewBox="0 0 100 100"><path d="M12 82 H38 V54 H64" fill="none" stroke="currentColor" stroke-width="10"></path><path d="M64 54 V26 H90" fill="none" stroke="var(--ac,currentColor)" stroke-width="10"></path><rect x="57" y="47" width="14" height="14" fill="var(--ac,currentColor)"></rect></symbol>
+
+<symbol id="mk-t4" viewBox="0 0 100 100"><g fill="currentColor"><rect x="40" y="16" width="44" height="9"></rect><rect x="22" y="32" width="62" height="9"></rect><rect x="52" y="48" width="32" height="9"></rect><rect x="14" y="64" width="70" height="9"></rect><rect x="34" y="80" width="50" height="9"></rect></g><rect x="84" y="12" width="10" height="81" fill="var(--ac,currentColor)"></rect></symbol>
+
+<symbol id="mk-t5" viewBox="0 0 100 100"><g fill="currentColor"><rect x="14" y="20" width="72" height="9"></rect><rect x="14" y="71" width="72" height="9"></rect></g><rect x="43" y="37" width="14" height="26" fill="var(--ac,currentColor)"></rect></symbol>
+
+<symbol id="mk-t6" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="12"><path d="M20 26 V38 M20 47 V59 M20 68 V80"></path><path d="M50 26 V48 M50 58 V80"></path></g><path d="M80 26 V80" fill="none" stroke="var(--ac,currentColor)" stroke-width="12"></path></symbol>
+
+<symbol id="mk-a1" viewBox="0 0 100 100"><g fill="currentColor"><rect x="14" y="70" width="13" height="18"></rect><rect x="32" y="52" width="13" height="36"></rect><rect x="50" y="38" width="13" height="50"></rect><rect x="68" y="22" width="13" height="66"></rect></g><path d="M6 58 H94" fill="none" stroke="var(--ac,currentColor)" stroke-width="9"></path></symbol>
+<symbol id="mk-a2" viewBox="0 0 100 100"><g fill="currentColor"><rect x="16" y="70" width="12" height="18" rx="3"></rect><rect x="33" y="52" width="12" height="36" rx="3"></rect><rect x="50" y="38" width="12" height="50" rx="3"></rect><rect x="67" y="22" width="12" height="66" rx="3"></rect></g><path d="M12 58 H88" fill="none" stroke="var(--ac,currentColor)" stroke-width="8" stroke-linecap="round"></path></symbol>
+<symbol id="mk-a3" viewBox="0 0 100 100"><g fill="currentColor"><rect x="20" y="60" width="15" height="28"></rect><rect x="41" y="42" width="15" height="46"></rect><rect x="62" y="20" width="15" height="68"></rect></g><path d="M12 54 H88" fill="none" stroke="var(--ac,currentColor)" stroke-width="12"></path></symbol>
+
+<symbol id="mk-b1" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M25 20 V80"></path><path d="M25 20 H44 a15 15 0 0 1 0 30 H25"></path><path d="M25 50 H46 a15 15 0 0 1 0 30 H25"></path></g><path d="M6 50 H94" fill="none" stroke="var(--ac,currentColor)" stroke-width="11"></path></symbol>
+<symbol id="mk-b2" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round"><path d="M25 21 V79"></path><path d="M25 21 H43 a14.5 14.5 0 0 1 0 29 H25"></path><path d="M25 50 H45 a14.5 14.5 0 0 1 0 29 H25"></path></g><path d="M12 50 H88" fill="none" stroke="var(--ac,currentColor)" stroke-width="11" stroke-linecap="round"></path></symbol>
+<symbol id="mk-b3" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="15"><path d="M27 22 V78"></path><path d="M27 22 H43 a14 14 0 0 1 0 28 H27"></path><path d="M27 50 H45 a14 14 0 0 1 0 28 H27"></path></g><path d="M10 50 H90" fill="none" stroke="var(--ac,currentColor)" stroke-width="15"></path></symbol>
+<symbol id="mk-b-micro" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="16"><path d="M28 22 V78"></path><path d="M28 22 H44 a14 14 0 0 1 0 28 H28"></path><path d="M28 50 H46 a14 14 0 0 1 0 28 H28"></path></g><path d="M12 50 H88" fill="none" stroke="var(--ac,currentColor)" stroke-width="16"></path></symbol>
+
+<symbol id="mk-c1" viewBox="0 0 100 100"><g fill="currentColor"><rect x="40" y="16" width="44" height="9"></rect><rect x="22" y="32" width="62" height="9"></rect><rect x="52" y="48" width="32" height="9"></rect><rect x="14" y="64" width="70" height="9"></rect><rect x="34" y="80" width="50" height="9"></rect></g><rect x="84" y="12" width="10" height="81" fill="var(--ac,currentColor)"></rect></symbol>
+<symbol id="mk-c2" viewBox="0 0 100 100"><g fill="currentColor"><rect x="44" y="18" width="40" height="8" rx="4"></rect><rect x="26" y="34" width="58" height="8" rx="4"></rect><rect x="54" y="50" width="30" height="8" rx="4"></rect><rect x="18" y="66" width="66" height="8" rx="4"></rect><rect x="38" y="82" width="46" height="8" rx="4"></rect></g><rect x="84" y="14" width="9" height="76" rx="4.5" fill="var(--ac,currentColor)"></rect></symbol>
+<symbol id="mk-c3" viewBox="0 0 100 100"><g fill="currentColor"><rect x="44" y="22" width="38" height="12"></rect><rect x="26" y="44" width="56" height="12"></rect><rect x="52" y="66" width="30" height="12"></rect></g><rect x="82" y="16" width="12" height="70" fill="var(--ac,currentColor)"></rect></symbol>
+
+</defs></svg>
+
+<div style="min-height:100vh;background:#F7F4EE;color:#14213D;font-family:'Instrument Sans',Helvetica,Arial,sans-serif">
+
+<div style="position:sticky;top:0;z-index:40;background:rgba(247,244,238,.94);backdrop-filter:blur(10px);border-bottom:1px solid #DFDACE">
+<div style="max-width:1180px;margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:10px;margin-right:auto">
+<svg viewBox="0 0 100 100" width="26" height="26" style="display:block;--ac:#2A9D6F"><use href="#mk-b1"></use></svg>
+<span style="font-weight:600;font-size:16px;letter-spacing:-.02em">Bestehen</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;text-transform:uppercase;padding-left:8px;border-left:1px solid #DFDACE">Logo system v1</span>
+</div>
+<div style="display:flex;gap:16px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:#6B6A63">
+<a href="#s01" style="border:0;color:#6B6A63">01 EXPLORATION</a>
+<a href="#s02" style="border:0;color:#6B6A63">02 MATRIX</a>
+<a href="#s03" style="border:0;color:#6B6A63">03 A</a>
+<a href="#s04" style="border:0;color:#6B6A63">04 B</a>
+<a href="#s05" style="border:0;color:#6B6A63">05 C</a>
+<a href="#s06" style="border:0;color:#6B6A63">06 RECOMMENDED</a>
+<a href="#s07" style="border:0;color:#6B6A63">07 ARCHITECTURE</a>
+<a href="#s08" style="border:0;color:#6B6A63">08 ICONS</a>
+<a href="#s09" style="border:0;color:#6B6A63">09 GUIDELINES</a>
+<a href="#s10" style="border:0;color:#6B6A63">10 HANDOFF</a>
+</div>
+</div>
+</div>
+
+<div style="max-width:1180px;margin:0 auto;padding:0 32px 140px">
+
+<section id="s00" data-screen-label="00 Brief" style="padding:88px 0 72px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:28px">00 — Brief and constraints</div>
+<h1 style="font-size:60px;line-height:1.02;letter-spacing:-.035em;font-weight:600;margin:0 0 24px;max-width:20ch">A logo system for the threshold between learning and passing.</h1>
+<p style="font-size:19px;line-height:1.6;color:#4A4E5C;max-width:64ch;margin:0 0 48px">Six concept territories explored in black and white, screened against eleven criteria, three refined into choice-ready finalists with labelled variation axes. One direction is recommended; none of the alternatives has been deleted.</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:#DFDACE;border:1px solid #DFDACE">
+<div style="background:#fff;padding:24px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;text-transform:uppercase;margin-bottom:10px">Brand promise</div><div style="font-size:16px;line-height:1.5;font-weight:500">Train for the exam. Know when you're ready.</div></div>
+<div style="background:#fff;padding:24px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;text-transform:uppercase;margin-bottom:10px">Personality</div><div style="font-size:16px;line-height:1.5;font-weight:500">Calm, focused, diagnostic, direct, evidence-based.</div></div>
+<div style="background:#fff;padding:24px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;text-transform:uppercase;margin-bottom:10px">Architecture</div><div style="font-size:16px;line-height:1.5;font-weight:500">Bestehen dominant. / App and / Corpus subordinate descriptors.</div></div>
+<div style="background:#fff;padding:24px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;text-transform:uppercase;margin-bottom:10px">Hard constraint</div><div style="font-size:16px;line-height:1.5;font-weight:500">No TELC resemblance. No accreditation seal. No pass guarantee.</div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#1D6F50;text-transform:uppercase;margin-bottom:14px">Must feel</div>
+<p style="margin:0;font-size:15px;line-height:1.75;color:#3A4256">Calm · focused · modern · intelligent · precise · practical · warm enough for daily study · serious enough to support a readiness decision · distinctive at 16&nbsp;px.</p>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#B64B4B;text-transform:uppercase;margin-bottom:14px">Ruled out before drawing</div>
+<p style="margin:0;font-size:15px;line-height:1.75;color:#3A4256">Graduation cap · open book · speech bubble · tick in a circle · trophy, medal, star, rocket, bullseye, upward arrow · flag, map, black-red-gold · brain, robot, sparkles, node clouds · shield or seal · a plain B in a rounded square.</p>
+</div>
+</div>
+
+<div style="margin-top:32px;background:#14213D;color:#EDF0F4;padding:32px 36px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8FA0BF;text-transform:uppercase;margin-bottom:14px">Design criteria fixed before drawing</div>
+<p style="margin:0;font-size:16px;line-height:1.7;max-width:78ch">Every territory had to survive four gates in this order: <strong style="font-weight:600">(1)</strong> readable as pure black-and-white geometry, <strong style="font-weight:600">(2)</strong> legible at 16&nbsp;px, <strong style="font-weight:600">(3)</strong> able to carry <em>/ App</em> and <em>/ Corpus</em> without a second mark, <strong style="font-weight:600">(4)</strong> conceptually specific to exam readiness rather than education in general. Colour, gradient and motion were withheld until after the gates.</p>
+</div>
+</section>
+
+<section id="s01" data-screen-label="01 Exploration" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">01 — Exploration · six concept territories</div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 20px;max-width:26ch">Six different construction logics, not six colourways.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:62ch;margin:0 0 44px">Each territory below is drawn in one colour first. The small-size strip shows the same geometry at 32, 24 and 16&nbsp;px with no optical corrections applied — deliberately, so that fragility shows.</p>
+
+<div style="display:grid;gap:24px">
+
+<div id="t1" style="background:#fff;border:1px solid #DFDACE;display:grid;grid-template-columns:260px 1fr;min-height:300px">
+<div style="border-right:1px solid #DFDACE;display:flex;align-items:center;justify-content:center;background:#FBFAF7"><svg viewBox="0 0 100 100" width="132" height="132" style="display:block"><use href="#mk-t1"></use></svg></div>
+<div style="padding:28px 32px">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8477">T1</span><h3 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em">Pass Line</h3></div>
+<p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#3A4256">Evidence rising until it crosses the line that actually matters.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;font-size:14px;line-height:1.6;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">Construction</strong><br/>Four measured bars on a shared baseline, increasing in height; one horizontal rule set at pass height and drawn wider than the bars so it reads as an external standard, not a container.</div>
+<div><strong style="color:#14213D;font-weight:600">Brand link</strong><br/>The rule is the pass range; the bars are accumulating evidence. Two bars sit under it — the mark admits that readiness is not finished.</div>
+<div><strong style="color:#14213D;font-weight:600">Distinctive</strong><br/>The overhanging rule. Almost every progress-bar mark encloses its bars; this one is measured <em>against</em> something outside itself.</div>
+<div><strong style="color:#14213D;font-weight:600">Risk</strong><br/>Bar charts are common in analytics branding. Needs the overhang and the below-line bar to stay away from generic dashboard iconography.</div>
+</div>
+<div style="display:flex;align-items:flex-end;gap:28px;margin-top:24px;padding-top:22px;border-top:1px solid #EDE9DF">
+<div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">1-COLOUR SMALL TEST</div><div style="display:flex;align-items:flex-end;gap:14px"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-t1"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-t1"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-t1"></use></svg></div></div>
+<div style="border-left:1px solid #EDE9DF;padding-left:28px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">LOCKUP PREVIEW</div>
+<div style="display:grid;gap:7px">
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t1"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t1"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t1"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">Corpus</span></div>
+</div></div>
+<div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;color:#6B6A63;text-align:right">BEST USE<br/><span style="color:#14213D">Readiness screens,<br/>document headers</span></div>
+</div>
+</div>
+</div>
+
+<div id="t2" style="background:#fff;border:1px solid #DFDACE;display:grid;grid-template-columns:260px 1fr;min-height:300px">
+<div style="border-right:1px solid #DFDACE;display:flex;align-items:center;justify-content:center;background:#FBFAF7"><svg viewBox="0 0 100 100" width="132" height="132" style="display:block"><use href="#mk-t2"></use></svg></div>
+<div style="padding:28px 32px">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8477">T2</span><h3 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em">Threshold B</h3></div>
+<p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#3A4256">The letter B rebuilt so that its crossbar is the pass line, continuing past the letter on both sides.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;font-size:14px;line-height:1.6;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">Construction</strong><br/>Monoline B: one stem, two arc bowls of equal depth meeting at the vertical midpoint. The crossbar is not drawn as part of the letter — a single full-width rule is laid through the letter at exactly that midpoint.</div>
+<div><strong style="color:#14213D;font-weight:600">Brand link</strong><br/>Bestehen and the threshold are one shape. The letter cannot be completed without the line: the brand is only itself once the standard is met.</div>
+<div><strong style="color:#14213D;font-weight:600">Distinctive</strong><br/>The line is a shared part, borrowed by the letter. It leaves the counter shapes open, which is the opposite of the sealed, enclosed monogram badge.</div>
+<div><strong style="color:#14213D;font-weight:600">Risk</strong><br/>A monogram must fight the "letter in a box" cliché. Solved by refusing the box and letting the rule bleed past the letter.</div>
+</div>
+<div style="display:flex;align-items:flex-end;gap:28px;margin-top:24px;padding-top:22px;border-top:1px solid #EDE9DF">
+<div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">1-COLOUR SMALL TEST</div><div style="display:flex;align-items:flex-end;gap:14px"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-t2"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-t2"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-b-micro"></use></svg></div></div>
+<div style="border-left:1px solid #EDE9DF;padding-left:28px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">LOCKUP PREVIEW</div>
+<div style="display:grid;gap:7px">
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t2"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t2"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t2"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">Corpus</span></div>
+</div></div>
+<div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;color:#6B6A63;text-align:right">BEST USE<br/><span style="color:#14213D">App icon, favicon,<br/>every surface</span></div>
+</div>
+</div>
+</div>
+
+<div id="t3" style="background:#fff;border:1px solid #DFDACE;display:grid;grid-template-columns:260px 1fr;min-height:300px">
+<div style="border-right:1px solid #DFDACE;display:flex;align-items:center;justify-content:center;background:#FBFAF7"><svg viewBox="0 0 100 100" width="132" height="132" style="display:block"><use href="#mk-t3"></use></svg></div>
+<div style="padding:28px 32px">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8477">T3</span><h3 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em">Next Move</h3></div>
+<p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#3A4256">A stepped path where one node is marked: the coach has already chosen what you do next.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;font-size:14px;line-height:1.6;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">Construction</strong><br/>A single orthogonal polyline of equal risers and treads. A square node sits on the elbow between the travelled and untravelled halves; the untravelled half is drawn in the accent.</div>
+<div><strong style="color:#14213D;font-weight:600">Brand link</strong><br/>The coaching promise in one gesture — position plus decision. It is the only territory that renders the <em>next</em> step rather than the destination.</div>
+<div><strong style="color:#14213D;font-weight:600">Distinctive</strong><br/>The marked elbow. Stair paths are common; a path that stops to point at one decision point is less so.</div>
+<div><strong style="color:#14213D;font-weight:600">Risk</strong><br/>Closest of the six to the upward-staircase and progress-arrow cliché, and the node clogs below 24&nbsp;px. Screened out for this reason.</div>
+</div>
+<div style="display:flex;align-items:flex-end;gap:28px;margin-top:24px;padding-top:22px;border-top:1px solid #EDE9DF">
+<div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">1-COLOUR SMALL TEST</div><div style="display:flex;align-items:flex-end;gap:14px"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-t3"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-t3"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-t3"></use></svg></div></div>
+<div style="border-left:1px solid #EDE9DF;padding-left:28px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">LOCKUP PREVIEW</div>
+<div style="display:grid;gap:7px">
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t3"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t3"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t3"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">Corpus</span></div>
+</div></div>
+<div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;color:#6B6A63;text-align:right">BEST USE<br/><span style="color:#14213D">Onboarding hero,<br/>campaign material</span></div>
+</div>
+</div>
+</div>
+
+<div id="t4" style="background:#fff;border:1px solid #DFDACE;display:grid;grid-template-columns:260px 1fr;min-height:300px">
+<div style="border-right:1px solid #DFDACE;display:flex;align-items:center;justify-content:center;background:#FBFAF7"><svg viewBox="0 0 100 100" width="132" height="132" style="display:block"><use href="#mk-t4"></use></svg></div>
+<div style="padding:28px 32px">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8477">T4</span><h3 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em">Evidence Alignment</h3></div>
+<p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#3A4256">Unequal pieces of evidence, ragged where they start, aligned where they are judged.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;font-size:14px;line-height:1.6;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">Construction</strong><br/>Five horizontal bars of different lengths and origins, all terminating flush against one vertical rule. Left edges deliberately unresolved; right edge absolute.</div>
+<div><strong style="color:#14213D;font-weight:600">Brand link</strong><br/>The Corpus and the learner's history are messy inputs; the exam is a single edge. This is the evidence model drawn literally, with no promise attached.</div>
+<div><strong style="color:#14213D;font-weight:600">Distinctive</strong><br/>Flush-right rag is a typographic idea, not an education one. It reads as measurement rather than achievement — very few marks in the category do.</div>
+<div><strong style="color:#14213D;font-weight:600">Risk</strong><br/>Cool. Reads as data infrastructure, which suits Corpus better than a learner-facing coach, and it makes a weak monogram.</div>
+</div>
+<div style="display:flex;align-items:flex-end;gap:28px;margin-top:24px;padding-top:22px;border-top:1px solid #EDE9DF">
+<div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">1-COLOUR SMALL TEST</div><div style="display:flex;align-items:flex-end;gap:14px"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-t4"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-t4"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-c3"></use></svg></div></div>
+<div style="border-left:1px solid #EDE9DF;padding-left:28px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">LOCKUP PREVIEW</div>
+<div style="display:grid;gap:7px">
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t4"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t4"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t4"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">Corpus</span></div>
+</div></div>
+<div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;color:#6B6A63;text-align:right">BEST USE<br/><span style="color:#14213D">Corpus reports,<br/>data surfaces</span></div>
+</div>
+</div>
+</div>
+
+<div id="t5" style="background:#fff;border:1px solid #DFDACE;display:grid;grid-template-columns:260px 1fr;min-height:300px">
+<div style="border-right:1px solid #DFDACE;display:flex;align-items:center;justify-content:center;background:#FBFAF7"><svg viewBox="0 0 100 100" width="132" height="132" style="display:block"><use href="#mk-t5"></use></svg></div>
+<div style="padding:28px 32px">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8477">T5</span><h3 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em">Safe Range</h3></div>
+<p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#3A4256">Two bounds and a position inside them — readiness stated as a range, never as a point.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;font-size:14px;line-height:1.6;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">Construction</strong><br/>Two parallel rules of equal length define a band; a short vertical marker sits inside the negative space, off-centre and clear of both bounds.</div>
+<div><strong style="color:#14213D;font-weight:600">Brand link</strong><br/>Honest uncertainty. It expresses the product's core refusal — no single confident number, no promise of a result.</div>
+<div><strong style="color:#14213D;font-weight:600">Distinctive</strong><br/>The meaning lives entirely in the negative space between the bounds, which is rare and quietly confident.</div>
+<div><strong style="color:#14213D;font-weight:600">Risk</strong><br/>Too quiet to be memorable, and easily mistaken for an equals sign, a menu icon or a text-align glyph at small sizes.</div>
+</div>
+<div style="display:flex;align-items:flex-end;gap:28px;margin-top:24px;padding-top:22px;border-top:1px solid #EDE9DF">
+<div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">1-COLOUR SMALL TEST</div><div style="display:flex;align-items:flex-end;gap:14px"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-t5"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-t5"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-t5"></use></svg></div></div>
+<div style="border-left:1px solid #EDE9DF;padding-left:28px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">LOCKUP PREVIEW</div>
+<div style="display:grid;gap:7px">
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t5"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t5"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t5"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">Corpus</span></div>
+</div></div>
+<div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;color:#6B6A63;text-align:right">BEST USE<br/><span style="color:#14213D">Secondary device,<br/>readiness graphics</span></div>
+</div>
+</div>
+</div>
+
+<div id="t6" style="background:#fff;border:1px solid #DFDACE;display:grid;grid-template-columns:260px 1fr;min-height:300px">
+<div style="border-right:1px solid #DFDACE;display:flex;align-items:center;justify-content:center;background:#FBFAF7"><svg viewBox="0 0 100 100" width="132" height="132" style="display:block"><use href="#mk-t6"></use></svg></div>
+<div style="padding:28px 32px">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8477">T6</span><h3 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em">Assistance Removed</h3></div>
+<p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#3A4256">The same stroke three times: fully supported, partly supported, standing alone.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;font-size:14px;line-height:1.6;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">Construction</strong><br/>Three verticals of identical height and weight. The first is broken into three segments, the second into two, the third continuous — the gaps close as competence grows.</div>
+<div><strong style="color:#14213D;font-weight:600">Brand link</strong><br/>The A1&nbsp;→&nbsp;B1 mechanism exactly: the task shape never changes, the scaffolding is withdrawn.</div>
+<div><strong style="color:#14213D;font-weight:600">Distinctive</strong><br/>Progress shown as continuity rather than height. Nothing grows; something becomes whole.</div>
+<div><strong style="color:#14213D;font-weight:600">Risk</strong><br/>The gaps are the whole idea and they are the first thing to disappear at 16&nbsp;px or in low-resolution print. Fatal for a favicon-first brand.</div>
+</div>
+<div style="display:flex;align-items:flex-end;gap:28px;margin-top:24px;padding-top:22px;border-top:1px solid #EDE9DF">
+<div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">1-COLOUR SMALL TEST</div><div style="display:flex;align-items:flex-end;gap:14px"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-t6"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-t6"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-t6"></use></svg></div></div>
+<div style="border-left:1px solid #EDE9DF;padding-left:28px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">LOCKUP PREVIEW</div>
+<div style="display:grid;gap:7px">
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t6"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t6"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:9px"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-t6"></use></svg><span style="font-size:17px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:14px;color:#8A8477">/</span><span style="font-size:14px;color:#3A4256">Corpus</span></div>
+</div></div>
+<div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;color:#6B6A63;text-align:right">BEST USE<br/><span style="color:#14213D">Progression graphics,<br/>not the master mark</span></div>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<section id="s02" data-screen-label="02 Matrix" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">02 — Concept comparison</div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 20px;max-width:26ch">Scored to expose trade-offs, not to produce a winner.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:62ch;margin:0 0 36px">1–5 on each criterion, same rater, same session. The totals are close enough that they carry no authority on their own; what matters is where a territory scores a 2 or 3, because those are the columns that break a logo in production.</p>
+
+<div style="background:#fff;border:1px solid #DFDACE;overflow-x:auto">
+<div style="min-width:940px">
+<div style="display:grid;grid-template-columns:210px repeat(11,1fr) 64px;background:#F1EEE6;border-bottom:1px solid #DFDACE;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;color:#6B6A63">
+<div style="padding:12px 16px">TERRITORY</div>
+<div style="padding:12px 4px;text-align:center">FIT</div><div style="padding:12px 4px;text-align:center">DIST</div><div style="padding:12px 4px;text-align:center">MEM</div><div style="padding:12px 4px;text-align:center">SML</div><div style="padding:12px 4px;text-align:center">WM</div><div style="padding:12px 4px;text-align:center">ARCH</div><div style="padding:12px 4px;text-align:center">MONO</div><div style="padding:12px 4px;text-align:center">A11Y</div><div style="padding:12px 4px;text-align:center">FLEX</div><div style="padding:12px 4px;text-align:center">ORIG</div><div style="padding:12px 4px;text-align:center">PROD</div>
+<div style="padding:12px 8px;text-align:right;color:#14213D">Σ</div>
+</div>
+<sc-for list="{{ matrix }}" as="row" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:210px repeat(11,1fr) 64px;border-bottom:1px solid #EDE9DF;align-items:center">
+<div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+<svg viewBox="0 0 100 100" width="22" height="22" style="flex:none"><use href="{{ row.ref }}"></use></svg>
+<div><div style="font-size:14px;font-weight:600;letter-spacing:-.01em">{{ row.name }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8A8477">{{ row.id }}</div></div>
+</div>
+<sc-for list="{{ row.scores }}" as="cell" hint-placeholder-count="11">
+<div style="padding:14px 4px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:13px;color:{{ cell.color }};background:{{ cell.bg }}">{{ cell.v }}</div>
+</sc-for>
+<div style="padding:14px 8px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:#14213D">{{ row.total }}</div>
+</div>
+<div style="padding:0 16px 16px 50px;border-bottom:1px solid #EDE9DF;font-size:13.5px;line-height:1.6;color:#6B6A63">{{ row.note }}</div>
+</sc-for>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:28px">
+<div style="background:#fff;border:1px solid #DFDACE;border-top:3px solid #2A9D6F;padding:24px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#1D6F50;margin-bottom:10px">CARRIED FORWARD</div><p style="margin:0;font-size:15px;line-height:1.6;color:#3A4256"><strong style="font-weight:600">T1 Pass Line → Finalist A</strong>, <strong style="font-weight:600">T2 Threshold B → Finalist B</strong>, <strong style="font-weight:600">T4 Evidence Alignment → Finalist C</strong>. Three genuinely different logics: measurement, monogram, and typographic rag.</p></div>
+<div style="background:#fff;border:1px solid #DFDACE;border-top:3px solid #B64B4B;padding:24px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#B64B4B;margin-bottom:10px">SCREENED OUT</div><p style="margin:0;font-size:15px;line-height:1.6;color:#3A4256"><strong style="font-weight:600">T3</strong> — nearest to the staircase/arrow cliché and clogs at small size. <strong style="font-weight:600">T5</strong> — under-distinctive, collides with common UI glyphs. <strong style="font-weight:600">T6</strong> — the idea is carried by gaps that vanish at 16&nbsp;px.</p></div>
+<div style="background:#fff;border:1px solid #DFDACE;border-top:3px solid #14213D;padding:24px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#14213D;margin-bottom:10px">KEPT AS SUPPORTING DEVICES</div><p style="margin:0;font-size:15px;line-height:1.6;color:#3A4256">T5's range band and T6's closing-gap progression are strong <em>product</em> graphics for readiness and progression screens. They are recommended to the UI system, not to the logo.</p></div>
+</div>
+</section>
+
+<section id="s03" data-screen-label="03 Finalist A" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">03 — Finalist A · Pass Line</div>
+<div style="display:grid;grid-template-columns:1fr 380px;gap:40px;align-items:start">
+<div>
+<h2 style="font-size:34px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 18px">Concept A — Pass Line</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:58ch;margin:0 0 28px">The most explicit statement of the product's promise: accumulating evidence measured against an external standard. Warmest of the three finalists in the wordmark lockup, because the rule can extend under <em>Bestehen</em> and tie the two halves together.</p>
+<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px">
+<div style="background:#F1EEE6;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4A4E5C">TRADE-OFF · reads as analytics before it reads as coaching</div>
+<div style="background:#F1EEE6;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4A4E5C">MIN SIZE · 20&nbsp;px</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:32px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:18px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="52" height="52"><use href="#mk-a1"></use></svg><span style="font-size:38px;font-weight:600;letter-spacing:-.03em">Bestehen</span></div>
+<div style="border-top:1px solid #EDE9DF;padding-top:24px;display:flex;gap:44px;flex-wrap:wrap;--ac:#2A9D6F">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-a1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:18px;color:#2A9D6F;margin:0 2px">/</span><span style="font-size:18px;font-weight:400;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-a1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:18px;color:#2A9D6F;margin:0 2px">/</span><span style="font-size:18px;font-weight:400;color:#3A4256">Corpus</span></div>
+</div>
+<div style="border-top:1px solid #EDE9DF;padding-top:24px;display:flex;gap:26px;align-items:flex-end">
+<div style="background:#14213D;padding:20px 26px;display:flex;align-items:center;gap:14px;color:#F7F4EE;--ac:#3FB484"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-a1"></use></svg><span style="font-size:24px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:flex-end;gap:16px;color:#000"><svg viewBox="0 0 100 100" width="40" height="40"><use href="#mk-a1"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-a1"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-a3"></use></svg></div>
+</div>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:18px">CONTROLLED VARIANTS</div>
+<div style="display:grid;gap:18px">
+<div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #EDE9DF;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-a1"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">A1 · BASELINE</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Square terminals, four bars, full overhang. Most measured, least friendly.</div></div></div>
+<div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #EDE9DF;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-a2"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">A2 · SOFTENED</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Rounded caps, reduced overhang. Warmer for daily use; loses some authority.</div></div></div>
+<div style="display:flex;gap:16px;align-items:flex-start;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-a3"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">A3 · COMPACT / STRONG</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Three bars, heavier rule. The 16&nbsp;px and app-icon form; recommended as A's micro-mark.</div></div></div>
+</div>
+<div style="margin-top:22px;padding-top:20px;border-top:1px solid #EDE9DF;font-size:13px;line-height:1.65;color:#6B6A63"><strong style="color:#14213D;font-weight:600">Next enhancement without changing the idea:</strong> test a fifth bar for rhythm, and test the rule extending under the wordmark as a shared baseline.</div>
+</div>
+</div>
+</section>
+
+<section id="s04" data-screen-label="04 Finalist B" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#1D6F50;text-transform:uppercase;margin-bottom:20px">04 — Finalist B · Threshold B · recommended</div>
+<div style="display:grid;grid-template-columns:1fr 380px;gap:40px;align-items:start">
+<div>
+<h2 style="font-size:34px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 18px">Concept B — Threshold B</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:58ch;margin:0 0 28px">A monoline <em>B</em> whose crossbar is not its own. One rule, set at the letter's exact vertical midpoint and drawn past it on both sides, completes the letterform and states the threshold in the same stroke. Ownable, monogrammatic, and the only finalist that is equally strong as a 512&nbsp;px icon and a 16&nbsp;px favicon.</p>
+<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px">
+<div style="background:#E6F2EB;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50">TRADE-OFF · monogram carries less narrative than A or C</div>
+<div style="background:#F1EEE6;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4A4E5C">MIN SIZE · 16&nbsp;px with micro-mark</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:32px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:18px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="52" height="52"><use href="#mk-b1"></use></svg><span style="font-size:38px;font-weight:600;letter-spacing:-.03em">Bestehen</span></div>
+<div style="border-top:1px solid #EDE9DF;padding-top:24px;display:flex;gap:44px;flex-wrap:wrap;--ac:#2A9D6F">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:18px;color:#2A9D6F;margin:0 2px">/</span><span style="font-size:18px;font-weight:400;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:18px;color:#2A9D6F;margin:0 2px">/</span><span style="font-size:18px;font-weight:400;color:#3A4256">Corpus</span></div>
+</div>
+<div style="border-top:1px solid #EDE9DF;padding-top:24px;display:flex;gap:26px;align-items:flex-end">
+<div style="background:#14213D;padding:20px 26px;display:flex;align-items:center;gap:14px;color:#F7F4EE;--ac:#3FB484"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-b1"></use></svg><span style="font-size:24px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:flex-end;gap:16px;color:#000"><svg viewBox="0 0 100 100" width="40" height="40"><use href="#mk-b1"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-b1"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-b-micro"></use></svg></div>
+</div>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:18px">CONTROLLED VARIANTS</div>
+<div style="display:grid;gap:18px">
+<div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #EDE9DF;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-b1"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">B1 · BASELINE — APPROVED</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Stroke 11/100, butt terminals, rule 6→94. Precise without being cold.</div></div></div>
+<div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #EDE9DF;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-b2"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">B2 · SOFTENED GEOMETRY</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Round caps, rule 12→88. Noticeably warmer; the rule reads slightly more decorative.</div></div></div>
+<div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #EDE9DF;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-b3"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">B3 · STRONG WEIGHT</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Stroke 15/100. Holds on dark surfaces and in small print; counters begin to close.</div></div></div>
+<div style="display:flex;gap:16px;align-items:flex-start;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-b-micro"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">B-micro · OPTICAL MICRO-MARK</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Stroke 16/100, rule 12→88, counters opened. Replaces B1 below 20&nbsp;px only.</div></div></div>
+</div>
+<div style="margin-top:22px;padding-top:20px;border-top:1px solid #EDE9DF;font-size:13px;line-height:1.65;color:#6B6A63"><strong style="color:#14213D;font-weight:600">Next enhancement without changing the idea:</strong> a two-unit optical shortening of the left overhang, and a signature detail on the wordmark's <em>t</em> crossbar echoing the rule.</div>
+</div>
+</div>
+
+<sc-if value="{{ showRejected }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:32px;background:#F1EEE6;border:1px solid #DFDACE;padding:28px 32px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#B64B4B;margin-bottom:16px">REJECTED VARIANTS — KEPT AS BOUNDARIES</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;font-size:14px;line-height:1.6;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">B-x1 · rule contained inside the letter</strong><br/>Becomes an ordinary B. The overhang is the concept; without it there is no threshold.</div>
+<div><strong style="color:#14213D;font-weight:600">B-x2 · B inside a rounded square</strong><br/>Immediately reads as an app-store default and triggers the seal/badge association.</div>
+<div><strong style="color:#14213D;font-weight:600">B-x3 · rule as a green gradient</strong><br/>Collapses in monochrome and in single-colour print. Master must stay flat.</div>
+<div><strong style="color:#14213D;font-weight:600">B-x4 · rule tilted 8°</strong><br/>Adds momentum but implies a guaranteed upward result. Contradicts honest readiness.</div>
+</div>
+</div>
+</sc-if>
+</section>
+
+<section id="s05" data-screen-label="05 Finalist C" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">05 — Finalist C · Evidence Alignment</div>
+<div style="display:grid;grid-template-columns:1fr 380px;gap:40px;align-items:start">
+<div>
+<h2 style="font-size:34px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 18px">Concept C — Evidence Alignment</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:58ch;margin:0 0 28px">The most original construction of the three and the most honest about what the product actually does: unequal evidence, one edge that judges it. It is also the coolest, which makes it excellent for Corpus and slightly severe for a learner opening the app on day one.</p>
+<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px">
+<div style="background:#F1EEE6;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4A4E5C">TRADE-OFF · infrastructure tone, weak monogram</div>
+<div style="background:#F1EEE6;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4A4E5C">MIN SIZE · 24&nbsp;px (3-bar form at 16&nbsp;px)</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:32px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:center;gap:18px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="52" height="52"><use href="#mk-c1"></use></svg><span style="font-size:38px;font-weight:600;letter-spacing:-.03em">Bestehen</span></div>
+<div style="border-top:1px solid #EDE9DF;padding-top:24px;display:flex;gap:44px;flex-wrap:wrap;--ac:#2A9D6F">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-c1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:18px;color:#2A9D6F;margin:0 2px">/</span><span style="font-size:18px;font-weight:400;color:#3A4256">App</span></div>
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-c1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:18px;color:#2A9D6F;margin:0 2px">/</span><span style="font-size:18px;font-weight:400;color:#3A4256">Corpus</span></div>
+</div>
+<div style="border-top:1px solid #EDE9DF;padding-top:24px;display:flex;gap:26px;align-items:flex-end">
+<div style="background:#14213D;padding:20px 26px;display:flex;align-items:center;gap:14px;color:#F7F4EE;--ac:#3FB484"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-c1"></use></svg><span style="font-size:24px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:flex;align-items:flex-end;gap:16px;color:#000"><svg viewBox="0 0 100 100" width="40" height="40"><use href="#mk-c1"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-c1"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-c3"></use></svg></div>
+</div>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:18px">CONTROLLED VARIANTS</div>
+<div style="display:grid;gap:18px">
+<div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #EDE9DF;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-c1"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">C1 · BASELINE</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Five bars, square ends, rule overshooting top and bottom.</div></div></div>
+<div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid #EDE9DF;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-c2"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">C2 · SOFTENED</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Pill ends. Friendlier, but the rag reads less like measurement.</div></div></div>
+<div style="display:flex;gap:16px;align-items:flex-start;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="56" height="56" style="flex:none"><use href="#mk-c3"></use></svg><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1D6F50;margin-bottom:4px">C3 · COMPACT / STRONG</div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Three heavy bars. Required below 24&nbsp;px; C's app-icon and favicon form.</div></div></div>
+</div>
+<div style="margin-top:22px;padding-top:20px;border-top:1px solid #EDE9DF;font-size:13px;line-height:1.65;color:#6B6A63"><strong style="color:#14213D;font-weight:600">Next enhancement without changing the idea:</strong> test the rule in ink and the bars in accent (inversion), and test a four-bar rhythm for a squarer icon crop.</div>
+</div>
+</div>
+</section>
+
+<section id="s06" data-screen-label="06 Recommended" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#1D6F50;text-transform:uppercase;margin-bottom:20px">06 — Recommended system · FINALIZED ✓</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-bottom:48px">
+<div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 20px;max-width:24ch">Finalized: Concept B, variant B1 — Threshold B.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;margin:0 0 18px">B1 is the only candidate that is simultaneously a monogram, a concept and a favicon. The rule gives Bestehen a structural device that scales across the whole system — it becomes the crossbar in the symbol, the divider before <em>/ App</em> and <em>/ Corpus</em>, the pass marker in readiness graphics, and the rule under a document header — without ever needing colour to be understood.</p>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;margin:0">A is the stronger storyteller but skews analytics; C is the most original but too cool to lead a learner product. Both remain fully specified above and can be promoted without restarting the work.</p>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:56px;display:flex;align-items:center;justify-content:center;gap:26px;--ac:#2A9D6F">
+<svg viewBox="0 0 100 100" width="104" height="104"><use href="#mk-b1"></use></svg>
+<span style="font-size:66px;font-weight:600;letter-spacing:-.035em;line-height:1">Bestehen</span>
+</div>
+</div>
+
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:16px">ANATOMY · 100-UNIT GRID</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:36px;display:grid;grid-template-columns:280px 1fr;gap:44px;align-items:center;margin-bottom:36px">
+<div style="position:relative;width:240px;height:240px;background:#FBFAF7;border:1px solid #EDE9DF">
+<div style="position:absolute;left:0;right:0;top:50%;height:1px;background:#B64B4B;opacity:.5"></div>
+<div style="position:absolute;top:0;bottom:0;left:14.4%;width:1px;background:#B64B4B;opacity:.35"></div>
+<div style="position:absolute;top:0;bottom:0;right:14.4%;width:1px;background:#B64B4B;opacity:.35"></div>
+<div style="position:absolute;inset:0;padding:0;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="240" height="240" style="display:block"><use href="#mk-b1"></use></svg></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;font-size:14px;line-height:1.65;color:#4A4E5C">
+<div><strong style="color:#14213D;font-weight:600">Stroke</strong><br/>11 units, uniform across stem, bowls and rule. One weight only — no optical thinning.</div>
+<div><strong style="color:#14213D;font-weight:600">Bowls</strong><br/>Radius 15 units, both bowls meeting exactly at y&nbsp;=&nbsp;50. Lower bowl 2 units wider for optical balance.</div>
+<div><strong style="color:#14213D;font-weight:600">The rule</strong><br/>y&nbsp;=&nbsp;50, x&nbsp;6&nbsp;→&nbsp;94. Always drawn last and always over the stem: the letter borrows it.</div>
+<div><strong style="color:#14213D;font-weight:600">Cap height</strong><br/>Letter spans y&nbsp;14.5&nbsp;→&nbsp;85.5. Rule sits at the mathematical centre, which is optically correct here because the bowls are equal.</div>
+</div>
+</div>
+
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:16px">RESPONSIVE SET</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:#DFDACE;border:1px solid #DFDACE;margin-bottom:36px">
+<div style="background:#fff;padding:24px;display:flex;flex-direction:column;gap:20px;justify-content:space-between"><div style="display:flex;align-items:center;gap:11px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-b1"></use></svg><span style="font-size:21px;font-weight:600;letter-spacing:-.025em">Bestehen</span><span style="font-size:16px;color:#2A9D6F">/</span><span style="font-size:16px;color:#3A4256">App</span></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">FULL LOCKUP<br/><span style="color:#14213D">≥ 200 px wide</span><br/>Marketing, docs, footers</div></div>
+<div style="background:#fff;padding:24px;display:flex;flex-direction:column;gap:20px;justify-content:space-between"><div style="display:flex;align-items:center;gap:11px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="28" height="28"><use href="#mk-b1"></use></svg><span style="font-size:20px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">SYMBOL + WORDMARK<br/><span style="color:#14213D">130–200 px wide</span><br/>App header, desktop sidebar</div></div>
+<div style="background:#fff;padding:24px;display:flex;flex-direction:column;gap:20px;justify-content:space-between"><div><span style="font-size:20px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">WORDMARK ONLY<br/><span style="color:#14213D">≥ 88 px wide</span><br/>Report headers, co-signed pages</div></div>
+<div style="background:#fff;padding:24px;display:flex;flex-direction:column;gap:20px;justify-content:space-between"><div style="--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-b1"></use></svg></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">SYMBOL ONLY<br/><span style="color:#14213D">20–64 px</span><br/>Mobile nav, avatar, app icon</div></div>
+<div style="background:#fff;padding:24px;display:flex;flex-direction:column;gap:20px;justify-content:space-between"><div style="--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-b-micro"></use></svg></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">MICRO-MARK<br/><span style="color:#14213D">&lt; 20 px</span><br/>Favicon, dense table rows</div></div>
+</div>
+
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:16px">COLOURWAYS</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:20px;margin-bottom:36px">
+<div style="border:1px solid #DFDACE"><div style="background:#F7F4EE;padding:34px 24px;display:flex;align-items:center;gap:12px;--ac:#2A9D6F;color:#14213D"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="background:#fff;padding:12px 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6A63">PRIMARY / WARM PAPER<br/><span style="color:#14213D">Ink 14.4:1 · Green 3.1:1</span></div></div>
+<div style="border:1px solid #DFDACE"><div style="background:#14213D;padding:34px 24px;display:flex;align-items:center;gap:12px;--ac:#3FB484;color:#F7F4EE"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="background:#fff;padding:12px 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6A63">REVERSED / DEEP INK<br/><span style="color:#14213D">Paper 14.4:1 · Green Light 6.1:1</span></div></div>
+<div style="border:1px solid #DFDACE"><div style="background:#F7F4EE;padding:34px 24px;display:flex;align-items:center;gap:12px;color:#14213D;--ac:#14213D"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="background:#fff;padding:12px 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6A63">ONE-COLOUR DEEP INK<br/><span style="color:#14213D">Default for documents</span></div></div>
+<div style="border:1px solid #DFDACE"><div style="background:#fff;padding:34px 24px;display:flex;align-items:center;gap:12px;color:#000;--ac:#000"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="background:#fff;padding:12px 16px;border-top:1px solid #EDE9DF;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6A63">ONE-COLOUR BLACK<br/><span style="color:#14213D">Print, fax, stamping</span></div></div>
+<div style="border:1px solid #DFDACE"><div style="background:#2A2A2A;padding:34px 24px;display:flex;align-items:center;gap:12px;color:#fff;--ac:#fff"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="background:#fff;padding:12px 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6A63">ONE-COLOUR WHITE<br/><span style="color:#14213D">Photography, dark print</span></div></div>
+<div style="border:1px solid #DFDACE"><div style="background:#EDF0F4;padding:34px 24px;display:flex;align-items:center;gap:12px;color:#3A4256;--ac:#7C8496"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.025em">Bestehen</span></div><div style="background:#fff;padding:12px 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6B6A63">GRAYSCALE<br/><span style="color:#14213D">Rule at 60% ink value</span></div></div>
+</div>
+
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:16px">IN CONTEXT · BESTEHEN / APP AND / CORPUS</div>
+<div style="display:grid;grid-template-columns:300px 1fr;gap:20px">
+
+<div style="background:#fff;border:1px solid #DFDACE;padding:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#8A8477;margin-bottom:14px">MOBILE HEADER · READINESS</div>
+<div style="width:100%;max-width:260px;margin:0 auto;border:8px solid #14213D;border-radius:28px;overflow:hidden;background:#F7F4EE">
+<div style="background:#fff;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #EDE9DF">
+<div style="display:flex;align-items:center;gap:8px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-b1"></use></svg><span style="font-size:14px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="width:22px;height:22px;border-radius:50%;background:#EDF0F4"></div>
+</div>
+<div style="padding:16px 14px 20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;color:#8A8477;margin-bottom:6px">B1 READINESS</div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px"><span style="font-size:34px;font-weight:600;letter-spacing:-.03em">43%</span><span style="font-size:11px;color:#6B6A63">low confidence</span></div>
+<div style="position:relative;height:8px;background:#EDF0F4;margin-bottom:6px"><div style="position:absolute;left:0;top:0;bottom:0;width:43%;background:#2A9D6F"></div><div style="position:absolute;left:60%;top:-4px;bottom:-4px;width:2px;background:#14213D"></div></div>
+<div style="font-size:11px;color:#6B6A63;margin-bottom:16px">Pass range from 60%</div>
+<div style="background:#14213D;color:#F7F4EE;padding:11px 14px;font-size:12px;font-weight:500">Start today's 24-minute plan</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;gap:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#8A8477;margin-bottom:14px">DESKTOP SIDEBAR · BRAND RECEDES BEHIND THE PLAN</div>
+<div style="border:1px solid #EDE9DF;display:grid;grid-template-columns:186px 1fr;min-height:180px">
+<div style="background:#14213D;padding:18px 16px;color:#8FA0BF">
+<div style="display:flex;align-items:center;gap:9px;margin-bottom:24px;color:#F7F4EE;--ac:#3FB484"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#mk-b1"></use></svg><span style="font-size:14px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="display:grid;gap:11px;font-size:12.5px"><span style="color:#F7F4EE;font-weight:500">Coach</span><span>Practice</span><span>Review</span><span>Readiness</span><span>Progress</span><span>Mock exams</span></div>
+</div>
+<div style="padding:20px;background:#FBFAF7">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;color:#8A8477;margin-bottom:8px">TODAY</div>
+<div style="font-size:19px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px">Speaking · interaction repair</div>
+<div style="font-size:13px;line-height:1.6;color:#4A4E5C;max-width:46ch">Chosen because Oral readiness is the only component below the pass range and your last two attempts lost points on disagreeing politely.</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#8A8477;margin-bottom:14px">EXAM SHELL · BRANDING WITHDRAWN</div>
+<div style="border:1px solid #EDE9DF;background:#fff;padding:16px">
+<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid #EDE9DF;margin-bottom:14px">
+<div style="display:flex;align-items:center;gap:8px;color:#7C8496;--ac:#7C8496"><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-b-micro"></use></svg><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em">MOCK · LESEN TEIL 2</span></div>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#14213D">18:42</span>
+</div>
+<div style="font-size:13px;line-height:1.7;color:#3A4256">Only the micro-mark in mist grey remains. Nothing brand-coloured competes with the task while evidence is being generated.</div>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#8A8477;margin-bottom:14px">CORPUS · INTERNAL REPORT HEADER</div>
+<div style="border:1px solid #EDE9DF;background:#fff;padding:18px">
+<div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:2px solid #14213D;margin-bottom:12px;--ac:#14213D">
+<svg viewBox="0 0 100 100" width="22" height="22"><use href="#mk-b1"></use></svg>
+<span style="font-size:16px;font-weight:600;letter-spacing:-.02em">Bestehen</span><span style="font-size:13px;color:#7C8496">/</span><span style="font-size:13px;color:#3A4256">Corpus</span>
+<span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8A8477">TAXONOMY v14 · INTERNAL</span>
+</div>
+<div style="font-size:13px;line-height:1.7;color:#3A4256">One-colour ink, rule doubling as the header divider. No accent green: Corpus surfaces stay evidential.</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#8A8477;margin-bottom:14px">SPLASH · REDUCED-MOTION SAFE</div>
+<div style="background:#14213D;padding:34px;display:flex;align-items:center;justify-content:center;gap:14px;--ac:#3FB484;color:#F7F4EE">
+<svg viewBox="0 0 100 100" width="30" height="30"><use href="#mk-b1"></use></svg><span style="font-size:22px;font-weight:600;letter-spacing:-.025em">Bestehen</span>
+</div>
+<div style="font-size:12.5px;line-height:1.6;color:#6B6A63;margin-top:12px">Optional load state: the rule draws left→right once, 240&nbsp;ms. Under <em>prefers-reduced-motion</em> it appears complete. Nothing in the mark depends on it.</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#8A8477;margin-bottom:14px">PDF REPORT · MONOCHROME EXPORT</div>
+<div style="background:#fff;border:1px solid #EDE9DF;padding:18px;color:#000">
+<div style="display:flex;align-items:center;gap:9px;margin-bottom:4px;--ac:#000"><svg viewBox="0 0 100 100" width="18" height="18"><use href="#mk-b1"></use></svg><span style="font-size:13px;font-weight:600;letter-spacing:-.02em">Bestehen</span></div>
+<div style="height:1px;background:#000;margin:10px 0 12px"></div>
+<div style="font-size:15px;font-weight:600;margin-bottom:6px">Readiness evidence summary</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555">GENERATED 19 AUG 2026 · NOT AN OFFICIAL EXAM RESULT</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="s07" data-screen-label="07 Architecture" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">07 — Brand architecture</div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 20px;max-width:26ch">One brand, two descriptors, one rule of subordination.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:62ch;margin:0 0 36px"><em>Bestehen</em> is set at 100% weight and size. The slash sits at 0.72× the wordmark size, the descriptor at 0.72× size and one weight lighter. That single ratio is the whole system.</p>
+
+<div style="background:#fff;border:1px solid #DFDACE;padding:40px;display:grid;gap:34px;margin-bottom:24px">
+<div style="display:flex;align-items:center;gap:20px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="46" height="46"><use href="#mk-b1"></use></svg><span style="font-size:40px;font-weight:600;letter-spacing:-.03em;line-height:1">Bestehen</span><span style="margin-left:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8A8477">UMBRELLA · 100% / 100%</span></div>
+<div style="display:flex;align-items:center;gap:20px;--ac:#2A9D6F;padding-top:28px;border-top:1px solid #EDE9DF"><svg viewBox="0 0 100 100" width="46" height="46"><use href="#mk-b1"></use></svg><div style="display:flex;align-items:baseline"><span style="font-size:40px;font-weight:600;letter-spacing:-.03em;line-height:1">Bestehen</span><span style="font-size:29px;font-weight:500;color:#2A9D6F;margin:0 10px;line-height:1">/</span><span style="font-size:29px;font-weight:400;color:#3A4256;letter-spacing:-.01em;line-height:1">App</span></div><span style="margin-left:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8A8477">LEARNER PRODUCT · 72% size, −1 weight</span></div>
+<div style="display:flex;align-items:center;gap:20px;--ac:#2A9D6F;padding-top:28px;border-top:1px solid #EDE9DF"><svg viewBox="0 0 100 100" width="46" height="46"><use href="#mk-b1"></use></svg><div style="display:flex;align-items:baseline"><span style="font-size:40px;font-weight:600;letter-spacing:-.03em;line-height:1">Bestehen</span><span style="font-size:29px;font-weight:500;color:#2A9D6F;margin:0 10px;line-height:1">/</span><span style="font-size:29px;font-weight:400;color:#3A4256;letter-spacing:-.01em;line-height:1">Corpus</span></div><span style="margin-left:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8A8477">INTELLIGENCE PRODUCT · ink slash, no accent</span></div>
+<div style="display:flex;align-items:flex-end;gap:44px;padding-top:28px;border-top:1px solid #EDE9DF;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="40" height="40"><use href="#mk-b1"></use></svg><span style="font-size:19px;font-weight:600;letter-spacing:-.025em">Bestehen</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8A8477">STACKED</span></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="40" height="40"><use href="#mk-b1"></use></svg><div style="display:flex;align-items:baseline"><span style="font-size:19px;font-weight:600;letter-spacing:-.025em">Bestehen</span><span style="font-size:14px;color:#2A9D6F;margin:0 5px">/</span><span style="font-size:14px;color:#3A4256">App</span></div><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8A8477">STACKED · APP</span></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="40" height="40"><use href="#mk-b1"></use></svg><div style="display:flex;align-items:baseline"><span style="font-size:19px;font-weight:600;letter-spacing:-.025em">Bestehen</span><span style="font-size:14px;color:#2A9D6F;margin:0 5px">/</span><span style="font-size:14px;color:#3A4256">Corpus</span></div><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8A8477">STACKED · CORPUS</span></div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#1D6F50;margin-bottom:12px">SLASH TREATMENT</div><p style="margin:0;font-size:15px;line-height:1.65;color:#3A4256">Two approved settings, no others. <strong style="font-weight:600">Neutral</strong> — slash in ink at 55% opacity, for Corpus and all document use. <strong style="font-weight:600">Structural</strong> — slash in Bestehen Green, for App and marketing. The slash never takes the descriptor's weight and never grows to match <em>Bestehen</em>. This is what keeps the naming from reading as a code path.</p></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#1D6F50;margin-bottom:12px">WORDMARK CONSTRUCTION</div><p style="margin:0;font-size:15px;line-height:1.65;color:#3A4256">Base typeface <strong style="font-weight:600">Instrument Sans SemiBold</strong> (SIL Open Font License 1.1 — permits modification and embedding; verify the current release before production). Modifications for the master: tracking −0.03&nbsp;em, <em>st</em> pair kerned −6 units, terminals cut horizontally, and the <em>t</em> crossbar shortened to the rule's weight. The delivered master must be outlined; the live-type version is for development only.</p></div>
+</div>
+</section>
+
+<section id="s08" data-screen-label="08 Icons" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">08 — App icons and favicons</div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 20px;max-width:26ch">The icon is the symbol, never a shrunken wordmark.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:62ch;margin:0 0 36px">Symbol at 62% of the icon's shortest edge, optically centred. Because the rule overhangs the letter, the icon's safe area is measured to the rule's ends, not to the letter.</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px;margin-bottom:32px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:22px"><div style="width:120px;height:120px;background:#14213D;display:flex;align-items:center;justify-content:center;--ac:#3FB484;color:#F7F4EE;margin-bottom:14px"><svg viewBox="0 0 100 100" width="74" height="74"><use href="#mk-b1"></use></svg></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">512 · SQUARE<br/><span style="color:#14213D">web-app icon</span></div></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:22px"><div style="width:120px;height:120px;background:#14213D;border-radius:26px;display:flex;align-items:center;justify-content:center;--ac:#3FB484;color:#F7F4EE;margin-bottom:14px"><svg viewBox="0 0 100 100" width="74" height="74"><use href="#mk-b1"></use></svg></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">180 · ROUNDED<br/><span style="color:#14213D">apple-touch</span></div></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:22px"><div style="width:120px;height:120px;background:#2A9D6F;border-radius:50%;display:flex;align-items:center;justify-content:center;--ac:#fff;color:#fff;margin-bottom:14px"><svg viewBox="0 0 100 100" width="70" height="70"><use href="#mk-b1"></use></svg></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">CIRCLE · AVATAR<br/><span style="color:#14213D">reversed on green</span></div></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:22px"><div style="position:relative;width:120px;height:120px;background:#F7F4EE;display:flex;align-items:center;justify-content:center;--ac:#2A9D6F;color:#14213D;margin-bottom:14px"><div style="position:absolute;inset:12px;border:1px dashed #B64B4B;border-radius:50%;opacity:.6"></div><svg viewBox="0 0 100 100" width="66" height="66"><use href="#mk-b1"></use></svg></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">MASKABLE<br/><span style="color:#14213D">80% safe circle</span></div></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:22px"><div style="width:120px;height:120px;background:#F7F4EE;border:1px solid #EDE9DF;display:flex;align-items:center;justify-content:center;--ac:#2A9D6F;color:#14213D;margin-bottom:14px"><svg viewBox="0 0 100 100" width="74" height="74"><use href="#mk-b1"></use></svg></div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#6B6A63">192 · LIGHT<br/><span style="color:#14213D">paper background</span></div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:20px">SIZE LADDER · MASTER VS MICRO-MARK</div>
+<div style="display:flex;align-items:flex-end;gap:26px;margin-bottom:20px;--ac:#2A9D6F">
+<div style="text-align:center"><svg viewBox="0 0 100 100" width="48" height="48"><use href="#mk-b1"></use></svg><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8A8477;margin-top:8px">48 · B1</div></div>
+<div style="text-align:center"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-b1"></use></svg><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8A8477;margin-top:8px">32 · B1</div></div>
+<div style="text-align:center"><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-b1"></use></svg><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8A8477;margin-top:8px">24 · B1</div></div>
+<div style="text-align:center;padding:0 10px;background:#E6F2EB"><svg viewBox="0 0 100 100" width="16" height="16" style="margin-top:8px"><use href="#mk-b-micro"></use></svg><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#1D6F50;margin:8px 0">16 · MICRO</div></div>
+<div style="text-align:center;opacity:.5"><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-b1"></use></svg><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#B64B4B;margin-top:8px">16 · B1 ✗</div></div>
+</div>
+<p style="margin:0;font-size:14px;line-height:1.65;color:#4A4E5C">B1 holds cleanly to 20&nbsp;px. Below that the counters fill in and the rule loses its overhang, so the micro-mark — stroke 16, rule 12&nbsp;→&nbsp;88 — takes over. The swap is a hard rule, not a judgement call.</p>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:20px">BROWSER TAB · LIGHT AND DARK</div>
+<div style="display:grid;gap:12px;margin-bottom:20px">
+<div style="background:#EDF0F4;padding:9px 12px;display:flex;align-items:center;gap:9px;border-radius:8px 8px 0 0"><svg viewBox="0 0 100 100" width="16" height="16" style="--ac:#2A9D6F;color:#14213D"><use href="#mk-b-micro"></use></svg><span style="font-size:12px;color:#3A4256">Bestehen — Readiness</span></div>
+<div style="background:#22262E;padding:9px 12px;display:flex;align-items:center;gap:9px;border-radius:8px 8px 0 0"><svg viewBox="0 0 100 100" width="16" height="16" style="--ac:#3FB484;color:#EDF0F4"><use href="#mk-b-micro"></use></svg><span style="font-size:12px;color:#D6DAE2">Bestehen — Readiness</span></div>
+<div style="background:#EDF0F4;padding:9px 12px;display:flex;align-items:center;gap:9px;border-radius:8px 8px 0 0"><svg viewBox="0 0 100 100" width="16" height="16" style="--ac:#000;color:#000"><use href="#mk-b-micro"></use></svg><span style="font-size:12px;color:#3A4256">Bestehen / Corpus — Taxonomy</span></div>
+</div>
+<p style="margin:0;font-size:14px;line-height:1.65;color:#4A4E5C">Ship two favicons and let the browser choose: ink+green for light UI, paper+light green for dark UI. The one-colour version is the fallback wherever a single asset must serve both.</p>
+</div>
+</div>
+</section>
+
+<section id="s09" data-screen-label="09 Guidelines" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">09 — Usage guidelines</div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 36px;max-width:26ch">Mini brand guide.</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:18px">CLEAR SPACE · UNIT = STROKE WIDTH</div>
+<div style="position:relative;background:#FBFAF7;border:1px dashed #B64B4B;padding:26px;display:inline-flex;align-items:center;gap:14px;--ac:#2A9D6F;margin-bottom:16px"><svg viewBox="0 0 100 100" width="40" height="40"><use href="#mk-b1"></use></svg><span style="font-size:28px;font-weight:600;letter-spacing:-.03em">Bestehen</span></div>
+<p style="margin:0;font-size:14px;line-height:1.65;color:#4A4E5C">Clear space on all four sides = <strong style="font-weight:600">2×&nbsp;stroke width</strong> (2 units of the symbol's 11-unit stroke, i.e. 18% of symbol height). Measured from the rule's ends and the wordmark's cap height, not from the letter's bowls.</p>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:18px">MINIMUM SIZES</div>
+<div style="display:grid;gap:11px;font-size:14px;line-height:1.5;color:#4A4E5C">
+<div style="display:flex;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid #EDE9DF"><span>Symbol, digital</span><strong style="font-weight:600;color:#14213D;font-family:'IBM Plex Mono',monospace;font-size:13px">20 px → micro-mark below</strong></div>
+<div style="display:flex;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid #EDE9DF"><span>Micro-mark, digital</span><strong style="font-weight:600;color:#14213D;font-family:'IBM Plex Mono',monospace;font-size:13px">16 px</strong></div>
+<div style="display:flex;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid #EDE9DF"><span>Full lockup, digital</span><strong style="font-weight:600;color:#14213D;font-family:'IBM Plex Mono',monospace;font-size:13px">96 px wide</strong></div>
+<div style="display:flex;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid #EDE9DF"><span>Symbol, print</span><strong style="font-weight:600;color:#14213D;font-family:'IBM Plex Mono',monospace;font-size:13px">6 mm</strong></div>
+<div style="display:flex;justify-content:space-between"><span>Full lockup, print</span><strong style="font-weight:600;color:#14213D;font-family:'IBM Plex Mono',monospace;font-size:13px">26 mm wide</strong></div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:14px">ALIGNMENT WITH TEXT</div><p style="margin:0;font-size:14px;line-height:1.7;color:#4A4E5C">In headers, align the symbol's rule to the wordmark's optical centre — not to the baseline. Symbol height = 1.15× the wordmark's cap height. Gap between symbol and wordmark = 0.34× symbol height; between wordmark and slash = 0.16×.</p></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:14px">MOTION PRINCIPLES</div><p style="margin:0;font-size:14px;line-height:1.7;color:#4A4E5C">Only one motion is sanctioned: the rule drawing left→right, 240&nbsp;ms, ease-out, once. Never loops, never bounces, never celebrates. The mark is complete and recognisable in its static state, and reduced-motion users see only that.</p></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:14px">EXAM-TARGET INDEPENDENCE</div><p style="margin:0;font-size:14px;line-height:1.7;color:#4A4E5C">Bestehen never appears adjacent to, above, or in a shared frame with a TELC or other provider mark. Exam names appear as plain text in the product's own type, never as a logo. Nothing in the identity may be described as official, certified or approved. The mark stays valid if the target exam changes.</p></div>
+</div>
+
+<div style="background:#fff;border:1px solid #DFDACE;padding:28px;margin-bottom:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#B64B4B;margin-bottom:20px">PROHIBITED USES</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:22px">
+<div style="display:flex;gap:14px;align-items:flex-start"><div style="width:52px;height:52px;flex:none;background:#FBFAF7;border:1px solid #EDE9DF;display:flex;align-items:center;justify-content:center;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="42" height="30" preserveAspectRatio="none"><use href="#mk-b1"></use></svg></div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Never stretch, condense or change proportions.</div></div>
+<div style="display:flex;gap:14px;align-items:flex-start"><div style="width:52px;height:52px;flex:none;background:#FBFAF7;border:1px solid #EDE9DF;display:flex;align-items:center;justify-content:center;--ac:#B64B4B;color:#B64B4B"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-b1"></use></svg></div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Never recolour outside the approved colourways. Risk Red is a status colour, never a logo colour.</div></div>
+<div style="display:flex;gap:14px;align-items:flex-start"><div style="width:52px;height:52px;flex:none;background:#FBFAF7;border:1px solid #EDE9DF;display:flex;align-items:center;justify-content:center;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="34" height="34" style="filter:drop-shadow(2px 3px 2px rgba(0,0,0,.5))"><use href="#mk-b1"></use></svg></div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Never add shadow, outline, bevel or gradient to the master.</div></div>
+<div style="display:flex;gap:14px;align-items:flex-start"><div style="width:52px;height:52px;flex:none;background:#FBFAF7;border:1px solid #EDE9DF;display:flex;align-items:center;justify-content:center;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="34" height="34" style="transform:rotate(-14deg)"><use href="#mk-b1"></use></svg></div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Never rotate the mark or detach the rule from the letter's midpoint.</div></div>
+<div style="display:flex;gap:14px;align-items:flex-start"><div style="width:52px;height:52px;flex:none;background:#FBFAF7;border:1px solid #EDE9DF;display:flex;align-items:center;justify-content:center"><div style="display:flex;align-items:baseline"><span style="font-size:9px;font-weight:600">Beste</span><span style="font-size:14px;font-weight:700;color:#2A9D6F">App</span></div></div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Never enlarge <em>/ App</em> or <em>/ Corpus</em> above the umbrella name, and never change <em>Bestehen</em>'s spelling or capitalisation.</div></div>
+<div style="display:flex;gap:14px;align-items:flex-start"><div style="width:52px;height:52px;flex:none;background:linear-gradient(45deg,#2A9D6F,#B64B4B);display:flex;align-items:center;justify-content:center;--ac:#fff;color:#F7F4EE"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-b1"></use></svg></div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Never place on busy or low-contrast surfaces without a solid protection field.</div></div>
+<div style="display:flex;gap:14px;align-items:flex-start"><div style="width:52px;height:52px;flex:none;background:#FBFAF7;border:1px solid #EDE9DF;display:flex;align-items:center;justify-content:center;position:relative;--ac:#2A9D6F"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-b1"></use></svg><span style="position:absolute;bottom:2px;right:3px;font-family:'IBM Plex Mono',monospace;font-size:7px;color:#B64B4B">100%</span></div><div style="font-size:13.5px;line-height:1.55;color:#4A4E5C">Never use the symbol as a pass guarantee, certification seal or score badge.</div></div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div style="background:#14213D;color:#EDF0F4;padding:30px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8FA0BF;margin-bottom:16px">ORIGINALITY AND SIMILARITY REVIEW</div>
+<div style="display:grid;gap:14px;font-size:14.5px;line-height:1.65">
+<p style="margin:0"><strong style="font-weight:600">Category territories checked conceptually:</strong> mascot-led language learning (a character or animal head — not used here); syllable/speech-bubble marks; abstract globe and chat glyphs; certification seals and laurel/shield devices; tick-in-circle completion marks; node-and-sparkle AI marks. None of those constructions appears in B1.</p>
+<p style="margin:0"><strong style="font-weight:600">Residual risk:</strong> monoline letterform monograms are a crowded space in general. The mitigation is structural rather than stylistic — the crossbar is a separate, over-length element shared with the wordmark and product graphics, which is what makes the construction specific rather than a stylised letter.</p>
+<p style="margin:0;color:#C7D0DE"><strong style="font-weight:600;color:#EDF0F4">No trademark clearance is claimed.</strong> This is a design-level collision review only. A professional trademark search and legal clearance in the relevant classes and jurisdictions remains a separate, required step before public commercial use.</p>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:30px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:16px">ACCESSIBILITY AND PRODUCTION CHECKS</div>
+<div style="display:grid;gap:9px;font-size:14px;line-height:1.55;color:#4A4E5C">
+<div>✓ &nbsp;Ink on Warm Paper 14.4:1; Paper on Ink 14.4:1 (both AAA).</div>
+<div>✓ &nbsp;Bestehen Green on Warm Paper 3.1:1 — passes the 3:1 non-text graphic threshold. For green <em>text</em> use Deep Green (5.6:1).</div>
+<div>✓ &nbsp;Green Light #3FB484 on Deep Ink 6.1:1 for reversed use.</div>
+<div>✓ &nbsp;Recognisable with colour removed: the construction is line-and-counter, not hue.</div>
+<div>✓ &nbsp;No meaning carried by animation; the optional rule draw is decorative only.</div>
+<div>✓ &nbsp;Flat geometry only — no raster effects, no gradient, no shadow in the master.</div>
+<div>✓ &nbsp;Three paths plus one rule; no accidental overlaps or redundant anchors.</div>
+<div>✓ &nbsp;Strokes are expanded to filled outlines in the production master so scaling cannot alter weight.</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="s0v" data-screen-label="Variables" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">Editable variables · live</div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 20px;max-width:28ch">Named values, so an enhancement request is unambiguous.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:62ch;margin:0 0 32px">The five variables below are live on this artifact — change them and the specimen re-renders. The rest are fixed geometry and are listed as constants, not controls, so a valid mark cannot be distorted.</p>
+<div style="display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start">
+<div style="background:#fff;border:1px solid #DFDACE;padding:44px;display:flex;flex-direction:column;gap:34px;align-items:flex-start" style-hover="">
+<div style="display:flex;align-items:center;gap:20px;color: {{ inkColor }}; --ac: {{ accentColor }}; --sw: {{ strokeUnits }}"><svg viewBox="0 0 100 100" width="60" height="60"><use href="#mk-t2"></use></svg><span style="font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1">Bestehen</span></div>
+<div style="display:flex;align-items:center;gap:16px;color: {{ inkColor }}; --ac: {{ accentColor }}; --sw: {{ strokeUnits }}"><svg viewBox="0 0 100 100" width="34" height="34"><use href="#mk-t2"></use></svg><div style="display:flex;align-items:baseline"><span style="font-size:25px;font-weight:600;letter-spacing:-.03em">Bestehen</span><span style="font-size:18px;font-weight:500;margin:0 7px;color: {{ slashColor }}">/</span><span style="font-size:18px;font-weight:400;color:#3A4256">App</span></div></div>
+<div style="display:flex;align-items:flex-end;gap:22px;color: {{ inkColor }}; --ac: {{ accentColor }}; --sw: {{ strokeUnits }}"><svg viewBox="0 0 100 100" width="32" height="32"><use href="#mk-t2"></use></svg><svg viewBox="0 0 100 100" width="24" height="24"><use href="#mk-t2"></use></svg><svg viewBox="0 0 100 100" width="16" height="16"><use href="#mk-t2"></use></svg></div>
+</div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:16px">CONSTANTS · NOT EXPOSED</div>
+<div style="display:grid;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.5;color:#4A4E5C">
+<div>bowl-radius <span style="color:#14213D">15 u</span></div>
+<div>rule-y <span style="color:#14213D">50 u</span></div>
+<div>rule-extent <span style="color:#14213D">6 → 94 u</span></div>
+<div>letter-height <span style="color:#14213D">71 u</span></div>
+<div>symbol-to-wordmark-gap <span style="color:#14213D">0.34 × symbol</span></div>
+<div>descriptor-gap <span style="color:#14213D">0.16 × symbol</span></div>
+<div>clear-space-unit <span style="color:#14213D">2 × stroke</span></div>
+<div>descriptor-scale <span style="color:#14213D">0.72 ×</span></div>
+<div>icon-safe-area <span style="color:#14213D">0.62 of shortest edge</span></div>
+<div>maskable-safe-circle <span style="color:#14213D">0.80</span></div>
+<div>compact-threshold <span style="color:#14213D">130 px lockup width</span></div>
+<div>micro-mark-threshold <span style="color:#14213D">20 px symbol</span></div>
+</div>
+<p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:#6B6A63">Proportions, curves and letterform details are deliberately not editable. Changing them produces a different mark, not a variant.</p>
+</div>
+</div>
+</section>
+
+<section id="s10" data-screen-label="10 Handoff" style="padding:72px 0;border-top:1px solid #DFDACE">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:#8A8477;text-transform:uppercase;margin-bottom:20px">10 — Exports and handoff</div>
+<h2 style="font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 20px;max-width:26ch">Asset register.</h2>
+<p style="font-size:17px;line-height:1.65;color:#4A4E5C;max-width:62ch;margin:0 0 32px">Vector masters for the recommended direction are written to the project as clean SVG — geometry only, no effects, no embedded raster. Every symbol on this page is generated from the same source geometry as those files.</p>
+
+<div style="background:#fff;border:1px solid #DFDACE;overflow-x:auto;margin-bottom:24px">
+<div style="min-width:820px">
+<div style="display:grid;grid-template-columns:2.3fr 1.6fr 1fr .9fr .8fr;background:#F1EEE6;border-bottom:1px solid #DFDACE;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;color:#6B6A63">
+<div style="padding:12px 16px">FILE</div><div style="padding:12px 12px">INTENDED USE</div><div style="padding:12px 12px">COLOURWAY</div><div style="padding:12px 12px">SIZE</div><div style="padding:12px 12px">MIN</div>
+</div>
+<sc-for list="{{ assets }}" as="a" hint-placeholder-count="10">
+<div style="display:grid;grid-template-columns:2.3fr 1.6fr 1fr .9fr .8fr;border-bottom:1px solid #EDE9DF;font-size:13px;color:#4A4E5C">
+<div style="padding:11px 16px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#14213D">{{ a.file }}</div>
+<div style="padding:11px 12px">{{ a.use }}</div>
+<div style="padding:11px 12px">{{ a.color }}</div>
+<div style="padding:11px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px">{{ a.size }}</div>
+<div style="padding:11px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px">{{ a.min }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:14px">REMAINING PRODUCTION STEPS</div><div style="display:grid;gap:8px;font-size:14px;line-height:1.55;color:#4A4E5C"><div>1 · Outline the wordmark in a vector editor and apply the four documented modifications.</div><div>2 · Expand symbol strokes to filled paths in the master.</div><div>3 · Render PNG 1×/2×/3× and the favicon/app-icon set from the SVGs.</div><div>4 · Produce the PDF brand sheet from this document.</div></div></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8A8477;margin-bottom:14px">ASSUMPTIONS</div><div style="display:grid;gap:8px;font-size:14px;line-height:1.55;color:#4A4E5C"><div>· Instrument Sans is available under OFL&nbsp;1.1 and may be modified and outlined; verify the current release notice.</div><div>· The Identity working palette is the starting point, not a locked system; Green Light #3FB484 is added for reversed contrast.</div><div>· German diacritics are a typography-system requirement; the name itself needs none.</div></div></div>
+<div style="background:#fff;border:1px solid #DFDACE;padding:26px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#B64B4B;margin-bottom:14px">KNOWN RISKS · NO BLOCKERS</div><div style="display:grid;gap:8px;font-size:14px;line-height:1.55;color:#4A4E5C"><div>· Monoline monograms are a crowded field; trademark clearance is unresolved and required.</div><div>· Bestehen Green at 3.1:1 is valid for graphics but must not be used for small text.</div><div>· If Bestehen later targets several exams, the rule should stay unlabelled — never annotate it with a score or level.</div></div></div>
+</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;inkColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#14213D&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Colour&quot;,&quot;options&quot;:[&quot;#14213D&quot;,&quot;#000000&quot;,&quot;#1D2433&quot;]},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#2A9D6F&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Colour&quot;,&quot;options&quot;:[&quot;#2A9D6F&quot;,&quot;#1D6F50&quot;,&quot;#3FB484&quot;,&quot;#14213D&quot;]},&quot;symbolWeight&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;regular&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;regular&quot;,&quot;strong&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Geometry&quot;},&quot;slashEmphasis&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;structural&quot;,&quot;options&quot;:[&quot;neutral&quot;,&quot;structural&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Geometry&quot;},&quot;showRejected&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Document&quot;}}">
+class Component extends DCLogic {
+  cell(v) {
+    const bg = v <= 2 ? '#FBECEC' : v === 3 ? '#F7F3E8' : v === 5 ? '#EAF4EF' : 'transparent';
+    const color = v <= 2 ? '#B64B4B' : v === 3 ? '#8A7A4A' : '#1D6F50';
+    return { v, bg, color };
+  }
+  renderVals() {
+    const raw = [
+      { id: 'T1', name: 'Pass Line', ref: '#mk-t1', s: [5,4,4,4,5,5,5,5,5,3,5], note: 'Strong on every production criterion; loses only on originality, because measured-bar constructions are common in analytics identities. Carried forward as Finalist A.' },
+      { id: 'T2', name: 'Threshold B', ref: '#mk-t2', s: [5,4,5,5,5,5,5,5,5,4,5], note: 'The only territory with no score below 4. Memorability and small-size performance are the decisive columns — it is a monogram and a concept at once. Carried forward as Finalist B.' },
+      { id: 'T3', name: 'Next Move', ref: '#mk-t3', s: [4,3,3,3,4,4,4,4,4,2,5], note: 'Two 3s and a 2: closest to the staircase/arrow cliché and the marked node clogs below 24 px. Screened out.' },
+      { id: 'T4', name: 'Evidence Alignment', ref: '#mk-t4', s: [5,5,4,4,5,5,5,5,4,4,5], note: 'Highest distinctiveness of the six. Digital flexibility drops because the five-bar rag needs width. Carried forward as Finalist C.' },
+      { id: 'T5', name: 'Safe Range', ref: '#mk-t5', s: [4,4,3,3,4,4,4,4,4,3,5], note: 'Conceptually the most honest, visually the most anonymous. Collides with common UI glyphs at small size. Screened out; retained as a product graphic.' },
+      { id: 'T6', name: 'Assistance Removed', ref: '#mk-t6', s: [4,3,3,2,4,3,4,4,3,2,4], note: 'The 2 in small-size performance is disqualifying: the gaps that carry the idea are the first thing lost. Screened out; retained as a progression graphic.' }
+    ];
+    const matrix = raw.map(r => ({
+      id: r.id, name: r.name, ref: r.ref, note: r.note,
+      scores: r.s.map(v => this.cell(v)),
+      total: r.s.reduce((a, b) => a + b, 0)
+    }));
+
+    const assets = [
+      { file: 'bestehen-symbol-primary.svg', use: 'Master symbol, B1', color: 'Ink + Green', size: '100 u', min: '20 px' },
+      { file: 'bestehen-symbol-micro.svg', use: 'Favicon, dense UI', color: 'Ink + Green', size: '100 u', min: '16 px' },
+      { file: 'bestehen-symbol-ink.svg', use: 'One-colour documents', color: 'Deep Ink', size: '100 u', min: '20 px' },
+      { file: 'bestehen-symbol-white.svg', use: 'Dark surfaces, photography', color: 'White', size: '100 u', min: '20 px' },
+      { file: 'bestehen-logo-primary-light.svg', use: 'Primary lockup', color: 'Ink + Green / Paper', size: '320×64', min: '96 px' },
+      { file: 'bestehen-logo-primary-dark.svg', use: 'Reversed lockup', color: 'Paper + Green Light / Ink', size: '320×64', min: '96 px' },
+      { file: 'bestehen-wordmark-ink.svg', use: 'Wordmark only', color: 'Deep Ink', size: '260×48', min: '88 px' },
+      { file: 'bestehen-app-lockup-horizontal.svg', use: 'Bestehen / App', color: 'Ink + Green', size: '380×64', min: '120 px' },
+      { file: 'bestehen-corpus-lockup-horizontal.svg', use: 'Bestehen / Corpus', color: 'Ink, neutral slash', size: '400×64', min: '120 px' },
+      { file: 'bestehen-app-icon-512.svg', use: 'Web-app icon source', color: 'Paper + Green Light / Ink', size: '512×512', min: '—' },
+      { file: 'bestehen-favicon-32.svg', use: 'Browser favicon', color: 'Ink + Green', size: '32×32', min: '—' },
+      { file: 'bestehen-maskable-icon.svg', use: 'Adaptive / maskable', color: 'Paper on Ink', size: '512×512', min: '—' }
+    ];
+
+    const weight = this.props.symbolWeight ?? 'regular';
+    const strokeUnits = weight === 'light' ? '9' : weight === 'strong' ? '15' : '11';
+    const accentColor = this.props.accentColor ?? '#2A9D6F';
+    const slashEmphasis = this.props.slashEmphasis ?? 'structural';
+
+    return {
+      matrix, assets, strokeUnits, accentColor,
+      inkColor: this.props.inkColor ?? '#14213D',
+      slashColor: slashEmphasis === 'structural' ? accentColor : 'rgba(20,33,61,.55)',
+      showRejected: this.props.showRejected ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

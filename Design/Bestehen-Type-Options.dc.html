@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;family=Instrument+Sans:wght@400;500;600&amp;family=Zilla+Slab:wght@400;500;600&amp;family=Fira+Sans:wght@400;500;600&amp;family=Newsreader:opsz,wght@6..72,400..600&amp;family=Public+Sans:wght@400;500;600&amp;family=Familjen+Grotesk:wght@400;500;600&amp;family=Source+Sans+3:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+:root,[data-theme="light"]{color-scheme:light;
+--paper:#F1F4F8;--paper-95:rgba(241,244,248,.95);--raised:#FFFFFF;--sunken:#E8ECF3;--mist:#E2E8F0;
+--ink:#14213D;--on-ink:#EDF1F7;--text:#14213D;--text-body:#2C3A5C;--text-2:#4A5670;--muted:#68738A;--system:#8790A3;
+--border:#D6DCE6;--border-strong:#B8C2D1;--divider:#E7EBF2;
+--accent:#2A9D6F;--accent-text:#1D6F50;--accent-tint:#E3F1EA;--accent-border:#A6CDBA;
+--amber-text:#8A6113;--amber-tint:#FBF1DC;--amber-border:#E3C583;
+--risk-text:#A83F3F;--risk-tint:#F8E9E9;--risk-border:#C08A8A;--shadow-1:rgba(20,33,61,.07);--swatch-edge:rgba(20,33,61,.18)}
+[data-theme="dark"]{color-scheme:dark;
+--paper:#0F1621;--paper-95:rgba(15,22,33,.95);--raised:#17202D;--sunken:#131C28;--mist:#1E2834;
+--ink:#070C15;--on-ink:#E7EDF5;--text:#E9EEF5;--text-body:#CBD5E2;--text-2:#A7B3C4;--muted:#8A97AB;--system:#6E7C90;
+--border:#2A3542;--border-strong:#3E4A5C;--divider:#222C39;
+--accent:#33B183;--accent-text:#54C698;--accent-tint:#112620;--accent-border:#2C5C47;
+--amber-text:#E8C079;--amber-tint:#241C0E;--amber-border:#57431E;
+--risk-text:#F0908F;--risk-tint:#2A1618;--risk-border:#5E3131;--shadow-1:rgba(0,0,0,.4);--swatch-edge:rgba(233,238,245,.22)}
+body{margin:0;background:var(--paper);-webkit-font-smoothing:antialiased;text-wrap:pretty}
+a{color:var(--accent-text);text-decoration:none}
+a:hover{color:var(--text)}
+</style>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true"><defs>
+<symbol id="bh-mark" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M25 20 V80"></path><path d="M25 20 H44 a15 15 0 0 1 0 30 H25"></path><path d="M25 50 H46 a15 15 0 0 1 0 30 H25"></path></g><path d="M6 50 H94" fill="none" stroke="var(--ac,currentColor)" stroke-width="11"></path></symbol>
+</defs></svg>
+
+<div data-theme="{{ theme }}" style="min-height:100vh;background:var(--paper);color:var(--text);font-family:'Instrument Sans',Helvetica,Arial,sans-serif">
+
+<div style="position:sticky;top:0;z-index:60;background:var(--paper-95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)">
+<div style="max-width:1180px;margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:10px;margin-right:auto">
+<svg viewBox="0 0 100 100" width="24" height="24" style="display:block;--ac:var(--accent)"><use href="#bh-mark"></use></svg>
+<span style="font-weight:600;font-size:15.5px;letter-spacing:-.02em">Bestehen</span>
+<span style="font-size:15.5px;color:var(--accent)">/</span>
+<span style="font-size:15.5px;color:var(--text-2)">Type options</span>
+</div>
+<a href="Bestehen-01-Design-System.dc.html" style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--text-2)">← 01 SYSTEM</a>
+<div style="display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em">
+<button onClick="{{ setLight }}" style="font-family:inherit;font-size:10.5px;letter-spacing:.06em;padding:7px 12px;border:0;background:{{ lightBg }};color:{{ lightFg }};cursor:pointer">LIGHT</button>
+<button onClick="{{ setDark }}" style="font-family:inherit;font-size:10.5px;letter-spacing:.06em;padding:7px 12px;border:0;border-left:1px solid var(--border);background:{{ darkBg }};color:{{ darkFg }};cursor:pointer">DARK</button>
+</div>
+</div>
+</div>
+
+<div style="max-width:1180px;margin:0 auto;padding:52px 32px 120px">
+
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">Typography · five pairings, identical content</div>
+<h1 style="font-size:46px;line-height:1.05;letter-spacing:-.03em;font-weight:600;margin:0 0 18px;max-width:24ch">Same screen, five voices.</h1>
+<p style="font-size:18px;line-height:1.6;color:var(--text-2);max-width:64ch;margin:0 0 18px">Every card below renders the exact same five things a Bestehen screen has to carry: a screen title, a German task-shaped headline, a three-sentence coach message, a tabular Readiness figure, and the status chips. Only the fonts change. IBM Plex Mono stays as the label/timer face in all five — it is what makes evidence metadata read as metadata.</p>
+<p style="font-size:15px;line-height:1.6;color:var(--muted);max-width:64ch;margin:0 0 44px">All five are open-licence and self-hostable. Judge them on the German line and on the number, not on the big word — those are the two places character usually breaks.</p>
+
+<sc-for list="{{ options }}" as="o" hint-placeholder-count="5">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:9px;padding:0;margin-bottom:24px;box-shadow:0 1px 2px var(--shadow-1);overflow:hidden">
+<div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;padding:16px 28px;background:var(--sunken);border-bottom:1px solid var(--border)">
+<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--accent-text);border:1px solid var(--accent-border);border-radius:5px;padding:3px 8px;background:var(--accent-tint)">{{ o.id }}</span>
+<span style="font-size:16px;font-weight:600">{{ o.name }}</span>
+<span style="font-size:14.5px;color:var(--text-2)">{{ o.note }}</span>
+<span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted)">{{ o.meta }}</span>
+</div>
+<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:0">
+<div style="padding:30px 28px;border-right:1px solid var(--divider)">
+<div style="font-family:{{ o.display }};font-size:52px;line-height:1.02;letter-spacing:{{ o.tracking }};font-weight:{{ o.displayWeight }};margin-bottom:18px">Readiness</div>
+<div style="font-family:{{ o.display }};font-size:27px;line-height:1.18;letter-spacing:-.01em;font-weight:{{ o.displayWeight }};margin-bottom:20px" lang="de">Ihr größter Hebel heute: Sprechen</div>
+<div style="font-family:{{ o.body }};font-size:17px;line-height:1.65;color:var(--text-body);max-width:56ch;margin-bottom:16px"><strong style="font-weight:600">Speaking is your largest gap: Oral is 12 points below the pass line.</strong> Interaction, not vocabulary, is what dropped in your last two attempts. We'll spend 12 minutes on S2 disagreement turns, then check two recurring Listening mistakes.</div>
+<div style="font-family:{{ o.body }};font-size:15px;line-height:1.7;color:var(--text-2);max-width:60ch" lang="de">Der Kurs findet nur werktags statt — Prüfungsvorbereitung, Sprachbausteine, häufige Missverständnisse. ÄÖÜ · äöüß · 0123456789</div>
+</div>
+<div style="padding:30px 28px;background:var(--paper)">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
+<span style="font-family:{{ o.body }};font-size:52px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums">58</span>
+<span style="font-family:{{ o.body }};font-size:16px;color:var(--text-2)">/ 100 index</span>
+</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:18px">WRITTEN 64 · ORAL 48 · PASS LINE 60</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+<span style="font-family:{{ o.body }};padding:5px 10px;border-radius:6px;background:var(--accent-tint);border:1px solid var(--accent-border);font-size:12.5px;color:var(--accent-text);font-weight:600">■ Safe</span>
+<span style="font-family:{{ o.body }};padding:5px 10px;border-radius:6px;background:var(--amber-tint);border:1px solid var(--amber-border);font-size:12.5px;color:var(--amber-text);font-weight:600">◆ Borderline</span>
+<span style="font-family:{{ o.body }};padding:5px 10px;border-radius:6px;background:var(--risk-tint);border:1px solid var(--risk-border);font-size:12.5px;color:var(--risk-text);font-weight:600">▲ Not ready</span>
+<span style="font-family:{{ o.body }};padding:5px 10px;border-radius:6px;background:var(--mist);border:1px dashed var(--system);font-size:12.5px;color:var(--text-2)">◇ Building</span>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+<button style="font-family:{{ o.body }};font-size:15px;font-weight:600;padding:12px 18px;border-radius:6px;border:0;background:var(--ink);color:var(--on-ink);min-height:44px">Start today's plan</button>
+<button style="font-family:{{ o.body }};font-size:15px;font-weight:600;padding:12px 18px;border-radius:6px;background:var(--raised);border:1px solid var(--text);color:var(--text);min-height:44px">Adjust</button>
+</div>
+<div style="font-family:{{ o.body }};font-size:13.5px;line-height:1.6;color:var(--muted);border-top:1px solid var(--divider);padding-top:14px">{{ o.verdict }}</div>
+</div>
+</div>
+</div>
+</sc-for>
+
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:9px;padding:24px 28px;margin-top:36px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);margin-bottom:12px">HOW TO CHOOSE</div>
+<div style="font-size:15px;line-height:1.75;color:var(--text-2);max-width:78ch">Read the German line first — that is where a display face with too much personality starts fighting the content. Then look at <strong style="color:var(--text);font-weight:600">58</strong>: it appears next to a pass line all day, so its figures have to be unambiguous and tabular. Tell me a letter and I'll roll it through 01 and build 02–04 on it.</div>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240,&quot;height&quot;:900},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;\&quot;auto\&quot; | \&quot;light\&quot; | \&quot;dark\&quot;&quot;}}">
+class Component extends DCLogic {
+  state = { theme: null, os: null };
+  componentDidMount() {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const set = () => this.setState({ os: mq.matches ? "dark" : "light" });
+    set(); this.syncBody();
+    mq.addEventListener("change", set);
+    this._mq = [mq, set];
+  }
+  componentDidUpdate() { this.syncBody(); }
+  componentWillUnmount() { if (this._mq) this._mq[0].removeEventListener("change", this._mq[1]); }
+  syncBody() { document.body.style.background = this.theme === "dark" ? "#0F1621" : "#F1F4F8"; }
+  get theme() {
+    if (this.state.theme) return this.state.theme;
+    const p = this.props.theme;
+    if (p === "light" || p === "dark") return p;
+    return this.state.os || "light";
+  }
+  renderVals() {
+    const t = this.theme, on = t === "dark";
+    return {
+      theme: t,
+      setLight: () => this.setState({ theme: "light" }),
+      setDark: () => this.setState({ theme: "dark" }),
+      lightBg: on ? "var(--raised)" : "var(--ink)",
+      lightFg: on ? "var(--text-2)" : "var(--on-ink)",
+      darkBg: on ? "var(--ink)" : "var(--raised)",
+      darkFg: on ? "var(--on-ink)" : "var(--text-2)",
+      options: [
+        {
+          id: "A", name: "Bricolage Grotesque + IBM Plex Sans",
+          note: "Editorial grotesque with irregular terminals over a workhorse UI sans",
+          meta: "✓ CHOSEN · OFL · variable optical size · tabular figures in Plex",
+          display: "'Bricolage Grotesque',Helvetica,sans-serif", body: "'IBM Plex Sans',Helvetica,sans-serif",
+          displayWeight: 600, tracking: "-.03em",
+          verdict: "Most contemporary of the five. The display face has real character at 52px and stays quiet at 27px; Plex Sans is engineered for data density and shares its skeleton with the Plex Mono labels, so the whole shell feels drawn by one hand."
+        },
+        {
+          id: "B", name: "Instrument Serif + Instrument Sans",
+          note: "One family, two voices — serif display, unchanged body",
+          meta: "OFL · same superfamily · smallest change from today",
+          display: "'Instrument Serif',Georgia,serif", body: "'Instrument Sans',Helvetica,sans-serif",
+          displayWeight: 400, tracking: "-.02em",
+          verdict: "Adds authority rather than personality: the serif reads as a printed exam paper while every UI surface stays exactly as tested. Lowest risk, and the only option where nothing about the body text needs re-validating."
+        },
+        {
+          id: "C", name: "Zilla Slab + Fira Sans",
+          note: "Slab headline over a German-engineered humanist sans",
+          meta: "OFL · designed to pair · widest German coverage",
+          display: "'Zilla Slab',Georgia,serif", body: "'Fira Sans',Helvetica,sans-serif",
+          displayWeight: 600, tracking: "-.015em",
+          verdict: "The most distinct on-brand voice: the slab is firm and exam-desk-like, and Fira was drawn for long UI strings with heavy diacritics — umlauts and ß sit properly, not squeezed. Warmest of the five without being soft."
+        },
+        {
+          id: "D", name: "Newsreader + Public Sans",
+          note: "Optical-size serif and an institutional-grade sans",
+          meta: "OFL · variable opsz · figures made for tables",
+          display: "'Newsreader',Georgia,serif", body: "'Public Sans',Helvetica,sans-serif",
+          displayWeight: 500, tracking: "-.01em",
+          verdict: "Reads as a public body that publishes results: serious, dated in the good sense, highly legible. Character comes from the serif's optical sizing, so the 52px title and the 27px German line have visibly different personalities."
+        },
+        {
+          id: "E", name: "Familjen Grotesk + Source Sans 3",
+          note: "Quirky Nordic grotesque over a neutral reading sans",
+          meta: "OFL · sharpest display detailing · tabular figures",
+          display: "'Familjen Grotesk',Helvetica,sans-serif", body: "'Source Sans 3',Helvetica,sans-serif",
+          displayWeight: 600, tracking: "-.025em",
+          verdict: "The display face has cut-in joints and a tight rhythm that make headings feel designed rather than set; Source Sans 3 is deliberately self-effacing underneath. Most personality per pixel, and the one that needs the most discipline in copy length."
+        }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+:root,[data-theme="light"]{color-scheme:light;
+--paper:#F1F4F8;--paper-95:rgba(241,244,248,.95);--raised:#FFFFFF;--sunken:#E8ECF3;--mist:#E2E8F0;
+--ink:#14213D;--on-ink:#EDF1F7;--on-ink-2:#98A6C0;--ink-border:#33436B;
+--text:#14213D;--text-body:#2C3A5C;--text-2:#4A5670;--muted:#68738A;--system:#8790A3;
+--border:#D6DCE6;--border-strong:#B8C2D1;--divider:#E7EBF2;--quote:#FAFBFD;
+--accent:#2A9D6F;--accent-text:#1D6F50;--accent-on-ink:#3FB484;--accent-tint:#E3F1EA;--accent-border:#A6CDBA;
+--amber:#D99A2B;--amber-text:#8A6113;--amber-tint:#FBF1DC;--amber-border:#E3C583;
+--risk:#B64B4B;--risk-text:#A83F3F;--risk-tint:#F8E9E9;--risk-border:#C08A8A;
+--shadow-1:rgba(20,33,61,.07);--shadow-2:rgba(20,33,61,.12);--swatch-edge:rgba(20,33,61,.18)}
+[data-theme="dark"]{color-scheme:dark;
+--paper:#0F1621;--paper-95:rgba(15,22,33,.95);--raised:#17202D;--sunken:#131C28;--mist:#1E2834;
+--ink:#070C15;--on-ink:#E7EDF5;--on-ink-2:#93A2B8;--ink-border:#27323F;
+--text:#E9EEF5;--text-body:#CBD5E2;--text-2:#A7B3C4;--muted:#8A97AB;--system:#6E7C90;
+--border:#2A3542;--border-strong:#3E4A5C;--divider:#222C39;--quote:#121A25;
+--accent:#33B183;--accent-text:#54C698;--accent-on-ink:#4CC492;--accent-tint:#112620;--accent-border:#2C5C47;
+--amber:#DDA749;--amber-text:#E8C079;--amber-tint:#241C0E;--amber-border:#57431E;
+--risk:#C95F5F;--risk-text:#F0908F;--risk-tint:#2A1618;--risk-border:#5E3131;
+--shadow-1:rgba(0,0,0,.4);--shadow-2:rgba(0,0,0,.55);--swatch-edge:rgba(233,238,245,.22)}
+body{margin:0;background:var(--paper);-webkit-font-smoothing:antialiased;text-wrap:pretty}
+a{color:var(--accent-text);text-decoration:none}
+a:hover{color:var(--text)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true"><defs>
+<symbol id="bh-mark" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="11"><path d="M25 20 V80"></path><path d="M25 20 H44 a15 15 0 0 1 0 30 H25"></path><path d="M25 50 H46 a15 15 0 0 1 0 30 H25"></path></g><path d="M6 50 H94" fill="none" stroke="var(--ac,currentColor)" stroke-width="11"></path></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16 9.5"></path></symbol>
+<symbol id="i-tri" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l8.5 15h-17z"></path><path d="M12 10v4M12 17h.01"></path></symbol>
+<symbol id="i-dashed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 1 6.4 2.6M21 12a9 9 0 0 1-2.6 6.4M12 21a9 9 0 0 1-6.4-2.6M3 12a9 9 0 0 1 2.6-6.4"></path></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></symbol>
+</defs></svg>
+
+<div data-theme="{{ theme }}" style="min-height:100vh;background:var(--paper);color:var(--text);font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif">
+
+<div style="position:sticky;top:0;z-index:60;background:var(--paper-95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)">
+<div style="max-width:1320px;margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:10px;margin-right:auto">
+<svg viewBox="0 0 100 100" width="24" height="24" style="display:block;--ac:var(--accent)"><use href="#bh-mark"></use></svg>
+<span style="font-weight:600;font-size:15.5px;letter-spacing:-.02em">Bestehen</span>
+<span style="font-size:15.5px;color:var(--accent)">/</span>
+<span style="font-size:15.5px;color:var(--text-2)">App</span>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em">
+<a href="Bestehen-01-Design-System.dc.html" style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;color:var(--text-2)">01 SYSTEM</a>
+<a href="Bestehen-02-Mobile-Screens.dc.html" style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;color:var(--text-2)">02 MOBILE</a>
+<a href="Bestehen-03-Desktop-Responsive.dc.html" style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;color:var(--text-2)">03 DESKTOP</a>
+<span style="padding:6px 10px;border-radius:5px;background:var(--ink);color:var(--on-ink)">04 FLOWS · A11Y · HANDOFF</span>
+</div>
+<div style="display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em">
+<button onClick="{{ setLight }}" style="font-family:inherit;font-size:10.5px;letter-spacing:.06em;padding:7px 12px;border:0;background:{{ lightBg }};color:{{ lightFg }};cursor:pointer">LIGHT</button>
+<button onClick="{{ setDark }}" style="font-family:inherit;font-size:10.5px;letter-spacing:.06em;padding:7px 12px;border:0;border-left:1px solid var(--border);background:{{ darkBg }};color:{{ darkFg }};cursor:pointer">DARK</button>
+</div>
+</div>
+<div style="max-width:1320px;margin:0 auto;padding:0 32px 10px;display:flex;gap:18px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--muted)">
+<a href="#f" style="color:var(--muted)">FLOWS A–G</a>
+<a href="#a" style="color:var(--muted)">ACCESSIBILITY</a>
+<a href="#c" style="color:var(--muted)">COVERAGE MATRIX</a>
+<a href="#h" style="color:var(--muted)">HANDOFF &amp; OPEN DECISIONS</a>
+</div>
+</div>
+
+<div style="max-width:1320px;margin:0 auto;padding:56px 32px 140px">
+
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:22px">04 — Flows, accessibility, coverage and handoff</div>
+<h1 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:52px;line-height:1.03;letter-spacing:-.035em;font-weight:600;margin:0 0 20px;max-width:24ch">The part that decides whether the design survives the build.</h1>
+<p style="font-size:18px;line-height:1.6;color:var(--text-2);max-width:68ch;margin:0 0 48px">Seven flows written as states and exits rather than happy paths, the accessibility commitments in checkable form, a matrix that maps every behavioural requirement in the specification to the screen that satisfies it, and the decisions design deliberately left to product.</p>
+
+<section id="f" data-screen-label="Flows">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">FLOWS A–G</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:30px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 12px;max-width:34ch">Every flow names its exits, including the ugly ones.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:72ch;margin:0">A flow that only documents success is a demo script. Each of these lists the branch a learner can actually take, what the system claims afterwards, and where the screens live.</p>
+</div>
+
+<div style="display:grid;gap:20px">
+<sc-for list="{{ flows }}" as="f" hint-placeholder-count="7">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:9px;overflow:hidden">
+<div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;padding:18px 24px;background:var(--sunken);border-bottom:1px solid var(--border)">
+<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--accent-text);border:1px solid var(--accent-border);border-radius:5px;padding:3px 9px;background:var(--accent-tint)">{{ f.id }}</span>
+<span style="font-size:18px;font-weight:600">{{ f.name }}</span>
+<span style="font-size:14.5px;color:var(--text-2)">{{ f.trigger }}</span>
+<span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted)">{{ f.screens }}</span>
+</div>
+<div style="padding:22px 24px">
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+<sc-for list="{{ f.steps }}" as="s" hint-placeholder-count="6">
+<span style="display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-size:14px">{{ s }}</span>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px">
+<div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:11px">BRANCHES A LEARNER CAN TAKE</div>
+<div style="display:grid;gap:9px">
+<sc-for list="{{ f.branches }}" as="b" hint-placeholder-count="3">
+<div style="display:flex;gap:10px;font-size:14.5px;line-height:1.6;color:var(--text-body)"><span style="color:var(--text-2);flex:none">→</span><span>{{ b }}</span></div>
+</sc-for>
+</div>
+</div>
+<div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:11px">EXIT STATES AND WHAT IS CLAIMED</div>
+<div style="display:grid;gap:9px">
+<sc-for list="{{ f.exits }}" as="e" hint-placeholder-count="3">
+<div style="display:flex;gap:10px;font-size:14.5px;line-height:1.6;color:var(--text-body)"><span style="color:var(--accent-text);flex:none">·</span><span>{{ e }}</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section id="a" data-screen-label="Accessibility" style="padding-top:60px">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">ACCESSIBILITY · WCAG 2.2 AA AS A BUILD CONTRACT</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:30px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 12px;max-width:36ch">A learner using a screen reader must be able to reach the same decision.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:72ch;margin:0">Not a compliance appendix: the two hardest surfaces in this product — a timed attempt and a range-based estimate — are exactly the two that break for assistive technology, so they are specified here in the same detail as the visuals.</p>
+</div>
+
+<div style="border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--raised);margin-bottom:26px">
+<div style="display:grid;grid-template-columns:1fr 1.5fr 1.2fr;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);background:var(--sunken);border-bottom:1px solid var(--border)">
+<div style="padding:12px 18px">SURFACE</div><div style="padding:12px 18px">COMMITMENT</div><div style="padding:12px 18px">HOW IT IS TESTED</div>
+</div>
+<sc-for list="{{ a11y }}" as="a" hint-placeholder-count="10">
+<div style="display:grid;grid-template-columns:1fr 1.5fr 1.2fr;border-bottom:1px solid var(--divider)">
+<div style="padding:15px 18px;font-size:14.5px;font-weight:600">{{ a.surface }}</div>
+<div style="padding:15px 18px;font-size:14px;line-height:1.6;color:var(--text-2)">{{ a.commitment }}</div>
+<div style="padding:15px 18px;font-size:14px;line-height:1.6;color:var(--text-2)">{{ a.test }}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:26px">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:9px;padding:26px 28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);margin-bottom:16px">KEYBOARD MAP · DESKTOP</div>
+<div style="display:grid;gap:10px">
+<sc-for list="{{ keys }}" as="k" hint-placeholder-count="8">
+<div style="display:flex;gap:14px;align-items:baseline;font-size:14.5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--sunken);border:1px solid var(--border);border-radius:5px;padding:4px 8px;flex:none;min-width:74px;text-align:center">{{ k.key }}</span><span style="line-height:1.55;color:var(--text-body)">{{ k.does }}</span></div>
+</sc-for>
+</div>
+<div style="border-top:1px solid var(--divider);margin-top:16px;padding-top:14px;font-size:13.5px;line-height:1.6;color:var(--text-2)">No shortcut is required to complete any task, none overrides a browser or screen-reader binding, and all are listed in a help panel reachable with one key.</div>
+</div>
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:9px;padding:26px 28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);margin-bottom:16px">LIVE ANNOUNCEMENTS · WHAT IS SPOKEN, AND WHEN</div>
+<div style="display:grid;gap:12px">
+<sc-for list="{{ announcements }}" as="an" hint-placeholder-count="6">
+<div style="font-size:14.5px;line-height:1.6"><strong style="font-weight:600">{{ an.when }}</strong> <span style="color:var(--text-2)">{{ an.what }}</span></div>
+</sc-for>
+</div>
+<div style="border-top:1px solid var(--divider);margin-top:16px;padding-top:14px;font-size:13.5px;line-height:1.6;color:var(--text-2)">Timer ticks are never announced. Politeness is <code style="font-family:'IBM Plex Mono',monospace;font-size:12.5px">polite</code> everywhere except the final-5-minutes warning and a recording-failure notice, which are <code style="font-family:'IBM Plex Mono',monospace;font-size:12.5px">assertive</code>.</div>
+</div>
+</div>
+
+<div style="background:var(--ink);color:var(--on-ink);border-radius:9px;padding:30px 32px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--on-ink-2);margin-bottom:18px">THE FOUR THINGS THAT WOULD MAKE THIS PRODUCT INACCESSIBLE — AND ARE THEREFORE FORBIDDEN</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;font-size:15px;line-height:1.65">
+<div><strong style="font-weight:600;color:var(--accent-on-ink)">Colour-only status.</strong> Every band, label and answer state carries a word and a named icon as well as its hue.</div>
+<div><strong style="font-weight:600;color:var(--accent-on-ink)">Chart-only evidence.</strong> Every scale has a sentence in the DOM before it and a real table behind one control.</div>
+<div><strong style="font-weight:600;color:var(--accent-on-ink)">Drag-only interaction.</strong> Matching and ordering always have a select-then-place keyboard path producing identical evidence.</div>
+<div><strong style="font-weight:600;color:var(--accent-on-ink)">Time pressure without control.</strong> Timers can be hidden, practice timing can be extended, and only mocks enforce exam timing.</div>
+</div>
+</div>
+</section>
+
+<section id="c" data-screen-label="Coverage" style="padding-top:60px">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">COVERAGE MATRIX · SPECIFICATION → DESIGN</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:30px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 12px;max-width:34ch">Where each requirement actually lives.</h2>
+<p style="font-size:16px;line-height:1.65;color:var(--text-2);max-width:72ch;margin:0">Read this as the review checklist. Anything marked <strong style="color:var(--amber-text);font-weight:600">open</strong> is a decision design cannot make alone — they are collected in the handoff below rather than guessed at.</p>
+</div>
+
+<div style="border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--raised);margin-bottom:26px">
+<div style="display:grid;grid-template-columns:1.1fr 1.6fr 1fr 92px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);background:var(--sunken);border-bottom:1px solid var(--border)">
+<div style="padding:12px 18px">REQUIREMENT</div><div style="padding:12px 18px">HOW THE DESIGN SATISFIES IT</div><div style="padding:12px 18px">WHERE</div><div style="padding:12px 18px">STATE</div>
+</div>
+<sc-for list="{{ coverage }}" as="c" hint-placeholder-count="14">
+<div style="display:grid;grid-template-columns:1.1fr 1.6fr 1fr 92px;border-bottom:1px solid var(--divider);align-items:start">
+<div style="padding:15px 18px;font-size:14.5px;font-weight:600">{{ c.req }}</div>
+<div style="padding:15px 18px;font-size:14px;line-height:1.6;color:var(--text-2)">{{ c.how }}</div>
+<div style="padding:15px 18px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-2);line-height:1.5">{{ c.where }}</div>
+<div style="padding:15px 18px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;padding:4px 8px;border-radius:5px;background:{{ c.bg }};border:1px solid {{ c.bd }};color:{{ c.fg }}">{{ c.state }}</span></div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section id="h" data-screen-label="Handoff" style="padding-top:60px">
+<div style="border-top:1px solid var(--border);padding-top:34px;margin-bottom:26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--accent-text);margin-bottom:12px">HANDOFF · BUILD ORDER, OWNERSHIP, OPEN DECISIONS</div>
+<h2 style="font-family:'Bricolage Grotesque',Helvetica,sans-serif;font-size:30px;line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:0 0 12px;max-width:34ch">What to build first, and what design did not decide.</h2>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:26px">
+<sc-for list="{{ phases }}" as="p" hint-placeholder-count="3">
+<div style="background:var(--raised);padding:24px 26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--accent-text);margin-bottom:10px">{{ p.id }}</div>
+<div style="font-size:18px;font-weight:600;margin-bottom:10px">{{ p.name }}</div>
+<div style="font-size:14.5px;line-height:1.65;color:var(--text-2);margin-bottom:14px">{{ p.why }}</div>
+<div style="display:grid;gap:7px">
+<sc-for list="{{ p.items }}" as="i" hint-placeholder-count="4">
+<div style="display:flex;gap:9px;font-size:13.5px;line-height:1.55;color:var(--text-body)"><span style="color:var(--muted);flex:none">·</span><span>{{ i }}</span></div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:26px;margin-bottom:26px">
+<div style="background:var(--raised);border:1px solid var(--amber-border);border-radius:9px;padding:26px 28px">
+<div style="display:flex;align-items:center;gap:9px;margin-bottom:18px"><svg width="18" height="18" style="color:var(--amber-text)"><use href="#i-tri"></use></svg><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--amber-text)">OPEN DECISIONS · PRODUCT, NOT DESIGN</span></div>
+<div style="display:grid;gap:16px">
+<sc-for list="{{ open }}" as="o" hint-placeholder-count="6">
+<div style="border-bottom:1px solid var(--divider);padding-bottom:14px">
+<div style="font-size:15.5px;font-weight:600;margin-bottom:5px">{{ o.q }}</div>
+<div style="font-size:14px;line-height:1.6;color:var(--text-2);margin-bottom:6px">{{ o.why }}</div>
+<div style="font-size:13.5px;line-height:1.55;color:var(--accent-text)">{{ o.placeholder }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:grid;gap:20px;align-content:start">
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:9px;padding:24px 26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);margin-bottom:14px">DELIVERED WITH THIS SYSTEM</div>
+<div style="display:grid;gap:9px;font-size:14px;line-height:1.6;color:var(--text-body)">
+<div style="display:flex;gap:10px"><svg width="16" height="16" style="color:var(--accent-text);flex:none;margin-top:2px"><use href="#i-check"></use></svg><span>25 semantic tokens × 2 modes, plus the brand constants</span></div>
+<div style="display:flex;gap:10px"><svg width="16" height="16" style="color:var(--accent-text);flex:none;margin-top:2px"><use href="#i-check"></use></svg><span>41 components with every state drawn, including disabled reasons</span></div>
+<div style="display:flex;gap:10px"><svg width="16" height="16" style="color:var(--accent-text);flex:none;margin-top:2px"><use href="#i-check"></use></svg><span>24 mobile screens, 4 desktop layouts, 1 tablet layout</span></div>
+<div style="display:flex;gap:10px"><svg width="16" height="16" style="color:var(--accent-text);flex:none;margin-top:2px"><use href="#i-check"></use></svg><span>18-glyph icon set with a naming rule for future additions</span></div>
+<div style="display:flex;gap:10px"><svg width="16" height="16" style="color:var(--accent-text);flex:none;margin-top:2px"><use href="#i-check"></use></svg><span>7 flows, 12 recovery situations, keyboard map, announcement list</span></div>
+</div>
+</div>
+<div style="background:var(--sunken);border:1px solid var(--border);border-radius:9px;padding:24px 26px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);margin-bottom:14px">EXPLICITLY NOT DESIGNED HERE</div>
+<div style="font-size:14px;line-height:1.75;color:var(--text-2)">Corpus authoring and provenance tooling · evaluator dashboards · billing and subscription surfaces · account recovery · marketing site · notification copy beyond the two examples shown · any B2 or Goethe variant. Each is out of scope in the specification, and drawing them would imply a commitment the product has not made.</div>
+</div>
+</div>
+</div>
+
+<div style="background:var(--raised);border:1px solid var(--border);border-radius:9px;padding:26px 28px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);margin-bottom:16px">HOW TO REVIEW THIS SYSTEM IN TEN MINUTES</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px;font-size:14.5px;line-height:1.65;color:var(--text-body)">
+<div><strong style="font-weight:600">1 · Read three screens.</strong> <a href="Bestehen-02-Mobile-Screens.dc.html#a2">02 · 2.1, 2.3 and 2.6</a> — the plan, the diagnosis and the retention screen. If those three are right, the loop is right.</div>
+<div><strong style="font-weight:600">2 · Check the honesty cases.</strong> <a href="Bestehen-02-Mobile-Screens.dc.html#a5">02 · Act 5</a> and the evidence-building band in <a href="Bestehen-02-Mobile-Screens.dc.html#a1">1.4</a>. This is where a coaching product usually starts lying.</div>
+<div><strong style="font-weight:600">3 · Test the vocabulary.</strong> <a href="Bestehen-01-Design-System.dc.html#s02">01 · §2.5 evidence labels</a>. If a label here is wrong, it is wrong in fifty places downstream.</div>
+<div><strong style="font-weight:600">4 · Answer the six open decisions.</strong> They are the only things blocking a build-ready spec.</div>
+</div>
+</div>
+</section>
+
+<div style="border-top:1px solid var(--border);margin-top:70px;padding-top:34px;display:flex;gap:26px;flex-wrap:wrap;align-items:center">
+<div style="display:flex;align-items:center;gap:10px;--ac:var(--accent)"><svg viewBox="0 0 100 100" width="20" height="20"><use href="#bh-mark"></use></svg><span style="font-size:14px;font-weight:600">Bestehen / App · design system v1</span></div>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--muted)">01 SYSTEM · 02 MOBILE · 03 DESKTOP · 04 FLOWS</span>
+<div style="margin-left:auto;display:flex;gap:20px;font-size:15px;font-weight:600">
+<a href="Bestehen-03-Desktop-Responsive.dc.html">← 03 Desktop &amp; responsive</a>
+<a href="Bestehen-01-Design-System.dc.html">Back to 01 →</a>
+</div>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320,&quot;height&quot;:900},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;\&quot;auto\&quot; | \&quot;light\&quot; | \&quot;dark\&quot;&quot;}}">
+class Component extends DCLogic {
+  state = { theme: null, os: null };
+  componentDidMount() {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const set = () => this.setState({ os: mq.matches ? "dark" : "light" });
+    set(); this.syncBody();
+    mq.addEventListener("change", set);
+    this._mq = [mq, set];
+  }
+  componentDidUpdate() { this.syncBody(); }
+  componentWillUnmount() { if (this._mq) this._mq[0].removeEventListener("change", this._mq[1]); }
+  syncBody() { document.body.style.background = this.theme === "dark" ? "#0F1621" : "#F1F4F8"; }
+  get theme() {
+    if (this.state.theme) return this.state.theme;
+    const p = this.props.theme;
+    if (p === "light" || p === "dark") return p;
+    return this.state.os || "light";
+  }
+  renderVals() {
+    const on = this.theme === "dark";
+    const ok = {state:"DRAWN", bg:"var(--accent-tint)", bd:"var(--accent-border)", fg:"var(--accent-text)"};
+    const open = {state:"OPEN", bg:"var(--amber-tint)", bd:"var(--amber-border)", fg:"var(--amber-text)"};
+    const rule = {state:"RULE", bg:"var(--mist)", bd:"var(--border-strong)", fg:"var(--text-2)"};
+    return {
+      theme: this.theme,
+      setLight: () => this.setState({ theme: "light" }),
+      setDark: () => this.setState({ theme: "dark" }),
+      lightBg: on ? "var(--raised)" : "var(--ink)",
+      lightFg: on ? "var(--text-2)" : "var(--on-ink)",
+      darkBg: on ? "var(--ink)" : "var(--raised)",
+      darkFg: on ? "var(--on-ink)" : "var(--text-2)",
+      flows: [
+        {
+          id:"A", name:"First session", trigger:"Cold arrival, no account", screens:"02 · 1.1–1.4",
+          steps:["Landing","Goal + date (skippable)","Reading probe · with help","Spoken probe · 40s","What we saw","First week set up"],
+          branches:[
+            "Skips the date entirely — planning falls back to weekly rhythm with no countdown anywhere.",
+            "Declines the microphone — placement completes on written evidence only and says Oral is unknown.",
+            "Abandons after the reading probe — the observation is kept, so a return picks up rather than restarts."
+          ],
+          exits:[
+            "Evidence building in both components: one weakness named, no index, no estimate.",
+            "Starting rung recorded per skill (Reading/Listening guided A2, Speaking one step lower).",
+            "No claim about pass likelihood is made or implied at any point in this flow."
+          ]
+        },
+        {
+          id:"B", name:"Daily coaching loop", trigger:"Return visit, plan exists", screens:"02 · 2.1–2.6 · 03 · D1",
+          steps:["Coach home","Observe task","Attempt","Diagnose","Repair","Retry","Remember"],
+          branches:[
+            "Adjusts session length or swaps the skill — allowed, recorded as a condition, no warning.",
+            "Uses help in ordinary practice — the attempt still teaches, but the label says it cannot move Readiness.",
+            "Skips repair or retry — the obligation returns on schedule; nothing is marked incomplete.",
+            "Stops mid-task — the attempt becomes interrupted practice, stated before resuming."
+          ],
+          exits:[
+            "Weakness moves along candidate → known → repairing → stabilising → repaired, with the delayed check scheduled.",
+            "Component estimate updates only if a valid, unaided, fresh attempt was completed.",
+            "Session ends on what changed and what returns — never a score for the session."
+          ]
+        },
+        {
+          id:"C", name:"Repair and retention", trigger:"A weakness is due, or repeats", screens:"02 · 2.4–2.6 · 4.3",
+          steps:["Due review group","Repair pattern","Fresh check","Confirm or reopen","Interval set"],
+          branches:[
+            "Fails the fresh check — the weakness reopens at repairing with no penalty language and a smaller next step.",
+            "No unseen equivalent task exists — retry is replaced by 'transfer check pending', named as our gap.",
+            "Overdue by days — shown as days overdue, never as an accumulated debt count."
+          ],
+          exits:[
+            "Repaired-in-session is distinguished from retained; only a delayed clean check on fresh content upgrades it.",
+            "Intervals shown as 7-day / 21-day obligations, never as cards, streaks or SRS jargon."
+          ]
+        },
+        {
+          id:"D", name:"Mock exam", trigger:"Learner or coach proposes a mock", screens:"02 · 4.4–4.5 · 5.4 · 03 · D4",
+          steps:["Type + rules","Pre-flight consequences","Measured block","Final-5 rule","Validity verdict","Two priorities"],
+          branches:[
+            "Starts one with too little time — allowed; the pre-flight states the risk and offers the shorter mock.",
+            "Pauses or backgrounds mid-block — exam-conditions claim lost for that block only; three explicit recovery options.",
+            "Writing evaluation is slow — the mock reports as partially pending and the rest of the app stays usable."
+          ],
+          exits:[
+            "Valid / partially valid / practice-only, stated before any score.",
+            "Exactly two priorities enter the plan; a mock that produced ten would produce none.",
+            "Oral is untouched by a written mock, and the copy says so."
+          ]
+        },
+        {
+          id:"E", name:"Readiness inspection", trigger:"Learner wants to know where they stand", screens:"02 · 4.1–4.2 · 4.6 · 03 · D2",
+          steps:["Two gates","Component detail","Evidence audit","Text alternative","Ready-to-Book gate"],
+          branches:[
+            "Evidence is insufficient — dashed track, no number, and the action that would produce the missing evidence.",
+            "Two sources contradict each other — the band drops to borderline and names the contradiction.",
+            "Learner books anyway despite a failing gate — supported, planning continues for the chosen date."
+          ],
+          exits:[
+            "Band + bottleneck + one action, or an honest 'not enough evidence yet'.",
+            "Ready to Book is a four-condition checklist, never a higher score.",
+            "Every graphic has produced an equivalent sentence and table."
+          ]
+        },
+        {
+          id:"F", name:"Interruption and failure", trigger:"Network, media, permission or evaluator fault", screens:"02 · 5.1–5.4 · 01 · §3.6",
+          steps:["Detect","Name the owner","Protect the record","Offer a repair","Offer an alternative","Resume or defer"],
+          branches:[
+            "Microphone denied — device instructions, device switch, or typed rehearsal labelled learning-only.",
+            "Audio fails — task marked not counted, replacement offered, Listening record untouched.",
+            "Offline while writing — local save, timing claim kept, submission queued.",
+            "Defective item reported — quarantined, replaced, and any affected evidence recomputed."
+          ],
+          exits:[
+            "Invalid evidence is grey and dashed, never red and never scored.",
+            "History keeps the attempt visible with 'not counted · our fault' so the record stays complete.",
+            "No global block from a local failure: the other skills stay available."
+          ]
+        },
+        {
+          id:"G", name:"Absence, staleness and data control", trigger:"Long gap, blueprint change, or a deletion request", screens:"02 · 5.5–5.6",
+          steps:["Neutral return","Mark stale","Smallest useful recheck","Re-plan","Export or delete"],
+          branches:[
+            "Exam date has passed — planning pauses and asks for a new date rather than inventing one.",
+            "Blueprint version changed — affected claims suspended, historical capability retained.",
+            "Requests deletion — typed confirmation, no backup, and the promise made at the microphone is repeated."
+          ],
+          exits:[
+            "Stale evidence is aged, never deleted or scored down; no backlog and no guilt copy.",
+            "Export produces the same data the evidence panel shows, in JSON.",
+            "Deletion is immediate, total and irreversible, and says so before it happens."
+          ]
+        }
+      ],
+      a11y: [
+        {surface:"Readiness scales", commitment:"role=img with a full sentence label; a sentence in the DOM before the graphic; a real table behind “Show evidence as text”. Hatching and marker shape carry the same information as colour.", test:"Screen-reader pass on both gates in all six bands; greyscale screenshot review."},
+        {surface:"Status and answers", commitment:"Word + named icon + colour, always all three. Correct/incorrect never rely on green/red alone.", test:"Colour-blind simulation (deuter/prot/tritan) and a text-only DOM dump."},
+        {surface:"Measured timer", commitment:"Time remaining in a polite live region at 10, 5 and 1 minute; one assertive announcement at the final-5 rule; ticks never announced. Hideable without changing timing.", test:"VoiceOver + NVDA run of a full mock block."},
+        {surface:"Recording", commitment:"Recording state announced on start and stop; dot + word + timer + level all present; reduced motion turns the pulse into a solid dot.", test:"Manual run with prefers-reduced-motion enabled."},
+        {surface:"Attempt navigation", commitment:"Logical DOM order: conditions, task, question, options, action. Focus moves to the first new element on step change, never to the top of the page.", test:"Keyboard-only completion of one task per skill."},
+        {surface:"Matching and ordering", commitment:"Select-then-place keyboard path with the same evidence value as drag; no drag-only interaction anywhere.", test:"Keyboard-only completion of an SB2 matching task."},
+        {surface:"Forms", commitment:"Visible labels, aria-invalid, an error summary that focuses the first bad field, and messages that say how to fix rather than what failed.", test:"Axe pass plus a manual date-error walkthrough."},
+        {surface:"Overlays", commitment:"Focus trapped, Escape closes, background inert, trigger regains focus. Sheets and dialogs share semantics.", test:"Keyboard test of every overlay in the library."},
+        {surface:"Targets and zoom", commitment:"44×44 minimum, 8px spacing, reflow to 320px, 200% text zoom without loss, no horizontal scroll.", test:"320px reflow and 200% zoom pass on all 24 mobile screens."},
+        {surface:"German content", commitment:"lang=\"de\" on every task string so pronunciation and hyphenation are correct; hyphens:auto instead of anywhere-breaking.", test:"Screen-reader pronunciation spot check on compound words."}
+      ],
+      keys: [
+        {key:"1–4 / a–d", does:"Select an answer option in the focused question"},
+        {key:"Enter", does:"Submit the current step, or activate the focused control"},
+        {key:"Space", does:"Play or pause audio in a Listening task"},
+        {key:"R", does:"Use a replay, only while one remains"},
+        {key:"Tab / ⇧Tab", does:"Move through the documented focus order"},
+        {key:"Esc", does:"Close an overlay and return focus to its trigger"},
+        {key:"T", does:"Show or hide the timer, without changing the timing"},
+        {key:"?", does:"Open the shortcut list"}
+      ],
+      announcements: [
+        {when:"On result:", what:"“3 of 4 correct. Likely cause: scanning for restrictions, medium confidence.”"},
+        {when:"On band change:", what:"“Oral is now borderline. The planning range crosses the pass line.”"},
+        {when:"At final 5 minutes:", what:"“Five minutes remaining in this block.” — assertive, once."},
+        {when:"On autosave failure:", what:"“Offline. Your draft is saved on this device.”"},
+        {when:"On evaluation arrival:", what:"“Your Writing evaluation is ready.” — polite, non-interrupting."},
+        {when:"On invalid attempt:", what:"“This attempt was not counted. The audio failed to load.”"}
+      ],
+      coverage: [
+        {req:"Four-tab IA", how:"Coach · Readiness · Train · Progress on every breakpoint, same order; Review and Mocks nested in Train.", where:"01 §2.13 · 02 2.1 · 03 D1", ...ok},
+        {req:"Two independent gates", how:"Separate scales, separate confidence, separate evidence age; overall = weaker gate as a bottleneck sentence.", where:"02 4.1 · 03 D2", ...ok},
+        {req:"No pass probability", how:"No percentage-likelihood string exists in any screen or component; bands are named ranges.", where:"01 §3.3 · whole system", ...rule},
+        {req:"Evidence validity model", how:"Valid / partially valid / pending / interrupted / not counted, each with a fixed visual family.", where:"01 §3.2 · 02 5.2, 5.4", ...ok},
+        {req:"Assistance & timing labels", how:"Read-only label row under every task title and every result score, max three visible.", where:"01 §2.5 · 02 2.2–2.5", ...ok},
+        {req:"Progression P0–P4", how:"Never shown as a level; surfaces only as the conditions row and in weakness detail.", where:"01 §3.4", ...rule},
+        {req:"Learner control boundary", how:"Controllable things get plain controls; system-owned things are text with an optional Why?.", where:"01 §3.5 · 02 1.2, 1.3", ...ok},
+        {req:"Canonical loop", how:"Six screens drawn end to end, with conditional jumps for valid-correct and pending states.", where:"02 Act 2", ...ok},
+        {req:"Reliability & recovery", how:"Twelve situations, each with learner-facing copy and an evidence consequence.", where:"01 §3.6 · 02 Act 5", ...ok},
+        {req:"Accessibility AA", how:"Ten surfaces specified with tests; four forbidden patterns named.", where:"04 · Accessibility", ...ok},
+        {req:"Coach voice", how:"Three-sentence fact → meaning → next action; no avatar, no first person, no praise without an observation.", where:"01 §2.4", ...ok},
+        {req:"Scope guards", how:"No Corpus browser, evaluator dashboard, billing, social or gamification surface exists to be built.", where:"01 §0 · 04 handoff", ...rule},
+        {req:"Notification copy", how:"Two examples only (evaluation arrived, exam in 6 days). The full set needs product tone review.", where:"01 §2.13", ...open},
+        {req:"Onboarding length", how:"Three steps drawn; whether placement should be 6 or 12 minutes is an evidence-quality trade-off.", where:"02 1.2–1.4", ...open}
+      ],
+      phases: [
+        {id:"PHASE 1 · WEEKS 1–6", name:"The loop, one skill", why:"Ship the honest core before breadth. Reading alone proves the evidence model end to end.",
+         items:["Tokens, both modes, and the 12 shell components","Attempt shell + Reading input region","Result / diagnosis / repair / fresh check","Evidence labels and validity states","Evidence-building band and its empty states"]},
+        {id:"PHASE 2 · WEEKS 7–14", name:"Five skills and Readiness", why:"Now the estimate can mean something, because there is breadth to estimate over.",
+         items:["Listening player, Writing editor, Speaking pre-flight and turn-taking","Both gates, component detail, text alternative table","Due review groups and weakness lifecycle","Recovery family: not counted, interrupted, pending","Desktop sidebar shell and the 7/5 Coach split"]},
+        {id:"PHASE 3 · WEEKS 15–20", name:"Mocks and the decision", why:"Mocks are only meaningful once validity, timing and evaluation are all trustworthy.",
+         items:["Measured timer, mock shell, pause/interruption recovery","Validity verdict and post-mock priorities","Ready-to-Book gate and taper phase","Desktop evidence panel and print of the text alternative","Absence, staleness, export and deletion"]}
+      ],
+      open: [
+        {q:"Where exactly does the safety margin sit?", why:"Design uses 65 as Bestehen's own margin above TELC's 60, always labelled as ours. If product wants 63 or 68, every band boundary and several copy strings move.", placeholder:"Design assumption: 65, learner-visible as “our margin, not the exam's line”."},
+        {q:"How long is the first session allowed to be?", why:"Six minutes gets more people to a second session; twelve produces a placement we can defend. This is an evidence-quality trade-off, not a layout one.", placeholder:"Design assumption: 6 minutes, with the honest “we can't estimate yet” outcome."},
+        {q:"What is the evaluator SLA that the pending state promises?", why:"“Usually under a minute” is written into the pending banner. If the real p95 is ten minutes, that copy is a lie and the flow needs a different shape.", placeholder:"Design assumption: p95 under 60 seconds, 7-day ceiling for audio retention."},
+        {q:"Notification tone and frequency.", why:"Two examples are drawn. The full set is the highest-risk place for the coach voice to drift into nagging, and it needs product ownership.", placeholder:"Design constraint: no streak reminders, no “we miss you”, no arithmetic countdowns."},
+        {q:"Does a learner ever see rung labels?", why:"The design deliberately never shows P0–P4. If support or teachers need to reference them, a single read-only surface has to be added — not a badge.", placeholder:"Design assumption: never learner-visible; conditions row carries the meaning."},
+        {q:"Speech evaluation confidence floor.", why:"Oral estimates carry a confidence value. Below some accuracy threshold the honest move is to withhold the number rather than show a wide range.", placeholder:"Design assumption: below the floor, Oral shows evidence-building rather than a range."}
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>
