@@ -431,30 +431,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define deterministic projections for capability/mastery, confidence, freshness, stability, assistance dependence, timing, direct lane, coverage, and readiness contribution without duplicating readiness.
-- [ ] Implement conceptually the Candidate → Known → Repairing → Stabilizing → Repaired → Resolved lifecycle plus Historical/Unconfirmed and Reopened paths.
-- [ ] Define promotion, recurrence, opportunity denominators, confidence, cross-skill influence, stale history, and re-opening semantics.
-- [ ] Represent P0–P4 profiles per task family/direct-evidence lane and one-axis promotion/regression probes.
-- [ ] Define due review/retention obligations, windows, natural-practice satisfaction, missed-day behavior, capping, and deterministic scheduling.
-- [ ] Define explainable recalculation inputs, versioned empirical defaults, and projection invalidation.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Keep scheduling and projections deterministic; model calls may inform bounded diagnosis but never run merely to update the learner model.
-- [ ] Security/privacy/rights — Keep sensitive learner history inside App and export/delete it coherently.
-- [ ] Accessibility — Ensure alternate inputs create equivalent evidence when they test the same capability; represent changed conditions explicitly otherwise.
-- [ ] Failure/recovery — Unknown cause, invalid task, stale data, and recalculation failure remain explicit and recoverable.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Projection ownership table.
-- [ ] Include Mistake lifecycle state diagram.
-- [ ] Include Progression profile model/table.
-- [ ] Include Review obligation/scheduling state machine.
-- [ ] Include Cross-lane influence matrix.
-- [ ] Include Worked recalculation examples.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/07-learner-model-mistake-memory-progression-and-review.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define deterministic projections for capability/mastery, confidence, freshness, stability, assistance dependence, timing, direct lane, coverage, and readiness contribution without duplicating readiness.
+- [x] Implement conceptually the Candidate → Known → Repairing → Stabilizing → Repaired → Resolved lifecycle plus Historical/Unconfirmed and Reopened paths.
+- [x] Define promotion, recurrence, opportunity denominators, confidence, cross-skill influence, stale history, and re-opening semantics.
+- [x] Represent P0–P4 profiles per task family/direct-evidence lane and one-axis promotion/regression probes.
+- [x] Define due review/retention obligations, windows, natural-practice satisfaction, missed-day behavior, capping, and deterministic scheduling.
+- [x] Define explainable recalculation inputs, versioned empirical defaults, and projection invalidation.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Keep scheduling and projections deterministic; model calls may inform bounded diagnosis but never run merely to update the learner model.
+- [x] Security/privacy/rights — Keep sensitive learner history inside App and export/delete it coherently.
+- [x] Accessibility — Ensure alternate inputs create equivalent evidence when they test the same capability; represent changed conditions explicitly otherwise.
+- [x] Failure/recovery — Unknown cause, invalid task, stale data, and recalculation failure remain explicit and recoverable.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Projection ownership table.
+- [x] Include Mistake lifecycle state diagram.
+- [x] Include Progression profile model/table.
+- [x] Include Review obligation/scheduling state machine.
+- [x] Include Cross-lane influence matrix.
+- [x] Include Worked recalculation examples.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/07-learner-model-mistake-memory-progression-and-review.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

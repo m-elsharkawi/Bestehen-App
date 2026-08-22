@@ -28,3 +28,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0011](ADR-0011-shared-five-skill-foundation-with-modality-extensions.md) | Shared five-skill foundation with modality extensions | Accepted | Stage 04 | `ARCH-S04-D03`, `D09` | — |
 | [ADR-0012](ADR-0012-append-oriented-relational-truth-and-bounded-persistence.md) | Append-oriented relational truth and bounded persistence | Accepted | Stage 05 | `ARCH-S05-D01`–`D10` | — |
 | [ADR-0013](ADR-0013-immutable-evidence-envelope-and-append-audited-validity.md) | Immutable evidence envelope and append-audited validity | Accepted | Stage 06 | `ARCH-S06-D01`–`D10` | — |
+| [ADR-0014](ADR-0014-deterministic-learner-projections-and-capability-obligations.md) | Deterministic learner projections and capability obligations | Accepted | Stage 07 | `ARCH-S07-D01`–`D10` | — |
