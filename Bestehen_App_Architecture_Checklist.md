@@ -365,30 +365,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define immutable observation/attempt/evidence identities, episode and content-family independence, provenance, and the boundary between facts and derived claims.
-- [ ] Specify `valid`, `partially_valid`, `pending`, `interrupted`, and `not_counted`, including affected scope and who may transition each state.
-- [ ] Represent assistance, timing, playback, transcript/reference exposure, freshness, target conditions, accessibility conditions, and direct modality as explicit dimensions.
-- [ ] Carry blueprint, taxonomy, content, form, rubric, evaluator, prompt, calculation, and contract versions through evidence and projections.
-- [ ] Define idempotent ingestion, correction, invalidation, quarantine/takedown effects, targeted recomputation, and audit history.
-- [ ] Forbid any pass-probability field/model before the product gate and represent missing estimates as absence, never zero.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Use deterministic projections/recomputation and targeted rebuilds; avoid an event-streaming platform unless measurements justify it.
-- [ ] Security/privacy/rights — Make evidence correction/invalidation and privileged overrides auditable; minimize external evaluator payloads.
-- [ ] Accessibility — Record the actual condition and affected claim without treating access support as learner failure.
-- [ ] Failure/recovery — Preserve unaffected scope and Pending work while avoiding duplicate evidence on retry/reconnect.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Evidence envelope/pseudotype.
-- [ ] Include Validity state machine.
-- [ ] Include Version lineage table.
-- [ ] Include Invalidation/recomputation sequence diagrams.
-- [ ] Include Idempotency and audit-boundary table.
-- [ ] Include State/API projection mapping for design labels.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/06-evidence-ledger-validity-versioning-and-audit.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define immutable observation/attempt/evidence identities, episode and content-family independence, provenance, and the boundary between facts and derived claims.
+- [x] Specify `valid`, `partially_valid`, `pending`, `interrupted`, and `not_counted`, including affected scope and who may transition each state.
+- [x] Represent assistance, timing, playback, transcript/reference exposure, freshness, target conditions, accessibility conditions, and direct modality as explicit dimensions.
+- [x] Carry blueprint, taxonomy, content, form, rubric, evaluator, prompt, calculation, and contract versions through evidence and projections.
+- [x] Define idempotent ingestion, correction, invalidation, quarantine/takedown effects, targeted recomputation, and audit history.
+- [x] Forbid any pass-probability field/model before the product gate and represent missing estimates as absence, never zero.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Use deterministic projections/recomputation and targeted rebuilds; avoid an event-streaming platform unless measurements justify it.
+- [x] Security/privacy/rights — Make evidence correction/invalidation and privileged overrides auditable; minimize external evaluator payloads.
+- [x] Accessibility — Record the actual condition and affected claim without treating access support as learner failure.
+- [x] Failure/recovery — Preserve unaffected scope and Pending work while avoiding duplicate evidence on retry/reconnect.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Evidence envelope/pseudotype.
+- [x] Include Validity state machine.
+- [x] Include Version lineage table.
+- [x] Include Invalidation/recomputation sequence diagrams.
+- [x] Include Idempotency and audit-boundary table.
+- [x] Include State/API projection mapping for design labels.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/06-evidence-ledger-validity-versioning-and-audit.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
