@@ -104,29 +104,29 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Identify learner, owner/operator, optional tester, browser/device, App, Corpus, model/media providers, notification transport, identity provider, and hosting/data services as actors or systems.
-- [ ] Draw C4-style context and trust boundaries for learner runtime, offline authoring/publication, operator actions, and third-party processors.
-- [ ] Separate runtime dependencies from asynchronous authoring/publication inputs and state exactly what continues during Corpus or provider downtime.
-- [ ] Inventory external dependencies, data crossing each boundary, authority, failure effect, and substitution path.
-- [ ] Define what is explicitly outside the App: raw Corpus ingestion/search, source archive UI, billing, social features, public multi-tenant Corpus API, and provider implementation internals.
-- [ ] Assign high-level ownership for learner state, content approval, evidence interpretation, readiness, rights eligibility, source intelligence, and audit.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer the fewest independently operated systems; flag any always-on or per-request external dependency.
-- [ ] Security/privacy/rights — Name trust zones and processor/data boundaries without claiming legal compliance.
-- [ ] Accessibility — Show browser/device capability as local activity eligibility, not a global access gate.
-- [ ] Failure/recovery — Define graceful behavior for Corpus, AI, identity, media, network, and notification unavailability.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include C4 system-context diagram.
-- [ ] Include Actor/system responsibility matrix.
-- [ ] Include Trust-zone and data-flow diagram.
-- [ ] Include Runtime-versus-offline dependency table.
-- [ ] Include External dependency/failure inventory.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/02-system-context-and-product-boundaries.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Identify learner, owner/operator, optional tester, browser/device, App, Corpus, model/media providers, notification transport, identity provider, and hosting/data services as actors or systems.
+- [x] Draw C4-style context and trust boundaries for learner runtime, offline authoring/publication, operator actions, and third-party processors.
+- [x] Separate runtime dependencies from asynchronous authoring/publication inputs and state exactly what continues during Corpus or provider downtime.
+- [x] Inventory external dependencies, data crossing each boundary, authority, failure effect, and substitution path.
+- [x] Define what is explicitly outside the App: raw Corpus ingestion/search, source archive UI, billing, social features, public multi-tenant Corpus API, and provider implementation internals.
+- [x] Assign high-level ownership for learner state, content approval, evidence interpretation, readiness, rights eligibility, source intelligence, and audit.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer the fewest independently operated systems; flag any always-on or per-request external dependency.
+- [x] Security/privacy/rights — Name trust zones and processor/data boundaries without claiming legal compliance.
+- [x] Accessibility — Show browser/device capability as local activity eligibility, not a global access gate.
+- [x] Failure/recovery — Define graceful behavior for Corpus, AI, identity, media, network, and notification unavailability.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include C4 system-context diagram.
+- [x] Include Actor/system responsibility matrix.
+- [x] Include Trust-zone and data-flow diagram.
+- [x] Include Runtime-versus-offline dependency table.
+- [x] Include External dependency/failure inventory.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/02-system-context-and-product-boundaries.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

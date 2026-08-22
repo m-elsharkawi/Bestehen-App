@@ -18,4 +18,5 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0001](ADR-0001-evidence-truth-and-explicit-uncertainty.md) | Evidence truth and explicit uncertainty | Accepted | Stage 01 | `ARCH-S01-D01`, `D03`, `D04`, `D08`, `D11` | — |
 | [ADR-0002](ADR-0002-modular-low-ops-deterministic-first-posture.md) | Modular low-ops deterministic-first posture | Accepted | Stage 01 | `ARCH-S01-D02`, `D09`, `D10` | — |
 | [ADR-0003](ADR-0003-quality-attributes-are-release-gates.md) | Quality attributes are release gates | Accepted | Stage 01 | `ARCH-S01-D05`, `D06`, `D07` | — |
-
+| [ADR-0004](ADR-0004-app-runtime-independent-from-corpus.md) | App runtime independent from Corpus | Accepted | Stage 02 | `ARCH-S02-D01`, `D02`, `D07` | — |
+| [ADR-0005](ADR-0005-app-semantic-authority-across-processors.md) | App semantic authority across processors | Accepted | Stage 02 | `ARCH-S02-D03`, `D04`, `D08`, `D09`, `D10` | — |
