@@ -294,30 +294,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Classify data by owner, purpose, sensitivity, authority, mutability, retention, exportability, and deletion behavior.
-- [ ] Select persistence technologies and map relational/document/blob/local/cache needs to them without a premature warehouse or time-series platform.
-- [ ] Define stable identifiers, content/evidence family identity, timestamps, learner locale/time zone, ordering, and clock semantics.
-- [ ] Define transaction boundaries, consistency requirements, concurrency strategy, and how append-only facts coexist with mutable corrections/projections.
-- [ ] Define migration, backward/forward compatibility, schema versioning, historical correction, backup/restore, and data-integrity validation.
-- [ ] Separate local anonymous state, synchronized server state, cached Corpus/content bundles, raw media, and derived projections.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Choose the smallest durable managed/local combination and quantify idle, storage, backup, egress, and growth drivers.
-- [ ] Security/privacy/rights — Map encryption, access boundaries, sensitive fields, deletion proof, and backup retention.
-- [ ] Accessibility — Persist only access preferences/conditions needed for experience/evidence; avoid inferring disability.
-- [ ] Failure/recovery — Define corruption, partial write, retry, restore, and projection-rebuild behavior.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Data ownership/classification matrix.
-- [ ] Include Conceptual ER/data map.
-- [ ] Include Transaction/consistency table.
-- [ ] Include Schema-evolution and correction flow.
-- [ ] Include Backup/restore and retention summary.
-- [ ] Include Database/storage alternatives and ADR.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/05-data-ownership-persistence-and-schema-evolution.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Classify data by owner, purpose, sensitivity, authority, mutability, retention, exportability, and deletion behavior.
+- [x] Select persistence technologies and map relational/document/blob/local/cache needs to them without a premature warehouse or time-series platform.
+- [x] Define stable identifiers, content/evidence family identity, timestamps, learner locale/time zone, ordering, and clock semantics.
+- [x] Define transaction boundaries, consistency requirements, concurrency strategy, and how append-only facts coexist with mutable corrections/projections.
+- [x] Define migration, backward/forward compatibility, schema versioning, historical correction, backup/restore, and data-integrity validation.
+- [x] Separate local anonymous state, synchronized server state, cached Corpus/content bundles, raw media, and derived projections.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Choose the smallest durable managed/local combination and quantify idle, storage, backup, egress, and growth drivers.
+- [x] Security/privacy/rights — Map encryption, access boundaries, sensitive fields, deletion proof, and backup retention.
+- [x] Accessibility — Persist only access preferences/conditions needed for experience/evidence; avoid inferring disability.
+- [x] Failure/recovery — Define corruption, partial write, retry, restore, and projection-rebuild behavior.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Data ownership/classification matrix.
+- [x] Include Conceptual ER/data map.
+- [x] Include Transaction/consistency table.
+- [x] Include Schema-evolution and correction flow.
+- [x] Include Backup/restore and retention summary.
+- [x] Include Database/storage alternatives and ADR.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/05-data-ownership-persistence-and-schema-evolution.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
