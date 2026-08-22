@@ -229,29 +229,29 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define ubiquitous language and bounded contexts/modules for learner/profile, attempts/sessions, evidence, coaching, mistake/review, progression, content/forms, Corpus publication, readiness/mocks, productive evaluation, and operations.
-- [ ] Assign aggregate/state-machine/policy/value-object ownership and legal dependency directions between contexts.
-- [ ] Map every product and design state to one authoritative domain owner; distinguish domain state from UI projection and provider schema.
-- [ ] Model shared five-skill foundations with modality-specific extensions rather than five feature stacks.
-- [ ] Define commands, policies, domain services, projections, and anti-corruption layers conceptually without selecting schemas or endpoint syntax.
-- [ ] Resolve naming differences such as `stabilizing/stabilising`, historical/unconfirmed, resolved/reopened, readiness bands, and validity states without losing product semantics.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Favor modular-monolith boundaries and in-process policies until an independently scalable/isolatable need is proven.
-- [ ] Security/privacy/rights — Identify sensitive aggregates and authorization boundaries without forcing accounts onto first use.
-- [ ] Accessibility — Represent accommodations/capabilities and evidence meaning in domain contracts, not UI-only flags.
-- [ ] Failure/recovery — Model non-learner invalidation, Pending, partial validity, and local degradation as domain outcomes.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Bounded-context map.
-- [ ] Include Authoritative state-ownership table.
-- [ ] Include Ubiquitous-language glossary.
-- [ ] Include Aggregate/policy responsibility table.
-- [ ] Include Cross-context dependency rules and anti-corruption boundaries.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/04-domain-model-and-bounded-contexts.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define ubiquitous language and bounded contexts/modules for learner/profile, attempts/sessions, evidence, coaching, mistake/review, progression, content/forms, Corpus publication, readiness/mocks, productive evaluation, and operations.
+- [x] Assign aggregate/state-machine/policy/value-object ownership and legal dependency directions between contexts.
+- [x] Map every product and design state to one authoritative domain owner; distinguish domain state from UI projection and provider schema.
+- [x] Model shared five-skill foundations with modality-specific extensions rather than five feature stacks.
+- [x] Define commands, policies, domain services, projections, and anti-corruption layers conceptually without selecting schemas or endpoint syntax.
+- [x] Resolve naming differences such as `stabilizing/stabilising`, historical/unconfirmed, resolved/reopened, readiness bands, and validity states without losing product semantics.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Favor modular-monolith boundaries and in-process policies until an independently scalable/isolatable need is proven.
+- [x] Security/privacy/rights — Identify sensitive aggregates and authorization boundaries without forcing accounts onto first use.
+- [x] Accessibility — Represent accommodations/capabilities and evidence meaning in domain contracts, not UI-only flags.
+- [x] Failure/recovery — Model non-learner invalidation, Pending, partial validity, and local degradation as domain outcomes.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Bounded-context map.
+- [x] Include Authoritative state-ownership table.
+- [x] Include Ubiquitous-language glossary.
+- [x] Include Aggregate/policy responsibility table.
+- [x] Include Cross-context dependency rules and anti-corruption boundaries.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/04-domain-model-and-bounded-contexts.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
