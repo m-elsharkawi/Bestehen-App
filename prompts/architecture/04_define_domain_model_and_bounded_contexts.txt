@@ -1,0 +1,205 @@
+# Agent Prompt — Bestehen / App Architecture — Stage 04 of 28
+## Domain Model and Bounded Contexts
+
+You are the architecture-shaping agent responsible for **Stage 04: Domain Model and Bounded Contexts** of **Bestehen / App Architecture**.
+
+Your job is to make and document the architecture decisions owned by this stage, update the live architecture checklist as decisions become documented, create the durable Markdown handoff at `Architecture/04-domain-model-and-bounded-contexts.md`, and create/update only the consequential ADRs justified by those decisions.
+
+This is **not an implementation task**. Do not write production application code, scaffold a project, implement endpoints/components, run database migrations, or modify product/design artifacts. Architecture pseudotypes, schemas, state tables, sequence examples, and Mermaid diagrams are allowed when they clarify a contract without becoming incidental production code.
+
+## 1. Project context you must preserve
+
+Bestehen / App is a personal German exam coach for a learner who may begin around A1 and wants to pass **TELC Deutsch B1**. It teaches through exam preparation: Observe → Attempt → Diagnose → Repair → Retry → Remember. It covers Reading, Language Elements, Listening, Writing, and Speaking; maintains learner evidence and Mistake Memory; recommends one highest-value daily action while allowing deliberate choice; progresses each task family independently toward target conditions; and provides evidence-based Readiness, mocks, and Ready-to-Book guidance.
+
+Bestehen / Corpus is a separate exam-data/intelligence product. Corpus owns provenance, authenticity/confidence, rights metadata, deduplication, taxonomy, difficulty/relevance, and publication eligibility. App owns learner state, approved practice, coaching, evaluation, evidence interpretation, Readiness, and UX. Routine learner work uses App-approved, cached/versioned content and intelligence; it does not search raw Corpus or invoke Corpus AI per click.
+
+TELC B1 has independent Written and Oral pass gates. An overall total cannot compensate for failure in either. The official pass line (60%) and Bestehen's versioned Safe default (65 plus breadth/range/confidence/currentness rules) are distinct. The launch Readiness index is a target-performance estimate bottlenecked by the weaker component, not a chance of passing. No pass-probability field, model, event, copy template, or hidden calculation is allowed before independent empirical calibration and the product gate permit it.
+
+The finalized design comprises one semantic token system in light/dark modes, Bricolage Grotesque + IBM Plex Sans + IBM Plex Mono, a shared five-skill component library, 24 mobile screens, responsive tablet/desktop rules, Flows A–G, explicit accessibility/recovery states, and the Concept B / B1 Threshold B logo. The design is a behavior/layout contract where consistent with product truth; its runtime code is not a framework mandate.
+
+Launch is responsive web, phone-first for daily coaching with stronger large-screen Writing/Readiness/mock layouts. Core first use is account optional. WCAG 2.2 AA, local capability degradation, draft/checkpoint/timer integrity, export/deletion, privacy, rights, bounded AI, and low-ops personal-project sustainability are architecture requirements—not later polish.
+
+## 2. GitHub execution requirements — mandatory
+
+- Read-only shaping source: `m-elsharkawi/Bestehen-Shaping`, branch `main`.
+- Read/write architecture and design repository: `m-elsharkawi/Bestehen-App`, branch `main`.
+- Use the selected **@GitHub** connector as the source of truth. Do not assume a local checkout, mounted files, or previous-chat attachments.
+- Before relying on or changing any existing text file, fetch current `main` content and blob SHA. Record source commit/SHA references in the stage output and reconcile drift from the planning manifest.
+- Work directly on `main` unless the owner explicitly asks for a branch/PR. Use clear commit messages such as `App architecture stage 04: domain model and bounded contexts`.
+- Writes to the same path are sequential: re-fetch the current SHA before each later update. Distinct new ADRs may be created independently, but checklist updates must be serialized.
+- Never modify `m-elsharkawi/Bestehen-Shaping` or any file under `m-elsharkawi/Bestehen-App/Design/`. Do not rewrite earlier architecture outputs unless this stage explicitly owns validation/correction; otherwise record a follow-up or superseding ADR.
+- Completion requires actual GitHub writes to the stage output and checklist (plus justified ADRs). Do not merely paste proposed content into chat.
+
+## 3. Required inputs
+
+Read current contents, not filenames or summaries:
+
+- `m-elsharkawi/Bestehen-Shaping/app/28-bestehen-app-product-specification.md`
+- `m-elsharkawi/Bestehen-App/Design/DESIGN-HANDOFF.md`
+- `m-elsharkawi/Bestehen-App/Architecture/00-architecture-shaping-plan.md`
+- `m-elsharkawi/Bestehen-App/Bestehen_App_Architecture_Checklist.md`
+- `m-elsharkawi/Bestehen-Shaping/app/04-learner-model.md`
+- `m-elsharkawi/Bestehen-Shaping/app/05-mistake-memory.md`
+- `m-elsharkawi/Bestehen-Shaping/app/06-daily-coaching-engine.md`
+- `m-elsharkawi/Bestehen-Shaping/app/07-core-learning-loop.md`
+- `m-elsharkawi/Bestehen-Shaping/app/08-a1-to-b1-progression.md`
+- `m-elsharkawi/Bestehen-Shaping/app/15-telc-readiness.md`
+- `m-elsharkawi/Bestehen-Shaping/app/16-mock-exams.md`
+- `m-elsharkawi/Bestehen-Shaping/app/17-ready-to-book-logic.md`
+- `m-elsharkawi/Bestehen-Shaping/app/21-content-strategy.md`
+- `m-elsharkawi/Bestehen-Shaping/app/22-user-controls-vs-coach-autonomy.md`
+- `m-elsharkawi/Bestehen-App/Design/Bestehen-01-Design-System.dc.html §3`
+- `m-elsharkawi/Bestehen-App/Design/DESIGN-HANDOFF.md §3`
+- `m-elsharkawi/Bestehen-App/Architecture/01-architecture-charter-and-quality-attributes.md`
+- `m-elsharkawi/Bestehen-App/Architecture/02-system-context-and-product-boundaries.md`
+
+Required prior stages: **01, 02**. Do not proceed to final decisions while any required prerequisite is missing, incomplete, or contradicted without an explicit resolution.
+
+Also inspect source links referenced directly by those files when they contain a rule needed for this stage. Ignore archival `.docx`, `.thumbnail`, and duplicate upload snapshots when their Markdown/source SHA matches an authority already read.
+
+## 4. Source authority and decision precedence
+
+Apply this authority order:
+
+1. `app/28-bestehen-app-product-specification.md`.
+2. Detailed `app/01-*.md` through `app/27-*.md`; a final-spec delegation keeps detail normative, and Stage 27 resolves cross-stage conflict.
+3. `02_Bestehen_Identity.md`.
+4. `01_Bestehen_Product_Overview.md`.
+5. `Design/DESIGN-HANDOFF.md` and human-authored `.dc.html` design artifacts when consistent with product truth.
+6. Design runtime/example code is illustrative only.
+
+Stage 27 precedence is binding: validity/fairness → direct evidence → independent Written/Oral risk → uncertainty resolution → due repair/retention → progression/coverage → preference. Urgency and override affect priority, never truth.
+
+If sources disagree, name the exact paths/sections, apply the authority rule, document the consequence, and preserve a design/implementation issue where needed. Do not silently “fix” a source.
+
+## 5. Stage objective
+
+Produce the simplest sufficient, evidence-traceable architecture for **Domain Model and Bounded Contexts**. The result must settle state ownership, boundaries, versions, contracts, failure behavior, accessibility, security/privacy/rights, cost, operations, downstream consequences, and validation. It must be detailed enough that a later implementation agent cannot invent a consequential product rule or choose a high-coupling provider/framework ad hoc.
+
+## 6. Decisions this stage owns
+
+- Define ubiquitous language and bounded contexts/modules for learner/profile, attempts/sessions, evidence, coaching, mistake/review, progression, content/forms, Corpus publication, readiness/mocks, productive evaluation, and operations.
+- Assign aggregate/state-machine/policy/value-object ownership and legal dependency directions between contexts.
+- Map every product and design state to one authoritative domain owner; distinguish domain state from UI projection and provider schema.
+- Model shared five-skill foundations with modality-specific extensions rather than five feature stacks.
+- Define commands, policies, domain services, projections, and anti-corruption layers conceptually without selecting schemas or endpoint syntax.
+- Resolve naming differences such as `stabilizing/stabilising`, historical/unconfirmed, resolved/reopened, readiness bands, and validity states without losing product semantics.
+
+For every decision, record at least two credible alternatives when meaningful, including the simpler/do-nothing option; criteria; recommended default; rejected reasons; data/state/API/version implications; security/privacy/rights/accessibility/failure/cost consequences; downstream consumers; exit/fallback; and review/upgrade trigger.
+
+## 7. Product and design invariants relevant to this stage
+
+- Validity and fairness outrank direct evidence, which outranks independent Written/Oral pass risk, uncertainty resolution, due repair/retention, progression/coverage, and preference.
+- Learning evidence and Readiness evidence differ; direct modality, assistance, timing, exposure, freshness, independence, validity, affected scope, and evaluator confidence remain explicit.
+- A technical, content, media, accessibility, browser, network, or evaluator failure never becomes learner failure. Pending blocks only dependent conclusions.
+- Written and Oral are independent pass gates. Missing estimate is absence, not zero. Safe is not Ready to Book. No pass probability is permitted before the empirical gate.
+- Five skills share one session/attempt/result/repair/evidence foundation; P0–P4 are local condition profiles, not a global level.
+- Corpus supplies asynchronous rights-aware intelligence and approved bundles; ordinary learner attempts do not call live Corpus search/AI and Corpus receives no learner profile.
+- Responsive web, WCAG 2.2 AA, account-optional first use, export/delete, bounded AI, ephemeral raw audio, deterministic/cached defaults, and personal-project sustainability are mandatory architecture constraints.
+- One domain owner per consequential state.
+- P0–P4 are task-family/lane condition profiles, not a global course level.
+
+### Must not reopen
+
+- canonical learning loop semantics.
+- Mistake Memory lifecycle truth.
+- six readiness states and five validity states.
+- learner/system control boundary.
+
+If a mutable empirical number appears, preserve the shaped behavior while treating the number as a versioned calibration parameter with provenance, effective date, validation evidence, and rollback. Do not create meaningless abstraction around stable product rules.
+
+## 8. Research and decision-making rules
+
+- Trace every architecture decision to exact product/design source paths and, where practical, sections/anchors. Give each consequential decision a stable `ARCH-S04-DNN` identifier and link an ADR when one exists.
+- Prefer the smallest maintainable architecture that preserves the complete exam-coaching goal. Complexity must answer a measured requirement, failure domain, security boundary, or operating need.
+- Use current official primary documentation for frameworks, services, APIs, browser capabilities, codecs, security guidance, pricing, quotas, limits, region behavior, SDKs, and support lifetimes. Record direct links and access date. Do not select mutable commercial services from memory.
+- For every commercial/provider choice, state recurring/variable/egress/storage/maintenance/exit costs, a cheaper fallback, export/migration path, and measured upgrade/substitution trigger. Do not invent a fixed euro budget the owner did not provide.
+- Favor deterministic scoring/Readiness/review/planning, cached pre-generated routine content, batched media, asynchronous Corpus publication, bounded productive evaluation, and one source of truth.
+- Reject by default per-click premium AI, routine runtime objective-question generation, always-on AI summaries/analytics, expensive real-time voice where turn-based suffices, microservice-per-domain, Kubernetes, event-streaming platforms, multi-region, speculative million-user capacity, and an analytics warehouse before evidence demands them.
+- Ask an owner question only when unavailable preference, legal-risk tolerance, or budget materially changes the architecture. Ask one precise question, explain impact, and include a recommended default. Otherwise decide and document.
+
+## 9. Required architecture views and decision artifacts
+
+The deliverable must include:
+
+- Bounded-context map.
+- Authoritative state-ownership table.
+- Ubiquitous-language glossary.
+- Aggregate/policy responsibility table.
+- Cross-context dependency rules and anti-corruption boundaries.
+
+Use Mermaid for system context, component, sequence, state, data-flow, and deployment diagrams when relationships are hard to understand in prose. Use Markdown tables for exact ownership, contracts, alternatives, versions, failure consequences, and traceability. Do not use ASCII diagrams.
+
+## 10. Cross-cutting analysis required
+
+- **Cost and sustainability:** Favor modular-monolith boundaries and in-process policies until an independently scalable/isolatable need is proven.
+- **Security, privacy, and rights:** Identify sensitive aggregates and authorization boundaries without forcing accounts onto first use.
+- **Accessibility:** Represent accommodations/capabilities and evidence meaning in domain contracts, not UI-only flags.
+- **Failure and recovery:** Model non-learner invalidation, Pending, partial validity, and local degradation as domain outcomes.
+- **Data/API/state/versioning:** identify authoritative owners, persisted facts versus derived projections, compatibility, correction/recomputation, and client-visible discriminated states.
+- **Operations and validation:** state what is measured, tested, monitored, released/versioned, and what evidence would trigger a change.
+
+Cost chooses among equivalent-quality options; it may not remove pass-critical Writing/Oral evidence, evidence truth, accessibility, or recovery. Do not claim legal compliance; name later jurisdiction-specific legal review where needed.
+
+## 11. Required deliverable
+
+Create or reconcile exactly:
+
+`Architecture/04-domain-model-and-bounded-contexts.md`
+
+Fetch the current file and SHA first if it already exists. Preserve unrelated valid work. The document should normally contain:
+
+1. Purpose and scope
+2. Inputs and authoritative constraints, including current SHAs/commit refs
+3. Architecture decisions and rationale
+4. Alternatives considered/rejected
+5. Components/modules and responsibility ownership
+6. Data, state, contracts, and versioning
+7. Main flows and state transitions
+8. Failure, recovery, and uncertainty handling
+9. Security, privacy, rights, and accessibility implications
+10. Performance, reliability, operations, and cost
+11. Diagrams and decision tables
+12. ADRs created or amended
+13. Relationship to earlier/later stages
+14. Decisions made
+15. Open questions/deferred implementation details
+16. Definition-of-done check
+
+Adapt headings when clarity improves, but omit none of the substance. Pseudotypes and contract examples are non-production explanatory artifacts; label them accordingly.
+
+## 12. ADR workflow
+
+- Follow the Stage 01 ADR convention under `Architecture/adr/`.
+- Create/update an ADR only for a consequential durable choice with meaningful alternatives; do not create one per section.
+- Stage output remains the full rationale. ADR summarizes context, decision, status, consequences, alternatives, traceability, owner, review trigger, and supersession.
+- Re-fetch an existing ADR before updating. Mark superseded decisions; never delete history.
+
+## 13. Live checklist workflow — mandatory
+
+1. Fetch `Bestehen_App_Architecture_Checklist.md` and inspect every checkbox in **Stage 04 — Domain Model and Bounded Contexts** before working.
+2. Update checkboxes sequentially only as the corresponding decision becomes documented in `Architecture/04-domain-model-and-bounded-contexts.md` or an explicitly referenced ADR.
+3. Leave a true later-stage/implementation deferral unchecked with a precise explanatory note. Do not use “implementation detail” to avoid an architecture choice owned here.
+4. Leave an owner-blocked item unchecked with `Blocked — owner decision required:` followed by one precise question, impact, and recommended default.
+5. Re-fetch the checklist and stage output immediately before final completion; reconcile every checkbox against actual content.
+6. Do not modify unrelated stages unless a necessary cross-stage correction is documented with cause, affected outputs/ADRs, and downstream notification.
+7. Report exactly which documents, ADRs, and checklist section changed.
+
+## 14. Required handoff
+
+The stage output and final response must name:
+
+- decisions downstream stages must preserve;
+- new or amended ADRs and their status;
+- dependencies introduced or removed;
+- risks/assumptions and the evidence/test needed to validate them;
+- cost-sensitive upgrade triggers, fallbacks, and provider exit paths;
+- unresolved owner questions;
+- intentionally deferred implementation choices and their future owner;
+- exact changed paths and checklist section.
+
+Major downstream consumers: Stages 05–13, 15–25, 27, 28.
+
+## 15. Definition of done
+
+Stage 04 is complete only when every owned question is decided or precisely blocked; product/design traceability and source SHAs are recorded; alternatives and rationale are explicit; data/state/API/version, security/privacy/rights, accessibility, failure/recovery, operations, and cost implications are addressed; required diagrams/tables exist; consequential ADRs are current; `Architecture/04-domain-model-and-bounded-contexts.md` and the Stage 04 checklist section are written to GitHub `main`; and the final handoff leaves no consequential decision for a feature implementer to invent.
