@@ -20,3 +20,7 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0003](ADR-0003-quality-attributes-are-release-gates.md) | Quality attributes are release gates | Accepted | Stage 01 | `ARCH-S01-D05`, `D06`, `D07` | — |
 | [ADR-0004](ADR-0004-app-runtime-independent-from-corpus.md) | App runtime independent from Corpus | Accepted | Stage 02 | `ARCH-S02-D01`, `D02`, `D07` | — |
 | [ADR-0005](ADR-0005-app-semantic-authority-across-processors.md) | App semantic authority across processors | Accepted | Stage 02 | `ARCH-S02-D03`, `D04`, `D08`, `D09`, `D10` | — |
+| [ADR-0006](ADR-0006-typescript-nextjs-modular-monorepo.md) | TypeScript Next.js modular monorepo | Accepted | Stage 03 | `ARCH-S03-D01`, `D06`, `D07`, `D08` | — |
+| [ADR-0007](ADR-0007-postgresql-authority-and-durable-jobs.md) | PostgreSQL authority and durable jobs | Accepted | Stage 03 | `ARCH-S03-D02`, `D03` | — |
+| [ADR-0008](ADR-0008-render-single-region-managed-deployment.md) | Render single-region managed deployment | Accepted | Stage 03 | `ARCH-S03-D05` | — |
+| [ADR-0009](ADR-0009-private-eu-s3-compatible-object-storage.md) | Private EU S3-compatible object storage | Accepted | Stage 03 | `ARCH-S03-D04` | — |

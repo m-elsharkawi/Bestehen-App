@@ -163,29 +163,29 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Compare and select the frontend, server/runtime, language, database/access layer, background-job mechanism, object/media storage, hosting, and deployment baseline.
-- [ ] Decide monorepo versus polyrepo and define package/module boundaries, dependency direction, shared contracts, and generated-artifact policy.
-- [ ] Define local-development, testing, build, package, lint/type, migration, and environment tooling at architecture level.
-- [ ] Set dependency admission/update policy, supported runtime/browser baselines, lockfile/reproducibility, and supply-chain expectations.
-- [ ] Compare managed-service simplicity, recurring/variable cost, free-tier limits, operational burden, portability, and exit path using current official sources.
-- [ ] Identify deliberately deferred provider choices owned by later media, AI, identity, notification, or operations stages.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Research current official pricing/quotas and include a cheaper fallback and measured upgrade trigger for each mutable commercial service.
-- [ ] Security/privacy/rights — Assess patch cadence, secrets integration, dependency provenance, and security-support lifetime.
-- [ ] Accessibility — Select a stack that can support semantic HTML, focus management, live regions, 320px reflow, and browser APIs without bespoke forks.
-- [ ] Failure/recovery — Document platform limitations, degraded-mode feasibility, and exit/migration strategy.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Weighted alternative matrix with official-source links/access dates.
-- [ ] Include Repository/module dependency diagram.
-- [ ] Include Toolchain and environment table.
-- [ ] Include Provider/stack cost and exit-risk table.
-- [ ] Include Consequential ADRs for selected durable choices.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/03-technology-stack-and-repository-strategy.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Compare and select the frontend, server/runtime, language, database/access layer, background-job mechanism, object/media storage, hosting, and deployment baseline.
+- [x] Decide monorepo versus polyrepo and define package/module boundaries, dependency direction, shared contracts, and generated-artifact policy.
+- [x] Define local-development, testing, build, package, lint/type, migration, and environment tooling at architecture level.
+- [x] Set dependency admission/update policy, supported runtime/browser baselines, lockfile/reproducibility, and supply-chain expectations.
+- [x] Compare managed-service simplicity, recurring/variable cost, free-tier limits, operational burden, portability, and exit path using current official sources.
+- [x] Identify deliberately deferred provider choices owned by later media, AI, identity, notification, or operations stages.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Research current official pricing/quotas and include a cheaper fallback and measured upgrade trigger for each mutable commercial service.
+- [x] Security/privacy/rights — Assess patch cadence, secrets integration, dependency provenance, and security-support lifetime.
+- [x] Accessibility — Select a stack that can support semantic HTML, focus management, live regions, 320px reflow, and browser APIs without bespoke forks.
+- [x] Failure/recovery — Document platform limitations, degraded-mode feasibility, and exit/migration strategy.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Weighted alternative matrix with official-source links/access dates.
+- [x] Include Repository/module dependency diagram.
+- [x] Include Toolchain and environment table.
+- [x] Include Provider/stack cost and exit-risk table.
+- [x] Include Consequential ADRs for selected durable choices.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/03-technology-stack-and-repository-strategy.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
