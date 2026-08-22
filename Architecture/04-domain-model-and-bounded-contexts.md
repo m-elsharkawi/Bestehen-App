@@ -1,8 +1,8 @@
 # Bestehen / App — Domain Model and Bounded Contexts
 
-> **Stage:** 04 of 28  
-> **Status:** Accepted  
-> **Decision date:** 2026-08-23  
+> **Stage:** 04 of 28
+> **Status:** Accepted
+> **Decision date:** 2026-08-23
 > **Scope:** Logical domain ownership and contracts; no production schema, endpoint, provider, or deployment implementation
 
 ## 1. Purpose and scope
