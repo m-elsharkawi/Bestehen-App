@@ -1754,30 +1754,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define test strategy/pyramid by domain, contract, persistence, UI, browser/device, content, evaluator, media, security, recovery, performance, and operations layers.
-- [ ] Specify invariant/property/model/state-machine tests for evidence, scoring, Readiness, Ready-to-Book, Mistake Memory, review, coaching, idempotency, and timing.
-- [ ] Define contract/compatibility/migration/backup/restore tests for App, Corpus bundles, APIs, jobs, local sync, and deletion.
-- [ ] Define golden forms/content QA plus Writing evaluator, Speaking evaluator, STT, TTS/audio, and partner benchmark/release gates.
-- [ ] Define WCAG/manual/automated, keyboard/screen-reader, 320px/200%, responsive, browser/device, offline/recovery, timer, security, privacy, rights, and cost-regression tests.
-- [ ] Assign release-blocking versus advisory gates, test data/privacy, ownership, evidence artifacts, flake policy, and exception process.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Use risk-based automation; benchmark model/media costs and catch cost regressions in release gates.
-- [ ] Security/privacy/rights — Include abuse, auth, secrets, injection, dependency, rights, export/delete, and privacy tests.
-- [ ] Accessibility — Own automated plus manual assistive-technology release gates for all core flows.
-- [ ] Failure/recovery — Test every recovery/Pending/partial/not_counted path, duplicate delivery, and targeted recomputation.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Test strategy and ownership matrix.
-- [ ] Include Invariant/property/state-machine catalog.
-- [ ] Include Benchmark/golden-set gate table.
-- [ ] Include Accessibility/browser/device test matrix.
-- [ ] Include Release-blocking quality gate table.
-- [ ] Include Test-data/privacy and evidence-retention plan.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/25-testing-evaluation-and-quality-gates.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define test strategy/pyramid by domain, contract, persistence, UI, browser/device, content, evaluator, media, security, recovery, performance, and operations layers.
+- [x] Specify invariant/property/model/state-machine tests for evidence, scoring, Readiness, Ready-to-Book, Mistake Memory, review, coaching, idempotency, and timing.
+- [x] Define contract/compatibility/migration/backup/restore tests for App, Corpus bundles, APIs, jobs, local sync, and deletion.
+- [x] Define golden forms/content QA plus Writing evaluator, Speaking evaluator, STT, TTS/audio, and partner benchmark/release gates.
+- [x] Define WCAG/manual/automated, keyboard/screen-reader, 320px/200%, responsive, browser/device, offline/recovery, timer, security, privacy, rights, and cost-regression tests.
+- [x] Assign release-blocking versus advisory gates, test data/privacy, ownership, evidence artifacts, flake policy, and exception process.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Use risk-based automation; benchmark model/media costs and catch cost regressions in release gates.
+- [x] Security/privacy/rights — Include abuse, auth, secrets, injection, dependency, rights, export/delete, and privacy tests.
+- [x] Accessibility — Own automated plus manual assistive-technology release gates for all core flows.
+- [x] Failure/recovery — Test every recovery/Pending/partial/not_counted path, duplicate delivery, and targeted recomputation.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Test strategy and ownership matrix.
+- [x] Include Invariant/property/state-machine catalog.
+- [x] Include Benchmark/golden-set gate table.
+- [x] Include Accessibility/browser/device test matrix.
+- [x] Include Release-blocking quality gate table.
+- [x] Include Test-data/privacy and evidence-retention plan.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/25-testing-evaluation-and-quality-gates.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

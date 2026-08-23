@@ -47,3 +47,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0030](ADR-0030-deterministic-local-calendar-scheduling-and-replaceable-standards-web-push.md) | Deterministic local-calendar scheduling and replaceable standards Web Push | Accepted | Stage 22 | `ARCH-S22-D01`–`D12` | — |
 | [ADR-0031](ADR-0031-minimized-authoritative-trust-boundaries-and-bounded-retention.md) | Minimized authoritative trust boundaries and bounded retention | Accepted | Stage 23 | `ARCH-S23-D01`–`D12` | — |
 | [ADR-0032](ADR-0032-lean-evidence-derived-telemetry-frozen-calibration-and-measured-operating-gates.md) | Lean evidence-derived telemetry, frozen calibration, and measured operating gates | Accepted | Stage 24 | `ARCH-S24-D01`–`D12` | — |
+| [ADR-0033](ADR-0033-claim-based-risk-gates-and-immutable-release-evidence.md) | Claim-based risk gates and immutable release evidence | Accepted | Stage 25 | `ARCH-S25-D01`, `D04`, `D06`–`D09` | — |
