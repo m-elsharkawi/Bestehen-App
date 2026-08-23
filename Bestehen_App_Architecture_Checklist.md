@@ -1494,30 +1494,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Model schedule preferences, local time zone, quiet hours, travel/time-zone changes, target month/range, planned date, booked date, milestones, and post-exam state.
-- [ ] Define in-app versus web-push/email/other reminder transport selection and permission lifecycle with current browser/provider research.
-- [ ] Implement conceptual reminder types, grouped obligations, one/day and rolling-seven-day caps, booked-period cap, exam-day exception, deduplication, suppression, and ignored-reminder behavior.
-- [ ] Define background-job scheduling, DST/calendar/time-zone semantics, delivery windows, stale-job cancellation, idempotency, and multi-device duplication prevention.
-- [ ] Define reviewed template/reason data rather than model-generated engagement copy and preserve learner opt-out/control.
-- [ ] Define privacy/retention/export/delete behavior for schedules, notification endpoints, delivery logs, and exam dates.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Research official provider/browser limits and prefer in-app/local/simple scheduled delivery with a cheaper fallback.
-- [ ] Security/privacy/rights — Protect endpoints, tokens, dates, and message contents; avoid exposing sensitive performance details on lock screens by default.
-- [ ] Accessibility — Notification settings/copy and in-app equivalents must remain accessible and understandable.
-- [ ] Failure/recovery — Late/duplicate/disabled/unavailable delivery causes no missed-day penalty or backlog and stale jobs are cancelled.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Schedule/date/notification model.
-- [ ] Include Delivery/suppression state diagram.
-- [ ] Include Reminder cap/deduplication matrix.
-- [ ] Include Time-zone/DST examples.
-- [ ] Include Transport/provider alternative and cost table.
-- [ ] Include Permission/privacy/failure contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/22-notifications-scheduling-and-time-zones.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Model schedule preferences, local time zone, quiet hours, travel/time-zone changes, target month/range, planned date, booked date, milestones, and post-exam state.
+- [x] Define in-app versus web-push/email/other reminder transport selection and permission lifecycle with current browser/provider research.
+- [x] Implement conceptual reminder types, grouped obligations, one/day and rolling-seven-day caps, booked-period cap, exam-day exception, deduplication, suppression, and ignored-reminder behavior.
+- [x] Define background-job scheduling, DST/calendar/time-zone semantics, delivery windows, stale-job cancellation, idempotency, and multi-device duplication prevention.
+- [x] Define reviewed template/reason data rather than model-generated engagement copy and preserve learner opt-out/control.
+- [x] Define privacy/retention/export/delete behavior for schedules, notification endpoints, delivery logs, and exam dates.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Research official provider/browser limits and prefer in-app/local/simple scheduled delivery with a cheaper fallback.
+- [x] Security/privacy/rights — Protect endpoints, tokens, dates, and message contents; avoid exposing sensitive performance details on lock screens by default.
+- [x] Accessibility — Notification settings/copy and in-app equivalents must remain accessible and understandable.
+- [x] Failure/recovery — Late/duplicate/disabled/unavailable delivery causes no missed-day penalty or backlog and stale jobs are cancelled.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Schedule/date/notification model.
+- [x] Include Delivery/suppression state diagram.
+- [x] Include Reminder cap/deduplication matrix.
+- [x] Include Time-zone/DST examples.
+- [x] Include Transport/provider alternative and cost table.
+- [x] Include Permission/privacy/failure contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/22-notifications-scheduling-and-time-zones.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
