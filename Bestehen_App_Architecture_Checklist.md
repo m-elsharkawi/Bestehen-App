@@ -915,30 +915,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Lock breakpoint/layout contract for ≤479, 480–767, 768–1023, 1024–1279, and ≥1280, including max measures, navigation changes, dialog/sheet behavior, and focused shells.
-- [ ] Define capability detection/preflight and activity-level eligibility for storage, microphone, audio, media formats, checkpoint durability, notifications, and private/embedded contexts.
-- [ ] Specify WCAG 2.2 AA mechanics for semantics, focus, keyboard, live regions, labels/errors, chart text/table alternatives, drag-free input, target sizes, 200% zoom, 320px reflow, and reduced motion.
-- [ ] Define timer/recording announcements, priority, focus movement, shortcuts, and conflicts with browser/screen-reader bindings.
-- [ ] Choose and justify browser/device support and automated/manual test matrix from current capability evidence.
-- [ ] Define evidence-equivalent versus evidence-altering accessibility conditions and the architecture contract for verified future accommodation profiles.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Bound the support matrix to current/current-previous major families and automate high-value checks before adding breadth.
-- [ ] Security/privacy/rights — Treat permission/capability checks contextually; never capture microphone in the background.
-- [ ] Accessibility — This stage owns the complete acceptance contract and must turn every design criterion into a testable mechanism.
-- [ ] Failure/recovery — Unsupported/denied/broken capability blocks only the affected high-stakes action and offers valid alternatives.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Responsive behavior matrix.
-- [ ] Include Capability/preflight state model.
-- [ ] Include Accessibility semantic/focus/live-region contract.
-- [ ] Include Browser/device support matrix with official-source access dates.
-- [ ] Include Evidence/accommodation matrix.
-- [ ] Include Acceptance-test catalog.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/14-responsive-accessibility-browser-and-device-architecture.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Lock breakpoint/layout contract for ≤479, 480–767, 768–1023, 1024–1279, and ≥1280, including max measures, navigation changes, dialog/sheet behavior, and focused shells.
+- [x] Define capability detection/preflight and activity-level eligibility for storage, microphone, audio, media formats, checkpoint durability, notifications, and private/embedded contexts.
+- [x] Specify WCAG 2.2 AA mechanics for semantics, focus, keyboard, live regions, labels/errors, chart text/table alternatives, drag-free input, target sizes, 200% zoom, 320px reflow, and reduced motion.
+- [x] Define timer/recording announcements, priority, focus movement, shortcuts, and conflicts with browser/screen-reader bindings.
+- [x] Choose and justify browser/device support and automated/manual test matrix from current capability evidence.
+- [x] Define evidence-equivalent versus evidence-altering accessibility conditions and the architecture contract for verified future accommodation profiles.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Bound the support matrix to current/current-previous major families and automate high-value checks before adding breadth.
+- [x] Security/privacy/rights — Treat permission/capability checks contextually; never capture microphone in the background.
+- [x] Accessibility — This stage owns the complete acceptance contract and must turn every design criterion into a testable mechanism.
+- [x] Failure/recovery — Unsupported/denied/broken capability blocks only the affected high-stakes action and offers valid alternatives.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Responsive behavior matrix.
+- [x] Include Capability/preflight state model.
+- [x] Include Accessibility semantic/focus/live-region contract.
+- [x] Include Browser/device support matrix with official-source access dates.
+- [x] Include Evidence/accommodation matrix.
+- [x] Include Acceptance-test catalog.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/14-responsive-accessibility-browser-and-device-architecture.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

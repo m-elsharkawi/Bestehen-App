@@ -36,3 +36,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0019](ADR-0019-versioned-http-contracts-and-durable-idempotent-asynchronous-work.md) | Versioned HTTP contracts and durable idempotent asynchronous work | Accepted | Stage 12 | `ARCH-S12-D01`–`D10` | — |
 | [ADR-0020](ADR-0020-server-first-frontend-composition-and-bounded-browser-state.md) | Server-first frontend composition and bounded browser state | Accepted | Stage 13 | `ARCH-S13-D01`–`D05`, `D10` | — |
 | [ADR-0021](ADR-0021-single-semantic-design-system-and-shared-five-skill-extension-contract.md) | Single semantic design system and shared five-skill extension contract | Accepted | Stage 13 | `ARCH-S13-D06`–`D11` | — |
+| [ADR-0022](ADR-0022-capability-gated-responsive-web-and-evidence-aware-accessibility.md) | Capability-gated responsive web and evidence-aware accessibility | Accepted | Stage 14 | `ARCH-S14-D01`–`D10` | — |
