@@ -1671,30 +1671,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define lean product/evidence/quality/cost event catalog, purpose, schemas, sampling, retention, privacy, and frozen prediction/readiness snapshots.
-- [ ] Specify DSRA, Useful Session Outcome, transfer/retention, evaluator/content quality, mock-to-real, calibration, and cost metrics without circular validation.
-- [ ] Define calibration datasets, versioning, backtesting, sample-size disclosure, drift/recalibration gates, and pass-probability activation boundary.
-- [ ] Define logs/metrics/traces/correlation/redaction, dashboards, alerts, SLO-style internal targets, incident evidence, and no invasive session replay.
-- [ ] Consolidate L0–L3 latency, autosave/data-loss, availability/degradation, media/AI reliability, capacity, and storage/model/media cost budgets.
-- [ ] Define measured upgrade/scale triggers and per-capability cost per useful productive evidence unit for a personal-project operating baseline.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Own consolidated cost measurement, budgets/alerts, provider/media/storage drivers, and progressive upgrade triggers without inventing owner budget.
-- [ ] Security/privacy/rights — Minimize telemetry, redact sensitive content/audio, control access/retention, and avoid demographic collection without purpose.
-- [ ] Accessibility — Measure technical/accessibility invalidation and latency fairness without tracking disability unnecessarily.
-- [ ] Failure/recovery — Observability must distinguish learner outcome from content/media/evaluator/system failure and support targeted recomputation/incidents.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Event/metric catalog.
-- [ ] Include Calibration data-flow and frozen-snapshot model.
-- [ ] Include Observability/redaction matrix.
-- [ ] Include Performance/reliability budget table.
-- [ ] Include Capacity/cost model and alert/upgrade triggers.
-- [ ] Include Dashboard/operating baseline.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/24-analytics-calibration-observability-performance-reliability-and-cost.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define lean product/evidence/quality/cost event catalog, purpose, schemas, sampling, retention, privacy, and frozen prediction/readiness snapshots.
+- [x] Specify DSRA, Useful Session Outcome, transfer/retention, evaluator/content quality, mock-to-real, calibration, and cost metrics without circular validation.
+- [x] Define calibration datasets, versioning, backtesting, sample-size disclosure, drift/recalibration gates, and pass-probability activation boundary.
+- [x] Define logs/metrics/traces/correlation/redaction, dashboards, alerts, SLO-style internal targets, incident evidence, and no invasive session replay.
+- [x] Consolidate L0–L3 latency, autosave/data-loss, availability/degradation, media/AI reliability, capacity, and storage/model/media cost budgets.
+- [x] Define measured upgrade/scale triggers and per-capability cost per useful productive evidence unit for a personal-project operating baseline.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Own consolidated cost measurement, budgets/alerts, provider/media/storage drivers, and progressive upgrade triggers without inventing owner budget.
+- [x] Security/privacy/rights — Minimize telemetry, redact sensitive content/audio, control access/retention, and avoid demographic collection without purpose.
+- [x] Accessibility — Measure technical/accessibility invalidation and latency fairness without tracking disability unnecessarily.
+- [x] Failure/recovery — Observability must distinguish learner outcome from content/media/evaluator/system failure and support targeted recomputation/incidents.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Event/metric catalog.
+- [x] Include Calibration data-flow and frozen-snapshot model.
+- [x] Include Observability/redaction matrix.
+- [x] Include Performance/reliability budget table.
+- [x] Include Capacity/cost model and alert/upgrade triggers.
+- [x] Include Dashboard/operating baseline.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/24-analytics-calibration-observability-performance-reliability-and-cost.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
