@@ -1580,30 +1580,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Create end-to-end data-flow inventory and threat model for anonymous/local use, accounts, sync, content, Corpus publication, AI/STT/TTS, notifications, analytics, operator access, and deletion.
-- [ ] Define authentication/authorization, trust boundaries, secrets/key rotation, encryption, headers/session security, abuse/rate limits, and audit logging proportionate to private/public scope.
-- [ ] Define data minimization/purpose, pseudonymous external calls, provider/processor boundaries, redaction, and no hidden model-training contribution.
-- [ ] Define retention for structured evidence, Writing, transcripts, raw audio, analytics/logs, exports, deletion tombstones, backups, and third-party copies.
-- [ ] Define rights-aware serving, attribution, asset access, takedown/quarantine, anti-copy, and source-expression leakage controls.
-- [ ] Define dependency/supply-chain, content/prompt injection, malicious uploads, cost abuse, incident expectations, and public-launch hardening triggers without asserting legal compliance.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Security controls must be proportionate but consequential data/rights protections cannot be traded away for cost.
-- [ ] Security/privacy/rights — This stage is the primary owner; cite current official security guidance and separate architecture from later jurisdiction-specific legal review.
-- [ ] Accessibility — Security/consent/delete/auth controls cannot create inaccessible core flows or silently penalize access needs.
-- [ ] Failure/recovery — Partial deletion, provider outage, incident, rights revocation, and key compromise have explicit containment/retry/audit behavior.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Threat model/data-flow diagrams.
-- [ ] Include Data/processor/retention matrix.
-- [ ] Include Authorization/secrets/control table.
-- [ ] Include Rights/takedown flow.
-- [ ] Include Abuse/supply-chain risk register.
-- [ ] Include Incident and public-hardening trigger table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/23-security-privacy-rights-retention-and-threat-model.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Create end-to-end data-flow inventory and threat model for anonymous/local use, accounts, sync, content, Corpus publication, AI/STT/TTS, notifications, analytics, operator access, and deletion.
+- [x] Define authentication/authorization, trust boundaries, secrets/key rotation, encryption, headers/session security, abuse/rate limits, and audit logging proportionate to private/public scope.
+- [x] Define data minimization/purpose, pseudonymous external calls, provider/processor boundaries, redaction, and no hidden model-training contribution.
+- [x] Define retention for structured evidence, Writing, transcripts, raw audio, analytics/logs, exports, deletion tombstones, backups, and third-party copies.
+- [x] Define rights-aware serving, attribution, asset access, takedown/quarantine, anti-copy, and source-expression leakage controls.
+- [x] Define dependency/supply-chain, content/prompt injection, malicious uploads, cost abuse, incident expectations, and public-launch hardening triggers without asserting legal compliance.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Security controls must be proportionate but consequential data/rights protections cannot be traded away for cost.
+- [x] Security/privacy/rights — This stage is the primary owner; cite current official security guidance and separate architecture from later jurisdiction-specific legal review.
+- [x] Accessibility — Security/consent/delete/auth controls cannot create inaccessible core flows or silently penalize access needs.
+- [x] Failure/recovery — Partial deletion, provider outage, incident, rights revocation, and key compromise have explicit containment/retry/audit behavior.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Threat model/data-flow diagrams.
+- [x] Include Data/processor/retention matrix.
+- [x] Include Authorization/secrets/control table.
+- [x] Include Rights/takedown flow.
+- [x] Include Abuse/supply-chain risk register.
+- [x] Include Incident and public-hardening trigger table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/23-security-privacy-rights-retention-and-threat-model.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
