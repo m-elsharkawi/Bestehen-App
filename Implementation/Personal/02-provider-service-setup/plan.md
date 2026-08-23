@@ -162,15 +162,21 @@ the linked page before accepting spend, terms, a model route, or a provider upda
   so immutable keys, digests, lifecycle, and app metadata supply the version contract.
 - Auth0 [tenant creation](https://auth0.com/docs/get-started/auth0-overview/create-tenants),
   [environment separation](https://auth0.com/docs/get-started/auth0-overview/create-tenants/set-up-multiple-environments),
-  [Flexible Identifiers email OTP](https://auth0.com/docs/authenticate/database-connections/passwordless-authentication-for-db-connect),
+  [Passwordless Authentication](https://auth0.com/docs/authenticate/passwordless),
+  [Passwordless with Universal Login](https://auth0.com/docs/authenticate/passwordless/passwordless-with-universal-login),
+  [Passwordless Email OTP](https://auth0.com/docs/authenticate/passwordless/authentication-methods/email-otp),
+  [Pre-user Registration](https://auth0.com/docs/customize/actions/explore-triggers/signup-and-login-triggers/pre-user-registration-trigger),
+  [Management API users](https://auth0.com/docs/manage-users/user-accounts/manage-users-using-the-management-api),
   [application settings](https://auth0.com/docs/get-started/applications/application-settings),
   [Next.js v4 routes](https://auth0.github.io/nextjs-auth0/),
   [tenant sessions](https://auth0.com/docs/get-started/tenant-settings),
   [SMTP providers](https://auth0.com/docs/customize/email/smtp-email-providers), and
   [email templates](https://auth0.com/docs/customize/email/email-templates).
   Decision: a separate EU staging tenant, Regular Web Application, New Universal
-  Login, Flexible Identifiers database connection with email OTP only, closed signup,
-  one pre-provisioned owner, RS256/OIDC, and no password/social/SMS fallback.
+  Login, the generally available Passwordless Email connection (`email`) with OTP
+  only, closed signup, one owner pre-provisioned through the Management API,
+  RS256/OIDC, and no other sign-in connection or fallback. This avoids an Early Access
+  feature and its additional Free Trial terms.
 - SES [regional behavior](https://docs.aws.amazon.com/ses/latest/dg/regions.html),
   [sandbox exit](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html),
   [credential types](https://docs.aws.amazon.com/ses/latest/dg/send-email-concepts-credentials.html),
@@ -258,7 +264,7 @@ keys, tokens, and recovery material remain protected owner-supplied values.
 | Pangolin | existing organization/Newt site; owner role; private HTTP `bestehen-staging`; private HTTP `bestehen-coolify` | Checkpoint-blocking; no anonymous access or share links |
 | DNS | Pangolin internal names; public SES identity, DKIM, MAIL FROM/SPF, and DMARC records | Internal names are Pangolin config; SES records are authoritative-DNS owner actions |
 | R2 | EU-jurisdiction Standard `bestehen-staging-runtime`; EU-jurisdiction Standard `bestehen-staging-backup`; lifecycle/CORS/budget; runtime and backup tokens | Checkpoint-blocking; production uses separate later buckets/credentials |
-| Auth0 | separate EU staging tenant; Regular Web App; Flexible Identifiers DB connection; owner user; post-login allowlist Action; SES email provider | Checkpoint-blocking; owner creates tenant/user and stores recovery material |
+| Auth0 | separate EU staging tenant; Regular Web App; GA Passwordless Email connection `email`; Management-API-provisioned owner; pre-user-registration and post-login allowlist Actions; SES email provider | Checkpoint-blocking; owner provisions the user without sharing its address and stores recovery material |
 | SES | Frankfurt sending identity/subdomain; Easy DKIM; custom MAIL FROM; DMARC; staging configuration set; Auth0 SMTP identity; App API identity | Checkpoint-blocking for OTP; production-access request is launch-blocking, not checkpoint-blocking |
 | Gemini | billing-enabled staging project; API key restricted to Gemini API; model access; budget alerts | Checkpoint-blocking for service readiness; paid route remains disabled without owner envelope |
 | OpenAI | staging project; restricted STT key; restricted TTS key; project budget/limits | Checkpoint-blocking for service readiness; routes remain disabled without owner envelope |
@@ -373,15 +379,26 @@ Pangolin libraries enter production packages.
   `https://staging.<owner-domain>/auth/callback`; Allowed Logout URL and Allowed Web
   Origin are exactly `https://staging.<owner-domain>`. No wildcard, localhost,
   production URL, cross-origin authentication, implicit flow, or password grant.
-- Connection: Flexible Identifiers database connection; email identifier; email OTP;
-  users without passwords supported; password login, password signup, self-service
-  password change, social/SMS, and public signup disabled. New Universal Login is the
-  only login surface.
-- Provision exactly one owner user through the dashboard/API owner step without
-  entering the address in the guide, issue, PR, log, or prompt. The post-login Action
-  compares the normalized verified email with an Action secret and denies every other
-  identity. This is defense in depth: Stage 03's server-side issuer+subject binding and
-  owner allowlist remains the authorization authority and fails closed.
+- Connection: enable the generally available Passwordless Email connection whose
+  strategy/name is `email`; choose OTP, not magic link; enable it only for the staging
+  application; and disable signups. Do not create or enable another connection type.
+  New Universal Login with the Identifier First profile is the only login surface.
+  The authorization request specifies `connection=email` so
+  the exact intended connection is selected and existing Auth0 SSO is not mistaken
+  for a fresh email proof.
+- Provision exactly one owner user with `POST /api/v2/users`, `connection=email`, and
+  a one-use Management API client/token scoped only to `create:users`; enable that
+  client on the connection only for provisioning, then revoke/delete its credential.
+  Auth0's dashboard create-user form does not offer the Passwordless connection and is
+  not used for this identity. Do not force a verified claim: the owner must prove the
+  address with the actual OTP flow. The address and Management token never enter the
+  guide, issue, PR, log, evidence, prompt, or chat.
+- Bind a pre-user-registration Action to the Passwordless flow that denies creation
+  unless the normalized address equals the protected owner allowlist Action secret;
+  disabled signups remain the primary control. Bind a post-login Action that again
+  requires the normalized verified owner email and denies every other identity. These
+  are defense in depth: Stage 03's server-side issuer+subject binding and owner
+  allowlist remain the authorization authority and fail closed.
 - Auth0 SSO session settings mirror `session-policy/v1`: 24-hour idle and seven-day
   absolute maximum. The App later owns its opaque same-origin session with the same
   limits and requires an OTP no older than ten minutes for adoption, credential
@@ -724,8 +741,10 @@ contract, evidence truth, authorization, retention, accessibility, or spend circ
    DNS separation, denial and rollback tests.
 5. `docs/setup/personal/04-r2-eu-private-storage.md` — jurisdiction, buckets/prefixes,
    credentials, CORS/lifecycle/no-versioning, presigning, deletion, budget, backup and exit.
-6. `docs/setup/personal/05-auth0-eu-email-otp.md` — tenant/app/connection, exact URLs,
-   SES provider, owner/Action, session/recent auth, rotation, recovery, accessibility and exit.
+6. `docs/setup/personal/05-auth0-eu-email-otp.md` — tenant/app/GA Passwordless Email
+   connection, `connection=email`, exact URLs, Management API owner provisioning,
+   SES provider, both allowlist Actions, session/recent auth, rotation, recovery,
+   accessibility and exit.
 7. `docs/setup/personal/06-ses-frankfurt.md` — region, identity/DNS, DKIM/SPF/DMARC,
    sandbox/production, credentials, feedback/suppression, safe tests and rollback.
 8. `docs/setup/personal/07-ai-stt-tts.md` — Gemini/OpenAI/conditional Polly accounts,
