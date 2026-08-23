@@ -703,31 +703,31 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Represent the versioned official blueprint, scoring units, Written 225/135 gate, Oral 75/45 gate, official 60 line, and Bestehen Safe margin as distinguishable data.
-- [ ] Specify eligibility and aggregation from independent evidence episodes to scoring units, sections, components, planning ranges, confidence, bands, reasons, and bottleneck index.
-- [ ] Define all six client states: `evidence_building`, `not_ready`, `borderline`, `safe`, `ready_to_book`, and `stale_contradicted`, including absent estimate versus zero.
-- [ ] Define mock scopes, form-family independence, correlated occasion handling, target-condition validity, partial/pending result behavior, and immutable original mock outcomes.
-- [ ] Specify Ready-to-Book as a reversible gate over Safe/current evidence with all Stage 17 gates and granular failure reasons; UI grouping may not drop a gate.
-- [ ] Define recalculation/invalidation for evidence correction, content defect, evaluator correction, staleness, contradiction, and blueprint change.
-- [ ] Version all empirical parameters and explicitly prohibit pass probability until calibrated with independent outcomes and the product gate is satisfied.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — All scoring/readiness/gating is deterministic; AI may create structured evaluator observations but never computes the final claim in a recurring call.
-- [ ] Security/privacy/rights — Protect consequential calculations, version/audit history, and privileged blueprint/calibration updates.
-- [ ] Accessibility — Return complete textual meaning for every chart/band/gate and preserve evidence-equivalent accommodations.
-- [ ] Failure/recovery — Pending productive evaluation blocks dependent conclusions only; missing evidence is absence; partial mock scope cannot silently become whole-mock validity.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Scoring/readiness calculation specification.
-- [ ] Include Readiness and Ready-to-Book state diagrams.
-- [ ] Include Eligibility/reason discriminated unions or pseudotypes.
-- [ ] Include Mock validity/scope matrix.
-- [ ] Include Recomputation sequence and audit table.
-- [ ] Include Worked missing/pending/partial/contradicted examples.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/11-readiness-scoring-mocks-and-ready-to-book.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Represent the versioned official blueprint, scoring units, Written 225/135 gate, Oral 75/45 gate, official 60 line, and Bestehen Safe margin as distinguishable data.
+- [x] Specify eligibility and aggregation from independent evidence episodes to scoring units, sections, components, planning ranges, confidence, bands, reasons, and bottleneck index.
+- [x] Define all six client states: `evidence_building`, `not_ready`, `borderline`, `safe`, `ready_to_book`, and `stale_contradicted`, including absent estimate versus zero.
+- [x] Define mock scopes, form-family independence, correlated occasion handling, target-condition validity, partial/pending result behavior, and immutable original mock outcomes.
+- [x] Specify Ready-to-Book as a reversible gate over Safe/current evidence with all Stage 17 gates and granular failure reasons; UI grouping may not drop a gate.
+- [x] Define recalculation/invalidation for evidence correction, content defect, evaluator correction, staleness, contradiction, and blueprint change.
+- [x] Version all empirical parameters and explicitly prohibit pass probability until calibrated with independent outcomes and the product gate is satisfied.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — All scoring/readiness/gating is deterministic; AI may create structured evaluator observations but never computes the final claim in a recurring call.
+- [x] Security/privacy/rights — Protect consequential calculations, version/audit history, and privileged blueprint/calibration updates.
+- [x] Accessibility — Return complete textual meaning for every chart/band/gate and preserve evidence-equivalent accommodations.
+- [x] Failure/recovery — Pending productive evaluation blocks dependent conclusions only; missing evidence is absence; partial mock scope cannot silently become whole-mock validity.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Scoring/readiness calculation specification.
+- [x] Include Readiness and Ready-to-Book state diagrams.
+- [x] Include Eligibility/reason discriminated unions or pseudotypes.
+- [x] Include Mock validity/scope matrix.
+- [x] Include Recomputation sequence and audit table.
+- [x] Include Worked missing/pending/partial/contradicted examples.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/11-readiness-scoring-mocks-and-ready-to-book.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

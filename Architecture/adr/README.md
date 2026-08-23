@@ -32,3 +32,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0015](ADR-0015-deterministic-coaching-policy-and-revisioned-session-execution.md) | Deterministic coaching policy and revisioned session execution | Accepted | Stage 08 | `ARCH-S08-D01`–`D06` | — |
 | [ADR-0016](ADR-0016-immutable-approved-content-manifests-and-family-independence.md) | Immutable approved content manifests and family independence | Accepted | Stage 09 | `ARCH-S09-D01`–`D10` | — |
 | [ADR-0017](ADR-0017-signed-immutable-corpus-bundles-and-atomic-app-promotion.md) | Signed immutable Corpus bundles and atomic App promotion | Accepted | Stage 10 | `ARCH-S10-D01`–`D10` | — |
+| [ADR-0018](ADR-0018-deterministic-versioned-readiness-and-reversible-booking-gate.md) | Deterministic versioned Readiness and reversible booking gate | Accepted | Stage 11 | `ARCH-S11-D01`–`D10` | — |
