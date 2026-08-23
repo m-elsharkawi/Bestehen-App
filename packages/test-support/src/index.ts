@@ -48,21 +48,34 @@ export async function withIsolatedDatabase<T>(
 ): Promise<T> {
   const adminUrl = new URL(baseUrl);
   adminUrl.pathname = "/postgres";
-  const databaseName = `bestehen_test_${randomUUID().replaceAll("-", "")}`;
+  const suffix = randomUUID().replaceAll("-", "");
+  const databaseName = `bestehen_test_${suffix}`;
+  const roleName = `bestehen_test_role_${suffix}`;
+  const rolePassword = randomUUID().replaceAll("-", "");
   const admin = new Client({ connectionString: adminUrl.toString() });
   await admin.connect();
-  await admin.query(`CREATE DATABASE "${databaseName}"`);
-  const databaseUrl = new URL(baseUrl);
-  databaseUrl.pathname = `/${databaseName}`;
   try {
-    return await callback(databaseUrl.toString());
+    await admin.query(`CREATE ROLE "${roleName}" LOGIN PASSWORD '${rolePassword}'`);
+    await admin.query(`CREATE DATABASE "${databaseName}" OWNER "${roleName}"`);
+    const databaseUrl = new URL(baseUrl);
+    databaseUrl.username = roleName;
+    databaseUrl.password = rolePassword;
+    databaseUrl.pathname = `/${databaseName}`;
+    try {
+      return await callback(databaseUrl.toString());
+    } finally {
+      await admin.query(
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()",
+        [databaseName],
+      );
+      await admin.query(`DROP DATABASE "${databaseName}"`);
+    }
   } finally {
-    await admin.query(
-      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()",
-      [databaseName],
-    );
-    await admin.query(`DROP DATABASE "${databaseName}"`);
-    await admin.end();
+    try {
+      await admin.query(`DROP ROLE IF EXISTS "${roleName}"`);
+    } finally {
+      await admin.end();
+    }
   }
 }
 
@@ -73,7 +86,10 @@ export async function withSyntheticDatabaseUnavailable<T>(
   const target = new URL(databaseUrl);
   const databaseName = target.pathname.slice(1);
   const role = decodeURIComponent(target.username);
-  if (!/^bestehen_test_[a-f0-9]+$/.test(databaseName) || !/^bestehen_(?:ci|local)$/.test(role)) {
+  if (
+    !/^bestehen_test_[a-f0-9]+$/.test(databaseName) ||
+    !/^bestehen_test_role_[a-f0-9]+$/.test(role)
+  ) {
     throw new Error("Availability control is limited to isolated synthetic test databases");
   }
   target.pathname = "/postgres";
