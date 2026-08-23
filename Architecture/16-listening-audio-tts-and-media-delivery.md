@@ -96,7 +96,7 @@ All mutable facts below were accessed on 2026-08-23. Static tables are planning 
 |---|---|---|---|
 | ARCH-S16-D01 | Bind every H1–H3 block to an immutable ListeningPlan whose ordered occurrences carry family, clip, allowed play count, authored speed, sequencing, transcript phase, and evidence role. P4 is H1 once, H2 twice, H3 twice under a current blueprint. | The client cannot invent replay or order. Blueprint change publishes a successor plan and recomputes only current-target eligibility. | ADR-0024 |
 | ARCH-S16-D02 | Session & Attempt owns an idempotent PlaybackOccurrence ledger: authorize one ordinal, record started/completed/failed actual facts, and never issue a duplicate ordinal after reload/retry. | A technical fault never buys a same-content “clean” replay. The affected scope is replaced fairly. Exit is provider-neutral HTTP/outbox contracts. | ADR-0024 |
-| ARCH-S16-D03 | Extend Stage-09’s immutable media manifest with a lossless approved master, one launch MP3 learner rendition, script/transcript lineage, voice/model release, acoustic and pronunciation QA, rights, and reveal policy. | A changed render/voice/trim is a successor media revision; provider identity is provenance, never semantic identity or freshness. | ADR-0024 |
+| ARCH-S16-D03 | Extend Stage-09’s immutable asset manifest with a private lossless master revision and one launch MP3 learner media_revision_id, each exact learner rendition retaining its own digest/object/manifest identity, plus script/transcript lineage, voice/model release, acoustic and pronunciation QA, rights, and reveal policy. | Any changed encode/render/voice/trim is a successor media_revision_id; provider identity is provenance, never semantic identity or freshness. | ADR-0024 |
 | ARCH-S16-D04 | Keep the accepted private EU R2 Standard bucket. Serve short-lived, object-specific authorized reads; do not add a public CDN at launch. MP3 is the sole required launch rendition; preserve a lossless master. | Lowest coupling and one browser path. Add Opus/edge cache only from measured bytes/latency/Class-B pressure and only with equivalent QA and access control. | ADR-0024 |
 | ARCH-S16-D05 | A clean measured block starts only after every required byte is fully fetched, digest/length verified, loaded/decoded by the actual browser candidate, retained locally for the block, output test confirmed by the learner, and a versioned preflight receipt issued. | Poor connectivity is discovered before exposure/timing. A heuristic ready event alone is insufficient. Preflight expires on asset/policy/device/context change. | ADR-0024 |
 | ARCH-S16-D06 | Use provider-neutral offline batch synthesis; launch default is Amazon Polly Neural in Europe (Frankfurt), evaluated from current German candidates, followed by App-controlled transcode and human audit. Standard is the cheap fallback; generative is an audited candidate only. | No runtime Polly dependency or per-play cost. Switch provider by re-rendering successor assets from App-owned scripts/SSML/QA; never mass-retarget old IDs. | ADR-0024 |
@@ -159,10 +159,10 @@ No new independently operated service is introduced. Polly is an offline process
 The following are explanatory pseudotypes, not production schema or code.
 
 ~~~text
-AudioAssetRevision {
+AudioAssetManifest {
   asset_id
-  media_revision_id
-  predecessor_media_revision_id?
+  manifest_revision
+  predecessor_manifest_revision?
   content_revision_id
   content_family_id
   listening_family: H1 | H2 | H3
@@ -174,10 +174,9 @@ AudioAssetRevision {
   source_role: reviewed_tts | audited_premium_tts | native_human | reusable_direct
   voice_class, speaker_count, turn_map?
   authored_speed_ratio
-  duration_ms, channels, sample_rate
-  master: { object_key, digest, bytes, format }
-  renditions: AudioRendition[]
   generator: { provider, region, engine, model_release, voice_release, request_digest }
+  source_master: { master_revision_id, object_key, digest, bytes, format }
+  learner_media_revisions: AudioRendition[]
   qa: { script_match, pronunciation, cue_alignment, clipping, silence, loudness, artifacts,
         speaker_attribution, target_calibration, reviewer_refs, gold_release }
   transcript_policy_ref
@@ -188,7 +187,8 @@ AudioAssetRevision {
 }
 
 AudioRendition {
-  rendition_id
+  media_revision_id
+  predecessor_media_revision_id?
   role: web_primary | future_optimized
   object_key, digest, bytes
   mime, codec, container
@@ -204,7 +204,7 @@ ListeningPlan {
   evidence_role
   progression_profile
   ordered_occurrences: [{
-    occurrence_id, item_or_part_scope, media_revision_id, rendition_candidates[],
+    occurrence_id, item_or_part_scope, candidate_media_revision_ids[],
     allowed_play_count, authored_speed_ratio, seeking_allowed,
     pause_allowed, transcript_phase, response_window
   }]
@@ -218,7 +218,7 @@ PlaybackOccurrence {
   operation_id, idempotency_hash
   state: authorized | started | completed | failed
   authorized_at, started_at?, completed_at?
-  media_revision_id, rendition_id
+  media_revision_id
   start_position_ms, observed_end_position_ms
   visibility_changes, stall_intervals, output_or_device_change
   learner_pause?, technical_pause?, speed_actual
@@ -229,7 +229,7 @@ PlaybackOccurrence {
 MediaPreflightReceipt {
   receipt_id
   listening_plan_id, policy_versions
-  candidate_renditions_by_media[]
+  candidate_media_revisions_by_occurrence[]
   verified_digest_and_length[]
   decoded_or_loaded[]
   local_retention_class
@@ -252,9 +252,9 @@ TranscriptEnvelope {
 
 ### 6.1 Identity and compatibility rules
 
-- asset_id is a logical lineage. media_revision_id names exact approved rendered meaning and bytes.
-- A new voice, model/engine release, script, SSML, splice, normalization, timing, pause/emphasis, channel mix, or final-byte correction creates a successor media revision.
-- Re-encoding identical approved audio creates a new rendition under the same media revision only when decoded timing/cue meaning and QA are proven equivalent. Otherwise create a new media revision.
+- asset_id is the logical audio lineage; manifest_revision pins the exact aggregate of source, renditions, QA, rights and reveal policy.
+- Every learner-delivered encoding has its own media_revision_id naming exact immutable rendered bytes and manifest, as fixed by Stage 09. A new encode, container, voice, model/engine release, script, SSML, splice, normalization, timing, pause/emphasis, channel mix, or final-byte correction creates a successor media_revision_id.
+- Adding or replacing a rendition publishes a successor asset manifest; existing media_revision_id values and bytes never change. The ListeningPlan pins the exact candidate media_revision_ids and cannot substitute “latest.”
 - Voice changes never create a fresh content family. Freshness remains Stage-09 content-family plus exposure.
 - Browser clients must reject unknown contract majors, unknown H-family/playback semantics, unsupported MIME candidates, digest mismatch, and unknown transcript phase. They never choose latest.
 - Plan, preflight, playback, target-blueprint, accommodation, evidence, and media-pipeline releases are independently versioned and pinned.
@@ -478,7 +478,7 @@ A rights-only withdrawal stops future access/cache and follows legal disposition
 ### 10.1 Launch performance and reliability contract
 
 - Ordinary practice may lazy-load one small asset. A measured block preloads only its exact pinned assets, in parallel with bounded concurrency, before timing/exposure.
-- MP3 mono speech is the single launch delivery rendition. Final bitrate/sample-rate/loudness are QA parameters, not invented product constants; quality must preserve numbers, negations, corrections, speaker distinction, naturalness, and cue timing.
+- MP3 is the single launch delivery rendition. Bitrate, sample rate, channel layout and loudness are QA parameters, not invented product constants; mono is allowed only when target calibration proves no relevant channel cue is lost. Quality must preserve numbers, negations, corrections, speaker distinction, naturalness, and cue timing.
 - Full bytes avoid mid-clip range/network dependency in P4. Preflight measures manifest acquisition, time-to-first-byte, full preload, digest, decode/load, and learner output confirmation separately.
 - Native audio event timing is not the target clock. Stage 21 supplies authoritative time semantics. Backgrounding never silently pauses/resets target time.
 - A clean P4 package is immutable for the block. “Latest” fallback, mid-block rendition switching, server-side live transcode, and per-play TTS are forbidden.
@@ -595,7 +595,7 @@ ADR-0024 applies ADR-0001, ADR-0002, ADR-0003, ADR-0009, ADR-0011, ADR-0012, ADR
 2. P0–P3 speed/replay/support and P4 exact rules are rendered, observed, and preserved without client invention.
 3. Playback start/completion/fault use idempotent occurrence ordinals; reload/offline retry cannot add exposure or evidence.
 4. Stage-09 media manifests are extended with lossless master, MP3 rendition, voice/release, QA, rights and transcript-phase facts.
-5. Private EU R2 Standard remains the byte store; short-lived controlled reads are used and no public CDN is added at launch.
+5. Private EU R2 Standard remains the byte store; short-lived controlled reads pin the exact media_revision_id and no public CDN is added at launch.
 6. MP3 is the only required launch web rendition; Opus/edge cache require measured benefit and full matrix evidence.
 7. Amazon Polly Neural in Frankfurt is the initial provider candidate for offline batch breadth, behind an exportable adapter; Standard is cheaper fallback, Generative audited-only.
 8. P4 uses target-calibrated complete-form human sign-off and audited voice/native variety; synthetic breadth alone is insufficient.
