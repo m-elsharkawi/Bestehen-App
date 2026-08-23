@@ -34,3 +34,5 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0017](ADR-0017-signed-immutable-corpus-bundles-and-atomic-app-promotion.md) | Signed immutable Corpus bundles and atomic App promotion | Accepted | Stage 10 | `ARCH-S10-D01`–`D10` | — |
 | [ADR-0018](ADR-0018-deterministic-versioned-readiness-and-reversible-booking-gate.md) | Deterministic versioned Readiness and reversible booking gate | Accepted | Stage 11 | `ARCH-S11-D01`–`D10` | — |
 | [ADR-0019](ADR-0019-versioned-http-contracts-and-durable-idempotent-asynchronous-work.md) | Versioned HTTP contracts and durable idempotent asynchronous work | Accepted | Stage 12 | `ARCH-S12-D01`–`D10` | — |
+| [ADR-0020](ADR-0020-server-first-frontend-composition-and-bounded-browser-state.md) | Server-first frontend composition and bounded browser state | Accepted | Stage 13 | `ARCH-S13-D01`–`D05`, `D10` | — |
+| [ADR-0021](ADR-0021-single-semantic-design-system-and-shared-five-skill-extension-contract.md) | Single semantic design system and shared five-skill extension contract | Accepted | Stage 13 | `ARCH-S13-D06`–`D11` | — |

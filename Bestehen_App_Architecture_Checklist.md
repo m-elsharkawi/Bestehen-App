@@ -851,30 +851,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define responsive web application composition, routing, four-destination IA, focused attempt/mock shells, feature-module boundaries, and dependency direction.
-- [ ] Define server/client/local/form state ownership, query/cache invalidation, draft state, optimistic UI limits, and how authoritative domain state becomes UI projections.
-- [ ] Define one shared component library and extension points for five skill-specific input regions; prevent skill-specific forks of shell/result/repair/evidence behavior.
-- [ ] Map 25 named semantic design tokens across light/dark modes, typography roles, 18-icon subset, Threshold B logo assets, theme override, and asset delivery.
-- [ ] Define component contracts for all validity/readiness/failure/pending states, progressive disclosure, error boundaries, empty states, and read-only evidence labels.
-- [ ] Create a screen/flow/component-to-module/API traceability map without treating each design frame as a separate route or backend service.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer one web client and one shared library; avoid duplicate state stores/frameworks and unnecessary client analytics.
-- [ ] Security/privacy/rights — Prevent XSS/content injection, protect tokens/secrets from the client, and make system-owned states read-only.
-- [ ] Accessibility — Build semantics/focus/live regions/reduced motion into shared primitives rather than per-screen fixes.
-- [ ] Failure/recovery — Use local error boundaries and recovery state contracts; one failed capability must not crash the whole App.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Frontend/module/component dependency diagram.
-- [ ] Include Route/shell/state ownership table.
-- [ ] Include Design-token/theme/asset architecture.
-- [ ] Include Design screen/flow/component mapping.
-- [ ] Include Error-boundary/degradation plan.
-- [ ] Include Shared-shell extension contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/13-frontend-application-and-design-system-architecture.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define responsive web application composition, routing, four-destination IA, focused attempt/mock shells, feature-module boundaries, and dependency direction.
+- [x] Define server/client/local/form state ownership, query/cache invalidation, draft state, optimistic UI limits, and how authoritative domain state becomes UI projections.
+- [x] Define one shared component library and extension points for five skill-specific input regions; prevent skill-specific forks of shell/result/repair/evidence behavior.
+- [x] Map 25 named semantic design tokens across light/dark modes, typography roles, 18-icon subset, Threshold B logo assets, theme override, and asset delivery.
+- [x] Define component contracts for all validity/readiness/failure/pending states, progressive disclosure, error boundaries, empty states, and read-only evidence labels.
+- [x] Create a screen/flow/component-to-module/API traceability map without treating each design frame as a separate route or backend service.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer one web client and one shared library; avoid duplicate state stores/frameworks and unnecessary client analytics.
+- [x] Security/privacy/rights — Prevent XSS/content injection, protect tokens/secrets from the client, and make system-owned states read-only.
+- [x] Accessibility — Build semantics/focus/live regions/reduced motion into shared primitives rather than per-screen fixes.
+- [x] Failure/recovery — Use local error boundaries and recovery state contracts; one failed capability must not crash the whole App.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Frontend/module/component dependency diagram.
+- [x] Include Route/shell/state ownership table.
+- [x] Include Design-token/theme/asset architecture.
+- [x] Include Design screen/flow/component mapping.
+- [x] Include Error-boundary/degradation plan.
+- [x] Include Shared-shell extension contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/13-frontend-application-and-design-system-architecture.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
