@@ -1909,30 +1909,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Validate all prior architecture documents against the nine product scenarios and design Flows A–G with concrete component/state/data/API/failure paths.
-- [ ] Build a cross-stage failure/recovery matrix for AI, audio, microphone, network, browser, content, evaluator, Corpus, identity, notification, storage, and deployment failures.
-- [ ] Walk through threat, privacy, rights, retention/deletion, accessibility, cost, latency, timing, idempotency, and operability for each consequential scenario.
-- [ ] Detect contradictory ownership, duplicate truth, missing state, circular dependency, version gap, hidden live dependency, and implementation invention.
-- [ ] Amend earlier architecture documents and ADRs only where evidence requires it, recording every amendment and checklist impact.
-- [ ] Answer every architecture-completeness question from the master plan and prove each product/design invariant has an owner and test.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Validate variable-cost bounds and low-cost fallbacks in every productive/media/provider path.
-- [ ] Security/privacy/rights — Validate end-to-end data minimization, rights, deletion, processor, auth, and incident paths.
-- [ ] Accessibility — Validate equal completion/evidence paths for all seven design flows and representative skill tasks.
-- [ ] Failure/recovery — Prove unaffected scope survives and no system fault becomes learner failure in every representative case.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Scenario walkthrough matrix.
-- [ ] Include Failure/recovery matrix.
-- [ ] Include Cross-stage consistency/ownership audit.
-- [ ] Include Threat/cost/latency/privacy/accessibility walkthroughs.
-- [ ] Include Amendment log and residual risk register.
-- [ ] Include Go/no-go definition-of-done result.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/27-end-to-end-architecture-validation.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Validate all prior architecture documents against the nine product scenarios and design Flows A–G with concrete component/state/data/API/failure paths.
+- [x] Build a cross-stage failure/recovery matrix for AI, audio, microphone, network, browser, content, evaluator, Corpus, identity, notification, storage, and deployment failures.
+- [x] Walk through threat, privacy, rights, retention/deletion, accessibility, cost, latency, timing, idempotency, and operability for each consequential scenario.
+- [x] Detect contradictory ownership, duplicate truth, missing state, circular dependency, version gap, hidden live dependency, and implementation invention.
+- [x] Amend earlier architecture documents and ADRs only where evidence requires it, recording every amendment and checklist impact.
+- [x] Answer every architecture-completeness question from the master plan and prove each product/design invariant has an owner and test.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Validate variable-cost bounds and low-cost fallbacks in every productive/media/provider path.
+- [x] Security/privacy/rights — Validate end-to-end data minimization, rights, deletion, processor, auth, and incident paths.
+- [x] Accessibility — Validate equal completion/evidence paths for all seven design flows and representative skill tasks.
+- [x] Failure/recovery — Prove unaffected scope survives and no system fault becomes learner failure in every representative case.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Scenario walkthrough matrix.
+- [x] Include Failure/recovery matrix.
+- [x] Include Cross-stage consistency/ownership audit.
+- [x] Include Threat/cost/latency/privacy/accessibility walkthroughs.
+- [x] Include Amendment log and residual risk register.
+- [x] Include Go/no-go definition-of-done result.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/27-end-to-end-architecture-validation.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
