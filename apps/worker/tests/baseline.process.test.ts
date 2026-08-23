@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
-import { setSyntheticDatabaseAvailability, withIsolatedDatabase } from "@bestehen/test-support";
+import { withIsolatedDatabase, withSyntheticDatabaseUnavailable } from "@bestehen/test-support";
 import { migrateDatabase } from "@bestehen/infrastructure";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -45,8 +45,11 @@ async function waitFor(url: string, status: number): Promise<void> {
 
 afterEach(async () => {
   for (const child of children) {
-    if (child.exitCode === null) child.kill("SIGKILL");
-    await once(child, "exit").catch(() => undefined);
+    if (child.exitCode === null && child.signalCode === null) {
+      const exited = once(child, "exit");
+      child.kill("SIGKILL");
+      await exited;
+    }
   }
   children.clear();
 });
@@ -62,9 +65,9 @@ describe.skipIf(!testDatabaseUrl)("worker process", () => {
       });
       children.add(child);
       await waitFor(`http://127.0.0.1:${port}/health/ready`, 200);
-      await setSyntheticDatabaseAvailability(databaseUrl, false);
-      await waitFor(`http://127.0.0.1:${port}/health/ready`, 503);
-      await setSyntheticDatabaseAvailability(databaseUrl, true);
+      await withSyntheticDatabaseUnavailable(databaseUrl, () =>
+        waitFor(`http://127.0.0.1:${port}/health/ready`, 503),
+      );
       await waitFor(`http://127.0.0.1:${port}/health/ready`, 200);
       const notFound = await fetch(`http://127.0.0.1:${port}/work`);
       expect(notFound.status).toBe(404);

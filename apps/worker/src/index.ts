@@ -87,15 +87,20 @@ export class WorkerRuntime {
     const closeServer = this.server
       ? new Promise<void>((resolve) => this.server?.close(() => resolve()))
       : Promise.resolve();
-    await Promise.race([
-      Promise.all([closeServer, this.supervisor.stop(), this.pool.end()]),
-      new Promise<never>((_, reject) =>
-        setTimeout(
-          () => reject(new Error("Worker shutdown exceeded its configured grace period")),
-          this.environment.BESTEHEN_SHUTDOWN_GRACE_MS,
-        ),
-      ),
-    ]);
+    let timeout: NodeJS.Timeout | undefined;
+    try {
+      await Promise.race([
+        Promise.all([closeServer, this.supervisor.stop(), this.pool.end()]),
+        new Promise<never>((_, reject) => {
+          timeout = setTimeout(
+            () => reject(new Error("Worker shutdown exceeded its configured grace period")),
+            this.environment.BESTEHEN_SHUTDOWN_GRACE_MS,
+          );
+        }),
+      ]);
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
     this.logger.info({ eventName: "worker_stopped", signal });
   }
 }
