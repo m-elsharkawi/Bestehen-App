@@ -2,9 +2,11 @@ import { execFileSync } from "node:child_process";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 
-const baseline = process.env.STAGE_BASE_SHA ?? "5c7e8b1ebdd2370b519b2d984b0ff732851b89ae";
 export const stage01Branch = "implementation/personal-01-repository-delivery-baseline";
-const allowed = [
+export const stage02Branch = "implementation/personal-02-provider-service-setup";
+const stage01Baseline = "5c7e8b1ebdd2370b519b2d984b0ff732851b89ae";
+const stage02Baseline = "e6491b8628c723614e38e56ffa25cfebb74d229b";
+const stage01Allowed = [
   /^\.dockerignore$/,
   /^\.env\.example$/,
   /^\.github\//,
@@ -30,6 +32,19 @@ const allowed = [
   /^Implementation\/Personal\/01-repository-delivery-baseline\/(?:plan|handoff)\.md$/,
   /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
 ];
+const stage02Allowed = [
+  /^\.env\.example$/,
+  /^\.github\/workflows\/ci\.yml$/,
+  /^config\/personal-provider-readiness\.example\.json$/,
+  /^docs\/configuration\.md$/,
+  /^docs\/setup\/personal\//,
+  /^Implementation\/Personal\/02-provider-service-setup\/handoff\.md$/,
+  /^package\.json$/,
+  /^packages\/(?:application|configuration|infrastructure)\/src\/index(?:\.test)?\.ts$/,
+  /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
+  /^schemas\/personal-provider-readiness\.schema\.json$/,
+  /^scripts\/(?:check-docs|check-provider-readiness|check-scope|test-scope)\.mjs$/,
+];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {
   return githubHeadRef || githubRefName || localBranch;
@@ -39,8 +54,16 @@ export function stage01ScopeApplies(context) {
   return scopeRef(context) === stage01Branch;
 }
 
+export function stage02ScopeApplies(context) {
+  return scopeRef(context) === stage02Branch;
+}
+
 export function unexpectedStage01Paths(changed) {
-  return changed.filter((file) => !allowed.some((pattern) => pattern.test(file)));
+  return changed.filter((file) => !stage01Allowed.some((pattern) => pattern.test(file)));
+}
+
+export function unexpectedStage02Paths(changed) {
+  return changed.filter((file) => !stage02Allowed.some((pattern) => pattern.test(file)));
 }
 
 function main() {
@@ -51,13 +74,19 @@ function main() {
       encoding: "utf8",
     }).trim(),
   };
-  if (!stage01ScopeApplies(context)) {
+  const stage = stage01ScopeApplies(context)
+    ? { baseline: stage01Baseline, label: "Stage 01", unexpected: unexpectedStage01Paths }
+    : stage02ScopeApplies(context)
+      ? { baseline: stage02Baseline, label: "P02-SCOPE-001", unexpected: unexpectedStage02Paths }
+      : undefined;
+  if (!stage) {
     process.stdout.write(
       `Stage 01 scope is not applicable on ${scopeRef(context) || "detached HEAD"}.\n`,
     );
     return;
   }
 
+  const baseline = process.env.STAGE_BASE_SHA ?? stage.baseline;
   execFileSync("git", ["merge-base", "--is-ancestor", baseline, "HEAD"]);
   const changed = execFileSync("git", ["diff", "--name-only", baseline], {
     encoding: "utf8",
@@ -65,14 +94,14 @@ function main() {
     .trim()
     .split("\n")
     .filter(Boolean);
-  const unexpected = unexpectedStage01Paths(changed);
+  const unexpected = stage.unexpected(changed);
   if (unexpected.length > 0)
-    throw new Error(`Stage 01 scope contains unexpected paths: ${unexpected}`);
+    throw new Error(`${stage.label} scope contains unexpected paths: ${unexpected}`);
   if (changed.some((file) => /^(?:Architecture|Design)\//.test(file))) {
-    throw new Error("Architecture and design sources are immutable during Stage 01 execution");
+    throw new Error(`Architecture and design sources are immutable during ${stage.label}`);
   }
   process.stdout.write(
-    `Stage 01 scope valid for ${changed.length} changed paths from ${baseline}.\n`,
+    `${stage.label} valid for ${changed.length} changed paths from ${baseline}.\n`,
   );
 }
 
