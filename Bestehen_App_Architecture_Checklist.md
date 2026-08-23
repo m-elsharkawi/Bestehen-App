@@ -501,30 +501,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define daily-plan inputs, lexicographic priority tiers, within-tier comparison, deterministic selection, tie-breaking, and structured reason codes.
-- [ ] Define `Coach me` versus `Just practice X`, alternative plans, time/context changes, early target-condition/mock choices, and non-punitive overrides.
-- [ ] Define session/activity/attempt boundaries, plan assembly, one dominant action, limited secondary scope, partial completion, stop, resume, and replanning.
-- [ ] Model Observe → Attempt → Diagnose → Repair → Retry → Remember with allowed compression/deferment and productive Pending branches.
-- [ ] Separate deterministic policy from bounded model-assisted diagnosis/copy and define reviewed fallback reasons/copy.
-- [ ] Define state ownership and concurrency when evaluations arrive after the learner continues or a plan changes.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — No per-session premium planner; use structured deterministic policy, cached content, and templated explanations.
-- [ ] Security/privacy/rights — Do not send full learner history to models just to choose or phrase a plan.
-- [ ] Accessibility — Capability/access context may change activity eligibility but must not globally block the App.
-- [ ] Failure/recovery — A plan assembly/content/evaluator failure yields a specific fallback or alternative activity without learner penalty.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Planning decision table/pseudologic.
-- [ ] Include Session and canonical-loop state diagrams.
-- [ ] Include Coach-me/Just-practice sequences.
-- [ ] Include Override/consequence matrix.
-- [ ] Include Reason-code and fallback-copy contract.
-- [ ] Include Partial completion/resume table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/08-coaching-engine-and-session-state-machines.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define daily-plan inputs, lexicographic priority tiers, within-tier comparison, deterministic selection, tie-breaking, and structured reason codes.
+- [x] Define `Coach me` versus `Just practice X`, alternative plans, time/context changes, early target-condition/mock choices, and non-punitive overrides.
+- [x] Define session/activity/attempt boundaries, plan assembly, one dominant action, limited secondary scope, partial completion, stop, resume, and replanning.
+- [x] Model Observe → Attempt → Diagnose → Repair → Retry → Remember with allowed compression/deferment and productive Pending branches.
+- [x] Separate deterministic policy from bounded model-assisted diagnosis/copy and define reviewed fallback reasons/copy.
+- [x] Define state ownership and concurrency when evaluations arrive after the learner continues or a plan changes.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — No per-session premium planner; use structured deterministic policy, cached content, and templated explanations.
+- [x] Security/privacy/rights — Do not send full learner history to models just to choose or phrase a plan.
+- [x] Accessibility — Capability/access context may change activity eligibility but must not globally block the App.
+- [x] Failure/recovery — A plan assembly/content/evaluator failure yields a specific fallback or alternative activity without learner penalty.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Planning decision table/pseudologic.
+- [x] Include Session and canonical-loop state diagrams.
+- [x] Include Coach-me/Just-practice sequences.
+- [x] Include Override/consequence matrix.
+- [x] Include Reason-code and fallback-copy contract.
+- [x] Include Partial completion/resume table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/08-coaching-engine-and-session-state-machines.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
