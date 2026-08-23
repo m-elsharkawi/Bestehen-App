@@ -465,6 +465,18 @@ sequenceDiagram
   PE-->>SA: durable deletion proof metadata
 ~~~
 
+### 7.2a Part-specific S1–S3 state contracts
+
+These are operational part states, not new evidence-validity values. The immutable SpeakingPart pins its permitted path, preparation rule and bounded turn plan; the client cannot invent or skip a state.
+
+| Part | Pinned state path | Completion / interaction claim | Fault boundary |
+|---|---|---|---|
+| S1 | prepared → preparation_complete → fixed_prompt → learner_turn → optional_fixed_follow_up → learner_response → part_complete | learner explicitly ends required voice turns; reciprocity cites the follow-up/response pair | prompt/capture fault interrupts only S1; an unresponsive monologue can retain production but cannot claim reciprocal S1 breadth |
+| S2 | prepared → preparation_complete → learner_input_contribution → partner_different_view → learner_response_and_reason → optional_clarify_or_disagree → part_complete | genuine interaction requires a learner turn dependent on the partner’s different view, not only the initial source summary | hidden-input leak, unrelated/malformed partner turn or capture loss narrows S2 interaction; completed defensible production survives |
+| S3 | prepared → preparation_complete → opening_proposal → partner_proposal_or_constraint → negotiate/counter/repair loop bounded by the plan → convergence_or_declared_end → confirmation → part_complete | genuine interaction cites reaction, proposal/alternative/compromise and convergence evidence; a different workable plan is valid | partner domination/blocking, scenario drift or failed turn capture affects only cited S3 scopes; lack of convergence is judged only when conditions were fair |
+
+Preparation starts only after current preflight and before the first measured learner turn. It follows the pinned blueprint/timing rule; the microphone may remain authorized but is not recording, and no coaching/partner generation is allowed to consume the learner’s private preparation. At P4, all feedback waits until the complete oral block ends. Each learner turn completes by explicit learner action or a validated bounded endpoint followed by confirmation; automatic endpointing cannot be the sole authority. System/partner wait is recorded separately and excluded from learner fluency/timing. A learner stop preserves completed defensible turns and enters the shared interrupted path rather than manufacturing a part score.
+
 ### 7.3 Partner behavior and fallback table
 
 | Part/profile | Default | Genuine evidence available | Failure/fallback |
