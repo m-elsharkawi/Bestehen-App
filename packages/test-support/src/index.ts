@@ -73,27 +73,21 @@ export async function withSyntheticDatabaseUnavailable<T>(
   const target = new URL(databaseUrl);
   const databaseName = target.pathname.slice(1);
   const role = decodeURIComponent(target.username);
-  const password = decodeURIComponent(target.password);
-  if (
-    !/^bestehen_test_[a-f0-9]+$/.test(databaseName) ||
-    !/^bestehen_(?:ci|local)$/.test(role) ||
-    !password
-  ) {
+  if (!/^bestehen_test_[a-f0-9]+$/.test(databaseName) || !/^bestehen_(?:ci|local)$/.test(role)) {
     throw new Error("Availability control is limited to isolated synthetic test databases");
   }
   target.pathname = "/postgres";
   const admin = new Client({ connectionString: target.toString() });
   await admin.connect();
   try {
-    const unavailablePassword = randomUUID().replaceAll("-", "");
-    await admin.query(`ALTER ROLE "${role}" PASSWORD '${unavailablePassword}'`);
+    await admin.query(`ALTER DATABASE "${databaseName}" WITH ALLOW_CONNECTIONS false`);
     await admin.query(
       "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()",
       [databaseName],
     );
     return await callback();
   } finally {
-    await admin.query(`ALTER ROLE "${role}" PASSWORD '${password.replaceAll("'", "''")}'`);
+    await admin.query(`ALTER DATABASE "${databaseName}" WITH ALLOW_CONNECTIONS true`);
     await admin.end();
   }
 }
