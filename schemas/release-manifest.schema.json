@@ -156,7 +156,15 @@
         "P01-OCI-WEB-001",
         "P01-OCI-WORKER-001",
         "P01-RELEASE-001",
-        "P01-DOC-001"
+        "P01-DOC-001",
+        "P02-SCOPE-001",
+        "P02-DOC-001",
+        "P02-CONFIG-001",
+        "P02-FAKE-001",
+        "P02-SECRET-001",
+        "P02-READINESS-001",
+        "P02-DEPS-001",
+        "P02-COMPAT-001"
       ],
       "properties": {
         "P01-BASE-001": { "type": "string", "minLength": 1 },
@@ -175,7 +183,15 @@
         "P01-OCI-WEB-001": { "type": "string", "minLength": 1 },
         "P01-OCI-WORKER-001": { "type": "string", "minLength": 1 },
         "P01-RELEASE-001": { "type": "string", "minLength": 1 },
-        "P01-DOC-001": { "type": "string", "minLength": 1 }
+        "P01-DOC-001": { "type": "string", "minLength": 1 },
+        "P02-SCOPE-001": { "type": "string", "minLength": 1 },
+        "P02-DOC-001": { "type": "string", "minLength": 1 },
+        "P02-CONFIG-001": { "type": "string", "minLength": 1 },
+        "P02-FAKE-001": { "type": "string", "minLength": 1 },
+        "P02-SECRET-001": { "type": "string", "minLength": 1 },
+        "P02-READINESS-001": { "type": "string", "minLength": 1 },
+        "P02-DEPS-001": { "type": "string", "minLength": 1 },
+        "P02-COMPAT-001": { "type": "string", "minLength": 1 }
       }
     }
   }

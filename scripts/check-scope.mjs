@@ -43,7 +43,8 @@ const stage02Allowed = [
   /^packages\/(?:application|configuration|infrastructure)\/src\/index(?:\.test)?\.ts$/,
   /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
   /^schemas\/personal-provider-readiness\.schema\.json$/,
-  /^scripts\/(?:check-docs|check-provider-readiness|check-scope|test-scope)\.mjs$/,
+  /^schemas\/release-manifest\.schema\.json$/,
+  /^scripts\/(?:check-docs|check-provider-readiness|check-scope|test-release-manifest|test-scope)\.mjs$/,
 ];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {

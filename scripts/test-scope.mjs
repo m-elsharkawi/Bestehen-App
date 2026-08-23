@@ -54,6 +54,8 @@ assert.deepEqual(
     "schemas/personal-provider-readiness.schema.json",
     "packages/configuration/src/index.test.ts",
     "Implementation/Personal/02-provider-service-setup/handoff.md",
+    "schemas/release-manifest.schema.json",
+    "scripts/test-release-manifest.mjs",
   ]),
   [],
   "Stage 02 accepts its bounded implementation paths",
