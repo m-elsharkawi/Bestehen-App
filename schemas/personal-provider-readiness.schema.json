@@ -26,8 +26,8 @@
     "redactionMarker": { "const": "content-and-identifiers-omitted" },
     "resources": {
       "type": "array",
-      "minItems": 7,
-      "maxItems": 7,
+      "minItems": 9,
+      "maxItems": 9,
       "items": { "$ref": "#/$defs/resource" }
     }
   },
@@ -51,12 +51,34 @@
       ],
       "properties": {
         "provider": {
-          "enum": ["auth0", "r2", "ses", "gemini", "openai_stt", "openai_tts", "polly"]
+          "enum": [
+            "coolify",
+            "pangolin",
+            "auth0",
+            "r2",
+            "ses",
+            "gemini",
+            "openai_stt",
+            "openai_tts",
+            "polly"
+          ]
         },
         "capability": {
-          "enum": ["identity", "object_storage", "email", "ai", "stt", "tts", "tts_offline"]
+          "enum": [
+            "deployment",
+            "private_ingress",
+            "identity",
+            "object_storage",
+            "email",
+            "ai",
+            "stt",
+            "tts",
+            "tts_offline"
+          ]
         },
-        "region": { "enum": ["eu", "eu-central-1", "provider-managed"] },
+        "region": {
+          "enum": ["owner-private-vms", "eu", "eu-central-1", "provider-managed"]
+        },
         "model": {
           "enum": [
             "not_applicable",
@@ -68,6 +90,8 @@
         },
         "resourceClass": {
           "enum": [
+            "two_vm_staging",
+            "private_http_resources",
             "tenant_application_connection",
             "private_bucket_pair",
             "sending_identity",
@@ -163,6 +187,36 @@
                   "verification": { "const": "not_applicable" }
                 }
               }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "provider": { "const": "coolify" } },
+            "required": ["provider"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "deployment" },
+              "region": { "const": "owner-private-vms" },
+              "model": { "const": "not_applicable" },
+              "resourceClass": { "const": "two_vm_staging" },
+              "guideStep": { "type": "string", "pattern": "^OPS-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "provider": { "const": "pangolin" } },
+            "required": ["provider"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "private_ingress" },
+              "region": { "const": "owner-private-vms" },
+              "model": { "const": "not_applicable" },
+              "resourceClass": { "const": "private_http_resources" },
+              "guideStep": { "type": "string", "pattern": "^NET-[0-9]{2}$" }
             }
           }
         },

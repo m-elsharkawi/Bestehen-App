@@ -3,9 +3,47 @@
   "environment": "staging",
   "releaseCommit": "0000000000000000000000000000000000000000",
   "applicationOrigin": "https://staging.example.invalid",
-  "authCallbackUrl": "https://staging.example.invalid/api/auth/callback",
+  "authCallbackUrl": "https://staging.example.invalid/auth/callback",
   "redactionMarker": "content-and-identifiers-omitted",
   "resources": [
+    {
+      "provider": "coolify",
+      "capability": "deployment",
+      "region": "owner-private-vms",
+      "model": "not_applicable",
+      "resourceClass": "two_vm_staging",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "OPS-07",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "dashboard",
+        "evidenceReference": "protected-ledger:coolify-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
+    {
+      "provider": "pangolin",
+      "capability": "private_ingress",
+      "region": "owner-private-vms",
+      "model": "not_applicable",
+      "resourceClass": "private_http_resources",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "NET-05",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "negative_test",
+        "evidenceReference": "protected-ledger:pangolin-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
     {
       "provider": "auth0",
       "capability": "identity",

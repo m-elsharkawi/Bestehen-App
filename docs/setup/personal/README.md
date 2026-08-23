@@ -24,6 +24,12 @@ An agent may use an authenticated connection only when the owner has already gra
 that authority. A dashboard-only step returns a redacted result such as
 `owner_pending`, `verified`, `failed`, or `rolled_back`; it never returns a value.
 
+The readiness receipt covers the private runtime boundaries (Coolify and Pangolin)
+and the seven provider rows. GitHub source, Dependency Graph, and CI readiness remain
+repository evidence recorded by commit and check URL in the handoff. GitHub is
+intentionally rejected as a receipt resource; no GitHub identifier or credential
+belongs in the receipt.
+
 ## Prerequisites and symbolic values
 
 Choose these in a protected owner ledger before starting. Angle-bracket values are
@@ -142,4 +148,3 @@ validator prints only field names and aggregate status, never file contents.
 Every numbered action below has Owner, Action, Expected result, How to verify,
 Evidence, Rollback, and NEVER PASTE HERE. A screenshot may supplement a result but is
 never the only instruction or proof.
-

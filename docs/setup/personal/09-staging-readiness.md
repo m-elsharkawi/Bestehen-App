@@ -29,7 +29,7 @@ DNS, resources, credentials, and bounded paid calls only with the named owner au
 - **Owner:** orchestrator/operations owner after owner configuration.
 - **Action:** Deploy the exact accepted commit with fake adapters and all external/paid flags false. Verify health/fake contracts. Only then set staging protected configuration for one named resource smoke at a time. Any executable live smoke requires `BESTEHEN_LIVE_SMOKE=1`, `BESTEHEN_APP_ENV=staging`, exact provider/capability, clean 40-character commit, provider and App envelope verification, and the documented maximum one call/create + one verification read + one cleanup. Normal CI never sets this opt-in.
 - **Expected result:** fake-first service is healthy; each admitted resource smoke is synthetic, bounded, cleaned, redacted, and returns flags to false.
-- **How to verify:** `pnpm live-smoke -- --provider <name> --capability <name> --dry-run` checks the guard without a network call. The actual provider action follows only its guide step and later capability implementation; Stage 02 supplies no provider adapter.
+- **How to verify:** run `pnpm check:providers`, then use the named guide step's exact preflight and bounded resource check. Stage 02 supplies no provider adapter or general live-smoke runner.
 - **Evidence:** provider/capability, commit, result class, region/model, bounded usage/latency, cleanup, step ID, and digest—never content or identifiers.
 - **Rollback:** cleanup in `finally`, set flags false, select fakes, revoke temporary access, and verify unrelated readiness.
 - **NEVER PASTE HERE:** environment, secret, URL/account/object/message/request ID, owner email, audio/transcript/text, provider body, or exact private cost envelope.
@@ -53,4 +53,3 @@ approved-object flow (`05E`); Gemini/STT/TTS and raw-audio deletion (`06E`);
 candidate-to-evidence/outage fallback (`07E`); provider-fault Readiness truth (`08E`);
 and session/email/export/deletion/restore suppression (`09E`). Deterministic fakes
 remain mandatory CI and a live failure never weakens them.
-

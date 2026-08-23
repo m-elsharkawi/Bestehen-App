@@ -7,7 +7,17 @@ import addFormats from "ajv-formats";
 const schemaPath = "schemas/personal-provider-readiness.schema.json";
 const examplePath = "config/personal-provider-readiness.example.json";
 const guideDirectory = "docs/setup/personal";
-const requiredProviders = ["auth0", "r2", "ses", "gemini", "openai_stt", "openai_tts", "polly"];
+const requiredProviders = [
+  "coolify",
+  "pangolin",
+  "auth0",
+  "r2",
+  "ses",
+  "gemini",
+  "openai_stt",
+  "openai_tts",
+  "polly",
+];
 const forbiddenKey =
   /(?:secret|password|token|credential|api.?key|access.?key|private.?key|email.?address|owner.?email|account.?id|tenant.?id|resource.?id|request.?id|message.?id|object.?key|transcript|prompt|response.?body)/i;
 const forbiddenValue = /(?:\bBearer\s+|\bsk-[A-Za-z0-9_-]{8,}|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})/i;
@@ -42,7 +52,7 @@ function scanRedaction(value, location = "receipt") {
 }
 
 function validateRelationships(receipt, steps) {
-  if (receipt.authCallbackUrl !== `${receipt.applicationOrigin}/api/auth/callback`)
+  if (receipt.authCallbackUrl !== `${receipt.applicationOrigin}/auth/callback`)
     throw new Error("Authentication callback must derive from the single application origin");
   if (receipt.applicationOrigin.includes("*") || receipt.authCallbackUrl.includes("*"))
     throw new Error("Wildcard origins and callbacks are forbidden");
@@ -81,6 +91,10 @@ function clone(value) {
   return structuredClone(value);
 }
 
+function providerResource(receipt, provider) {
+  return receipt.resources.find((resource) => resource.provider === provider);
+}
+
 function assertRejected(name, mutate, example, validate, steps) {
   const invalid = clone(example);
   mutate(invalid);
@@ -94,20 +108,37 @@ function assertRejected(name, mutate, example, validate, steps) {
 
 function runInvalidFixtures(example, validate, steps) {
   const fixtures = [
-    ["private field", (receipt) => (receipt.resources[0].clientSecret = "redacted")],
+    ["private field", (receipt) => (providerResource(receipt, "auth0").clientSecret = "redacted")],
     [
       "false live claim",
       (receipt) => {
-        receipt.resources[0].result = "verified";
-        receipt.resources[0].liveVerified = false;
+        providerResource(receipt, "auth0").result = "verified";
+        providerResource(receipt, "auth0").liveVerified = false;
       },
     ],
-    ["unknown guide step", (receipt) => (receipt.resources[0].guideStep = "AUTH-99")],
-    ["wrong region", (receipt) => (receipt.resources[1].region = "eu-central-1")],
-    ["wrong model", (receipt) => (receipt.resources[3].model = "not_applicable")],
+    ["unknown guide step", (receipt) => (providerResource(receipt, "auth0").guideStep = "AUTH-99")],
+    ["wrong region", (receipt) => (providerResource(receipt, "r2").region = "eu-central-1")],
+    ["wrong model", (receipt) => (providerResource(receipt, "gemini").model = "not_applicable")],
     ["wildcard origin", (receipt) => (receipt.applicationOrigin = "https://*.example.invalid")],
-    ["missing rollback", (receipt) => delete receipt.resources[0].rollback],
-    ["missing verification", (receipt) => delete receipt.resources[0].verification],
+    [
+      "wrong callback path",
+      (receipt) => (receipt.authCallbackUrl = `${receipt.applicationOrigin}/api/auth/callback`),
+    ],
+    [
+      "missing Coolify",
+      (receipt) =>
+        receipt.resources.splice(
+          receipt.resources.findIndex((resource) => resource.provider === "coolify"),
+          1,
+        ),
+    ],
+    [
+      "misclassified Pangolin",
+      (receipt) => (providerResource(receipt, "pangolin").capability = "deployment"),
+    ],
+    ["GitHub is outside the receipt", (receipt) => (receipt.resources[0].provider = "github")],
+    ["missing rollback", (receipt) => delete providerResource(receipt, "auth0").rollback],
+    ["missing verification", (receipt) => delete providerResource(receipt, "auth0").verification],
   ];
   for (const [name, mutate] of fixtures) assertRejected(name, mutate, example, validate, steps);
   return fixtures.length;
