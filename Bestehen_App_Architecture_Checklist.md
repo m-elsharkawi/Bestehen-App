@@ -635,30 +635,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Choose and specify App request/Corpus publication contract style: bundles, API, files, or hybrid, with evidence-based comparison.
-- [ ] Map six information families plus governance envelopes into versioned App-consumable contracts without leaking Corpus tables.
-- [ ] Define asynchronous publication, acceptance/promotion, immutable bundle/version identity, cache layout, rollback, and offline/runtime fallback.
-- [ ] Define contract/model/payload version compatibility, stable IDs, taxonomy/blueprint migrations, deprecation, and unsupported-major behavior.
-- [ ] Define confidence, currentness, source breadth, analytical independence, use eligibility, exact-asset rights, attribution, takedown, and reclassification handling.
-- [ ] Prove normal practice and previously approved P4 content continue during Corpus downtime and that Corpus never receives learner state.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer batched immutable publication and local/cache reads; quantify storage, transfer, refresh, and invalidation costs.
-- [ ] Security/privacy/rights — Authenticate authoring/publication channels, validate signatures/checksums where justified, and enforce rights/takedown.
-- [ ] Accessibility — Carry accessibility metadata and do not publish learner tasks missing required alternatives.
-- [ ] Failure/recovery — Define no-match, sparse evidence, stale bundle, incompatible major, revoked asset, and Corpus outage behavior.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Contract/bundle pseudotypes.
-- [ ] Include Publication/acceptance sequence.
-- [ ] Include Compatibility matrix.
-- [ ] Include Cache/fallback state table.
-- [ ] Include Rights/change impact matrix.
-- [ ] Include Corpus-downtime walkthrough.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/10-corpus-integration-compatibility-cache-and-rights.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Choose and specify App request/Corpus publication contract style: bundles, API, files, or hybrid, with evidence-based comparison.
+- [x] Map six information families plus governance envelopes into versioned App-consumable contracts without leaking Corpus tables.
+- [x] Define asynchronous publication, acceptance/promotion, immutable bundle/version identity, cache layout, rollback, and offline/runtime fallback.
+- [x] Define contract/model/payload version compatibility, stable IDs, taxonomy/blueprint migrations, deprecation, and unsupported-major behavior.
+- [x] Define confidence, currentness, source breadth, analytical independence, use eligibility, exact-asset rights, attribution, takedown, and reclassification handling.
+- [x] Prove normal practice and previously approved P4 content continue during Corpus downtime and that Corpus never receives learner state.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer batched immutable publication and local/cache reads; quantify storage, transfer, refresh, and invalidation costs.
+- [x] Security/privacy/rights — Authenticate authoring/publication channels, validate signatures/checksums where justified, and enforce rights/takedown.
+- [x] Accessibility — Carry accessibility metadata and do not publish learner tasks missing required alternatives.
+- [x] Failure/recovery — Define no-match, sparse evidence, stale bundle, incompatible major, revoked asset, and Corpus outage behavior.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Contract/bundle pseudotypes.
+- [x] Include Publication/acceptance sequence.
+- [x] Include Compatibility matrix.
+- [x] Include Cache/fallback state table.
+- [x] Include Rights/change impact matrix.
+- [x] Include Corpus-downtime walkthrough.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/10-corpus-integration-compatibility-cache-and-rights.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
