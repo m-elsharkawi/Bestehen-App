@@ -155,11 +155,11 @@ Stage 25 must prove:
 - authorization, raw-audio, export/delete/restore/rights/security and reserved critical queue paths;
 - usage/invoice reconciliation, envelope/circuit, zero denominator and provider exit.
 
-Review/supersede when a measured trigger in `Architecture/24-analytics-calibration-observability-performance-reliability-and-cost.md` `11.5 fires, a provider/price/terms/standard changes, a critical incident shows missing signal, calibration drift breaches a gate, or a future product decision makes probability eligible. Promotion is atomic and rollback uses the predecessor release. Historical snapshots/receipts/results remain labelled with original definitions.
+Review/supersede when a measured trigger in `Architecture/24-analytics-calibration-observability-performance-reliability-and-cost.md` section 11.5 fires, a provider/price/terms/standard changes, a critical incident shows missing signal, calibration drift breaches a gate, or a future product decision makes probability eligible. Promotion is atomic and rollback uses the predecessor release. Historical snapshots/receipts/results remain labelled with original definitions.
 
 ## Traceability
 
-- Product/design sources: `app/28-bestehen-app-product-specification.md` ``16–18, `app/24-analytics-and-success-metrics.md`, `app/26-platform-accessibility-nonfunctional.md`, `Design/DESIGN-HANDOFF.md` ``3.1–3.7, `Design/Bestehen-03-Desktop-Responsive.dc.html` D2, `Design/Bestehen-04-Flows-Handoff.dc.html` recovery/accessibility.
+- Product/design sources: `app/28-bestehen-app-product-specification.md` sections 16–18, `app/24-analytics-and-success-metrics.md`, `app/26-platform-accessibility-nonfunctional.md`, `Design/DESIGN-HANDOFF.md` sections 3.1–3.7, `Design/Bestehen-03-Desktop-Responsive.dc.html` D2, `Design/Bestehen-04-Flows-Handoff.dc.html` recovery/accessibility.
 - Owning stage output: `Architecture/24-analytics-calibration-observability-performance-reliability-and-cost.md`.
 - Checklist items: all 24 decisions/checks in Stage 24.
 - Related ADRs: ADR-0001, ADR-0003, ADR-0007, ADR-0008, ADR-0009, ADR-0012, ADR-0013, ADR-0018, ADR-0019, ADR-0024–ADR-0031.

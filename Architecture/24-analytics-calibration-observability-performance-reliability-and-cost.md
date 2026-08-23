@@ -33,7 +33,7 @@ Every required input was fetched at the immutable refs above before decisions we
 
 | Path | Blob SHA | Stage-24 use |
 |---|---|---|
-| `app/28-bestehen-app-product-specification.md` | `18ae80cc2fd63cecd76c297c3e56d44a68367856` | Highest product authority, ``16–18 and `20.5 |
+| `app/28-bestehen-app-product-specification.md` | `18ae80cc2fd63cecd76c297c3e56d44a68367856` | Highest product authority, sections 16–18 and 20.5 |
 | `app/01-product-thesis.md` | `6bbb074dc6a262cb66cebad960dd248d1010f21f` | Outcome hierarchy and sustainable-cost intent |
 | `app/04-learner-model.md` | `f7ae1f4af375ee3302d04c726d8fe8453a9daf80` | Evidence conditions, independence and confidence |
 | `app/05-mistake-memory.md` | `a7c574b08c33418eab44aba8b6e9b7f8ab877109` | Repair/resolution/reopen lifecycle |
@@ -588,7 +588,7 @@ Human adjudication, content QA, release review, restore/incident time and mainte
 
 ### 11.3 Current price catalog facts and review
 
-Stage 03’s dated comparison places the minimum paid Render web/worker/PostgreSQL baseline at approximately USD 20/month plus PostgreSQL storage, R2 overage, tax and later processors. This is comparison arithmetic, not an approved budget. Current official Render flexible PostgreSQL storage is USD 0.30/GB-month. Current R2 Standard rates are recorded in `9.1. Stage 19 remains authoritative for current Gemini/OpenAI/Deepgram comparison and capability usage units; Stage 20 for Auth0/SES; Stage 22 for Web Push.
+Stage 03’s dated comparison places the minimum paid Render web/worker/PostgreSQL baseline at approximately USD 20/month plus PostgreSQL storage, R2 overage, tax and later processors. This is comparison arithmetic, not an approved budget. Current official Render flexible PostgreSQL storage is USD 0.30/GB-month. Current R2 Standard rates are recorded in section 9.1. Stage 19 remains authoritative for current Gemini/OpenAI/Deepgram comparison and capability usage units; Stage 20 for Auth0/SES; Stage 22 for Web Push.
 
 The cost ledger stores each price as `PriceCatalogRelease(provider, SKU, unit, currency, rate, effective_at, fetched_at, source_url, tax_scope, predecessor, review_trigger)`. Provider usage is reconciled to invoice/export. A provider change/deprecation/terms/region/price notice, unknown SKU, promotional expiry, or invoice-estimator variance requires a new catalog/review.
 
@@ -723,7 +723,7 @@ General logs/traces are designed without a re-linkable learner identifier. If an
 | Decision area | Simplest/do-nothing | Selected baseline | Higher-complexity alternative | Exit/review |
 |---|---|---|---|---|
 | Product analytics | Manual notes/provider dashboards | PG semantic events/material snapshots/rollups | Product analytics SDK + clickstream | Add only a named product question unavailable from facts; session replay remains forbidden |
-| Analytics store | Query facts ad hoc | Indexed PG rollups/materialized views scheduled off critical path | Warehouse/columnar store | Trigger in `11.5; SQL/export/deletion/source-cut proof |
+| Analytics store | Query facts ad hoc | Indexed PG rollups/materialized views scheduled off critical path | Warehouse/columnar store | Trigger in section 11.5; SQL/export/deletion/source-cut proof |
 | Observability sink | Render only with no internal incident record | Render 7-day views + PG critical audit/rollups + OTel-compatible contracts | Grafana/Better Stack/other managed sink | Bounded sink after two demonstrated retention failures; export/retention/redaction proof |
 | Tracing | No traces | sampled server/worker traces and W3C correlation | full browser/distributed trace capture | Browser auto-instrumentation rejected while experimental/overbroad |
 | Calibration | Current score compared with itself | frozen prior snapshot + independent holdout | learned psychometrics/probability | probability requires explicit future gate/ADR |
@@ -843,8 +843,8 @@ There is no owner blocker. The following are intentionally deferred within fixed
 | Exact statistical sample number/non-inferiority margin | calibration owner + Stage 25 review | preregistered power/precision/adjudicator basis; insufficient data cannot promote |
 | Jurisdiction-specific analytics/legal basis, processor/DPA wording | owner/legal + Stage 23/26 | minimization, purpose, deletion, no sensitive demographics/session replay |
 | Managed observability vendor | later ADR after trigger | bounded retention/access/export/redaction/cost; no vendor authority |
-| Warehouse, read replica, queue service, second region | later measured decision/ADR | `11.5 triggers, portable facts/contracts and no truth weakening |
-| Probability model/UI | future product decision + superseding ADR | completely absent now; activation prerequisites in `8.6 |
+| Warehouse, read replica, queue service, second region | later measured decision/ADR | section 11.5 triggers, portable facts/contracts and no truth weakening |
+| Probability model/UI | future product decision + superseding ADR | completely absent now; activation prerequisites in section 8.6 |
 
 ### 17.4 Definition-of-done check
 
