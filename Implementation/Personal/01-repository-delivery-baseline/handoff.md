@@ -2,8 +2,10 @@
 
 Date: 2026-08-23
 
-Status: ready for independent `01E` acceptance; not accepted, merged, deployed, or
-marked ready
+Status: Stage 01 Execution accepted for reviewed input head
+`b38129a4ff01c23a6484adf05f2c682bd8b3076c` by the
+[independent orchestrator acceptance](https://github.com/m-elsharkawi/Bestehen-App/pull/1#issuecomment-5388049241);
+not merged, deployed, or marked ready
 
 Draft PR: [#1](https://github.com/m-elsharkawi/Bestehen-App/pull/1)
 
@@ -12,10 +14,9 @@ Verified implementation candidate: `d69f47a23b4e56d376f5b1d56d6a0148e652d0c4`
 Passing candidate run:
 [32660827161](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32660827161)
 
-The commit containing this handoff refresh and the checklist evidence update is
-evidence-only. The checklist status remains `[~]`. The PR check rollup and the final
-execution comment bind that commit to its own clean CI result before acceptance. Only
-the orchestrator may change `[~]` to `[x]`.
+The prior handoff refresh and checklist evidence update were evidence-only. The
+checklist status is now `[x]` solely to record the independent orchestrator acceptance
+linked above. This acceptance-record update does not alter the implementation.
 
 ## Source and ancestry
 

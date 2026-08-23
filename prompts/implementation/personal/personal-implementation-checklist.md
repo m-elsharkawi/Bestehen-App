@@ -13,7 +13,7 @@ This is the live, authoritative progress ledger for the personal program. Worker
 ## 01 — Repository and delivery baseline
 
 - [x] 01P Planning accepted — evidence: `Implementation/Personal/01-repository-delivery-baseline/plan.md`; [PR #1 acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/1#issuecomment-5387482785); Planning commit `233eb0c84e092e5bdda88a1f3692bd41ddc07d3e`; `P01-PLAN`
-- [~] 01E Execution pending orchestrator acceptance — evidence: `Implementation/Personal/01-repository-delivery-baseline/handoff.md`; [draft PR #1](https://github.com/m-elsharkawi/Bestehen-App/pull/1); [passing repair run 32660827161](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32660827161); candidate `d69f47a23b4e56d376f5b1d56d6a0148e652d0c4`
+- [x] 01E Execution accepted — evidence: `Implementation/Personal/01-repository-delivery-baseline/handoff.md`; [PR #1 acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/1#issuecomment-5388049241); reviewed head `b38129a4ff01c23a6484adf05f2c682bd8b3076c`; final [PR run 32661191970](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32661191970) and [push run 32661190079](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32661190079); `P01-BASE-001`, `P01-SCOPE-001`, `P01-DEPS-001`, `P01-BOUNDARY-001`, `P01-TYPE-001`, `P01-STYLE-001`, `P01-UNIT-001`, `P01-CONFIG-001`, `P01-SECRET-001`, `P01-PG-001`, `P01-JOB-001`, `P01-HTTP-001`, `P01-A11Y-001`, `P01-OCI-WEB-001`, `P01-OCI-WORKER-001`, `P01-RELEASE-001`, `P01-DOC-001`
 - [ ] Approved stack, package boundaries, exact lock/runtime versions, containers, and CI gates are reproducible.
 - [ ] Personal deployment-profile decision preserves provider and commercial exit seams.
 
