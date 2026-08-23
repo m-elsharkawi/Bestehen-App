@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
@@ -37,7 +37,9 @@ function guideSteps() {
 
 function scanRedaction(value, location = "receipt") {
   if (Array.isArray(value)) {
-    value.forEach((item, index) => scanRedaction(item, `${location}[${index}]`));
+    value.forEach((item, index) => {
+      scanRedaction(item, `${location}[${index}]`);
+    });
     return;
   }
   if (value && typeof value === "object") {
