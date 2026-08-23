@@ -39,7 +39,7 @@ export default defineConfig({
       {
         test: {
           name: "process",
-          include: ["apps/*/src/**/*.process.test.ts"],
+          include: ["apps/*/src/**/*.process.test.ts", "apps/*/tests/**/*.process.test.ts"],
           testTimeout: 45_000,
           hookTimeout: 45_000,
           fileParallelism: false,

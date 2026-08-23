@@ -110,6 +110,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/infrastructure
     devDependencies:
+      '@bestehen/test-support':
+        specifier: workspace:*
+        version: link:../../packages/test-support
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3

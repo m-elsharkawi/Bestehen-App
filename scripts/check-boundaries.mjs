@@ -70,10 +70,9 @@ async function inspectImports() {
         const specifier = match[1];
         if (
           specifier.split("/").length > 2 &&
-          !new Set([
-            "@bestehen/design-system/styles.css",
-            "@bestehen/infrastructure/postgres",
-          ]).has(specifier)
+          !new Set(["@bestehen/design-system/styles.css", "@bestehen/infrastructure/postgres"]).has(
+            specifier,
+          )
         ) {
           throw new Error(
             `Deep workspace import is forbidden in ${path.relative(root, file)}: ${specifier}`,
