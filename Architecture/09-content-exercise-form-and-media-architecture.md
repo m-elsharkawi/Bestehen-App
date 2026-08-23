@@ -56,7 +56,7 @@ GitHub was the source of truth. Shaping was read at immutable commit `9f37ad78fd
 | `Architecture/05-data-ownership-persistence-and-schema-evolution.md` | `bb6df811ec9010de556d1719f22e31bb8ca3190e` |
 | `Architecture/06-evidence-ledger-validity-versioning-and-audit.md` | `53d34ae65ef4c8fa79c00026f9bd5d7b876ce672` |
 
-The four prerequisite stages are accepted and consistent:
+The four prerequisite stages are accepted and consistent. Stage 06's closed learner-evidence validity set remains exactly `valid | partially_valid | pending | interrupted | not_counted`; content approval/quarantine never adds an evidence-validity state:
 
 - Stage 02 keeps Corpus asynchronous/non-runtime and sends it no learner profile.
 - Stage 04 assigns content/form/media/rights/quarantine to **Content & Forms**, learner occurrence to **Session & Attempt**, and validity to **Evidence & Capability**.
