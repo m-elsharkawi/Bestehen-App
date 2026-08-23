@@ -4,6 +4,7 @@ const port = 3300;
 
 export default defineConfig({
   testDir: "./apps/web/tests",
+  testMatch: "**/*.spec.ts",
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
