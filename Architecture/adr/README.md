@@ -43,3 +43,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0026](ADR-0026-ephemeral-voice-evidence-and-bounded-oral-evaluation.md) | Ephemeral voice evidence and bounded oral evaluation | Accepted | Stage 18 | `ARCH-S18-D01`–`D12` | — |
 | [ADR-0027](ADR-0027-capability-specific-ai-routes-and-evidence-governed-candidates.md) | Capability-specific AI routes and evidence-governed candidates | Accepted | Stage 19 | `ARCH-S19-D01`–`D12` | — |
 | [ADR-0028](ADR-0028-provider-portable-account-identity-and-id-preserving-local-first-lifecycle.md) | Provider-portable account identity and id-preserving local-first lifecycle | Accepted | Stage 20 | `ARCH-S20-D01`–`D12` | — |
+| [ADR-0029](ADR-0029-bounded-local-write-ahead-continuity-and-conservative-timer-reconstruction.md) | Bounded local write-ahead continuity and conservative timer reconstruction | Accepted | Stage 21 | `ARCH-S21-D01`–`D12` | — |

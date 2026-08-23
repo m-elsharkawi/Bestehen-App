@@ -1424,30 +1424,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define capability-based offline matrix for loaded objective work, Writing, Listening, Speaking, productive evaluation, mocks, readiness, sync, and content fetch.
-- [ ] Decide service worker/PWA scope from evidence, browser limitations, cache invalidation, and operating cost rather than installability theater.
-- [ ] Define checkpoints, local queue, reconnect, retry/idempotency, merge/conflict/tombstone behavior, and explicit data-loss bounds per activity.
-- [ ] Define authoritative monotonic/wall-clock use, server timestamps, timer reconstruction, page backgrounding, sleep/device-clock changes, and honest timing labels.
-- [ ] Define interruption/resume choices and the smallest affected evidence scope for ordinary tasks, continuous blocks, and mocks.
-- [ ] Define recovery UI/domain states and transitions for crash, reload, network loss, provider outage, stale content/version, and local-storage loss.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Use browser/local primitives and a simple queue before dedicated offline-sync infrastructure; state storage/egress/cache drivers.
-- [ ] Security/privacy/rights — Protect local sensitive data, bound cache retention, and avoid exposing raw audio/content in uncontrolled caches.
-- [ ] Accessibility — Recovery choices, timer state, and offline notices remain semantically announced and operable.
-- [ ] Failure/recovery — Reconnection cannot duplicate evidence; background/pause conditions cannot silently retain target validity.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Offline capability matrix.
-- [ ] Include Checkpoint/queue/reconnect state diagram.
-- [ ] Include Timer integrity model and threat/failure table.
-- [ ] Include Conflict-resolution matrix.
-- [ ] Include Mock interruption/resume sequence.
-- [ ] Include Data-loss budgets and recovery UI contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/21-offline-checkpointing-recovery-conflicts-and-timing-integrity.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define capability-based offline matrix for loaded objective work, Writing, Listening, Speaking, productive evaluation, mocks, readiness, sync, and content fetch.
+- [x] Decide service worker/PWA scope from evidence, browser limitations, cache invalidation, and operating cost rather than installability theater.
+- [x] Define checkpoints, local queue, reconnect, retry/idempotency, merge/conflict/tombstone behavior, and explicit data-loss bounds per activity.
+- [x] Define authoritative monotonic/wall-clock use, server timestamps, timer reconstruction, page backgrounding, sleep/device-clock changes, and honest timing labels.
+- [x] Define interruption/resume choices and the smallest affected evidence scope for ordinary tasks, continuous blocks, and mocks.
+- [x] Define recovery UI/domain states and transitions for crash, reload, network loss, provider outage, stale content/version, and local-storage loss.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Use browser/local primitives and a simple queue before dedicated offline-sync infrastructure; state storage/egress/cache drivers.
+- [x] Security/privacy/rights — Protect local sensitive data, bound cache retention, and avoid exposing raw audio/content in uncontrolled caches.
+- [x] Accessibility — Recovery choices, timer state, and offline notices remain semantically announced and operable.
+- [x] Failure/recovery — Reconnection cannot duplicate evidence; background/pause conditions cannot silently retain target validity.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Offline capability matrix.
+- [x] Include Checkpoint/queue/reconnect state diagram.
+- [x] Include Timer integrity model and threat/failure table.
+- [x] Include Conflict-resolution matrix.
+- [x] Include Mock interruption/resume sequence.
+- [x] Include Data-loss budgets and recovery UI contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/21-offline-checkpointing-recovery-conflicts-and-timing-integrity.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
