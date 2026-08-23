@@ -22,7 +22,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm --filter @bestehen/web exec next start --hostname 127.0.0.1 --port ${port}`,
+    command: "node apps/web/.next/standalone/apps/web/server.js",
     env: {
       ...process.env,
       BESTEHEN_AI_ADAPTER: "fake",

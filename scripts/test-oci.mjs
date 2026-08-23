@@ -283,7 +283,7 @@ try {
       name === web ? "3000" : "3001",
       name === web ? "/api/health/ready" : "/health/ready",
     ]);
-    run("docker", ["stop", "--signal", "SIGTERM", "--time", "10", name]);
+    run("docker", ["stop", "--signal", "SIGTERM", "--timeout", "10", name]);
     const exitCode = inspect(name, "{{.State.ExitCode}}");
     if (exitCode !== "0") throw new Error(`${name} exited with ${exitCode} after SIGTERM`);
   }

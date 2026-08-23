@@ -10,6 +10,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json-summary", "html"],
       reportsDirectory: "coverage",
+      exclude: ["**/dist/**", "**/.next/**", "**/*.test.*", "**/tests/**"],
     },
     projects: [
       {

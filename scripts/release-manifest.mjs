@@ -78,6 +78,35 @@ export function validateManifest(manifest) {
   ) {
     throw new Error("Runtime or schema compatibility identity drifted");
   }
+  if (
+    manifest.tools.typescript !== "5.9.3" ||
+    manifest.tools.biome !== "2.5.10" ||
+    manifest.tools.vitest !== "4.1.11" ||
+    manifest.tools.playwright !== "1.62.1"
+  ) {
+    throw new Error("Tool identity drifted");
+  }
+  const expectedActions = {
+    checkout: "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    setupNode: "820762786026740c76f36085b0efc47a31fe5020",
+    pnpmSetup: "0977fd99725f1db4007ccb2928dbb4e90d06cc86",
+    uploadArtifact: "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+    downloadArtifact: "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+    dependencyReview: "a1d282b36b6f3519aa1f3fc636f609c47dddb294",
+    setupBuildx: "37fe631027851001ddb9b187196cc803df7f5f0e",
+    buildPush: "53b7df96c91f9c12dcc8a07bcb9ccacbed38856a",
+  };
+  if (Object.entries(expectedActions).some(([name, sha]) => manifest.actions[name] !== sha)) {
+    throw new Error("Workflow action identity drifted");
+  }
+  if (
+    manifest.containerBases.node !==
+      "sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03" ||
+    manifest.containerBases.postgres !==
+      "sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108"
+  ) {
+    throw new Error("Container base identity drifted");
+  }
   if (Object.values(manifest.flags).some((value) => value !== false)) {
     throw new Error("Stage 01 release flags must remain closed");
   }
@@ -129,6 +158,26 @@ export function createManifest(options) {
       migrationOwner: "explicit-migrator",
     },
     runtime: { node: "24.19.0", pnpm: "11.23.0" },
+    tools: {
+      typescript: "5.9.3",
+      biome: "2.5.10",
+      vitest: "4.1.11",
+      playwright: "1.62.1",
+    },
+    actions: {
+      checkout: "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      setupNode: "820762786026740c76f36085b0efc47a31fe5020",
+      pnpmSetup: "0977fd99725f1db4007ccb2928dbb4e90d06cc86",
+      uploadArtifact: "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+      downloadArtifact: "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+      dependencyReview: "a1d282b36b6f3519aa1f3fc636f609c47dddb294",
+      setupBuildx: "37fe631027851001ddb9b187196cc803df7f5f0e",
+      buildPush: "53b7df96c91f9c12dcc8a07bcb9ccacbed38856a",
+    },
+    containerBases: {
+      node: "sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03",
+      postgres: "sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108",
+    },
     releaseAxes: {
       application: "stage-01-baseline",
       content: "not-produced",
