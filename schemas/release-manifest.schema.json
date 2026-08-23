@@ -138,8 +138,45 @@
     },
     "checks": {
       "type": "object",
-      "minProperties": 16,
-      "additionalProperties": { "type": "string", "minLength": 1 }
+      "additionalProperties": false,
+      "required": [
+        "P01-BASE-001",
+        "P01-SCOPE-001",
+        "P01-DEPS-001",
+        "P01-BOUNDARY-001",
+        "P01-TYPE-001",
+        "P01-STYLE-001",
+        "P01-UNIT-001",
+        "P01-CONFIG-001",
+        "P01-SECRET-001",
+        "P01-PG-001",
+        "P01-JOB-001",
+        "P01-HTTP-001",
+        "P01-A11Y-001",
+        "P01-OCI-WEB-001",
+        "P01-OCI-WORKER-001",
+        "P01-RELEASE-001",
+        "P01-DOC-001"
+      ],
+      "properties": {
+        "P01-BASE-001": { "type": "string", "minLength": 1 },
+        "P01-SCOPE-001": { "type": "string", "minLength": 1 },
+        "P01-DEPS-001": { "type": "string", "minLength": 1 },
+        "P01-BOUNDARY-001": { "type": "string", "minLength": 1 },
+        "P01-TYPE-001": { "type": "string", "minLength": 1 },
+        "P01-STYLE-001": { "type": "string", "minLength": 1 },
+        "P01-UNIT-001": { "type": "string", "minLength": 1 },
+        "P01-CONFIG-001": { "type": "string", "minLength": 1 },
+        "P01-SECRET-001": { "type": "string", "minLength": 1 },
+        "P01-PG-001": { "type": "string", "minLength": 1 },
+        "P01-JOB-001": { "type": "string", "minLength": 1 },
+        "P01-HTTP-001": { "type": "string", "minLength": 1 },
+        "P01-A11Y-001": { "type": "string", "minLength": 1 },
+        "P01-OCI-WEB-001": { "type": "string", "minLength": 1 },
+        "P01-OCI-WORKER-001": { "type": "string", "minLength": 1 },
+        "P01-RELEASE-001": { "type": "string", "minLength": 1 },
+        "P01-DOC-001": { "type": "string", "minLength": 1 }
+      }
     }
   }
 }

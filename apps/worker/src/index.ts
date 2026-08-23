@@ -27,6 +27,7 @@ export class WorkerRuntime {
       service: "worker",
       environment: this.environment.BESTEHEN_APP_ENV,
       releaseCommit: this.environment.BESTEHEN_RELEASE_COMMIT,
+      level: this.environment.BESTEHEN_LOG_LEVEL,
     });
   }
 

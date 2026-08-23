@@ -1,29 +1,17 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
+import Ajv2020 from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 
-export const requiredChecks = [
-  "P01-BASE-001",
-  "P01-SCOPE-001",
-  "P01-DEPS-001",
-  "P01-BOUNDARY-001",
-  "P01-TYPE-001",
-  "P01-STYLE-001",
-  "P01-UNIT-001",
-  "P01-CONFIG-001",
-  "P01-SECRET-001",
-  "P01-PG-001",
-  "P01-JOB-001",
-  "P01-HTTP-001",
-  "P01-A11Y-001",
-  "P01-OCI-WEB-001",
-  "P01-OCI-WORKER-001",
-  "P01-RELEASE-001",
-  "P01-DOC-001",
-];
+const schema = JSON.parse(readFileSync("schemas/release-manifest.schema.json", "utf8"));
+export const requiredChecks = Object.freeze([...schema.properties.checks.required]);
+const ajv = new Ajv2020({ allErrors: true, strict: true });
+addFormats(ajv);
+const validateSchema = ajv.compile(schema);
 
 function git(arguments_) {
   return execFileSync("git", arguments_, { encoding: "utf8" }).trim();
@@ -58,68 +46,12 @@ export function parseArguments(arguments_) {
 }
 
 export function validateManifest(manifest) {
-  const digestPattern = /^sha256:[a-f0-9]{64}$/;
-  if (manifest.schemaVersion !== 1) throw new Error("Unsupported manifest schema version");
-  if (!/^[a-f0-9]{40}$/.test(manifest.commit)) throw new Error("Commit must be an exact SHA");
-  if (manifest.dirty !== false) throw new Error("Dirty releases are forbidden");
-  if (!digestPattern.test(manifest.images.web) || !digestPattern.test(manifest.images.worker)) {
-    throw new Error("Both immutable image digests are required");
-  }
-  if (!/^[a-f0-9]{64}$/.test(manifest.dependencies.lockSha256)) {
-    throw new Error("Invalid dependency lock digest");
-  }
-  if (
-    manifest.runtime.node !== "24.19.0" ||
-    manifest.runtime.pnpm !== "11.23.0" ||
-    manifest.database.postgres !== "18.6" ||
-    manifest.database.minimumRevision !== "baseline" ||
-    manifest.database.maximumRevision !== "baseline" ||
-    manifest.database.migrationOwner !== "explicit-migrator"
-  ) {
-    throw new Error("Runtime or schema compatibility identity drifted");
-  }
-  if (
-    manifest.tools.typescript !== "5.9.3" ||
-    manifest.tools.biome !== "2.5.10" ||
-    manifest.tools.vitest !== "4.1.11" ||
-    manifest.tools.playwright !== "1.62.1"
-  ) {
-    throw new Error("Tool identity drifted");
-  }
-  const expectedActions = {
-    checkout: "3d3c42e5aac5ba805825da76410c181273ba90b1",
-    setupNode: "820762786026740c76f36085b0efc47a31fe5020",
-    pnpmSetup: "0977fd99725f1db4007ccb2928dbb4e90d06cc86",
-    uploadArtifact: "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
-    downloadArtifact: "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
-    setupBuildx: "37fe631027851001ddb9b187196cc803df7f5f0e",
-    buildPush: "53b7df96c91f9c12dcc8a07bcb9ccacbed38856a",
-  };
-  if (Object.entries(expectedActions).some(([name, sha]) => manifest.actions[name] !== sha)) {
-    throw new Error("Workflow action identity drifted");
-  }
-  if (
-    manifest.containerBases.node !==
-      "sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03" ||
-    manifest.containerBases.postgres !==
-      "sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108"
-  ) {
-    throw new Error("Container base identity drifted");
-  }
-  if (Object.values(manifest.flags).some((value) => value !== false)) {
-    throw new Error("Stage 01 release flags must remain closed");
-  }
-  const missing = requiredChecks.filter((check) => !manifest.checks[check]);
-  if (missing.length > 0) throw new Error(`Missing check evidence: ${missing.join(", ")}`);
-  if (
-    manifest.releaseAxes.application !== "stage-01-baseline" ||
-    [
-      manifest.releaseAxes.content,
-      manifest.releaseAxes.evaluation,
-      manifest.releaseAxes.model,
-    ].some((value) => value !== "not-produced")
-  ) {
-    throw new Error("Release axes are incomplete or mutable");
+  if (!validateSchema(manifest)) {
+    throw new Error(
+      `Release manifest violates its JSON Schema: ${ajv.errorsText(validateSchema.errors, {
+        separator: "; ",
+      })}`,
+    );
   }
   return manifest;
 }
@@ -131,11 +63,8 @@ export function createManifest(options) {
   if (git(["rev-parse", "HEAD"]) !== options.commit) {
     throw new Error("Requested commit does not equal the checked-out commit");
   }
-  if (
-    git(["status", "--porcelain", "--untracked-files=no"]) ||
-    process.env.RELEASE_MANIFEST_TEST_DIRTY === "true"
-  ) {
-    throw new Error("Release manifest refuses a dirty tracked worktree");
+  if (git(["status", "--porcelain"]) || process.env.RELEASE_MANIFEST_TEST_DIRTY === "true") {
+    throw new Error("Release manifest refuses a dirty worktree");
   }
   const createdAt = process.env.SOURCE_DATE_EPOCH
     ? new Date(Number(process.env.SOURCE_DATE_EPOCH) * 1000).toISOString()
@@ -195,7 +124,6 @@ export function createManifest(options) {
 }
 
 function main() {
-  JSON.parse(readFileSync("schemas/release-manifest.schema.json", "utf8"));
   const options = parseArguments(process.argv.slice(2));
   const manifest = createManifest(options);
   const output = `${JSON.stringify(manifest, null, 2)}\n`;

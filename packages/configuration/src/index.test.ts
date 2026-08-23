@@ -69,7 +69,12 @@ describe("structured redaction", () => {
       },
     });
     const logger = createLogger(
-      { service: "web", environment: "test", releaseCommit: "synthetic-commit" },
+      {
+        service: "web",
+        environment: "test",
+        releaseCommit: "synthetic-commit",
+        level: "info",
+      },
       destination,
     );
     const sentinel = ["sentinel", "secret", "stage01"].join("-");
@@ -77,5 +82,35 @@ describe("structured redaction", () => {
     await new Promise((resolve) => setImmediate(resolve));
     expect(output).not.toContain(sentinel);
     expect(output).toContain("baseline_test");
+  });
+
+  it("honors the validated configured log threshold without exposing values", async () => {
+    const environment = parseServerEnvironment({
+      ...validEnvironment(),
+      BESTEHEN_LOG_LEVEL: "warn",
+    });
+    let output = "";
+    const destination = new Writable({
+      write(chunk, _encoding, callback) {
+        output += chunk.toString();
+        callback();
+      },
+    });
+    const logger = createLogger(
+      {
+        service: "worker",
+        environment: environment.BESTEHEN_APP_ENV,
+        releaseCommit: environment.BESTEHEN_RELEASE_COMMIT,
+        level: environment.BESTEHEN_LOG_LEVEL,
+      },
+      destination,
+    );
+    const sentinel = ["configured", "secret", "threshold"].join("-");
+    logger.info({ eventName: "below_configured_threshold" });
+    logger.warn({ eventName: "configured_threshold", sessionSecret: sentinel });
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(output).not.toContain("below_configured_threshold");
+    expect(output).toContain("configured_threshold");
+    expect(output).not.toContain(sentinel);
   });
 });

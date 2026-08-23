@@ -275,13 +275,18 @@ export interface LoggerContext {
   readonly service: "web" | "worker" | "migrator";
   readonly environment: ServerEnvironment["BESTEHEN_APP_ENV"];
   readonly releaseCommit: string;
+  readonly level: ServerEnvironment["BESTEHEN_LOG_LEVEL"];
 }
 
 export function createLogger(context: LoggerContext, destination?: NodeJS.WritableStream): Logger {
   return pino(
     {
-      base: context,
-      level: "info",
+      base: {
+        service: context.service,
+        environment: context.environment,
+        releaseCommit: context.releaseCommit,
+      },
+      level: context.level,
       formatters: {
         log: (payload) => sanitizeLogPayload(payload) as Record<string, unknown>,
       },

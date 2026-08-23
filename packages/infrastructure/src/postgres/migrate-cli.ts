@@ -7,6 +7,7 @@ async function main(): Promise<void> {
     service: "migrator",
     environment: environment.BESTEHEN_APP_ENV,
     releaseCommit: environment.BESTEHEN_RELEASE_COMMIT,
+    level: environment.BESTEHEN_LOG_LEVEL,
   });
   const result = await migrateDatabase(environment.DATABASE_URL);
   logger.info({
