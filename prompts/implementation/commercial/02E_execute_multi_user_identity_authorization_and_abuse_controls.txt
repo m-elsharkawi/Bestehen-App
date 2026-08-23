@@ -1,0 +1,28 @@
+You are the Execution subagent for Commercial Stage 02: Multi-user product, identity, authorization, and abuse controls.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 02 plan. Use fake/test identity and email providers by default; live Auth0 production setup belongs to Stage 03 owner guides.
+
+Execution responsibilities
+
+1. Implement app-owned guest/account/profile/device/session relationships and compatible schema migrations from the personal owner profile.
+2. Implement guest-first use, honest local-loss warnings, sign-in/registration handoff, email-OTP identity linking, adoption/merge, duplicate/conflict handling, logout/recovery, sessions/devices, recent auth, and account closure.
+3. Implement idempotent guest adoption across attempts, evidence, learner state, drafts, objects, jobs, preferences, tombstones, deletion state, and foreground WAL. Prevent duplication and resurrection under retries/concurrency.
+4. Enforce tenant ownership and authorization across database queries, use cases, APIs, object access, jobs, export, deletion, notifications, and support tooling. Add least-privilege database/service roles where planned.
+5. Implement responsive commercial onboarding/Account/session/data-rights views and accessible provider-neutral copy with no personal allowlist assumption.
+6. Extend the Auth0 adapter for production-tenant configuration, Universal Login email OTP, anti-enumeration, session/recent-auth/audit events, and replaceable identity proof. Do not add passwords.
+7. Implement commercial email lifecycle through the adapter/fake, suppression-safe status, and accessibility/failure behavior.
+8. Implement per-capability quotas, rate limits, cost envelopes, upload limits, anti-automation/abuse controls, neutral error/retry semantics, privacy-safe metrics, and auditable support boundaries.
+9. Run multi-user/adversarial/property/migration/concurrency tests with many synthetic users, guest-adoption replay/conflicts, session revocation, recent auth, rate limits, object/job isolation, export/deletion, browser/a11y, and performance tests.
+10. Close only Stage 02 closure-register items with durable evidence; write the handoff and update `02E`.
+
+Required outputs
+
+- accepted multi-user/guest/identity/authorization/abuse implementation, migrations, UI, and tests
+- `Implementation/Commercial/02-multi-user-identity-abuse/handoff.md`
+- closure-register evidence and verified commercial `02E`
+
+Definition of Done
+
+- Multiple synthetic users and guests cannot read, mutate, infer, export, delete, or receive another subject's data.
+- Guest adoption is idempotent, conflict-safe, tombstone-aware, and history-preserving.
+- Sessions, recent auth, OTP identity, quotas, abuse controls, and support access have observable honest states and tests.

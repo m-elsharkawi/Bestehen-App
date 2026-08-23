@@ -1,0 +1,39 @@
+You are the Planning subagent for Personal Stage 05: Content and deterministic learning runtime.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning changes no production code.
+
+Required inputs
+
+- accepted Personal Stages 01–04 handoffs
+- Architecture stages 06–10, 12, 15–16, 23–25 and relevant ADRs
+- content/corpus compatibility, rights, media, evidence, scoring, attempts, and release-registry contracts
+- Design anchors for onboarding/foundation, Reading, Language Elements, Listening, navigation, evidence, and recovery
+
+Objective
+
+Plan the first complete deterministic learning slice: approved/versioned content ingestion and publication, shared attempt runtime, objective scoring, Reading, Language Elements, Listening, evidence acceptance, and foundation-route checkpoints.
+
+Planning responsibilities
+
+1. Define content manifest/schema, provenance/rights metadata, compatibility/version pinning, immutable publication, quarantine/rejection, cache, withdrawal, and audit workflows. Corpus ingestion is asynchronous and never a runtime dependency for an active attempt.
+2. Define seeded personal content that is legally safe for repository fixtures. Do not copy restricted exam source bytes.
+3. Define the shared attempt state machine, item sequencing, server clock/timing, autosave/checkpoint, submit/finalize, resume/expiry, scoring, evidence proposal/acceptance, retry/idempotency, and correction behavior.
+4. Define skill-specific contracts and exercise/form/media variants for Reading, Language Elements, and Listening, including accessible alternatives, transcript policy, playback controls, buffering/failure, and deterministic scoring.
+5. Define foundation/onboarding/profile checkpoints for the personal owner, including the resolved 65-year planning horizon and mandatory Auth0 presentation.
+6. Define how accepted outcomes append canonical evidence and update projections without silently changing history.
+7. Define APIs, queries, caches, prefetch, route states, progressive enhancement, offline boundary, and provider-neutral failure/recovery copy.
+8. Define content/admin seed or import tooling with validation reports, dry-run, idempotency, and rollback/withdrawal. No broad CMS is required.
+9. Define unit/property/schema/golden, database, API, browser, a11y, timing, network-interruption, content-withdrawal, and compatibility tests.
+10. Sequence a thin vertical slice before full variants, with explicit completion evidence for each skill.
+
+Required deliverables
+
+- `Implementation/Personal/05-content-deterministic-runtime/plan.md`
+- content/attempt/skill traceability and test matrix
+- Planning evidence recorded on the `05P` checklist line
+
+Definition of Done
+
+- Content rights/provenance, publication/versioning, attempts, deterministic scoring, evidence, timing, accessibility, recovery, and withdrawal agree.
+- No live Corpus or AI call is required during an active deterministic attempt.
+- Later Writing/Speaking and readiness stages can extend the same attempt/evidence contracts.

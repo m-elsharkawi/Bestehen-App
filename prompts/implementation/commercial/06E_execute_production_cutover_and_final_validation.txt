@@ -1,0 +1,29 @@
+You are the Execution subagent for Commercial Stage 06: Production cutover and final commercial validation.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 06 plan. Complete preflight and repository work autonomously. Perform the live cutover only when every launch gate is accepted and the orchestrator records explicit owner authorization for the bounded window. Never expose secrets, silently waive a gate, or decommission Coolify.
+
+Execution responsibilities
+
+1. Re-verify the exact release candidate, container/provenance, schema/content/model/config manifests, staging results, backups/restore, final rehearsal, closure register, external approval scope/date, Render health/capacity, Coolify health, provider budgets, DNS TTL, operators, and abort criteria.
+2. If any go/no-go item fails, do not start or continue the irreversible phase. Preserve service, record exact evidence, execute the safe rollback/current-state path, and mark the stage `[!]`.
+3. After explicit authorization, execute the accepted runbook exactly: controlled write/queue state, final backup/sync, validation/migrations, Render web/worker activation, Auth0 callback/origin changes, authoritative DNS/custom-domain switch, and Pangolin app-route handling.
+4. Capture redacted timestamps, command/tool versions, counts/checksums, release IDs/digests, decision outcomes, and operator/owner confirmations. Do not store credentials or private user content.
+5. Run the immediate full smoke matrix and tenant-isolation/security checks. Validate canonical history, jobs, objects, identities, tombstones/deletion suppression, release pins, and audit continuity.
+6. Observe the documented SLO/error/latency/queue/database/resource/provider/auth/email/object/cost and user-impact thresholds. Exercise support/incident communications when a threshold triggers.
+7. Execute rollback immediately when a trigger is met; reconcile writes/jobs/callbacks according to phase and prove service integrity on the restored route. Never “wait and hope” past a threshold.
+8. When observation and final audit pass, publish the exact commercial release tag/manifest, operations/support handoff, current provider/DNS/config inventory, final backup evidence, cost baseline, and remaining non-launch optimization register.
+9. Keep Coolify warm for the accepted rollback window. Record a separate owner decision for later archive/decommission; do not delete resources or data in this stage.
+10. Update the complete commercial checklist and closure register from durable evidence and write the final handoff.
+
+Required outputs
+
+- redacted cutover, smoke, observation, rollback (if used), and final-audit evidence
+- exact commercial release tag and manifest only when all gates pass
+- `Implementation/Commercial/06-production-cutover-validation/handoff.md`
+- verified commercial `06E` and final checklist, or a truthful safe `[!]` state
+
+Definition of Done
+
+- Render Frankfurt serves the commercial release at the intended domain from the exact accepted artifact with multi-user safety and all functional/trust gates proven.
+- Data, objects, jobs, identity links, deletion suppression, audit, backups, alerts, cost controls, and rollback remain correct.
+- Coolify disposition is explicit and separate; no resource is silently destroyed.

@@ -1,0 +1,40 @@
+You are the Planning subagent for Personal Stage 03: Domain, data, jobs, identity, and authorization foundation.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Do not change production code or external state.
+
+Required inputs
+
+- accepted Personal Stages 01–02 handoffs and merge commits
+- Architecture stages 04–08, 10–12, 20–21, 23, and relevant ADRs
+- final architecture domain/state/reason-code, evidence, API/job/idempotency, identity, offline, privacy, retention, and audit contracts
+- personal deployment profile and provider configuration contracts
+
+Objective
+
+Produce the executable foundation plan for the server-authoritative domain, PostgreSQL schema/evolution, pg-boss jobs, app-owned identity, mandatory personal Auth0 boundary, server authorization, audit, release registry, and recovery-safe mutation contracts.
+
+Planning responsibilities
+
+1. Extract the canonical aggregates, app-owned identifiers, exact state unions, reason codes, version pins, invariants, and bounded-context ownership. Create a traceability matrix to architecture clauses.
+2. Define PostgreSQL 18 schemas/tables/indexes/constraints for identity/profile, content/release registry, attempts, evidence ledger, learner facts/projections, review/coaching, readiness foundations, jobs, audit, idempotency, export/deletion journals, tombstones, and compatibility metadata. Plan only what is needed now, but avoid dead-end schema choices.
+3. Define Kysely migration rules, expand/migrate/contract sequencing, transaction boundaries, seed/fixture policy, schema compatibility windows, rollback/roll-forward, and production-safe migration ownership.
+4. Define pg-boss queue/job contracts, leases/retries/backoff/dead letters, semantic idempotency keys, outbox/inbox needs, bulkheads, cancellation, version compatibility, and truthful pending/failure/recovery states.
+5. Define Auth0 claim validation and app-owned identity linking for the closed personal profile, allowlisted owner enforcement, session/device representation, recent-auth markers, logout/revocation, audit, and disabled guest/adoption seams for commercial restoration.
+6. Define server-side authorization at route/use-case/query/object boundaries. Prove no record can be selected solely by client-supplied owner IDs.
+7. Define the canonical evidence ledger append/accept/correct/supersede semantics and distinguish historical truth from derived current validity.
+8. Define timestamps, clocks, attempt timing, optimistic concurrency, request IDs, error envelopes, pagination, version negotiation, and audit/redaction rules.
+9. Define deterministic fixtures, property tests, database integration tests, migration tests, job/idempotency tests, claim/authorization adversarial tests, and compatibility tests.
+10. Sequence the foundation so later feature stages consume stable application ports rather than writing directly to storage/providers.
+
+Required deliverables
+
+- `Implementation/Personal/03-domain-data-jobs-auth/plan.md`
+- architecture-to-contract/schema traceability appendix
+- Planning evidence recorded on the `03P` checklist line
+
+Definition of Done
+
+- Every authoritative state transition and write owner is explicit.
+- Schema, jobs, identity, authorization, evidence, audit, idempotency, migration, and compatibility plans agree.
+- The mandatory personal login does not delete guest/adoption domain seams required later.
+- Tests can prove cross-user isolation even though personal production has one allowlisted owner.

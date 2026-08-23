@@ -1,0 +1,40 @@
+You are the Planning subagent for Personal Stage 10: Coolify deployment and personal release acceptance.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning performs read-only discovery only; it does not deploy, change DNS/Pangolin, enter secrets, or call paid providers.
+
+Required inputs
+
+- accepted Personal Stages 01–09 handoffs and exact merged commits
+- final architecture operations, testing, security, privacy, reliability, performance, cost, release, and recovery requirements
+- all personal setup guides and current owner-gate status
+- Coolify/Pangolin two-VM profile: same private LAN, Coolify controller plus connected application VM, private-IP management, public ingress through Pangolin
+- application containers, migrations, health endpoints, environment schema, backup/restore tooling, and full test suites
+
+Objective
+
+Plan a reproducible personal production deployment and acceptance release without weakening the later Render exit. The plan must identify every owner/manual gate, exact artifact and migration order, rollback trigger, recovery drill, smoke path, and evidence requirement.
+
+Planning responsibilities
+
+1. Verify the actual Coolify/controller and connected-server topology from approved read-only information. Define placement, private networks, persistent volumes, resource limits, ports, firewall/SSH posture, proxy ownership, update policy, and failure domains.
+2. Define build/deploy from exact GitHub commits, separate web/worker services, PostgreSQL 18 placement, pg-boss, migration job/lease, environment groups, health/readiness/startup, dependency order, zero/low-downtime compatibility, and rollback.
+3. Define Pangolin resources and authoritative-DNS records for Coolify and the app, TLS/certificate ownership, private upstream addresses, host headers, websocket/streaming needs, security headers, and external verification. Never conflate Pangolin with R2 or assume Cloudflare DNS.
+4. Define secret entry/rotation through Coolify/provider stores, least-privilege R2/Auth0/SES/AI credentials, callback/logout/origin updates, spend envelopes, and redacted configuration verification.
+5. Define PostgreSQL backup schedule, encryption, off-host copy, retention, restore procedure, schema compatibility, RPO/RTO measurement, deletion restore suppression, and a mandatory restore rehearsal.
+6. Define logs/metrics/traces, privacy redaction, uptime/health checks, queue/job alerts, disk/database/resource thresholds, provider error/cost alerts, incident contacts, runbooks, and maintenance/update cadence appropriate to a personal system.
+7. Define a full acceptance matrix across sign-in, all skills, AI Pending/live smoke, evidence/coach/progress, mocks/readiness, export/deletion sandbox drill, recovery/conflicts, notifications, browsers, responsive/a11y, security, performance, and cost.
+8. Define release manifest contents and exact version pins for code, containers, schema, content, prompts/models/rubrics/benchmarks/prices, Design, config, and infrastructure.
+9. Define go/no-go and rollback thresholds. Owner actions such as secrets, DNS, paid smoke, or destructive deletion drills must be bounded and separately confirmed.
+10. Define the personal operations handoff and commercial-pack entry artifacts. Coolify decommission is out of scope.
+
+Required deliverables
+
+- `Implementation/Personal/10-coolify-deployment-acceptance/plan.md`
+- deployment/cutover/rollback, owner-action, acceptance, and operations matrices
+- Planning evidence recorded on the `10P` checklist line
+
+Definition of Done
+
+- A competent operator can deploy, verify, roll back, restore, monitor, and update the personal release without guessing.
+- Every live/manual action is sequenced, bounded, verifiable, and reversible where possible.
+- The full acceptance matrix and release manifest are explicit; no native-mobile work exists.

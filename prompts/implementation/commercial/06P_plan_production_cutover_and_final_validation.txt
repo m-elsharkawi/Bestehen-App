@@ -1,0 +1,39 @@
+You are the Planning subagent for Commercial Stage 06: Production cutover and final commercial validation.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning is read-only and does not freeze writes, change DNS/Auth0, deploy production, or decommission Coolify.
+
+Required inputs
+
+- accepted Commercial Stages 01–05 handoffs, exact commits, closure register, qualified approvals, staging/operations evidence, and final timed migration rehearsal
+- personal Coolify release/tag/manifest and current operational state
+- Render production topology/configuration, custom-domain plan, provider production setup status, migration/rollback tooling, backup/restore evidence, and release candidate manifest
+- authoritative DNS ownership and current Pangolin resources, Auth0 callbacks/origins, R2/SES/AI configuration, monitoring, support, and incident contacts
+
+Objective
+
+Produce the final executable go/no-go, migration, traffic-switch, validation, observation, rollback, and handoff plan. The production cutover occurs only after all launch-blocking technical and qualified external gates are accepted and the owner explicitly authorizes the bounded cutover window.
+
+Planning responsibilities
+
+1. Independently verify closure-register and release-candidate evidence. Define immutable cutover inputs: code/container digests, schemas/migrations, content, prompts/models/rubrics/benchmarks/prices, infrastructure, config names, backup, provider resources, and operator roles.
+2. Define pre-window tasks: TTL reduction, backups, restore check, Render capacity/health, secrets/callback staging, Coolify health, communications/support, provider budgets, queue state, release freeze, and abort criteria.
+3. Define the minute-by-minute low-downtime sequence for write freeze/compatibility mode, queue drain/pause, final data/object/job/deletion-journal sync, validation, migrations, Render web/worker activation, Auth0 callback/origin changes, authoritative DNS/custom-domain traffic switch, Pangolin app-route disposition, and monitoring.
+4. Define exact go/no-go evidence and owner authority at irreversible or externally visible points. No agent may infer permission from available credentials.
+5. Define immediate smoke tests for account-optional guest/adoption, Auth0 OTP/sessions/recent auth, all skills and AI Pending/live paths, evidence/coaching/progress, mocks/readiness, object/media, email/notifications, export/deletion sandbox, recovery/conflicts, support, authorization, responsive/a11y, and telemetry/cost.
+6. Define observation windows, SLO/error/latency/queue/database/resource/provider/auth/email/object/cost thresholds, audit sampling, user-impact checks, and incident communications.
+7. Define rollback triggers and sequence for pre-DNS, post-DNS/no-new-writes, and post-new-writes phases. Address reverse data compatibility, write reconciliation, jobs/callbacks, Auth0, DNS TTL/cache, and Coolify warm capacity.
+8. Define post-acceptance steps: release tag/manifest, provider/DNS/config inventory, final backup, runbooks/support, incident review, cost review, deferred optimization, and explicit Coolify retention/decommission decision. Decommission is never automatic.
+9. Define final independent audit and evidence retention. External approvals must still be in scope/date; no stale sign-off.
+10. Define a safe blocked-state report if any gate fails before or during cutover.
+
+Required deliverables
+
+- `Implementation/Commercial/06-production-cutover-validation/plan.md`
+- signed-off go/no-go, minute runbook, smoke/observation, rollback, and post-cutover matrices
+- Planning evidence on commercial `06P`
+
+Definition of Done
+
+- Every production-visible action has prerequisites, owner, verification, timeout, abort/rollback, and evidence.
+- New writes and late jobs/callbacks are safe in every cutover/rollback phase.
+- Coolify remains a bounded rollback target until explicit post-acceptance disposition.

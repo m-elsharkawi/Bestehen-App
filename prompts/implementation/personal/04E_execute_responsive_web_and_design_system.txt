@@ -1,0 +1,30 @@
+You are the Execution subagent for Personal Stage 04: Responsive web and Design system foundation.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 04 plan. Implement reusable web foundations and representative states, not feature logic owned by later stages.
+
+Execution responsibilities
+
+1. Implement the accepted token system, global styles, themes, focus/motion/contrast rules, responsive layout primitives, and semantic status mapping.
+2. Self-host and optimize approved fonts/icons/logo assets. Add license/source/digest inventory and automated rejection of external Google Fonts or unapproved asset origins.
+3. Implement App Router shells, navigation, personal sign-in boundary, protected layouts, loading/error/not-found/offline/pending patterns, and large/compact responsive navigation.
+4. Implement the accepted APIs and accessible behavior for all 43 components and 20 icons, with stories/fixtures or an equivalent deterministic component gallery.
+5. Implement representative route/state anchors spanning all Design archetypes, including desktop exemplars and compact reflow. Later-feature data may use typed fixtures only.
+6. Implement derived architecture-required UI foundations: device/session list and recent-auth shell, export/deletion status shells, divergent-draft compare/select/merge pattern, and honest interrupted-attempt recovery copy/state.
+7. Maintain the source-anchor manifest with exact component/route/test links and the current 43/20/41/8 inventory.
+8. Add component, semantic state, keyboard, axe, screen-reader-script, visual regression, 320px, 200% zoom, high-contrast, reduced-motion, and representative browser tests.
+9. Measure and enforce accepted asset/bundle/hydration/navigation budgets. Fix layout shifts and focus loss.
+10. Run all relevant checks, write the handoff, and update `04E` evidence.
+
+Required outputs
+
+- accepted responsive web/design-system implementation and assets
+- current Design source-anchor manifest and accessibility test scripts
+- `Implementation/Personal/04-responsive-web-design-system/handoff.md`
+- verified `04E` checklist evidence
+
+Definition of Done
+
+- The component inventory, shells, representative archetypes, and current Design counts are implemented and traceable.
+- Keyboard, focus, landmarks, names, status announcements, reflow, zoom, contrast, and reduced motion pass documented gates.
+- No external font dependency, native mobile code, or PWA-installability scope exists.
+- Personal copy truthfully requires sign-in; provider/queue/storage jargon is absent from user-facing contracts.

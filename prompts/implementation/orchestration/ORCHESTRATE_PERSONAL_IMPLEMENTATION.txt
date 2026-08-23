@@ -1,0 +1,168 @@
+Objective
+
+Deliver the complete Bestehen personal implementation program from the GitHub repository by executing every prompt under `prompts/implementation/personal/` in strict Planning-then-Execution order. Use a fresh subagent for each `P` prompt and a fresh subagent for its matching `E` prompt. Run exactly one subagent at a time. Independently verify and merge each numbered stage before beginning the next one.
+
+The target is one production-quality responsive web application for a single allowlisted owner: Coolify/Pangolin on the owner's two local-network Linux VMs, Cloudflare R2, Auth0 EU Universal Login email OTP, SES Frankfurt, and architecture-admitted commercial AI/STT/TTS adapters. Do not implement a native mobile application or PWA-installability. Preserve provider-neutral and account-optional seams for the later commercial migration.
+
+Do not ask the owner ordinary questions. Inspect the repository and authoritative sources, select the safest architecture-consistent reversible default, document it, and continue. Only request an owner action when a paid account, secret entry, DNS/provider change, legal acceptance, or production-visible cutover genuinely requires that authority. Never request that a secret be pasted into chat.
+
+Authoritative repository files
+
+- `prompts/implementation/README.md`
+- `prompts/implementation/COMMON_STAGE_CONTRACT.md`
+- `prompts/implementation/DESIGN_REVIEW_NOTES.md`
+- `prompts/implementation/personal/00-personal-implementation-plan.md`
+- `prompts/implementation/personal/personal-implementation-checklist.md`
+- all `NNP_*.txt` and `NNE_*.txt` prompts in `prompts/implementation/personal/`
+- `Architecture/28-bestehen-app-architecture-specification.md`, relevant detailed architecture stages/ADRs, and required Design inputs
+
+The expected GitHub repository is `https://github.com/m-elsharkawi/Bestehen-App`. Verify the remote identity before work. Its default branch, merged pull requests, checks, tags, and repository evidence are the system of record. Chat summaries and worker claims are not evidence.
+
+Non-negotiable orchestration rules
+
+1. Never run two stage workers concurrently.
+2. For each number, Planning must be accepted before Execution starts.
+3. Use one branch and one pull request per numbered stage. Planning and Execution share that stage branch; do not merge after Planning alone.
+4. Start each new numbered stage from the verified current default-branch head after the previous stage is merged.
+5. Use a fresh subagent with bounded context for every `P` and every `E` prompt. Give it only the common contract, its prompt, required source paths, exact baseline commit, branch/PR, previous handoff, and relevant failed checks.
+6. A worker may not start or perform work from a later prompt. The orchestrator does not implement production changes itself; it coordinates, verifies, requests bounded repairs, and merges accepted work.
+7. Keep the personal checklist current in the same commits as its evidence. Never turn `[ ]` or `[!]` into `[x]` from a handoff assertion alone.
+8. Do not weaken architecture invariants, tests, migrations, privacy, accessibility, recovery, or cost controls to make a stage pass.
+9. Never commit or quote secrets, recordings, production data, tokens, private keys, raw provider responses containing personal content, or local environment files.
+10. Do not skip a stage because some of its files appear to exist. Verify its full Definition of Done and either accept the existing evidence or run the missing work.
+
+Personal stage sequence
+
+1. `01P_plan_repository_and_delivery_baseline.txt`
+2. `01E_execute_repository_and_delivery_baseline.txt`
+3. `02P_plan_provider_accounts_and_service_setup.txt`
+4. `02E_execute_provider_accounts_and_service_setup.txt`
+5. `03P_plan_domain_data_jobs_identity_and_authorization.txt`
+6. `03E_execute_domain_data_jobs_identity_and_authorization.txt`
+7. `04P_plan_responsive_web_and_design_system.txt`
+8. `04E_execute_responsive_web_and_design_system.txt`
+9. `05P_plan_content_and_deterministic_learning_runtime.txt`
+10. `05E_execute_content_and_deterministic_learning_runtime.txt`
+11. `06P_plan_writing_speaking_ai_and_private_objects.txt`
+12. `06E_execute_writing_speaking_ai_and_private_objects.txt`
+13. `07P_plan_learner_coaching_review_progression_and_evidence.txt`
+14. `07E_execute_learner_coaching_review_progression_and_evidence.txt`
+15. `08P_plan_mocks_readiness_and_ready_to_book.txt`
+16. `08E_execute_mocks_readiness_and_ready_to_book.txt`
+17. `09P_plan_account_data_rights_recovery_and_notifications.txt`
+18. `09E_execute_account_data_rights_recovery_and_notifications.txt`
+19. `10P_plan_coolify_deployment_and_personal_acceptance.txt`
+20. `10E_execute_coolify_deployment_and_personal_acceptance.txt`
+
+Startup and resume protocol
+
+1. Fetch the GitHub default branch, tags, open pull requests, checks, and remote branches. Record the exact starting commit.
+2. Read every authoritative orchestration file completely. Read the checklist and the latest accepted handoff before deciding where to resume.
+3. Validate every prior `[x]` in order against its merged commit/PR, repository paths, and checks. Stop validation at the first incomplete or unproven `P`/`E` line.
+4. Inspect any matching open stage branch/PR. Resume it when it is consistent and safe; do not create duplicate branches or plans.
+5. Determine the next atomic prompt. Never assume that Planning and Execution for a number share completion state.
+6. Report a concise startup status: default-branch commit, last verified step, next prompt, existing branch/PR, and external gates that are informational now. Then continue without waiting for confirmation.
+
+Branch and pull-request protocol
+
+Use these stage branches:
+
+- `implementation/personal-01-repository-delivery-baseline`
+- `implementation/personal-02-provider-service-setup`
+- `implementation/personal-03-domain-data-jobs-auth`
+- `implementation/personal-04-responsive-web-design-system`
+- `implementation/personal-05-content-deterministic-runtime`
+- `implementation/personal-06-writing-speaking-ai-objects`
+- `implementation/personal-07-learner-coaching-progression`
+- `implementation/personal-08-mocks-readiness-ready-to-book`
+- `implementation/personal-09-account-rights-recovery-notifications`
+- `implementation/personal-10-coolify-deployment-acceptance`
+
+The Planning worker creates/reuses the branch from the accepted baseline, commits its plan and checklist evidence, pushes, and creates/updates a draft pull request. The orchestrator reviews Planning while the PR remains unmerged. The Execution worker then checks out the same remote branch at the accepted Planning commit, implements its bounded stage, commits in reviewable units, updates the PR/handoff/checklist, and pushes.
+
+After Execution verification and required GitHub checks pass, the orchestrator marks the PR ready if needed, merges using the repository's normal non-history-rewriting method, fetches the remote default branch, and verifies that the expected commit/tree/checklist/handoff are present. Delete the stage branch only when normal repository policy permits it. Record the merge commit as the next stage baseline.
+
+If GitHub branch protection requires a human merge, leave the PR fully ready and mark the exact external gate. Do not bypass protection or work around required review.
+
+How to launch each Planning worker
+
+Provide a compact task containing:
+
+- “You are the only active worker. Execute only this Planning prompt.”
+- the full common contract and exact `NNP` prompt path/content;
+- GitHub repository/default-branch URL, exact baseline commit, stage branch, and draft PR if one exists;
+- the previous accepted handoff and only the relevant architecture/Design/provider source paths;
+- instructions to fetch first, inspect existing work, write the required plan, update only its checklist Planning line, run doc/schema checks, commit, push, and return commit/PR/evidence plus unresolved external gates.
+
+The Planning worker must make decisions and write an execution-ready plan. It must not change production code, services, DNS, or secrets.
+
+Planning acceptance gate
+
+Independently inspect the Planning commit and repository diff. Accept only if:
+
+- it changed only allowed Planning artifacts;
+- it cites the exact baseline and required authoritative inputs;
+- objective, scope/non-scope, decisions, file map, contracts/migrations, security/privacy/accessibility, tests/evidence, rollback/compatibility, owner actions, risks, execution order, and Definition of Done are present;
+- it resolves architecture/Design conflicts rather than forwarding ordinary questions;
+- the execution plan is bounded to the numbered stage and preserves future Render migration;
+- the Planning checklist evidence points to the actual commit/paths/checks.
+
+If it fails, send a focused repair task to that same stage worker while it remains the only active worker. Reverify. Do not start Execution until accepted. Once accepted, end that worker and launch a fresh Execution worker.
+
+How to launch each Execution worker
+
+Provide a compact task containing:
+
+- “You are the only active worker. Execute only this accepted Execution prompt and plan.”
+- the full common contract and exact `NNE` prompt path/content;
+- exact accepted Planning commit, branch/PR, plan path, previous handoff, and relevant sources;
+- current failing checks or review comments only;
+- instructions to fetch first, implement in reviewable commits, run the plan's complete tests, update only its Execution checklist line, write the handoff, push, and return commits/PR/evidence plus named owner gates.
+
+Execution acceptance gate
+
+Do not trust the worker summary. Inspect the diff, code, migrations, generated artifacts, dependencies, documentation, and handoff. Re-run checks proportional to risk. Confirm:
+
+- the accepted plan and stage prompt are fully satisfied without later-stage scope;
+- tests prove success, failure, retry, authorization, privacy, accessibility, recovery, and compatibility behavior relevant to the stage;
+- no test was weakened, skipped silently, or replaced with placeholders;
+- secrets/private content are absent and logs/config diagnostics redact values;
+- migrations/jobs are forward/backward compatible at declared release boundaries and idempotent where required;
+- Design implementation follows the architecture-over-Design corrections and current 43/20/41/8 inventory;
+- no native mobile/PWA scope, pass probability, password fallback, provider coupling, false deletion/backup promise, or false manual-completion claim appeared;
+- checklist evidence and handoff identify exact commits, tests, migrations, owner gates, rollback, and next-stage inputs.
+
+Use the same-worker focused repair loop for bounded failures. If the implementation materially violates the accepted plan, require the worker to update the handoff/decision evidence and correct it; do not silently broaden the stage.
+
+External owner-gate policy
+
+Service account creation, payment, MFA, domain/DNS changes, secret entry, Auth0/R2/SES/AI console actions, provider terms, and the live deployment window remain owner actions. Earlier stages must still finish guides, validators, fakes, and preparatory code. Do not block Stage 02 merely because the owner has not yet entered credentials when later local work can continue.
+
+At Stage 10, complete every repository/local/staging check first. Then present only the exact ordered owner actions still required, each with its guide link, expected result, verification, and rollback. Resume automatically when evidence becomes available if the environment supports it. If the live release cannot be proven without the action, mark `10E` `[!]`; never fabricate deployment evidence.
+
+Checkpoints
+
+After each numbered stage is merged, report only:
+
+- merged stage and merge commit;
+- key evidence/check results;
+- remaining external gates that affect later work;
+- next `P` prompt being launched.
+
+Continue immediately. Do not request routine approval between stages.
+
+Final personal audit
+
+After Stage 10 Execution appears complete:
+
+1. Re-fetch the GitHub default branch and verify all ten stage PRs/merge commits, twenty checklist lines, plans, handoffs, and final audit lines.
+2. Reproduce the clean release build/test/container path and verify the release tag/manifest points to the exact accepted commit.
+3. Verify the deployed version matches the manifest when live deployment is an accepted gate.
+4. Verify the full product, security/privacy/data-rights, accessibility/responsive, provider-fallback/cost, backup/restore/deletion-suppression, observability, and rollback evidence.
+5. Search for secrets, native-mobile/PWA work, pass probability, Auth0 password fallback, stale Design counts, external fonts, false account/no-wall copy, incomplete exports, destructive draft conflicts, and false deletion/backup claims.
+6. Verify every external gate is either accepted with evidence or truthfully blocks release; do not mark the goal complete around one.
+7. Publish a concise final report with repository, tag/manifest, deployment profile, evidence index, owner operations links, remaining non-blocking limitations, and commercial-pack entry commit.
+
+Completion condition
+
+Finish only when the complete personal checklist and final audit are independently verified and the personal release is reproducibly deployed/accepted. If an indispensable external gate remains, preserve all completed work and report the single exact blocked condition plus the already-prepared guide; do not claim completion.

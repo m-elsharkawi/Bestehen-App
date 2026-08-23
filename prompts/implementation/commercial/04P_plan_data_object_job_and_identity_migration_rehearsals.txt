@@ -1,0 +1,39 @@
+You are the Planning subagent for Commercial Stage 04: Data, object, job, and identity migration rehearsals.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning is read-only. Do not freeze production, copy sensitive data, change DNS, or mutate Coolify/Render/provider state.
+
+Required inputs
+
+- accepted Commercial Stages 01–03 handoffs, closure register, Render topology/guides, and any authorized staging evidence
+- personal Coolify/PostgreSQL/R2/Auth0/job/release manifests and backup/restore evidence
+- current schemas/migrations, app-owned identity links, object manifests, pg-boss contracts, deletion journals/tombstones, exports, provider receipts, and foreground sync compatibility
+- architecture migration, recovery, truth, versioning, retention, security, privacy, and release requirements
+
+Objective
+
+Plan repeatable production-shaped rehearsals from the Coolify-hosted PostgreSQL/application profile to Render Frankfurt without losing, duplicating, reassigning, resurrecting, or silently reinterpreting canonical data. Keep R2 and Auth0 stable unless isolation or test evidence requires a compatible copy/reconfiguration.
+
+Planning responsibilities
+
+1. Define the source and destination inventory/preflight: PostgreSQL exact versions/extensions/collations/timezones, schemas/migrations, sizes/growth, large tables, constraints/sequences, jobs/leases, R2 manifests, Auth0 links, app-owned IDs, release pins, backups, tombstones, deletion/provider-pending journals, and local-client compatibility.
+2. Select and justify the smallest safe migration method using official Render/PostgreSQL capabilities: dump/restore, logical replication, or another compatible path. Define downtime envelope, prerequisites, test data sanitization, encryption, transfer custody, and failure modes.
+3. Define application/web/worker compatibility and quiescence: exact old/new versions, write freeze or dual-compatible window, migration lease, queue pause/drain, in-flight jobs, scheduled work, late provider callbacks, R2 uploads, exports/deletions, and foreground WAL.
+4. Define ordered backup, schema, roles, data, sequence, index/constraint, job, projection/cache, object-reference, identity/callback, and release-manifest steps. Derived state may be rebuilt only from canonical facts with version pins.
+5. Define validation at multiple layers: row/constraint/sequence counts, sampled and full hashes where safe, canonical ledger replay, projection equivalence, ownership/isolation, job states/idempotency, object existence/digests, identity links, tombstones/deletion suppression, audit continuity, and application smoke tests.
+6. Define R2 disposition. Prefer retaining the same private compatible objects for initial cutover when commercial isolation permits; otherwise define idempotent server-side copy, checksums, dual-read compatibility, lifecycle, and rollback without exposing bytes.
+7. Define Auth0 disposition and callback/origin change while preserving app-owned IDs, sessions/recent-auth policy, account adoption, and audit. Never remap domain ownership from provider emails.
+8. Define at least three rehearsals: sanitized/local procedural, staging production-shaped, and final timed pre-cutover rehearsal. Set measurable time, consistency, RPO/RTO, error, and rollback acceptance thresholds.
+9. Define rollback for every phase, including DNS not yet changed, Coolify warm state, reverse compatibility, destination discard/quarantine, queued work, new writes, and owner go/no-go authority.
+10. Define a minute-by-minute cutover runbook draft, evidence template, operator roles, communications, incident path, and Commercial Stage 06 entry conditions.
+
+Required deliverables
+
+- `Implementation/Commercial/04-migration-rehearsals/plan.md`
+- source/destination inventory, compatibility, validation, rehearsal, rollback, and cutover-runbook matrices
+- Planning evidence on commercial `04P`
+
+Definition of Done
+
+- Every canonical/derived/job/object/identity/deletion/audit data class has an ordered migration or verified no-copy disposition.
+- Acceptance and rollback thresholds are measurable and protect user ownership/history.
+- The plan can be rehearsed without production secrets or unsafe production mutations.

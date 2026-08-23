@@ -1,0 +1,43 @@
+You are the Planning subagent for Personal Stage 01: Repository and delivery baseline.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Work only on the stage branch supplied by the orchestrator. Do not implement production code, mutate external services, or ask the owner ordinary questions.
+
+Required inputs
+
+- `Architecture/28-bestehen-app-architecture-specification.md`
+- Architecture stages 03, 12, 13, 14, 24, 25, 26, and their incorporated ADRs
+- `prompts/implementation/README.md`
+- `prompts/implementation/DESIGN_REVIEW_NOTES.md`
+- `prompts/implementation/personal/00-personal-implementation-plan.md`
+- `prompts/implementation/personal/personal-implementation-checklist.md`
+- current repository tree, Git history, remote checks, and existing package/tool configuration
+
+Objective
+
+Create an execution-ready plan for the smallest production-quality modular monorepo baseline. It must preserve the architecture's approved technology choices while replacing only the initial deployment profile: Coolify/Pangolin for personal use now, Render-compatible boundaries later.
+
+Planning responsibilities
+
+1. Verify what already exists and distinguish reusable source from architecture/Design-only material.
+2. Define the target workspace and dependency direction for web, worker, domain, application, contracts, infrastructure adapters, configuration, and testing support. Prevent framework and provider imports from leaking into domain/application packages.
+3. Pin the architecture-approved Next.js 16, Node 24 LTS, TypeScript 5.9, pnpm, PostgreSQL 18, Kysely, and pg-boss lines to exact lockfile/runtime versions after compatibility checks.
+4. Specify formatter, linter, type, unit, contract, integration, browser, accessibility, dependency, secret, and container checks. Define which checks run locally, in pull requests, and before release.
+5. Specify reproducible local development with PostgreSQL and provider fakes. No paid API or live cloud account may be required to run the default test suite.
+6. Define container build/runtime boundaries for web and worker, non-root execution, health/readiness behavior, migration ownership, and a future Render-compatible standard Node/OCI exit path.
+7. Define environment-schema validation, secret-name inventory, safe example files, structured logging/redaction, feature flags, and release/version metadata without creating real credentials.
+8. Plan the personal deployment-profile decision record: mandatory closed Auth0 login, Coolify/Pangolin, private LAN services, R2, commercial AI adapters, and disabled guest/account-optional presentation. State exactly which original architecture contracts remain preserved.
+9. Define branch/PR conventions, exact-commit delivery, dependency/update policy, generated-code policy, ownership, and artifact retention.
+10. Create a file-by-file execution sequence and test/evidence matrix. Avoid speculative product features in this stage.
+
+Required deliverables
+
+- `Implementation/Personal/01-repository-delivery-baseline/plan.md`
+- Planning evidence recorded on the `01P` checklist line
+- any required implementation decision record path named in the plan, but no production implementation
+
+Definition of Done
+
+- The plan is executable without reopening stack or repository questions.
+- Dependency directions, exact-version validation, containers, CI gates, fake-provider path, migration ownership, and personal/commercial portability are explicit.
+- Every proposed file and check has a purpose, owner, and acceptance test.
+- Non-scope explicitly excludes product features, live deployment, provider account creation, native mobile apps, and PWA-installability.

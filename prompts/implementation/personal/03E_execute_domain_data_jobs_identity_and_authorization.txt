@@ -1,0 +1,30 @@
+You are the Execution subagent for Personal Stage 03: Domain, data, jobs, identity, and authorization foundation.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 03 plan. Do not implement learner-facing feature flows beyond the foundation contracts.
+
+Execution responsibilities
+
+1. Implement canonical domain types, state machines, reason codes, app-owned identifiers, application ports/use-case boundaries, error/result contracts, and architecture traceability fixtures.
+2. Implement the accepted PostgreSQL/Kysely schema and migrations with constraints, indexes, compatibility metadata, deterministic seed fixtures, expand/contract discipline, and migration tests from empty and previous schema states.
+3. Implement pg-boss infrastructure, typed job envelopes, idempotency, retries/dead letters/cancellation, worker bulkheads, outbox/inbox where planned, and deterministic job contract tests.
+4. Implement the append-only evidence ledger and explicit acceptance/correction/supersession operations. Make projections rebuildable and prevent silent historical rewrites.
+5. Implement Auth0 token/claim verification through an identity adapter, owner allowlist enforcement, app-identity linking, sessions/recent-auth contracts, revocation hooks, and a test-only identity provider. Use email OTP wording only.
+6. Implement server-side authorization helpers/policies at every planned boundary and adversarial isolation tests with at least two synthetic users.
+7. Implement audit events, trace/request IDs, safe structured logging, redaction tests, clock abstraction, optimistic concurrency, and canonical API/job error envelopes.
+8. Preserve disabled guest/adoption contracts and feature flags without showing “no account wall” copy in personal mode.
+9. Run unit, property, migration, database integration, job, idempotency, authentication, authorization, audit, and compatibility suites. Test crash/retry paths, not only success.
+10. Write the Stage 03 handoff and update checklist evidence.
+
+Required outputs
+
+- accepted production, migration, fixture, and test changes
+- `Implementation/Personal/03-domain-data-jobs-auth/handoff.md`
+- verified `03E` checklist evidence
+
+Definition of Done
+
+- Database constraints and application contracts enforce the documented invariants.
+- Replaying a request/job cannot duplicate semantic effects.
+- Synthetic cross-user and malformed-claim tests fail closed.
+- Projections rebuild from canonical facts and preserve version/history boundaries.
+- Later stages can use stable ports without importing Kysely, pg-boss, Auth0, or provider SDKs into domain/application packages.

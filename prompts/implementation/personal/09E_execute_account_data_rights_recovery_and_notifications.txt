@@ -1,0 +1,30 @@
+You are the Execution subagent for Personal Stage 09: Account, data rights, recovery, offline, and notifications.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 09 plan. Use fake providers by default; do not claim a live email/push/provider purge without evidence.
+
+Execution responsibilities
+
+1. Implement responsive profile/preferences and session/device views, recent-auth gates, revoke-one/revoke-others, logout/recovery, server authorization, and audit with Auth0 email-OTP-only wording.
+2. Implement queued source-cut export generation, the complete architecture ZIP/README/accessible summary/CSV/checksummed manifest, recent-auth/private delivery, 24-hour default expiry/seven-day maximum, purge/reconciliation, and golden fixtures.
+3. Implement revoke-first idempotent deletion orchestration for sessions, live data, objects, jobs, providers, exports, notifications, and derived state with partial/provider-pending status, retry, accessible confirmation alternatives, and audit.
+4. Implement tombstones and restore-suppression tooling/hooks. Prove via a representative backup/restore drill or deterministic equivalent that deleted/suppressed data is not exposed before reconciliation.
+5. Implement foreground-first browser WAL/checkpoints, reconnect/replay, quotas, compatibility, safe local data handling, and explicit offline boundaries. Exclude raw audio.
+6. Implement data-type-specific conflict resolution, including tombstone dominance and accessible preservation/compare/select/merge of both Writing branches.
+7. Implement session-expiry/mid-attempt recovery preserving draft/elapsed/conditions and server-owned validity with truthful copy.
+8. Implement timezone/DST-safe preferences and admitted notification channels with permission denial, quiet hours, deduplication, unsubscribe, retry/fallback, audit, and deterministic fakes.
+9. Run golden export and AT-readable-summary tests, session/authz adversarial tests, delete/retry/provider-pending tests, restore-suppression drill, WAL/conflict/property tests, DST/notification tests, browser/a11y tests, and redaction scans.
+10. Write the handoff and update `09E` evidence.
+
+Required outputs
+
+- accepted account/session/export/deletion/recovery/notification implementation and tests
+- durable restore-suppression/deletion drill evidence
+- `Implementation/Personal/09-account-rights-recovery-notifications/handoff.md`
+- verified `09E` checklist evidence
+
+Definition of Done
+
+- Exports are complete, accessible, checksummed, private, short-lived, and exclude forbidden data.
+- Deletion revokes access first, reports partial/provider-pending honestly, converges idempotently, and suppresses restored data before exposure.
+- Interrupted/offline/conflict flows preserve all recoverable work and server authority.
+- Account sessions and notification schedules behave correctly across authorization, accessibility, timezone, and failure tests.

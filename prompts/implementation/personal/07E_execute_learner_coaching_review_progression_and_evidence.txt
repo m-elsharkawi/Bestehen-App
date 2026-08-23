@@ -1,0 +1,28 @@
+You are the Execution subagent for Personal Stage 07: Learner model, coaching, review, progression, and evidence views.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 07 plan.
+
+Execution responsibilities
+
+1. Implement canonical learner facts and rebuildable, versioned projections with correction/supersession, freshness, backfill, audit, and rebuild-equivalence tests.
+2. Implement normalized mistake/weakness records and their full documented lifecycle, evidence linkage, recurrence/mastery/dormancy/reopen transitions, reason codes, and deterministic fixtures.
+3. Implement timezone-safe review scheduling, due/overdue flows, review attempts, retention/spacing updates, interruption/recovery, and correction behavior.
+4. Implement the deterministic coaching/planning engine, eligibility/constraints, plan and session state machines, versioned bounded explanations, alternatives, and observable reason codes.
+5. Implement accessible owner override/edit/skip/retry/abandon flows and audit their reasons without mutating evidence history.
+6. Implement progression/mastery/freshness/regression rules and current-versus-historical projections without readiness/pass-probability claims.
+7. Implement responsive Home/plan, session, Mistakes, Review, Progress, evidence-detail, history, and pending/error/empty states using the Design system.
+8. Implement idempotent recalculation/backfill jobs, stale/partial rebuild recovery, monitoring metrics, and accepted performance budgets.
+9. Run lifecycle property tests, rebuild/correction scenarios, recurrence/freshness clocks, plan-reason/override tests, database/API/browser/a11y tests, and representative query/load checks.
+10. Update traceability, write the handoff, and update `07E` evidence.
+
+Required outputs
+
+- accepted learner/coaching/review/progression implementation, migrations, jobs, UI, and tests
+- `Implementation/Personal/07-learner-coaching-progression/handoff.md`
+- verified `07E` checklist evidence
+
+Definition of Done
+
+- A completed attempt can create evidence, update a weakness, produce an explainable plan, drive a session/review, and update progression end to end.
+- Rebuilds and corrections are deterministic, idempotent, auditable, and history-preserving.
+- Every displayed recommendation exposes neutral bounded reasons and supports an accessible override.

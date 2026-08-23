@@ -1,0 +1,41 @@
+You are the Planning subagent for Commercial Stage 03: Render platform, environments, CI/CD, and operations.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning performs read-only research only; do not create Render/provider accounts, change DNS, enter secrets, deploy, or alter Coolify.
+
+Required inputs
+
+- accepted Commercial Stages 01–02 handoffs and closure register
+- architecture deployment/operations/security/privacy/reliability/performance/cost/testing contracts and Render ADR
+- current containers, migrations, health checks, GitHub workflows, personal setup guides, Coolify topology, provider inventories, backup/restore evidence, and release manifest
+- current dated official documentation for Render, GitHub, the authoritative DNS provider, Auth0, R2, SES, and selected AI/STT/TTS providers
+
+Objective
+
+Plan a production-grade Render Frankfurt platform and staging/production delivery system while the Coolify release remains available. Produce exact account/resource/service setup guides, configuration contracts, security/operations controls, and a rollback-safe delivery topology.
+
+Planning responsibilities
+
+1. Define Render account/team/billing/ownership, MFA, least-privilege members, audit, spend alerts, recovery, and support prerequisites.
+2. Define Frankfurt staging and production resources: standard Node/OCI web, background worker, managed PostgreSQL 18/PITR, environment groups, service identities, private networking, health checks, resource sizes, autoscaling policy, persistent requirements, build/start/pre-deploy commands, and cost envelope. Do not invent a price; cite the current calculator/official pricing date.
+3. Define Blueprint/IaC versus dashboard bootstrap boundaries and drift detection. Prefer reproducible declarative configuration without placing secrets in Git.
+4. Define GitHub integration, protected environments, exact-commit artifacts, pull-request previews if justified, staging promotion, migration lease/order, web/worker old-new compatibility, release manifest activation, rollbacks, and emergency hotfix procedure.
+5. Define custom domains and records at the actual authoritative DNS provider, Render verification/TLS, staging names, TTL reduction for cutover, and the eventual Pangolin/Coolify app-route disposition. Keep the Coolify admin resource separate.
+6. Define production-separated R2 buckets/credentials/lifecycles/CORS, Auth0 EU tenant/application/OTP/callbacks, SES Frankfurt identity/production access/suppression, AI/STT/TTS projects/keys/regions/budgets/data terms, and GitHub/Render secret placement/rotation. Reuse only when isolation and migration evidence justify it.
+7. Define PostgreSQL PITR plus independent encrypted logical backup/export, off-provider retention, restore tests, deletion restore suppression, RPO/RTO, connection pooling, maintenance, extension/version constraints, and exit export.
+8. Define privacy-safe logs/metrics/traces, SLOs, synthetic health, queue/dead-letter, database, provider, auth, email, object, cost, security, and user-impact alerts with ownership/runbooks.
+9. Define security hardening: TLS/headers/cookies/CSRF/CORS, secrets, network/DB roles, dependency/container/SBOM/provenance, audit/log retention/redaction, vulnerability/patch cadence, and incident/rollback access.
+10. Define a field-by-field `docs/setup/commercial/` guide inventory with expected result, verification, rollback, and no-secret warnings for every account and service.
+11. Define infrastructure/config/unit/contract/staging smoke/restore/failover/security/performance/cost tests and Stage 04 migration rehearsal entry criteria.
+
+Required deliverables
+
+- `Implementation/Commercial/03-render-platform-operations/plan.md`
+- Render topology, environment/promotion, owner-action, service-account, DNS, secrets, backup, observability, and cost matrices
+- proposed `docs/setup/commercial/` guide inventory
+- Planning evidence on commercial `03P`
+
+Definition of Done
+
+- The plan can bootstrap staging and production without guessing or exposing secrets.
+- Render Frankfurt, GitHub delivery, provider separation, domains, backups, observability, security, cost, rollback, and Coolify coexistence are explicit.
+- Mutable provider instructions require dated official sources and observable verification.

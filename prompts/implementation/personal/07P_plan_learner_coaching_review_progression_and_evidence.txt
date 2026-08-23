@@ -1,0 +1,39 @@
+You are the Planning subagent for Personal Stage 07: Learner model, coaching, review, progression, and evidence views.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning changes no production code.
+
+Required inputs
+
+- accepted Personal Stages 01–06 handoffs
+- Architecture stages 06–08, 11–12, 19, 24–25 and relevant ADRs
+- canonical evidence, learner-fact/projection, mistake-memory, review, coaching, progression, release, and reason-code contracts
+- Design anchors for home/plan, sessions, mistakes, review, Progress, explanations, overrides, pending, and history
+
+Objective
+
+Plan the complete evidence-to-action loop: accepted evidence becomes learner facts and projections, weaknesses enter an explicit lifecycle, coaching chooses a transparent plan, the owner can override it, review is scheduled, progression is earned, and every recommendation is explainable and reproducible.
+
+Planning responsibilities
+
+1. Define canonical learner facts versus rebuildable projections, freshness/current-validity windows, content/rubric/model version effects, correction/supersession, and projection rebuild/audit behavior.
+2. Define mistake/weakness identity, normalization, evidence links, severity, confidence semantics, lifecycle states, recurrence, mastery, dormancy/reopen, cross-skill relationships, and reason codes. Avoid vague “AI insight” records.
+3. Define review scheduling/retention/spacing, due/overdue handling, item generation, attempt linkage, interruption, correction, and deterministic clocks.
+4. Define the coaching engine's inputs, eligibility, constraints, plan/session state machines, exercise selection, ordering, bounded explanations, alternatives, and versioned reasons. Never use hidden model output as the authoritative planner.
+5. Define owner override/edit/skip/retry/abandon flows, reason capture, accessibility, audit, and how overrides influence but do not rewrite evidence.
+6. Define progression/mastery rules, levels/milestones, uncertainty, freshness, regression, and current-versus-historical display. Do not imply readiness or a pass probability.
+7. Define Progress, Mistakes, Review, Home/plan, session, evidence-detail, and history queries/views across desktop and compact layouts with neutral pending/error/empty states.
+8. Define recalculation jobs, idempotency, dependency/version pins, backfills, compatibility, performance budgets, and recovery from stale or partially rebuilt projections.
+9. Define deterministic scenarios and property tests for the full lifecycle, plan reasons, overrides, correction, recurrence, freshness, rebuild equivalence, clocks, and accessibility.
+10. Sequence the execution from facts/projections through one full weakness lifecycle and then all views/variants.
+
+Required deliverables
+
+- `Implementation/Personal/07-learner-coaching-progression/plan.md`
+- evidence-to-fact-to-plan-to-review lifecycle traceability matrix
+- Planning evidence recorded on the `07P` checklist line
+
+Definition of Done
+
+- Every recommendation, projection, progression decision, and lifecycle transition has named inputs, version pins, reasons, and tests.
+- Correction/rebuild paths preserve history and produce deterministic current state.
+- User overrides are first-class and auditable, not destructive exceptions.

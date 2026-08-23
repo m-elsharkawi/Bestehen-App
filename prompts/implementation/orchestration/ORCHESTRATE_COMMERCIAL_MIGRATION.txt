@@ -1,0 +1,169 @@
+Objective
+
+Migrate the accepted Bestehen personal release into a production-ready multi-user commercial service by executing every prompt under `prompts/implementation/commercial/` in strict Planning-then-Execution order. Use a fresh subagent for every `P` prompt and another fresh subagent for its matching `E` prompt. Run exactly one subagent at a time. Independently verify and merge each numbered stage before beginning the next.
+
+The program restores commercial identity/product behavior, provisions Render Frankfurt alongside the live Coolify system, rehearses compatible data/object/job/identity migration, closes every architecture and commercial launch gate, and performs a bounded owner-authorized cutover. Cloudflare R2, Auth0 EU email OTP, SES Frankfurt, app-owned identifiers, standard PostgreSQL/S3 exports, and provider-neutral AI/STT/TTS ports remain portable. Do not implement native mobile applications or PWA-installability. Never decommission Coolify automatically.
+
+Do not ask the owner ordinary questions. Resolve repository and architecture choices with the safest evidence-backed reversible default and proceed. Only request authority for account/payment/terms, secrets, DNS/provider changes, qualified external approval, production traffic changes, or later resource decommission. Never ask for a secret in chat and never let an agent self-certify legal, rights, privacy-regulatory, trademark, penetration, fairness/domain, or professional accessibility approval.
+
+Authoritative repository files
+
+- `prompts/implementation/README.md`
+- `prompts/implementation/COMMON_STAGE_CONTRACT.md`
+- `prompts/implementation/DESIGN_REVIEW_NOTES.md`
+- `prompts/implementation/commercial/00-commercial-migration-plan.md`
+- `prompts/implementation/commercial/commercial-migration-checklist.md`
+- all `NNP_*.txt` and `NNE_*.txt` prompts in `prompts/implementation/commercial/`
+- the accepted personal release manifest/tag/checklist and `Implementation/Personal/10-coolify-deployment-acceptance/handoff.md`
+- final/detailed architecture, ADRs, required Design inputs, and current closure register
+
+The expected GitHub repository is `https://github.com/m-elsharkawi/Bestehen-App`. Verify the remote identity before work. Its default branch, merged pull requests, checks, tags, provider-independent repository evidence, and qualified external approval artifacts are the system of record. Chat summaries and worker claims are not evidence.
+
+Non-negotiable orchestration rules
+
+1. Never run two stage workers concurrently.
+2. For each number, Planning must be independently accepted before Execution starts.
+3. Use one branch and one pull request per numbered stage. Planning and Execution share the branch; merge only after Execution acceptance.
+4. Start a new numbered stage from the verified default-branch merge of its predecessor.
+5. Use a fresh bounded-context subagent for every `P` and `E`. No worker may implement a later prompt.
+6. The orchestrator coordinates, verifies, requests bounded repairs, and merges. It does not substitute its own production implementation for a failed worker.
+7. Keep the commercial checklist and closure register synchronized with their evidence. No `[x]` from assertion, draft policy, unchecked screenshot, or expired approval.
+8. Keep the personal Coolify release live/recoverable through platform setup and rehearsals. No production DNS switch before Stage 06 authorization.
+9. Never weaken multi-user isolation, evidence/readiness truth, data rights, migrations, recovery, accessibility, evaluation, security, cost, or external approvals to meet a schedule.
+10. Never commit secrets, production data, recordings, private report contents, tokens, keys, or sensitive provider payloads.
+
+Commercial stage sequence
+
+1. `01P_plan_baseline_audit_and_closure_register.txt`
+2. `01E_execute_baseline_audit_and_closure_register.txt`
+3. `02P_plan_multi_user_identity_authorization_and_abuse_controls.txt`
+4. `02E_execute_multi_user_identity_authorization_and_abuse_controls.txt`
+5. `03P_plan_render_platform_environments_delivery_and_operations.txt`
+6. `03E_execute_render_platform_environments_delivery_and_operations.txt`
+7. `04P_plan_data_object_job_and_identity_migration_rehearsals.txt`
+8. `04E_execute_data_object_job_and_identity_migration_rehearsals.txt`
+9. `05P_plan_commercial_evidence_and_deferred_item_closure.txt`
+10. `05E_execute_commercial_evidence_and_deferred_item_closure.txt`
+11. `06P_plan_production_cutover_and_final_validation.txt`
+12. `06E_execute_production_cutover_and_final_validation.txt`
+
+Startup and resume protocol
+
+1. Fetch the GitHub default branch, tags, open pull requests, checks, and remote branches. Record the exact starting commit.
+2. Verify the accepted personal release tag/manifest/checklist/handoff and the actual deployed version/restore evidence. Do not start commercial work from an unproven local branch.
+3. Read the orchestration files, commercial checklist, current closure register, and latest accepted handoff completely.
+4. Validate every commercial `[x]` in order against its merged commit/PR, paths, checks, and external-approval artifact when relevant. Stop at the first incomplete/unproven `P` or `E`.
+5. Inspect any matching open branch/PR and resume safe existing work instead of duplicating it.
+6. Report a concise startup status: personal baseline/tag, default-branch commit, last verified commercial step, next prompt, existing PR, Coolify health evidence, and known external launch gates. Then continue without routine confirmation.
+
+Branch and pull-request protocol
+
+Use these stage branches:
+
+- `implementation/commercial-01-baseline-audit-closure`
+- `implementation/commercial-02-multi-user-identity-abuse`
+- `implementation/commercial-03-render-platform-operations`
+- `implementation/commercial-04-migration-rehearsals`
+- `implementation/commercial-05-commercial-evidence-closure`
+- `implementation/commercial-06-production-cutover-validation`
+
+The Planning worker creates/reuses the stage branch from the accepted baseline, commits its plan/register/checklist evidence, pushes, and creates/updates a draft PR. After independent Planning acceptance, a fresh Execution worker continues from that exact commit on the same branch, implements the stage, updates its handoff/register/checklist, runs checks, and pushes.
+
+After Execution acceptance and required checks, merge through normal protected-branch policy without history rewriting. Fetch the remote default branch and verify the merged tree, checklist, closure register, handoff, and expected commits before advancing. If a required human merge/review blocks protection, leave the PR ready and report that exact gate; never bypass it.
+
+Planning worker launch packet
+
+Provide only:
+
+- “You are the only active worker. Execute only this Planning prompt.”
+- the full common contract and exact `NNP` prompt;
+- repository/default branch, exact baseline, stage branch/PR, previous handoff, personal release manifest when relevant, and current closure register;
+- required architecture/Design/provider source paths and current failed checks;
+- instructions to fetch first, resolve safe defaults, write the required plan/matrices, update only `NNP` evidence/register entries, run doc/schema checks, commit, push, and return exact evidence/external gates.
+
+Planning does not change production code, live services, DNS, data, or secrets.
+
+Planning acceptance gate
+
+Inspect the actual commit/diff. Accept only if:
+
+- only allowed Planning artifacts changed;
+- the exact baseline and authoritative sources are cited;
+- scope/non-scope, decisions, file/work map, contracts/migrations, multi-user/security/privacy/accessibility/evaluation/operations implications, tests/evidence, rollback/compatibility, owner/external gates, risks, execution order, and Definition of Done are complete;
+- every relevant closure-register item has a disposition and no ordinary question was forwarded;
+- Coolify safety and commercial migration compatibility remain explicit;
+- checklist/register evidence points to actual commits, paths, checks, and qualified approvers where required.
+
+Use a focused same-worker repair loop for bounded failures while it remains the only active worker. Reverify, then end it and launch a fresh Execution worker.
+
+Execution worker launch packet
+
+Provide only:
+
+- “You are the only active worker. Execute only this accepted Execution prompt and plan.”
+- the full common contract and exact `NNE` prompt;
+- exact accepted Planning commit, branch/PR, plan, previous handoff, personal baseline, current closure register, and relevant sources;
+- current failed checks/review findings only;
+- instructions to fetch first, implement in reviewable commits, run the complete test/evidence matrix, update only its Execution/checklist/register evidence, write the handoff, push, and return exact results/gates.
+
+Execution acceptance gate
+
+Inspect repository changes and re-run risk-proportionate checks. Accept only if:
+
+- the entire accepted stage is implemented without unplanned later-stage scope;
+- multi-user ownership/authorization, migration compatibility, truth/versioning, privacy/data rights, accessibility, recovery/rollback, provider neutrality, and cost controls remain intact;
+- tests cover success, adversarial isolation, retry/concurrency, failure, migration, recovery, accessibility, and performance/cost cases relevant to the stage;
+- no test/threshold was weakened and no fake-only result is presented as live validation;
+- no secret/private content or false manual/external approval claim exists;
+- Render/Coolify/provider operations are reproducible and bounded; Coolify was not silently degraded;
+- every closed register/checklist line has durable current evidence, and every remaining `[!]` has a named necessary authority and review packet/guide.
+
+Use a focused same-worker repair loop for bounded failures. Do not advance around a launch blocker.
+
+External and qualified-gate policy
+
+Agents complete all research, implementation, guides, validators, tests, rehearsal tooling, draft policies, and review packets they safely can. They do not create paid accounts or accept legal/provider terms for the owner; handle raw secrets; make unauthorized DNS/traffic changes; or certify their own legal, rights, privacy-regulatory, trademark, penetration, fairness/domain, or professional accessibility work.
+
+An external gate is acceptable only when it names:
+
+- the exact action/review and why outside authority is required;
+- the account/role or qualified reviewer, without exposing private credentials;
+- the prepared guide or review packet;
+- objective expected evidence and scope/date/expiry;
+- safe current state and effect on later stages.
+
+Continue independent stages around non-blocking gates. Stage 05 cannot complete its launch gate while required qualified approvals are missing. Stage 06 may not begin production cutover authorization until all launch-blocking gates are accepted.
+
+Live action policy
+
+Repository, local, synthetic, and authorized staging work proceeds normally. Production account/provider/DNS/data/traffic actions require the precise owner gate defined in the accepted plan. Availability of credentials is not permission.
+
+For Stage 06, first complete and report the immutable preflight/go-no-go packet. Request only the single bounded cutover authorization if every prerequisite already passes. During execution, obey abort/rollback thresholds immediately. Never extend the window or improvise an irreversible step without authority.
+
+Checkpoints
+
+After each merged numbered stage, report only:
+
+- stage and merge commit;
+- key checks/rehearsal/evidence results;
+- closure-register counts by verified/open/external-blocked severity;
+- current Coolify/Render safety state;
+- next `P` prompt.
+
+Continue immediately without routine approval.
+
+Final commercial audit
+
+After Stage 06 Execution appears complete:
+
+1. Re-fetch GitHub and verify all six PRs/merge commits, twelve checklist lines, plans, handoffs, closure-register items, qualified approval artifacts, release tag, and final manifest.
+2. Verify the production domain serves the exact Render release artifact and the deployed schema/content/model/config/infrastructure versions match the manifest.
+3. Re-run or inspect current end-to-end multi-user/guest/adoption, isolation/security, all learning/readiness, export/deletion/restore, recovery/conflicts, notifications, responsive/accessibility, provider/fallback/evaluation, performance/reliability/cost, backup/restore, monitoring/support, and rollback evidence.
+4. Verify the migration preserved counts/checksums, canonical history, projections, jobs, objects, app-owned identity links, tombstones/deletion suppression, audit, and release pins.
+5. Search for secrets, stale/fake evidence, expired approvals, unowned closure items, pass probability, password fallback, provider-coupled IDs, native/PWA scope, external fonts, cross-user leakage, false compliance claims, and silent test/threshold waivers.
+6. Verify Coolify is retained or disposed only according to a separate explicit owner decision after the accepted rollback window. Never infer decommission permission from successful cutover.
+7. Publish a concise commercial final report with repository/tag/manifest, Render topology/domain, migration evidence, closure/approval index, operations/support/recovery links, cost baseline, Coolify disposition, and remaining non-launch optimizations.
+
+Completion condition
+
+Finish only when all commercial checklist/final-audit lines and launch-blocking closure items are independently verified, the exact Render production release is accepted, and rollback/recovery remain proven. If an indispensable owner or qualified external gate remains, preserve the safe current service, mark the exact gate, and do not claim commercial completion.

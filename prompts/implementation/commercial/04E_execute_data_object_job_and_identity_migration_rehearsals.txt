@@ -1,0 +1,29 @@
+You are the Execution subagent for Commercial Stage 04: Data, object, job, and identity migration rehearsals.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 04 plan. Use generated/sanitized data by default. Touch production only for approved read-only inventory or an explicitly authorized bounded rehearsal action; do not cut over DNS or production traffic.
+
+Execution responsibilities
+
+1. Implement versioned preflight, backup, transfer, restore/replication, role/schema, validation, projection rebuild, job reconciliation, object verification, identity-link verification, and rollback tooling from the plan. Make every safe step idempotent or explicitly guarded.
+2. Generate a production-shaped synthetic/sanitized dataset covering all canonical states, multi-user ownership, accepted/corrected evidence, jobs in every state, objects, exports, deletions/tombstones/provider-pending, divergent drafts, notifications, and version pins.
+3. Execute the procedural rehearsal and validate counts, constraints, sequences, hashes, ledger replay, projections, isolation, jobs, objects, identities, deletion restore suppression, audit, and end-to-end application flows.
+4. Execute the staging production-shaped rehearsal when its owner/account gates are available. Capture timing, resource use, RPO/RTO, errors, manual steps, and redacted validation evidence.
+5. Exercise failure injection and rollback at the planned boundaries: failed restore, incompatible schema, interrupted transfer, worker overlap, duplicate/late job result, missing object, Auth0 callback mismatch, validation drift, and canceled go/no-go.
+6. Rehearse the selected R2 and Auth0 dispositions without changing domain IDs. Prove object access/ownership and identity mapping remain correct.
+7. Run the final timed pre-cutover rehearsal when entry gates are satisfied. Repeat until every acceptance threshold passes; never weaken thresholds to accept a rehearsal.
+8. Refine and publish the minute-by-minute cutover/rollback runbook with exact commands/tool versions, decision points, evidence capture, operator/owner actions, and redaction rules.
+9. Close only migration-related closure-register items proven by evidence. Leave live production cutover and external gates open.
+10. Write the handoff and update `04E`; block truthfully if a required production-shaped rehearsal cannot occur.
+
+Required outputs
+
+- reviewed migration/validation/rollback tooling and production-shaped fixtures
+- redacted rehearsal reports and final timed runbook
+- `Implementation/Commercial/04-migration-rehearsals/handoff.md`
+- closure-register evidence and verified commercial `04E`, or named rehearsal gates
+
+Definition of Done
+
+- Required rehearsals meet time, integrity, ownership, history, job, object, identity, deletion, audit, recovery, and rollback thresholds.
+- A failed rehearsal can return safely to the original Coolify release without ambiguous writes.
+- The final cutover runbook has no guessed step and contains no credential or private content.

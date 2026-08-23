@@ -1,0 +1,36 @@
+You are the Execution subagent for Personal Stage 01: Repository and delivery baseline.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only after the orchestrator accepts `Implementation/Personal/01-repository-delivery-baseline/plan.md`. Implement only that plan on the same stage branch. Do not configure live providers or deploy.
+
+Required inputs
+
+- the accepted Stage 01 plan and its recorded baseline commit
+- all inputs listed in `01P_plan_repository_and_delivery_baseline.txt`
+- the current stage pull request and checks
+
+Execution responsibilities
+
+1. Scaffold the accepted private pnpm modular monorepo and enforce its import/dependency boundaries.
+2. Pin compatible exact tool/runtime/package versions and commit the lockfile plus runtime declarations.
+3. Add the web and worker shells, shared packages, typed environment schema, structured redaction, feature flags, health/readiness skeletons, and release metadata without pretending product capabilities exist.
+4. Add reproducible local PostgreSQL/provider-fake setup and safe `.env.example` material containing names and descriptions only.
+5. Add production-style, non-root container builds for web and worker with deterministic build contexts and architecture-compatible startup/migration contracts.
+6. Implement the accepted CI checks, caching, artifact handling, dependency/secret scanning, unit smoke tests, browser/a11y smoke harness, and pull-request gate configuration that can live in the repository.
+7. Add the personal deployment-profile decision record and a compatibility note showing how the same artifacts can later run on Render.
+8. Add developer setup, quality-command, branching, release, and troubleshooting documentation.
+9. Run every baseline check from a clean install/build path. Inspect container contents and generated artifacts for secrets or unnecessary files.
+10. Write the stage handoff and update only the Stage 01 Execution checklist evidence.
+
+Required outputs
+
+- production and documentation changes defined by the accepted plan
+- `Implementation/Personal/01-repository-delivery-baseline/handoff.md`
+- verified `01E` checklist evidence with commit/check identifiers
+
+Definition of Done
+
+- A new contributor can clone, install, run local fakes/PostgreSQL, build, test, and start web/worker from the documentation.
+- CI enforces the accepted quality gates and the default test path uses no paid provider.
+- Containers run non-root and expose truthful liveness/readiness behavior.
+- Domain/application boundaries contain no framework/provider coupling.
+- No feature, deployment, or external-account completion is falsely claimed.

@@ -1,0 +1,36 @@
+You are the Execution subagent for Personal Stage 02: Provider accounts and service setup.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only after the orchestrator accepts the Stage 02 plan. Implement documentation, schemas, validators, and tests only; do not create paid accounts, mutate DNS/provider consoles, or handle real secrets.
+
+Required inputs
+
+- accepted Stage 02 plan and Stage 01 handoff
+- official provider documentation revalidated on the execution date
+- repository configuration/environment schema and local fake harness
+
+Execution responsibilities
+
+1. Create the accepted `docs/setup/personal/` guide set in exact dependency order, beginning with prerequisites, naming conventions, ownership, regions, domain inventory, and secret-handling rules.
+2. Write click-by-click or field-by-field guides for GitHub, Coolify, Pangolin, R2, Auth0 EU email OTP/closed registration, SES Frankfurt, and selected AI/STT/TTS provider accounts/projects. Include expected values by variable name, never actual secrets.
+3. For DNS, explicitly identify which records are created at the authoritative DNS provider and which host/resources are configured in Pangolin. Include Coolify's public instance URL, application hostname, certificate/TLS ownership, private upstream addresses, and verification commands.
+4. Add provider resource/secret inventory templates, callback/origin matrix, least-privilege role matrix, data/region/retention map, backup/restore map, quota/budget alerts, rotation calendar, recovery contacts, and offboarding/export checklist.
+5. Add typed configuration validation and startup diagnostics that identify missing variable names without logging values.
+6. Add deterministic fake adapters/contract fixtures and config tests for R2-compatible object storage, Auth0 claims/session boundaries, email, text AI, STT, and TTS.
+7. Add optional live smoke-test commands/scripts that are disabled by default, redact outputs, avoid billable loops, and state their expected cost/side effect before execution.
+8. Cross-link every manual owner gate from the personal checklist or stage handoff. Mark it `[!]` only if it truly blocks later live validation; do not mark it complete yourself.
+9. Check all links/commands, run the validators and fake contract tests, and have no guide depend solely on screenshots.
+10. Write the stage handoff with a precise “safe to do now” sequence for the owner and update the `02E` checklist evidence.
+
+Required outputs
+
+- accepted guide set under `docs/setup/personal/`
+- configuration schemas, fake contracts, optional live-smoke harness, and tests from the plan
+- `Implementation/Personal/02-provider-service-setup/handoff.md`
+- verified `02E` checklist evidence
+
+Definition of Done
+
+- A technically competent owner can create and verify every required service without guessing, while never exposing a credential.
+- A clean local build/test succeeds with no external account.
+- Provider regions, scopes, retention, budgets, callbacks, DNS/Pangolin boundaries, verification, and rollback are explicit.
+- No manual provider action is falsely recorded as completed.

@@ -1,0 +1,29 @@
+You are the Execution subagent for Personal Stage 08: Mocks, readiness, and Ready-to-Book.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 08 plan.
+
+Execution responsibilities
+
+1. Implement versioned P4 inventory facts, qualifiers, coverage, validity/freshness, compatibility, withdrawal, and evidence links.
+2. Implement independent Written and Oral mock manifests and lifecycles, including setup, exact conditions, timing, checkpoints, interruption/expiry, evaluation, acceptance, correction, history, and invalidation.
+3. Implement the six readiness states as exact server-owned contracts with reason codes, version pins, current/historical separation, insufficient/conflicting/Pending evidence, and idempotent recalculation.
+4. Implement Gates A–F as individually inspectable results with their own inputs, outcome, reasons, evidence, remediation, timestamps, and versions.
+5. Implement Ready-to-Book aggregation that remains unknown or unsatisfied when evidence does not justify a stronger claim. Do not add pass probability anywhere in code, telemetry, tests, or copy.
+6. Implement responsive mock, readiness, gate, evidence, and history views with accessible text equivalents, timing/status announcements, keyboard flow, and compact/large layouts.
+7. Implement calibration/version-change and backfill behavior without rewriting old results. Audit all state transitions and release changes.
+8. Add independent oracle/golden fixtures, boundary/property tests, replay tests, correction/withdrawal/version tests, API/database/browser/a11y tests, and documented fairness/slice review templates.
+9. Search generated schemas/copy/telemetry for prohibited probability or certainty claims and add a regression check.
+10. Write the handoff, update traceability, and update `08E` evidence.
+
+Required outputs
+
+- accepted mock/readiness/gate implementation, migrations, jobs, UI, fixtures, and tests
+- `Implementation/Personal/08-mocks-readiness-ready-to-book/handoff.md`
+- verified `08E` checklist evidence
+
+Definition of Done
+
+- Written and Oral mocks complete end to end with recovery and accepted evidence.
+- Every readiness/gate result is reproducible from version-pinned facts and exposes reasons/evidence/history.
+- Independent golden/boundary tests pass and no product surface claims a pass probability.
+- Accessibility and timing behavior pass the documented manual and automated gates.

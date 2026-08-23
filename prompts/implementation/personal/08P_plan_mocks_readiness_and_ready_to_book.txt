@@ -1,0 +1,38 @@
+You are the Planning subagent for Personal Stage 08: Mocks, readiness, and Ready-to-Book.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning changes no production code.
+
+Required inputs
+
+- accepted Personal Stages 01–07 handoffs
+- Architecture stage 11 plus evidence, versioning, content compatibility, validity, observability, fairness, accessibility, and test contracts
+- Design anchors for P4 inventory, mock setup/in-progress/interruption/results, readiness overview/detail, Ready-to-Book gates, evidence panels, and neutral explanations
+
+Objective
+
+Plan the highest-trust product slice: P4 inventory qualifiers, independent Written and Oral mock flows, versioned calibration, six readiness states, and Gates A–F for Ready-to-Book. The UI and API must never claim a pass probability or unsupported certainty.
+
+Planning responsibilities
+
+1. Extract the exact mock, P4 inventory, readiness, and gate definitions from architecture. Name their authoritative inputs, exclusions, minimum evidence, freshness, compatibility, version pins, and reason codes.
+2. Define Written and Oral mock manifests, eligibility, setup, conditions, timing, checkpoint/interruption/expiry, scoring/evaluation, evidence acceptance, invalidation, correction, and history independently.
+3. Define P4 inventory coverage/qualifier facts and how missing, stale, incompatible, or withdrawn inventory affects readiness and gates.
+4. Define the six readiness states and transition table, current versus historical state, validity/freshness, insufficient/conflicting/Pending evidence, calibration versioning, and recalculation/backfill.
+5. Define Gates A–F as individually inspectable state machines with inputs, thresholds/rules, reason codes, evidence links, remediation, and audit. A single boolean is forbidden.
+6. Define Ready-to-Book aggregation and copy. It may report satisfied/unsatisfied/unknown/expired gates and next evidence actions; it may not report likelihood of passing the exam.
+7. Define responsive overview/detail/evidence/history/mock views, screen-reader summaries, charts with text equivalents, live timing/status, keyboard behavior, and neutral state copy.
+8. Define independent replay/oracle fixtures, calibration datasets, golden cases, boundary/property tests, version-change tests, withdrawal/correction tests, and fairness/slice review evidence without inventing production validity.
+9. Define observability and audit for state changes without logging sensitive response content.
+10. Sequence one mock/gate vertical slice before the full matrix and name every release-blocking validation gate.
+
+Required deliverables
+
+- `Implementation/Personal/08-mocks-readiness-ready-to-book/plan.md`
+- readiness/gate state table and architecture traceability matrix
+- Planning evidence recorded on the `08P` checklist line
+
+Definition of Done
+
+- The plan exactly represents all six readiness states and Gates A–F with evidence, reasons, versioning, history, and tests.
+- Written and Oral mocks remain independent and recoverable.
+- No copy, metric, API field, or chart can be mistaken for pass probability.

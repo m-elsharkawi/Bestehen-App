@@ -1,0 +1,40 @@
+You are the Planning subagent for Personal Stage 06: Writing, Speaking, AI, and private-object pipelines.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Do not implement code, call paid models, upload recordings, or mutate provider state in Planning.
+
+Required inputs
+
+- accepted Personal Stages 01–05 handoffs
+- Architecture stages 09, 12, 16–19, 23–25 and incorporated ADRs
+- R2, AI, STT, TTS, email, privacy, cost, deletion, release-registry, attempt, and evidence contracts
+- Design anchors and derived patterns for Writing, Speaking, evaluation, Pending, media, divergent drafts, and recovery
+- provider fake contracts and owner setup guides from Stage 02
+
+Objective
+
+Plan durable Writing and Speaking flows plus private R2 media/object handling and governed asynchronous AI/STT/TTS evaluation. Productive model output is a version-pinned candidate, never canonical meaning, until application acceptance records evidence.
+
+Planning responsibilities
+
+1. Define Writing document/draft/revision/autosave/checkpoint/submit/evaluate/correct flows, including optimistic concurrency and preservation of both branches in divergent draft conflicts. Specify an accessible compare/select/merge path before submission.
+2. Define Speaking consent, permission, capture, local preview, upload, retry/resume, submit, transcription, evaluation, playback/alternative, correction, and raw-audio deletion flows. Raw audio never enters offline sync.
+3. Define private R2 object namespaces/classes, app-owned object references, presigned upload/download, content-type/size/digest validation, malware/format safeguards where warranted, encryption/access, lifecycle, orphan reconciliation, audit, export inclusion/exclusion, and deletion verification.
+4. Define the AI gateway's capability-specific ports and registry pins: provider, model, prompt, schema, rubric, benchmark, price release, data terms, and region. Provider aliases may not silently change a release.
+5. Implement the architecture policy in the plan: deterministic precheck, one structured candidate, at most one justified escalation, separate application validation/acceptance, and neutral Pending/fallback. Never let model confidence become readiness truth.
+6. Define asynchronous pg-boss job states, idempotency, leases/retries, timeout/cancel, deduplication, callback/polling, bulkheads, late result handling, redaction, and reproducibility receipts.
+7. Define live-provider benchmark admission for Gemini 3.6 Flash candidates, OpenAI mini Transcribe/TTS candidates, and batch-audited Polly media only where quality/fairness/privacy/region/terms/latency/cost thresholds pass. Default tests remain fake/deterministic.
+8. Define billable usage and price-release receipts, per-capability budgets, circuit breakers, cached/deterministic/fixed-media/queued/lower-claim fallbacks, and an owner-set spend envelope. Cost cannot remove productive Writing/Oral evidence.
+9. Define privacy/retention: minimum-purpose provider payloads, no secrets or content in logs, raw-audio immediate deletion after accepted derivative and never later than seven days, deletion journal, provider purge status, and honest failure copy.
+10. Define unit/schema/golden, provider contract, job crash/retry, R2, browser/media, accessibility, conflict, deletion, privacy/redaction, benchmark, and cost tests.
+
+Required deliverables
+
+- `Implementation/Personal/06-writing-speaking-ai-objects/plan.md`
+- capability/provider/data-flow and benchmark/evidence matrix
+- Planning evidence recorded on the `06P` checklist line
+
+Definition of Done
+
+- Writing, Speaking, R2, jobs, AI governance, evidence acceptance, deletion, fallback, cost, and accessibility contracts are consistent and executable.
+- No productive path requires a provider SDK outside infrastructure adapters.
+- The plan cannot lose a draft branch, accept an unvalidated model output, or keep raw audio indefinitely.

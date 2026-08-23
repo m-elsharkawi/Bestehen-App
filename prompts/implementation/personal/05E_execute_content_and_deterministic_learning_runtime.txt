@@ -1,0 +1,29 @@
+You are the Execution subagent for Personal Stage 05: Content and deterministic learning runtime.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 05 plan.
+
+Execution responsibilities
+
+1. Implement content manifests, validation, provenance/rights/compatibility metadata, immutable releases, quarantine/withdrawal, cache/import tooling, release-registry integration, and legally safe fixtures.
+2. Implement the shared server-authoritative attempt lifecycle, timing, checkpoint/autosave, resume/expiry, idempotent submit/finalize, deterministic scoring, evidence proposal/acceptance, and recovery contracts.
+3. Implement responsive, accessible Reading flows and all planned exercise/form variants with objective scoring and evidence links.
+4. Implement responsive, accessible Language Elements flows and variants with deterministic scoring and evidence links.
+5. Implement Listening media delivery/playback, keyboard/screen-reader controls, buffering/retry, transcript/alternative policy, attempt integrity, and deterministic scoring without productive TTS dependency.
+6. Implement the personal foundation/onboarding/profile checkpoints using mandatory Auth0 language and the resolved planning horizon.
+7. Implement learner-facing history/result/evidence links required for these skills without preempting the full Progress stage.
+8. Add idempotent seed/import/withdraw commands with dry-run reports and rollback guidance.
+9. Run unit/property/schema/golden, migration/database, API/contract, browser, accessibility, timing, interruption, withdrawal, compatibility, and representative performance tests.
+10. Update Design traceability, write the handoff, and update `05E` evidence.
+
+Required outputs
+
+- accepted content/runtime/skill implementation, fixtures, tooling, and tests
+- `Implementation/Personal/05-content-deterministic-runtime/handoff.md`
+- verified `05E` checklist evidence
+
+Definition of Done
+
+- A signed-in personal owner can complete and recover Reading, Language Elements, and Listening attempts end to end and inspect truthful results/evidence.
+- Replayed submissions, retries, crashes, content withdrawal, and version changes preserve canonical history.
+- All active-attempt paths work without Corpus or paid AI availability.
+- Compact and large responsive layouts plus keyboard/AT behavior meet Stage 04 gates.

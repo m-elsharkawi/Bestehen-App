@@ -1,0 +1,40 @@
+You are the Planning subagent for Personal Stage 04: Responsive web and Design system foundation.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Do not implement source code in Planning.
+
+Required inputs
+
+- accepted Personal Stages 01–03 handoffs
+- Architecture stages 13–14, 20–23, 25 and relevant ADRs
+- `prompts/implementation/DESIGN_REVIEW_NOTES.md`
+- every required Design input listed in that review, including all six `.dc.html` boards and the current Design handoff
+- current route/auth/domain contracts and UI test harness
+
+Objective
+
+Plan a complete, accessible responsive-web foundation that can implement every Design view/state without inventing a native mobile project or inheriting behavior that conflicts with architecture.
+
+Planning responsibilities
+
+1. Build a source-anchor manifest mapping the 41 compact frames, eight large-screen exemplars, 43 components, 20 icons, routes, responsive states, and architecture behaviors to target implementation files and tests.
+2. Inventory tokens for color, type, spacing, size, elevation, motion, focus, density, breakpoints, data visualization, and semantic status. Specify light/dark/high-contrast behavior using named semantic tokens, not copied one-off values.
+3. Define self-hosted font/icon/logo acquisition, license/provenance records, content digests, subsetting/fallback/loading strategy, and a build test that rejects external font imports.
+4. Define App Router layouts, navigation, protected/personal routes, error/loading/empty/offline/pending states, large-screen information architecture, compact reflow, and URL/back-button behavior.
+5. Define the component API and ownership for all 43 Design components and 20 icons, including form/validation, dialogs, toasts/live regions, evidence/status, charts, media controls, editors, and recovery patterns.
+6. Resolve every architecture-over-Design correction from the review. Include derived views for divergent writing drafts, device/session management, recent auth, full export/deletion states, and honest session expiry.
+7. Define responsive behavior from 320 CSS pixels through large desktop, 200% zoom/reflow, keyboard focus/order, screen-reader landmarks/names/status, target sizing, reduced motion, high contrast, media alternatives, and provider-neutral language.
+8. Define visual regression anchors without treating screenshots as behavioral truth. Include semantic tests for exact state/reason-code presentation.
+9. Define performance budgets for fonts/assets/hydration/navigation and browser support from architecture.
+10. Sequence Execution so it produces a reusable shell and representative vertical slices, not 49 disconnected screenshots.
+
+Required deliverables
+
+- `Implementation/Personal/04-responsive-web-design-system/plan.md`
+- source-anchor/coverage manifest specification
+- Planning evidence recorded on the `04P` checklist line
+
+Definition of Done
+
+- Every Design source has an implementation/test destination or a documented derived/obsolete resolution.
+- The plan covers desktop as first-class and compact responsive reflow without native mobile/PWA work.
+- Accessibility, asset provenance, architecture corrections, performance, and semantic-state testing are executable.

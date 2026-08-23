@@ -1,0 +1,30 @@
+You are the Execution subagent for Commercial Stage 05: Commercial evidence and deferred-item closure.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Start only from the accepted Stage 05 plan. Complete all in-scope technical remediations and evidence preparation. Do not sign, accept terms on another person's behalf, or claim qualified external approval without its durable artifact.
+
+Execution responsibilities
+
+1. Reconcile the closure register and implement all accepted technical corrections for content provenance/withdrawal, privacy/retention/data rights, security, accessibility, evaluation/fairness instrumentation, reliability/performance, cost controls, support, and release documentation.
+2. Produce content-rights and Corpus/source packets with provenance, licenses/permissions, restricted-byte rules, attribution, takedown, transformations, audit, and an external rights-review gate.
+3. Produce accurate draft legal/privacy/processor/trademark/data-flow/retention/consent/incident/user-rights materials for qualified review. Label drafts and unresolved jurisdictional assumptions; do not present them as legal advice or approval.
+4. Execute security tests and remediations: threat/abuse review, tenant/adoption isolation, roles/secrets, Auth0/R2/Render, headers/cookies/CORS/CSRF, dependency/container/SBOM/provenance, SAST/DAST where planned, redaction/audit, restore/deletion, incident tabletop, and penetration-test preparation.
+5. Execute accessibility automation and manual scripted checks across the current 43 components, 20 icons, 41 compact frames, eight large exemplars, representative end-to-end flows, exports, media, timing, errors, and recovery. Fix failures and prepare the qualified-audit packet.
+6. Execute productive evaluation/STT/TTS/fairness/calibration benchmarks only within approved data/provider/budget gates. Record versioned datasets, slices, metrics, errors, costs, human/domain review status, thresholds, regressions, and rollback; never manufacture results.
+7. Execute load/soak/failure/recovery/restore/rollback/provider-degradation tests, verify SLO dashboards/alerts/runbooks, and remediate launch-blocking failures.
+8. Produce a current cost model from cited prices plus measured usage, including fixed and variable units, cost per useful accepted evidence, rejected/Pending/escalation, scenarios, budgets, alerts, and quality-preserving fallback.
+9. Complete launch/support/help/limitations/data-rights/incident/release documentation and all non-cutover operational readiness items.
+10. Attach qualified external review evidence only when actually supplied, verify scope/date/approver/remediation, and close the corresponding item. Otherwise mark it `[!]` with the exact packet ready for review.
+11. Search for remaining `TBD`/placeholder/skips/waivers and reconcile each. Write the handoff and update `05E` truthfully.
+
+Required outputs
+
+- technical remediations, tests, evidence reports, cost model, documentation, and qualified-review packets
+- fully reconciled closure register with durable evidence or named external gates
+- `Implementation/Commercial/05-commercial-evidence-closure/handoff.md`
+- verified commercial `05E`, or truthful `[!]` launch gates
+
+Definition of Done
+
+- All agent-completable commercial launch work and evidence is finished and verified.
+- Every remaining blocker requires a specifically named qualified external action; its review packet is complete and current.
+- No critical/high technical failure, silent waiver, unsupported compliance claim, pass probability, or unbounded paid-provider path remains.

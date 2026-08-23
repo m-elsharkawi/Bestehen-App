@@ -1,0 +1,38 @@
+You are the Planning subagent for Personal Stage 09: Account, data rights, recovery, offline, and notifications.
+
+Read and obey `prompts/implementation/COMMON_STAGE_CONTRACT.md`. Planning changes no production code or external provider state.
+
+Required inputs
+
+- accepted Personal Stages 01–08 handoffs
+- Architecture stages 20–23, 25 and relevant ADRs
+- Design review corrections and Account/export/delete/offline/recovery/notification anchors
+- current Auth0, R2, email, audit, tombstone, job, attempt, draft, and evidence contracts
+
+Objective
+
+Plan the complete personal account and trust boundary: profile and active sessions, recent authentication, source-cut export, revoke-first deletion, restore suppression, foreground-first WAL/checkpoint recovery, conflict handling, and timezone-safe notifications.
+
+Planning responsibilities
+
+1. Define profile/preferences and current session/device inventory, revoke-one/revoke-others, current-device semantics, recent-auth requirements, logout, allowlist/account recovery, and audit. Auth0 uses Universal Login email OTP; no password-change UI.
+2. Define the architecture export ZIP source cut: README, accessible summary, profile, attempts, evidence, learning state, readiness, Writing/evaluation material, content references, activity CSV, deletion/audit material, and checksummed manifest. Exclude raw audio, secrets, and restricted source bytes.
+3. Define export authorization/recent auth, consistent source cut, queued generation, status/errors, private delivery, audit, golden fixtures, 24-hour default expiry, seven-day ceiling, and artifact purge/reconciliation.
+4. Define revoke-first, idempotent deletion across live DB, sessions, objects, jobs, providers, exports, notifications, and derived/cache/search state. Include partial/provider-pending states, retry/reconciliation, confirmation alternative, and no false terminal completion.
+5. Define tombstones and restore suppression so backup/PITR restore cannot expose deleted identities/data. State the architecture's bounded encrypted-inaccessible backup residual window honestly; do not claim backups are impossible to restore.
+6. Define foreground-first browser WAL/checkpoints, local encryption/sensitivity, sync state, reconnect/replay, quotas, versioning, and source-of-truth boundaries. Raw audio never syncs.
+7. Define conflict behavior by data type, especially preserving both Writing branches with accessible compare/select/merge, tombstone dominance, and server-owned attempt/evidence truth.
+8. Define session-expiry/mid-attempt recovery that preserves draft, elapsed time, and conditions while leaving final validity to the server. Do not promise the attempt “still counts.”
+9. Define notification preferences, web push/email/in-app channels admitted by architecture, timezone/DST scheduling, quiet hours, permission denial, unsubscribe, deduplication, fallback, accessibility, and audit. No native push/PWA-installability project.
+10. Define export golden/AT tests, auth/session adversarial tests, deletion/restore drills, WAL/conflict/property tests, notification clock tests, browser/a11y tests, and operational evidence.
+
+Required deliverables
+
+- `Implementation/Personal/09-account-rights-recovery-notifications/plan.md`
+- export manifest, deletion graph, restore-suppression, and conflict/notification test matrices
+- Planning evidence recorded on the `09P` checklist line
+
+Definition of Done
+
+- Account/session, export, deletion, backup restore, WAL/conflicts, interrupted attempts, and notifications have explicit honest states, owners, retries, and tests.
+- The plan implements every Design review correction and cannot resurrect deleted data or discard a divergent Writing branch.
