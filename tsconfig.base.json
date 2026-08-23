@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "allowJs": false,
+    "baseUrl": ".",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@bestehen/application": ["packages/application/src/index.ts"],
+      "@bestehen/configuration": ["packages/configuration/src/index.ts"],
+      "@bestehen/content": ["packages/content/src/index.ts"],
+      "@bestehen/contracts": ["packages/contracts/src/index.ts"],
+      "@bestehen/design-system": ["packages/design-system/src/index.tsx"],
+      "@bestehen/domain": ["packages/domain/src/index.ts"],
+      "@bestehen/infrastructure": ["packages/infrastructure/src/index.ts"],
+      "@bestehen/infrastructure/postgres": ["packages/infrastructure/src/postgres/index.ts"],
+      "@bestehen/test-support": ["packages/test-support/src/index.ts"]
+    },
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2024",
+    "verbatimModuleSyntax": true
+  }
+}

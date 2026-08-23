@@ -1,0 +1,62 @@
+import { randomUUID } from "node:crypto";
+import * as net from "node:net";
+import { appId, type AppId } from "@bestehen/domain";
+import { Client } from "pg";
+
+export class FakeClock {
+  public constructor(private current: Date) {}
+
+  public now(): Date {
+    return new Date(this.current);
+  }
+
+  public advance(milliseconds: number): void {
+    this.current = new Date(this.current.getTime() + milliseconds);
+  }
+}
+
+export function syntheticId<Kind extends string>(prefix: string): AppId<Kind> {
+  return appId<Kind>(`${prefix}_${randomUUID().replaceAll("-", "")}`);
+}
+
+export function installExternalEgressGuard(
+  allowedHosts = new Set(["127.0.0.1", "localhost", "::1"]),
+): () => void {
+  const originalConnect = net.connect;
+  const guardedConnect = ((...arguments_: unknown[]) => {
+    const first = arguments_[0] as { host?: string } | undefined;
+    const host = typeof first === "object" && first !== null ? first.host : undefined;
+    if (host && !allowedHosts.has(host)) {
+      throw new Error(`External network access denied by the deterministic test guard: ${host}`);
+    }
+    return Reflect.apply(originalConnect, net, arguments_);
+  }) as typeof net.connect;
+  Object.defineProperty(net, "connect", { configurable: true, value: guardedConnect });
+  return () => {
+    Object.defineProperty(net, "connect", { configurable: true, value: originalConnect });
+  };
+}
+
+export async function withIsolatedDatabase<T>(
+  baseUrl: string,
+  callback: (databaseUrl: string) => Promise<T>,
+): Promise<T> {
+  const adminUrl = new URL(baseUrl);
+  adminUrl.pathname = "/postgres";
+  const databaseName = `bestehen_test_${randomUUID().replaceAll("-", "")}`;
+  const admin = new Client({ connectionString: adminUrl.toString() });
+  await admin.connect();
+  await admin.query(`CREATE DATABASE "${databaseName}"`);
+  const databaseUrl = new URL(baseUrl);
+  databaseUrl.pathname = `/${databaseName}`;
+  try {
+    return await callback(databaseUrl.toString());
+  } finally {
+    await admin.query(
+      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()",
+      [databaseName],
+    );
+    await admin.query(`DROP DATABASE "${databaseName}"`);
+    await admin.end();
+  }
+}

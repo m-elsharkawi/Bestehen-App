@@ -1,0 +1,124 @@
+:root {
+  color-scheme: light dark;
+  --baseline-surface: #f1f4f8;
+  --baseline-raised: #ffffff;
+  --baseline-text: #14213d;
+  --baseline-muted: #4a5670;
+  --baseline-border: #d6dce6;
+  --baseline-accent: #1d6f50;
+  --baseline-focus: #1d6f50;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --baseline-surface: #0f1621;
+    --baseline-raised: #17202d;
+    --baseline-text: #e9eef5;
+    --baseline-muted: #a7b3c4;
+    --baseline-border: #2a3542;
+    --baseline-accent: #54c698;
+    --baseline-focus: #4cc492;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--baseline-surface);
+  color: var(--baseline-text);
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: var(--baseline-accent);
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--baseline-focus);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  background: var(--baseline-raised);
+  left: 1rem;
+  padding: 0.75rem 1rem;
+  position: fixed;
+  top: -5rem;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.baseline-shell {
+  display: grid;
+  gap: 2rem;
+  margin: 0 auto;
+  max-width: 60rem;
+  min-height: 100dvh;
+  padding: 1rem;
+}
+
+.baseline-header {
+  align-items: center;
+  border-bottom: 1px solid var(--baseline-border);
+  display: flex;
+  font-weight: 700;
+  gap: 0.75rem;
+  padding-block: 0.75rem;
+}
+
+.baseline-mark {
+  align-items: center;
+  border: 2px solid currentColor;
+  display: inline-flex;
+  height: 2.75rem;
+  justify-content: center;
+  width: 2.75rem;
+}
+
+main {
+  align-self: start;
+  background: var(--baseline-raised);
+  border: 1px solid var(--baseline-border);
+  border-radius: 0.5rem;
+  padding: clamp(1rem, 5vw, 3rem);
+}
+
+p {
+  color: var(--baseline-muted);
+  line-height: 1.6;
+  max-width: 65ch;
+}
+
+footer {
+  align-self: end;
+  border-top: 1px solid var(--baseline-border);
+  color: var(--baseline-muted);
+  padding-block: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .baseline-mark,
+  main {
+    border-color: CanvasText;
+  }
+}
