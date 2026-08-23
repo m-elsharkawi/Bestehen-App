@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { stage01Branch, stage01ScopeApplies, unexpectedStage01Paths } from "./check-scope.mjs";
+import {
+  stage01Branch,
+  stage01ScopeApplies,
+  stage02Branch,
+  stage02ScopeApplies,
+  unexpectedStage01Paths,
+  unexpectedStage02Paths,
+} from "./check-scope.mjs";
 
 const fixtures = [
   {
@@ -33,6 +40,42 @@ for (const fixture of fixtures) {
   assert.deepEqual(unexpectedStage01Paths(fixture.changed), fixture.unexpected, fixture.name);
 }
 
+for (const context of [
+  { localBranch: stage02Branch },
+  { githubHeadRef: stage02Branch, githubRefName: "3/merge" },
+]) {
+  assert.equal(stage02ScopeApplies(context), true, "Stage 02 branch enforces its allowlist");
+  assert.equal(stage01ScopeApplies(context), false, "Stage 01 scope stays branch-specific");
+}
+
+assert.deepEqual(
+  unexpectedStage02Paths([
+    "docs/setup/personal/README.md",
+    "schemas/personal-provider-readiness.schema.json",
+    "packages/configuration/src/index.test.ts",
+    "Implementation/Personal/02-provider-service-setup/handoff.md",
+    "schemas/release-manifest.schema.json",
+    "scripts/test-release-manifest.mjs",
+  ]),
+  [],
+  "Stage 02 accepts its bounded implementation paths",
+);
+assert.deepEqual(
+  unexpectedStage02Paths([
+    "Implementation/Personal/02-provider-service-setup/plan.md",
+    "pnpm-lock.yaml",
+    "Architecture/28-bestehen-app-architecture-specification.md",
+    "packages/infrastructure/src/postgres/migrations/002-provider.sql",
+  ]),
+  [
+    "Implementation/Personal/02-provider-service-setup/plan.md",
+    "pnpm-lock.yaml",
+    "Architecture/28-bestehen-app-architecture-specification.md",
+    "packages/infrastructure/src/postgres/migrations/002-provider.sql",
+  ],
+  "Stage 02 rejects plan drift, dependency drift, architecture edits, and migrations",
+);
+
 assert.deepEqual(
   unexpectedStage01Paths([
     "apps/web/src/app/page.tsx",
@@ -42,4 +85,4 @@ assert.deepEqual(
   "Stage 01 still accepts only its bounded implementation paths",
 );
 
-process.stdout.write("Stage 01 scope applicability and allowlist fixtures passed.\n");
+process.stdout.write("P02-SCOPE-001 passed alongside preserved Stage 01 scope fixtures.\n");

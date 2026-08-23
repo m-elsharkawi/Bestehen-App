@@ -1,7 +1,11 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
+const personalGuides = readdirSync("docs/setup/personal")
+  .filter((name) => name.endsWith(".md"))
+  .map((name) => `docs/setup/personal/${name}`)
+  .sort();
 const documents = [
   "README.md",
   "docs/architecture/package-boundaries.md",
@@ -9,6 +13,16 @@ const documents = [
   "docs/local-development.md",
   "docs/delivery.md",
   "docs/decisions/IDR-0001-personal-deployment-profile.md",
+  ...personalGuides,
+];
+const actionFields = [
+  "Owner",
+  "Action",
+  "Expected result",
+  "How to verify",
+  "Evidence",
+  "Rollback",
+  "NEVER PASTE HERE",
 ];
 const configurationFields = [
   "BESTEHEN_APP_ENV",
@@ -34,21 +48,36 @@ const configurationFields = [
   "BESTEHEN_FLAG_PAID_PRODUCTIVE_PROCESSING",
   "BESTEHEN_FLAG_PUBLIC_OBJECT_ACCESS",
   "BESTEHEN_FLAG_EXPERIMENTAL_PRODUCT_BEHAVIOR",
-  "BESTEHEN_AUTH0_DOMAIN",
+  "BESTEHEN_AUTH0_ISSUER_BASE_URL",
   "BESTEHEN_AUTH0_CLIENT_ID",
+  "BESTEHEN_AUTH0_CLIENT_SECRET",
   "BESTEHEN_AUTH0_SESSION_SECRET",
-  "BESTEHEN_OWNER_ALLOWLIST",
+  "BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE",
   "BESTEHEN_APPLICATION_BASE_URL",
+  "BESTEHEN_AUTH0_CONNECTION",
+  "BESTEHEN_AUTH0_CALLBACK_PATH",
+  "BESTEHEN_AUTH0_SESSION_POLICY_REVISION",
   "BESTEHEN_S3_ENDPOINT",
   "BESTEHEN_S3_REGION",
   "BESTEHEN_S3_BUCKET",
-  "BESTEHEN_S3_PREFIX",
+  "BESTEHEN_S3_ALLOWED_PREFIXES",
   "BESTEHEN_S3_ACCESS_KEY_ID",
   "BESTEHEN_S3_SECRET_ACCESS_KEY",
-  "BESTEHEN_EMAIL_API_KEY",
-  "BESTEHEN_AI_API_KEY",
-  "BESTEHEN_STT_API_KEY",
-  "BESTEHEN_TTS_API_KEY",
+  "BESTEHEN_SES_REGION",
+  "BESTEHEN_SES_FROM_REFERENCE",
+  "BESTEHEN_SES_CONFIGURATION_SET",
+  "BESTEHEN_SES_ACCESS_KEY_ID",
+  "BESTEHEN_SES_SECRET_ACCESS_KEY",
+  "BESTEHEN_GEMINI_MODEL",
+  "BESTEHEN_GEMINI_API_KEY",
+  "BESTEHEN_OPENAI_STT_MODEL",
+  "BESTEHEN_OPENAI_STT_API_KEY",
+  "BESTEHEN_OPENAI_TTS_MODEL",
+  "BESTEHEN_OPENAI_TTS_API_KEY",
+  "BESTEHEN_PAID_DAILY_ENVELOPE_MICRO_USD",
+  "BESTEHEN_PAID_ROLLING_30D_ENVELOPE_MICRO_USD",
+  "BESTEHEN_PAID_ENVELOPE_POLICY_REVISION",
+  "BESTEHEN_PAID_ENVELOPE_VERIFIED_AT",
 ];
 
 for (const document of documents) {
@@ -60,6 +89,20 @@ for (const document of documents) {
     if (!target || /^(?:https?:|mailto:)/.test(target)) continue;
     const resolved = path.resolve(path.dirname(document), target);
     if (!existsSync(resolved)) throw new Error(`Broken local link in ${document}: ${match[1]}`);
+  }
+}
+
+for (const guide of personalGuides.filter((name) => !name.endsWith("/README.md"))) {
+  const actions = readFileSync(guide, "utf8").split(/^### /gm).slice(1);
+  if (actions.length === 0) throw new Error(`Personal setup guide has no action blocks: ${guide}`);
+  for (const action of actions) {
+    const step = action.match(/^`([A-Z0-9]+-[0-9]{2})`/)?.[1];
+    if (!step) throw new Error(`Personal setup guide has an invalid step heading: ${guide}`);
+    for (const field of actionFields) {
+      const occurrences = action.match(new RegExp(`^- \\*\\*${field}:\\*\\*`, "gm"))?.length ?? 0;
+      if (occurrences !== 1)
+        throw new Error(`${guide} ${step} must contain exactly one ${field} field`);
+    }
   }
 }
 
@@ -75,5 +118,5 @@ for (const command of ["pnpm install --frozen-lockfile", "pnpm db:migrate", "pnp
   if (!readme.includes(command)) throw new Error(`README missing canonical command: ${command}`);
 }
 process.stdout.write(
-  `Documentation links, fences, commands, and ${configurationFields.length} configuration fields are valid.\n`,
+  `P02-DOC-001 passed: links, fences, ${personalGuides.length - 1} guides, action fields, commands, and ${configurationFields.length} configuration fields are valid.\n`,
 );

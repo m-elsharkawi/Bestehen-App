@@ -19,8 +19,8 @@ This is the live, authoritative progress ledger for the personal program. Worker
 
 ## 02 — Provider accounts and service setup
 
-- [ ] 02P Planning accepted — evidence: pending
-- [ ] 02E Execution accepted — evidence: pending
+- [x] 02P Planning accepted — evidence: `Implementation/Personal/02-provider-service-setup/plan.md`; [PR #3 acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/3#issuecomment-5388249271); reviewed Planning head `b62d8b98869a7cd4dcd23ee0206575d3952afd20`; [CI run 32663751573](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32663751573); `P02-PLAN`
+- [x] 02E Execution accepted independently — evidence: `Implementation/Personal/02-provider-service-setup/handoff.md`; [acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/3#issuecomment-5388485710); [draft PR #3](https://github.com/m-elsharkawi/Bestehen-App/pull/3); accepted candidate `241b8a2828680a40b399c0be7f2863a76fa097f5`; [push CI 32666424947](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32666424947); [PR CI 32666427818](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32666427818); `P02-SCOPE-001`, `P02-DOC-001`, `P02-CONFIG-001`, `P02-FAKE-001`, `P02-SECRET-001`, `P02-READINESS-001`, `P02-DEPS-001`, `P02-COMPAT-001`
 - [ ] GitHub, Coolify, Pangolin, R2, Auth0, SES, AI/STT/TTS, secrets, budget, backup, and recovery guides are verified.
 - [ ] Configuration schemas and fake contracts pass without live accounts; manual gates are named honestly.
 

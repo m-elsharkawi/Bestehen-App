@@ -49,6 +49,9 @@ expectSchemaInvalid((manifest) => {
 expectSchemaInvalid((manifest) => {
   delete manifest.checks["P01-DOC-001"];
 });
+expectSchemaInvalid((manifest) => {
+  delete manifest.checks["P02-READINESS-001"];
+});
 
 run(
   ["--dry-run", "--commit", commit, "--web-digest", digest, "--worker-digest", digest, ...checks],

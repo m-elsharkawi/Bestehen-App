@@ -1,0 +1,317 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bestehen.invalid/schemas/personal-provider-readiness.schema.json",
+  "title": "Bestehen personal provider readiness receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "environment",
+    "releaseCommit",
+    "applicationOrigin",
+    "authCallbackUrl",
+    "redactionMarker",
+    "resources"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "personal-provider-readiness/v1" },
+    "environment": { "const": "staging" },
+    "releaseCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "applicationOrigin": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^/?#*]+$"
+    },
+    "authCallbackUrl": { "type": "string", "format": "uri" },
+    "redactionMarker": { "const": "content-and-identifiers-omitted" },
+    "resources": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "$ref": "#/$defs/resource" }
+    }
+  },
+  "$defs": {
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "capability",
+        "region",
+        "model",
+        "resourceClass",
+        "checkedAt",
+        "guideStep",
+        "result",
+        "liveVerified",
+        "verification",
+        "rollback",
+        "redacted"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "coolify",
+            "pangolin",
+            "auth0",
+            "r2",
+            "ses",
+            "gemini",
+            "openai_stt",
+            "openai_tts",
+            "polly"
+          ]
+        },
+        "capability": {
+          "enum": [
+            "deployment",
+            "private_ingress",
+            "identity",
+            "object_storage",
+            "email",
+            "ai",
+            "stt",
+            "tts",
+            "tts_offline"
+          ]
+        },
+        "region": {
+          "enum": ["owner-private-vms", "eu", "eu-central-1", "provider-managed"]
+        },
+        "model": {
+          "enum": [
+            "not_applicable",
+            "gemini-3.6-flash",
+            "gpt-4o-mini-transcribe-2025-12-15",
+            "gpt-4o-mini-tts-2025-12-15",
+            "not_selected"
+          ]
+        },
+        "resourceClass": {
+          "enum": [
+            "two_vm_staging",
+            "private_http_resources",
+            "tenant_application_connection",
+            "private_bucket_pair",
+            "sending_identity",
+            "staging_project",
+            "restricted_project_key",
+            "conditional_candidate"
+          ]
+        },
+        "checkedAt": { "type": "string", "format": "date-time" },
+        "guideStep": { "type": "string", "pattern": "^[A-Z0-9]+-[0-9]{2}$" },
+        "result": { "enum": ["owner_pending", "verified", "failed", "not_admitted"] },
+        "liveVerified": { "type": "boolean" },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "method", "evidenceReference", "evidenceDigest"],
+          "properties": {
+            "status": { "enum": ["pending", "passed", "failed", "not_applicable"] },
+            "method": { "enum": ["dashboard", "negative_test", "bounded_smoke", "contract"] },
+            "evidenceReference": {
+              "type": "string",
+              "pattern": "^protected-ledger:[a-z0-9-]{1,64}$"
+            },
+            "evidenceDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          }
+        },
+        "rollback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "verification"],
+          "properties": {
+            "state": { "enum": ["planned", "verified", "not_required"] },
+            "verification": { "enum": ["pending", "passed", "not_applicable"] }
+          }
+        },
+        "redacted": { "const": true }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "result": { "const": "verified" } }, "required": ["result"] },
+          "then": {
+            "properties": {
+              "liveVerified": { "const": true },
+              "verification": {
+                "type": "object",
+                "properties": { "status": { "const": "passed" } }
+              },
+              "rollback": {
+                "type": "object",
+                "properties": {
+                  "state": { "const": "verified" },
+                  "verification": { "const": "passed" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "result": { "const": "owner_pending" } },
+            "required": ["result"]
+          },
+          "then": {
+            "properties": {
+              "liveVerified": { "const": false },
+              "verification": {
+                "type": "object",
+                "properties": { "status": { "const": "pending" } }
+              },
+              "rollback": {
+                "type": "object",
+                "properties": {
+                  "state": { "const": "planned" },
+                  "verification": { "const": "pending" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "result": { "const": "not_admitted" } }, "required": ["result"] },
+          "then": {
+            "properties": {
+              "liveVerified": { "const": false },
+              "verification": {
+                "type": "object",
+                "properties": { "status": { "const": "not_applicable" } }
+              },
+              "rollback": {
+                "type": "object",
+                "properties": {
+                  "state": { "const": "not_required" },
+                  "verification": { "const": "not_applicable" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "provider": { "const": "coolify" } },
+            "required": ["provider"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "deployment" },
+              "region": { "const": "owner-private-vms" },
+              "model": { "const": "not_applicable" },
+              "resourceClass": { "const": "two_vm_staging" },
+              "guideStep": { "type": "string", "pattern": "^OPS-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "provider": { "const": "pangolin" } },
+            "required": ["provider"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "private_ingress" },
+              "region": { "const": "owner-private-vms" },
+              "model": { "const": "not_applicable" },
+              "resourceClass": { "const": "private_http_resources" },
+              "guideStep": { "type": "string", "pattern": "^NET-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "provider": { "const": "auth0" } }, "required": ["provider"] },
+          "then": {
+            "properties": {
+              "capability": { "const": "identity" },
+              "region": { "const": "eu" },
+              "model": { "const": "not_applicable" },
+              "resourceClass": { "const": "tenant_application_connection" },
+              "guideStep": { "type": "string", "pattern": "^AUTH-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "provider": { "const": "r2" } }, "required": ["provider"] },
+          "then": {
+            "properties": {
+              "capability": { "const": "object_storage" },
+              "region": { "const": "eu" },
+              "model": { "const": "not_applicable" },
+              "resourceClass": { "const": "private_bucket_pair" },
+              "guideStep": { "type": "string", "pattern": "^R2-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "provider": { "const": "ses" } }, "required": ["provider"] },
+          "then": {
+            "properties": {
+              "capability": { "const": "email" },
+              "region": { "const": "eu-central-1" },
+              "model": { "const": "not_applicable" },
+              "resourceClass": { "const": "sending_identity" },
+              "guideStep": { "type": "string", "pattern": "^SES-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "provider": { "const": "gemini" } }, "required": ["provider"] },
+          "then": {
+            "properties": {
+              "capability": { "const": "ai" },
+              "region": { "const": "provider-managed" },
+              "model": { "const": "gemini-3.6-flash" },
+              "resourceClass": { "const": "staging_project" },
+              "guideStep": { "type": "string", "pattern": "^AI-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "provider": { "const": "openai_stt" } },
+            "required": ["provider"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "stt" },
+              "region": { "const": "provider-managed" },
+              "model": { "const": "gpt-4o-mini-transcribe-2025-12-15" },
+              "resourceClass": { "const": "restricted_project_key" },
+              "guideStep": { "type": "string", "pattern": "^AUDIO-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "provider": { "const": "openai_tts" } },
+            "required": ["provider"]
+          },
+          "then": {
+            "properties": {
+              "capability": { "const": "tts" },
+              "region": { "const": "provider-managed" },
+              "model": { "const": "gpt-4o-mini-tts-2025-12-15" },
+              "resourceClass": { "const": "restricted_project_key" },
+              "guideStep": { "type": "string", "pattern": "^AUDIO-[0-9]{2}$" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "provider": { "const": "polly" } }, "required": ["provider"] },
+          "then": {
+            "properties": {
+              "capability": { "const": "tts_offline" },
+              "region": { "const": "eu-central-1" },
+              "model": { "const": "not_selected" },
+              "resourceClass": { "const": "conditional_candidate" },
+              "guideStep": { "const": "AUDIO-05" },
+              "result": { "const": "not_admitted" }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
