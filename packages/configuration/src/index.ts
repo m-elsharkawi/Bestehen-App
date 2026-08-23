@@ -7,7 +7,89 @@ const strictBoolean = z
   .default(false);
 
 const positivePort = z.coerce.number().int().min(1).max(65_535);
-const fakeOrConfigured = z.enum(["fake", "configured"]);
+const positiveMicroUsd = z.coerce.number().int().positive();
+const httpsOrigin = z
+  .string()
+  .url()
+  .refine((value) => {
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      url.pathname === "/" &&
+      !url.search &&
+      !url.hash &&
+      !url.hostname.includes("*")
+    );
+  });
+const auth0EuIssuer = httpsOrigin.refine((value) =>
+  new URL(value).hostname.endsWith(".eu.auth0.com"),
+);
+const r2EuEndpoint = httpsOrigin.refine((value) =>
+  new URL(value).hostname.endsWith(".eu.r2.cloudflarestorage.com"),
+);
+
+const adapterRequirements = [
+  {
+    adapter: "BESTEHEN_AUTH_ADAPTER",
+    configured: "auth0",
+    fields: [
+      "BESTEHEN_AUTH0_ISSUER_BASE_URL",
+      "BESTEHEN_AUTH0_CLIENT_ID",
+      "BESTEHEN_AUTH0_CLIENT_SECRET",
+      "BESTEHEN_AUTH0_SESSION_SECRET",
+      "BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE",
+      "BESTEHEN_APPLICATION_BASE_URL",
+      "BESTEHEN_AUTH0_CONNECTION",
+      "BESTEHEN_AUTH0_CALLBACK_PATH",
+      "BESTEHEN_AUTH0_SESSION_POLICY_REVISION",
+    ],
+  },
+  {
+    adapter: "BESTEHEN_OBJECT_STORAGE_ADAPTER",
+    configured: "r2",
+    fields: [
+      "BESTEHEN_S3_ENDPOINT",
+      "BESTEHEN_S3_REGION",
+      "BESTEHEN_S3_BUCKET",
+      "BESTEHEN_S3_ALLOWED_PREFIXES",
+      "BESTEHEN_S3_ACCESS_KEY_ID",
+      "BESTEHEN_S3_SECRET_ACCESS_KEY",
+    ],
+  },
+  {
+    adapter: "BESTEHEN_EMAIL_ADAPTER",
+    configured: "ses",
+    fields: [
+      "BESTEHEN_SES_REGION",
+      "BESTEHEN_SES_FROM_REFERENCE",
+      "BESTEHEN_SES_CONFIGURATION_SET",
+      "BESTEHEN_SES_ACCESS_KEY_ID",
+      "BESTEHEN_SES_SECRET_ACCESS_KEY",
+    ],
+  },
+  {
+    adapter: "BESTEHEN_AI_ADAPTER",
+    configured: "gemini",
+    fields: ["BESTEHEN_GEMINI_MODEL", "BESTEHEN_GEMINI_API_KEY"],
+  },
+  {
+    adapter: "BESTEHEN_STT_ADAPTER",
+    configured: "openai",
+    fields: ["BESTEHEN_OPENAI_STT_MODEL", "BESTEHEN_OPENAI_STT_API_KEY"],
+  },
+  {
+    adapter: "BESTEHEN_TTS_ADAPTER",
+    configured: "openai",
+    fields: ["BESTEHEN_OPENAI_TTS_MODEL", "BESTEHEN_OPENAI_TTS_API_KEY"],
+  },
+] as const;
+
+const paidEnvelopeFields = [
+  "BESTEHEN_PAID_DAILY_ENVELOPE_MICRO_USD",
+  "BESTEHEN_PAID_ROLLING_30D_ENVELOPE_MICRO_USD",
+  "BESTEHEN_PAID_ENVELOPE_POLICY_REVISION",
+  "BESTEHEN_PAID_ENVELOPE_VERIFIED_AT",
+] as const;
 
 const serverEnvironmentSchema = z
   .object({
@@ -24,69 +106,57 @@ const serverEnvironmentSchema = z
       .default("info"),
     BESTEHEN_LOG_FORMAT: z.literal("json").default("json"),
     DATABASE_URL: z.string().url().startsWith("postgresql://"),
-    BESTEHEN_AUTH_ADAPTER: fakeOrConfigured.default("fake"),
-    BESTEHEN_OBJECT_STORAGE_ADAPTER: fakeOrConfigured.default("fake"),
-    BESTEHEN_EMAIL_ADAPTER: fakeOrConfigured.default("fake"),
-    BESTEHEN_AI_ADAPTER: fakeOrConfigured.default("fake"),
-    BESTEHEN_STT_ADAPTER: fakeOrConfigured.default("fake"),
-    BESTEHEN_TTS_ADAPTER: fakeOrConfigured.default("fake"),
+    BESTEHEN_AUTH_ADAPTER: z.enum(["fake", "auth0"]).default("fake"),
+    BESTEHEN_OBJECT_STORAGE_ADAPTER: z.enum(["fake", "r2"]).default("fake"),
+    BESTEHEN_EMAIL_ADAPTER: z.enum(["fake", "ses"]).default("fake"),
+    BESTEHEN_AI_ADAPTER: z.enum(["fake", "gemini"]).default("fake"),
+    BESTEHEN_STT_ADAPTER: z.enum(["fake", "openai"]).default("fake"),
+    BESTEHEN_TTS_ADAPTER: z.enum(["fake", "openai"]).default("fake"),
     BESTEHEN_FLAG_GUEST_PRESENTATION: strictBoolean,
     BESTEHEN_FLAG_ACCOUNT_OPTIONAL_PRESENTATION: strictBoolean,
     BESTEHEN_FLAG_EXTERNAL_PROVIDER_CALLS: strictBoolean,
     BESTEHEN_FLAG_PAID_PRODUCTIVE_PROCESSING: strictBoolean,
     BESTEHEN_FLAG_PUBLIC_OBJECT_ACCESS: strictBoolean,
     BESTEHEN_FLAG_EXPERIMENTAL_PRODUCT_BEHAVIOR: strictBoolean,
-    BESTEHEN_AUTH0_DOMAIN: z.string().min(1).optional(),
+    BESTEHEN_AUTH0_ISSUER_BASE_URL: auth0EuIssuer.optional(),
     BESTEHEN_AUTH0_CLIENT_ID: z.string().min(1).optional(),
+    BESTEHEN_AUTH0_CLIENT_SECRET: z.string().min(16).optional(),
     BESTEHEN_AUTH0_SESSION_SECRET: z.string().min(16).optional(),
-    BESTEHEN_OWNER_ALLOWLIST: z.string().min(1).optional(),
-    BESTEHEN_APPLICATION_BASE_URL: z.string().url().optional(),
-    BESTEHEN_S3_ENDPOINT: z.string().url().optional(),
-    BESTEHEN_S3_REGION: z.string().min(1).optional(),
-    BESTEHEN_S3_BUCKET: z.string().min(1).optional(),
-    BESTEHEN_S3_PREFIX: z.string().min(1).optional(),
+    BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE: z.string().min(1).optional(),
+    BESTEHEN_APPLICATION_BASE_URL: httpsOrigin.optional(),
+    BESTEHEN_AUTH0_CONNECTION: z.literal("email").optional(),
+    BESTEHEN_AUTH0_CALLBACK_PATH: z.literal("/auth/callback").optional(),
+    BESTEHEN_AUTH0_SESSION_POLICY_REVISION: z.literal("session-policy/v1").optional(),
+    BESTEHEN_S3_ENDPOINT: r2EuEndpoint.optional(),
+    BESTEHEN_S3_REGION: z.literal("auto").optional(),
+    BESTEHEN_S3_BUCKET: z
+      .string()
+      .regex(/^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/)
+      .optional(),
+    BESTEHEN_S3_ALLOWED_PREFIXES: z.literal("media/approved/,audio/raw/,exports/,tmp/").optional(),
     BESTEHEN_S3_ACCESS_KEY_ID: z.string().min(1).optional(),
     BESTEHEN_S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
-    BESTEHEN_EMAIL_API_KEY: z.string().min(1).optional(),
-    BESTEHEN_AI_API_KEY: z.string().min(1).optional(),
-    BESTEHEN_STT_API_KEY: z.string().min(1).optional(),
-    BESTEHEN_TTS_API_KEY: z.string().min(1).optional(),
+    BESTEHEN_SES_REGION: z.literal("eu-central-1").optional(),
+    BESTEHEN_SES_FROM_REFERENCE: z.string().min(1).optional(),
+    BESTEHEN_SES_CONFIGURATION_SET: z.string().min(1).optional(),
+    BESTEHEN_SES_ACCESS_KEY_ID: z.string().min(1).optional(),
+    BESTEHEN_SES_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+    BESTEHEN_GEMINI_MODEL: z.literal("gemini-3.6-flash").optional(),
+    BESTEHEN_GEMINI_API_KEY: z.string().min(1).optional(),
+    BESTEHEN_OPENAI_STT_MODEL: z.literal("gpt-4o-mini-transcribe-2025-12-15").optional(),
+    BESTEHEN_OPENAI_STT_API_KEY: z.string().min(1).optional(),
+    BESTEHEN_OPENAI_TTS_MODEL: z.literal("gpt-4o-mini-tts-2025-12-15").optional(),
+    BESTEHEN_OPENAI_TTS_API_KEY: z.string().min(1).optional(),
+    BESTEHEN_PAID_DAILY_ENVELOPE_MICRO_USD: positiveMicroUsd.optional(),
+    BESTEHEN_PAID_ROLLING_30D_ENVELOPE_MICRO_USD: positiveMicroUsd.optional(),
+    BESTEHEN_PAID_ENVELOPE_POLICY_REVISION: z.string().min(1).optional(),
+    BESTEHEN_PAID_ENVELOPE_VERIFIED_AT: z.iso.date().optional(),
   })
   .strict()
   .superRefine((environment, context) => {
-    const adapterFields: ReadonlyArray<
-      readonly [keyof typeof environment, readonly (keyof typeof environment)[]]
-    > = [
-      [
-        "BESTEHEN_AUTH_ADAPTER",
-        [
-          "BESTEHEN_AUTH0_DOMAIN",
-          "BESTEHEN_AUTH0_CLIENT_ID",
-          "BESTEHEN_AUTH0_SESSION_SECRET",
-          "BESTEHEN_OWNER_ALLOWLIST",
-          "BESTEHEN_APPLICATION_BASE_URL",
-        ],
-      ],
-      [
-        "BESTEHEN_OBJECT_STORAGE_ADAPTER",
-        [
-          "BESTEHEN_S3_ENDPOINT",
-          "BESTEHEN_S3_REGION",
-          "BESTEHEN_S3_BUCKET",
-          "BESTEHEN_S3_PREFIX",
-          "BESTEHEN_S3_ACCESS_KEY_ID",
-          "BESTEHEN_S3_SECRET_ACCESS_KEY",
-        ],
-      ],
-      ["BESTEHEN_EMAIL_ADAPTER", ["BESTEHEN_EMAIL_API_KEY"]],
-      ["BESTEHEN_AI_ADAPTER", ["BESTEHEN_AI_API_KEY"]],
-      ["BESTEHEN_STT_ADAPTER", ["BESTEHEN_STT_API_KEY"]],
-      ["BESTEHEN_TTS_ADAPTER", ["BESTEHEN_TTS_API_KEY"]],
-    ];
-
-    for (const [adapter, requiredFields] of adapterFields) {
-      if (environment[adapter] !== "configured") continue;
-      for (const field of requiredFields) {
+    for (const { adapter, configured, fields } of adapterRequirements) {
+      if (environment[adapter] !== configured) continue;
+      for (const field of fields) {
         if (!environment[field]) {
           context.addIssue({
             code: "custom",
@@ -98,7 +168,7 @@ const serverEnvironmentSchema = z
     }
 
     if (environment.BESTEHEN_APP_ENV === "production") {
-      for (const [adapter] of adapterFields) {
+      for (const { adapter } of adapterRequirements) {
         if (environment[adapter] === "fake") {
           context.addIssue({
             code: "custom",
@@ -118,6 +188,52 @@ const serverEnvironmentSchema = z
         code: "custom",
         path: ["BESTEHEN_FLAG_EXTERNAL_PROVIDER_CALLS"],
         message: "external provider calls are forbidden in local, test, and preview profiles",
+      });
+    }
+
+    const providedEnvelopeFields = paidEnvelopeFields.filter((field) => environment[field]);
+    if (
+      providedEnvelopeFields.length > 0 &&
+      providedEnvelopeFields.length !== paidEnvelopeFields.length
+    ) {
+      for (const field of paidEnvelopeFields.filter((field) => !environment[field])) {
+        context.addIssue({ code: "custom", path: [field], message: "paid envelope is incomplete" });
+      }
+    }
+
+    if (environment.BESTEHEN_FLAG_PAID_PRODUCTIVE_PROCESSING) {
+      if (!environment.BESTEHEN_FLAG_EXTERNAL_PROVIDER_CALLS) {
+        context.addIssue({
+          code: "custom",
+          path: ["BESTEHEN_FLAG_PAID_PRODUCTIVE_PROCESSING"],
+          message: "paid processing requires external provider calls",
+        });
+      }
+      for (const field of paidEnvelopeFields) {
+        if (!environment[field]) {
+          context.addIssue({ code: "custom", path: [field], message: "paid envelope is required" });
+        }
+      }
+      for (const [field, expected] of [
+        ["BESTEHEN_AI_ADAPTER", "gemini"],
+        ["BESTEHEN_STT_ADAPTER", "openai"],
+        ["BESTEHEN_TTS_ADAPTER", "openai"],
+      ] as const) {
+        if (environment[field] !== expected) {
+          context.addIssue({
+            code: "custom",
+            path: [field],
+            message: "paid adapter is not configured",
+          });
+        }
+      }
+    }
+
+    if (environment.BESTEHEN_FLAG_PUBLIC_OBJECT_ACCESS) {
+      context.addIssue({
+        code: "custom",
+        path: ["BESTEHEN_FLAG_PUBLIC_OBJECT_ACCESS"],
+        message: "public object access is forbidden for the personal profile",
       });
     }
   });
@@ -148,21 +264,36 @@ const explicitServerKeys = [
   "BESTEHEN_FLAG_PAID_PRODUCTIVE_PROCESSING",
   "BESTEHEN_FLAG_PUBLIC_OBJECT_ACCESS",
   "BESTEHEN_FLAG_EXPERIMENTAL_PRODUCT_BEHAVIOR",
-  "BESTEHEN_AUTH0_DOMAIN",
+  "BESTEHEN_AUTH0_ISSUER_BASE_URL",
   "BESTEHEN_AUTH0_CLIENT_ID",
+  "BESTEHEN_AUTH0_CLIENT_SECRET",
   "BESTEHEN_AUTH0_SESSION_SECRET",
-  "BESTEHEN_OWNER_ALLOWLIST",
+  "BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE",
   "BESTEHEN_APPLICATION_BASE_URL",
+  "BESTEHEN_AUTH0_CONNECTION",
+  "BESTEHEN_AUTH0_CALLBACK_PATH",
+  "BESTEHEN_AUTH0_SESSION_POLICY_REVISION",
   "BESTEHEN_S3_ENDPOINT",
   "BESTEHEN_S3_REGION",
   "BESTEHEN_S3_BUCKET",
-  "BESTEHEN_S3_PREFIX",
+  "BESTEHEN_S3_ALLOWED_PREFIXES",
   "BESTEHEN_S3_ACCESS_KEY_ID",
   "BESTEHEN_S3_SECRET_ACCESS_KEY",
-  "BESTEHEN_EMAIL_API_KEY",
-  "BESTEHEN_AI_API_KEY",
-  "BESTEHEN_STT_API_KEY",
-  "BESTEHEN_TTS_API_KEY",
+  "BESTEHEN_SES_REGION",
+  "BESTEHEN_SES_FROM_REFERENCE",
+  "BESTEHEN_SES_CONFIGURATION_SET",
+  "BESTEHEN_SES_ACCESS_KEY_ID",
+  "BESTEHEN_SES_SECRET_ACCESS_KEY",
+  "BESTEHEN_GEMINI_MODEL",
+  "BESTEHEN_GEMINI_API_KEY",
+  "BESTEHEN_OPENAI_STT_MODEL",
+  "BESTEHEN_OPENAI_STT_API_KEY",
+  "BESTEHEN_OPENAI_TTS_MODEL",
+  "BESTEHEN_OPENAI_TTS_API_KEY",
+  "BESTEHEN_PAID_DAILY_ENVELOPE_MICRO_USD",
+  "BESTEHEN_PAID_ROLLING_30D_ENVELOPE_MICRO_USD",
+  "BESTEHEN_PAID_ENVELOPE_POLICY_REVISION",
+  "BESTEHEN_PAID_ENVELOPE_VERIFIED_AT",
 ] as const;
 
 export function parseServerEnvironment(
