@@ -13,7 +13,7 @@ This is the live, authoritative progress ledger for the personal program. Worker
 ## 01 — Repository and delivery baseline
 
 - [x] 01P Planning accepted — evidence: `Implementation/Personal/01-repository-delivery-baseline/plan.md`; [PR #1 acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/1#issuecomment-5387482785); Planning commit `233eb0c84e092e5bdda88a1f3692bd41ddc07d3e`; `P01-PLAN`
-- [~] 01E Execution pending orchestrator acceptance — evidence: `Implementation/Personal/01-repository-delivery-baseline/handoff.md`; [draft PR #1](https://github.com/m-elsharkawi/Bestehen-App/pull/1); [passing implementation run 32658581656](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656); candidate `eb4b97c486553a3262acb181fd82a2d362641c3c`
+- [~] 01E Execution pending orchestrator acceptance — evidence: `Implementation/Personal/01-repository-delivery-baseline/handoff.md`; [draft PR #1](https://github.com/m-elsharkawi/Bestehen-App/pull/1); [passing implementation run 32659599740](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740); candidate `58e93774eb62dcd9c5f26c66403fc4292759e689`
 - [ ] Approved stack, package boundaries, exact lock/runtime versions, containers, and CI gates are reproducible.
 - [ ] Personal deployment-profile decision preserves provider and commercial exit seams.
 

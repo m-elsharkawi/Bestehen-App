@@ -7,14 +7,15 @@ marked ready
 
 Draft PR: [#1](https://github.com/m-elsharkawi/Bestehen-App/pull/1)
 
-Verified implementation candidate: `eb4b97c486553a3262acb181fd82a2d362641c3c`
+Verified implementation candidate: `58e93774eb62dcd9c5f26c66403fc4292759e689`
 
 Passing candidate run:
-[32658581656](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656)
+[32659599740](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740)
 
-The commit containing this handoff and the checklist `[~]` update is evidence-only.
-The PR check rollup and the final execution comment bind that commit to its own clean
-CI result before acceptance. Only the orchestrator may change `[~]` to `[x]`.
+The commit containing this handoff refresh and the checklist evidence update is
+evidence-only. The checklist status remains `[~]`. The PR check rollup and the final
+execution comment bind that commit to its own clean CI result before acceptance. Only
+the orchestrator may change `[~]` to `[x]`.
 
 ## Source and ancestry
 
@@ -87,15 +88,24 @@ Execution commits after the accepted Planning head are:
   discovery.
 - `eb4b97c486553a3262acb181fd82a2d362641c3c` — make the isolated synthetic database
   outage deterministic.
+- `6aead604db9d5d23448b58b716215a7ac5160c0e` — record the first Stage 01 execution
+  handoff candidate.
+- `a7256a195e93b74f9b324a11c3be2c8f81f63be7` — use a randomly named non-superuser
+  role and database for each PostgreSQL fixture.
+- `1f71c55fa987346f95323983c960bb556245c829` — control the isolated database outage
+  with a validated synthetic CI administrator.
+- `58e93774eb62dcd9c5f26c66403fc4292759e689` — keep the worker alive and readiness
+  reconnecting when an idle PostgreSQL connection is lost.
 
-The final evidence-only commit is the commit containing this document and the single
-`01E` checklist `[~]` change; its exact SHA is recorded in the PR execution-evidence
-comment because a commit cannot truthfully contain its own SHA.
+The final evidence-only commit is the commit containing this document refresh and the
+evidence link on the already `[~]` `01E` checklist line; its exact SHA is recorded in
+the PR execution-evidence comment because a commit cannot truthfully contain its own
+SHA.
 
 ## Changed paths and generated artifacts
 
-The verified implementation candidate changes 100 allowed paths from the accepted
-baseline; this handoff adds the planned 101st path. They are confined to:
+The verified implementation candidate changes 100 allowed paths from the exact
+accepted Planning head. They are confined to:
 
 - root workspace/runtime/tooling policy and the frozen lock;
 - `.github` ownership, update, PR, CI, and release-candidate policy;
@@ -167,44 +177,47 @@ The local runtime was exact Node `24.19.0` and pnpm `11.23.0`.
 
 ## GitHub CI and evidence
 
-The final implementation candidate's first run, not a retry of the same SHA, passed all
-required jobs in run
-[32658581656](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656):
+The final implementation candidate passed all required jobs independently in both the
+pull-request run
+[32659599740](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740)
+and matching push run
+[32659597379](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659597379).
+The pull-request jobs are:
 
-- [P01 policy and frozen dependencies](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/job/97241155850)
+- [P01 policy and frozen dependencies](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/job/97243634921)
   — pass. Covers `P01-BASE-001`, `P01-SCOPE-001`, lock, secret, and doc policy.
-- [P01 exact-lock dependency audit](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/job/97241155843)
+- [P01 exact-lock dependency audit](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/job/97243634895)
   — pass. Covers `P01-DEPS-001`, critical advisory blocking, source/lifecycle policy,
   deterministic dependency and license inventories.
-- [P01 static, unit, build, and release checks](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/job/97241155837)
+- [P01 static, unit, build, and release checks](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/job/97243634748)
   — pass. Covers boundary/type/style/unit/config/secret/HTTP/generated/release tests.
   Unit coverage is correctly diagnostic: 40.93% statements, 38.38% branches, 49.09%
   functions, and 41.43% lines.
-- [P01 PostgreSQL migration and process](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/job/97241155807)
+- [P01 PostgreSQL migration and process](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/job/97243634870)
   — pass against real PostgreSQL `18.6`: two integration tests and three process tests
   cover concurrent idempotent migration, schema mismatch, database outage, readiness
   `503`, recovery to `200`, no product work route, invalid-config failure, and bounded
   zero-exit web/worker `SIGTERM`.
-- [P01 browser and accessibility](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/job/97241155697)
+- [P01 browser and accessibility](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/job/97243634859)
   — pass, 3 Chromium/axe smoke tests with keyboard, visible focus, reflow, and reduced
   motion assertions. Axe automation is not represented as complete manual AT proof.
-- [P01 OCI non-root read-only health and signal](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/job/97241155938)
+- [P01 OCI non-root read-only health and signal](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/job/97243634853)
   — pass for both images on clean Linux. The gate re-resolved multi-architecture and
   platform manifests; built minimal images; inspected labels, history, config, and
   secrets; ran the explicit migrator; started both images with non-root `10001:10001`,
   init, read-only root, and bounded `/tmp`; checked health/readiness; and required
   bounded zero-exit `SIGTERM`.
-- [P01 evidence and release manifest](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/job/97241571239)
+- [P01 evidence and release manifest](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/job/97243961534)
   — pass. It downloaded the OCI identity, generated an exact clean immutable manifest,
   and uploaded redacted inventory/license/manifest evidence.
 
 Durable 14-day run artifacts are
-[dependencies/licenses/audit](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/artifacts/9498112165),
-[unit/coverage](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/artifacts/9498121030),
-[PostgreSQL/process](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/artifacts/9498122321),
-[browser/accessibility](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/artifacts/9498124098),
-[OCI](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/artifacts/9498148474),
-and [release manifest/inventory](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656/artifacts/9498156087).
+[dependencies/licenses/audit](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/artifacts/9498374080),
+[unit/coverage](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/artifacts/9498383934),
+[PostgreSQL/process](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/artifacts/9498386951),
+[browser/accessibility](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/artifacts/9498388655),
+[OCI](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/artifacts/9498401377),
+and [release manifest/inventory](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32659599740/artifacts/9498407719).
 
 The clean evidence binds Node base manifest
 `sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03`,
@@ -214,9 +227,9 @@ PostgreSQL base manifest
 `sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108`,
 Linux PostgreSQL platform manifest
 `sha256:b939b3851e2cccb017dc4497af63b15e34efa57fba036548773c53b2f16a8871`,
-web image `sha256:ac5d7ed50e7b8279173d284ef5102c1c083f45e74e4cbd6c96967d0384c92463`,
+web image `sha256:c5b135c848fef2f4a57815c75dda8e639d1ca99c4b3da95dbb9050aece7c6d35`,
 and worker image
-`sha256:82a2bdcea5444ff40f9b4a18b1042ce3279da52f9ce414d2fe1d045769f286b9`.
+`sha256:8d7e49496c9356e20bf0928f5a55997ca782befaca8fe17dcded797d5e97063e`.
 The images are local CI artifacts only and were not published.
 
 ### Diagnostic candidate failures
@@ -228,14 +241,27 @@ Failures were fixed with new commits; no diagnostic retry was relabeled green.
   exposed three independent issues: the private-repository GHAS dependency action was
   unavailable, standalone web returned signal exit `143`, and worker database-outage
   simulation was nondeterministic. Commits `d019424` and `746278d` corrected them.
-- Candidate `952f782` run
+- Candidate `952f782` pull-request run
   [32658357254](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658357254)
   proved the corrected OCI gate green but showed that altering a shared synthetic role
   did not deterministically make the isolated database unavailable. Commit `eb4b97c`
   instead toggles connections only on the validated, randomly named isolated synthetic
   database and always restores them in `finally`.
-- Candidate `eb4b97c` then passed every job on its first run. These earlier candidates
-  remain diagnostic history, not acceptance evidence for their failed claims.
+- Candidate `eb4b97c` pull-request run
+  [32658581656](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658581656)
+  passed, but the independently triggered same-SHA push run
+  [32658579105](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32658579105)
+  still failed the outage assertion. It therefore remained diagnostic rather than
+  acceptance evidence.
+- Candidates through `1f71c55` progressively isolated the fixture to a random
+  non-superuser role/database and moved outage control to a validated synthetic CI
+  administrator. The duplicate lanes then exposed the root process defect: forced
+  loss of an idle `pg.Pool` client emitted an unhandled error and exited the worker
+  before readiness could reconnect.
+- Commit `58e9377` consumes that expected pool error without logging raw PostgreSQL
+  detail; readiness fails closed during loss and reconnects on the next probe. Both
+  independent exact-SHA runs above passed PostgreSQL outage/recovery and all other
+  gates. Earlier candidate runs remain diagnostic history.
 
 ## Accepted-plan dependency-gate variance
 
