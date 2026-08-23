@@ -109,6 +109,9 @@ Mutable facts were checked on 2026-08-23 against primary sources:
   current supported minor.
 - [pnpm settings](https://pnpm.io/settings) and
   [pnpm build-script policy](https://pnpm.io/settings/build).
+- [npm public registry metadata](https://registry.npmjs.org/) queried with exact
+  package/version, engine, and peer-dependency fields for every JavaScript choice in
+  §7.3.
 - [Coolify Dockerfile deployment](https://next.coolify.io/docs/applications/builds/dockerfile)
   and [health checks](https://next.coolify.io/docs/applications/configuration/health-checks).
 - Pangolin [resources](https://docs.pangolin.net/manage/resources/understanding-resources),
@@ -272,6 +275,14 @@ behavior: an unreviewed `esbuild@0.28.2` lifecycle script fails the install. The
 `pnpm-workspace.yaml` explicitly sets only `allowBuilds.esbuild: true`; all other new
 dependency lifecycle scripts fail until their exact purpose and artifact are reviewed.
 `dangerouslyAllowAllBuilds` is forbidden.
+
+The dated registry metadata also confirms the constraining engines/peers: pnpm requires
+Node at least `22.13`; Next requires Node at least `20.9` and accepts React 19; Kysely
+requires Node at least 22; pg-boss requires Node at least `22.12`; Vitest accepts Node
+24; Playwright requires Node at least 20; and jsdom accepts Node `24.15` or newer. Node
+`24.19.0` and the matching React/React DOM `19.2.8` satisfy all of them. `01E` repeats
+these metadata assertions from the resolved lock and fails if a transitive constraint
+or peer relationship changes.
 
 ### 7.4 Update and generated-file policy
 
