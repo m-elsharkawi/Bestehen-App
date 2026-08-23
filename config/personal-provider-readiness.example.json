@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "personal-provider-readiness/v1",
+  "environment": "staging",
+  "releaseCommit": "0000000000000000000000000000000000000000",
+  "applicationOrigin": "https://staging.example.invalid",
+  "authCallbackUrl": "https://staging.example.invalid/api/auth/callback",
+  "redactionMarker": "content-and-identifiers-omitted",
+  "resources": [
+    {
+      "provider": "auth0",
+      "capability": "identity",
+      "region": "eu",
+      "model": "not_applicable",
+      "resourceClass": "tenant_application_connection",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "AUTH-10",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "dashboard",
+        "evidenceReference": "protected-ledger:auth0-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
+    {
+      "provider": "r2",
+      "capability": "object_storage",
+      "region": "eu",
+      "model": "not_applicable",
+      "resourceClass": "private_bucket_pair",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "R2-07",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "dashboard",
+        "evidenceReference": "protected-ledger:r2-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
+    {
+      "provider": "ses",
+      "capability": "email",
+      "region": "eu-central-1",
+      "model": "not_applicable",
+      "resourceClass": "sending_identity",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "SES-08",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "dashboard",
+        "evidenceReference": "protected-ledger:ses-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
+    {
+      "provider": "gemini",
+      "capability": "ai",
+      "region": "provider-managed",
+      "model": "gemini-3.6-flash",
+      "resourceClass": "staging_project",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "AI-04",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "dashboard",
+        "evidenceReference": "protected-ledger:gemini-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
+    {
+      "provider": "openai_stt",
+      "capability": "stt",
+      "region": "provider-managed",
+      "model": "gpt-4o-mini-transcribe-2025-12-15",
+      "resourceClass": "restricted_project_key",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "AUDIO-03",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "dashboard",
+        "evidenceReference": "protected-ledger:stt-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
+    {
+      "provider": "openai_tts",
+      "capability": "tts",
+      "region": "provider-managed",
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "resourceClass": "restricted_project_key",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "AUDIO-04",
+      "result": "owner_pending",
+      "liveVerified": false,
+      "verification": {
+        "status": "pending",
+        "method": "dashboard",
+        "evidenceReference": "protected-ledger:tts-owner-pending",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "planned", "verification": "pending" },
+      "redacted": true
+    },
+    {
+      "provider": "polly",
+      "capability": "tts_offline",
+      "region": "eu-central-1",
+      "model": "not_selected",
+      "resourceClass": "conditional_candidate",
+      "checkedAt": "2026-08-23T00:00:00Z",
+      "guideStep": "AUDIO-05",
+      "result": "not_admitted",
+      "liveVerified": false,
+      "verification": {
+        "status": "not_applicable",
+        "method": "contract",
+        "evidenceReference": "protected-ledger:polly-not-admitted",
+        "evidenceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "rollback": { "state": "not_required", "verification": "not_applicable" },
+      "redacted": true
+    }
+  ]
+}
