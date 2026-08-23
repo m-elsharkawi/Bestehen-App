@@ -1,6 +1,7 @@
 # Personal Stage 02 — provider accounts and service setup plan
 
-Status: `02P` planning in progress; awaiting independent orchestrator acceptance.
+Status: `02P` planning accepted; reviewed input head
+`b62d8b98869a7cd4dcd23ee0206575d3952afd20`; [acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/3#issuecomment-5388249271).
 
 Planning date: 2026-08-23 (Europe/Berlin).
 
