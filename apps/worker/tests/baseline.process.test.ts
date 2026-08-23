@@ -65,7 +65,7 @@ describe.skipIf(!testDatabaseUrl)("worker process", () => {
       });
       children.add(child);
       await waitFor(`http://127.0.0.1:${port}/health/ready`, 200);
-      await withSyntheticDatabaseUnavailable(databaseUrl, () =>
+      await withSyntheticDatabaseUnavailable(databaseUrl, testDatabaseUrl as string, () =>
         waitFor(`http://127.0.0.1:${port}/health/ready`, 503),
       );
       await waitFor(`http://127.0.0.1:${port}/health/ready`, 200);

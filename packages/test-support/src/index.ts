@@ -81,29 +81,37 @@ export async function withIsolatedDatabase<T>(
 
 export async function withSyntheticDatabaseUnavailable<T>(
   databaseUrl: string,
+  controllerUrl: string,
   callback: () => Promise<T>,
 ): Promise<T> {
   const target = new URL(databaseUrl);
+  const controller = new URL(controllerUrl);
   const databaseName = target.pathname.slice(1);
   const role = decodeURIComponent(target.username);
   if (
     !/^bestehen_test_[a-f0-9]+$/.test(databaseName) ||
-    !/^bestehen_test_role_[a-f0-9]+$/.test(role)
+    !/^bestehen_test_role_[a-f0-9]+$/.test(role) ||
+    !/^bestehen_(?:ci|local)$/.test(decodeURIComponent(controller.username)) ||
+    target.hostname !== controller.hostname ||
+    target.port !== controller.port
   ) {
     throw new Error("Availability control is limited to isolated synthetic test databases");
   }
-  target.pathname = "/postgres";
-  const admin = new Client({ connectionString: target.toString() });
+  controller.pathname = "/postgres";
+  const admin = new Client({ connectionString: controller.toString() });
   await admin.connect();
   try {
-    await admin.query(`ALTER DATABASE "${databaseName}" WITH ALLOW_CONNECTIONS false`);
+    await admin.query(`ALTER ROLE "${role}" NOLOGIN`);
     await admin.query(
       "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()",
       [databaseName],
     );
     return await callback();
   } finally {
-    await admin.query(`ALTER DATABASE "${databaseName}" WITH ALLOW_CONNECTIONS true`);
-    await admin.end();
+    try {
+      await admin.query(`ALTER ROLE "${role}" LOGIN`);
+    } finally {
+      await admin.end();
+    }
   }
 }
