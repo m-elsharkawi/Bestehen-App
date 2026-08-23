@@ -20,7 +20,7 @@ This is the live, authoritative progress ledger for the personal program. Worker
 ## 02 — Provider accounts and service setup
 
 - [x] 02P Planning accepted — evidence: `Implementation/Personal/02-provider-service-setup/plan.md`; [PR #3 acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/3#issuecomment-5388249271); reviewed Planning head `b62d8b98869a7cd4dcd23ee0206575d3952afd20`; [CI run 32663751573](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32663751573); `P02-PLAN`
-- [~] 02E Execution in progress — evidence: pending
+- [~] 02E Execution candidate awaiting independent acceptance — evidence: `Implementation/Personal/02-provider-service-setup/handoff.md`; [draft PR #3](https://github.com/m-elsharkawi/Bestehen-App/pull/3); implementation candidate `52be044955086924c35bdf9dcdddd988c03b65db`; [CI run 32665918536](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32665918536); `P02-SCOPE-001`, `P02-DOC-001`, `P02-CONFIG-001`, `P02-FAKE-001`, `P02-SECRET-001`, `P02-READINESS-001`, `P02-DEPS-001`, `P02-COMPAT-001`
 - [ ] GitHub, Coolify, Pangolin, R2, Auth0, SES, AI/STT/TTS, secrets, budget, backup, and recovery guides are verified.
 - [ ] Configuration schemas and fake contracts pass without live accounts; manual gates are named honestly.
 
