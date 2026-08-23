@@ -1057,30 +1057,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define H1–H3 runtime/playback contracts, audio manifests, playback/reference limits, replay accounting, speed/voice metadata, and transcript gating.
-- [ ] Select storage/CDN/delivery formats and cache/preload strategy from current browser support, cost, licensing, and accessibility evidence.
-- [ ] Define batch TTS/human-audited/native benchmark pipeline boundary, asset versioning, pronunciation QA, and evidence role.
-- [ ] Define measured-block media preflight, locally-ready criteria, timer/playback integrity, reconnect/offline/poor-connectivity behavior, and no duplicate playback/evidence.
-- [ ] Define instructional text alternatives versus target Listening transcript restrictions and evidence-altering accommodations.
-- [ ] Handle missing/corrupt/late audio, device output problems, backgrounding, and replacement without learner failure.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Batch/cache TTS, avoid per-play generation, measure storage/CDN/egress and define human-audio upgrade triggers.
-- [ ] Security/privacy/rights — Use signed/controlled asset access where needed, enforce rights, and avoid leaking restricted transcripts.
-- [ ] Accessibility — Instructional audio has text equivalents; target Listening remains evidence-sensitive with honest accommodation labels.
-- [ ] Failure/recovery — Audio failure is not_counted; preflight prevents false clean claims and unrelated skills remain available.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Media manifest/asset pseudotypes.
-- [ ] Include Playback state machine.
-- [ ] Include Delivery/storage/format comparison with official browser/price sources.
-- [ ] Include Preflight/failure matrix.
-- [ ] Include TTS/audit publication flow.
-- [ ] Include Offline/cache sequence.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/16-listening-audio-tts-and-media-delivery.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define H1–H3 runtime/playback contracts, audio manifests, playback/reference limits, replay accounting, speed/voice metadata, and transcript gating.
+- [x] Select storage/CDN/delivery formats and cache/preload strategy from current browser support, cost, licensing, and accessibility evidence.
+- [x] Define batch TTS/human-audited/native benchmark pipeline boundary, asset versioning, pronunciation QA, and evidence role.
+- [x] Define measured-block media preflight, locally-ready criteria, timer/playback integrity, reconnect/offline/poor-connectivity behavior, and no duplicate playback/evidence.
+- [x] Define instructional text alternatives versus target Listening transcript restrictions and evidence-altering accommodations.
+- [x] Handle missing/corrupt/late audio, device output problems, backgrounding, and replacement without learner failure.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Batch/cache TTS, avoid per-play generation, measure storage/CDN/egress and define human-audio upgrade triggers.
+- [x] Security/privacy/rights — Use signed/controlled asset access where needed, enforce rights, and avoid leaking restricted transcripts.
+- [x] Accessibility — Instructional audio has text equivalents; target Listening remains evidence-sensitive with honest accommodation labels.
+- [x] Failure/recovery — Audio failure is not_counted; preflight prevents false clean claims and unrelated skills remain available.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Media manifest/asset pseudotypes.
+- [x] Include Playback state machine.
+- [x] Include Delivery/storage/format comparison with official browser/price sources.
+- [x] Include Preflight/failure matrix.
+- [x] Include TTS/audit publication flow.
+- [x] Include Offline/cache sequence.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/16-listening-audio-tts-and-media-delivery.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

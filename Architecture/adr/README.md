@@ -38,3 +38,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0021](ADR-0021-single-semantic-design-system-and-shared-five-skill-extension-contract.md) | Single semantic design system and shared five-skill extension contract | Accepted | Stage 13 | `ARCH-S13-D06`–`D11` | — |
 | [ADR-0022](ADR-0022-capability-gated-responsive-web-and-evidence-aware-accessibility.md) | Capability-gated responsive web and evidence-aware accessibility | Accepted | Stage 14 | `ARCH-S14-D01`–`D10` | — |
 | [ADR-0023](ADR-0023-deterministic-objective-task-runtime-and-immutable-outcomes.md) | Deterministic objective task runtime and immutable outcomes | Accepted | Stage 15 | `ARCH-S15-D01`–`D10` | — |
+| [ADR-0024](ADR-0024-pinned-batch-audio-and-evidence-sensitive-playback.md) | Pinned batch audio and evidence-sensitive playback | Accepted | Stage 16 | `ARCH-S16-D01`–`D10` | — |
