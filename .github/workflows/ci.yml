@@ -1,0 +1,293 @@
+name: Stage 01 CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - implementation/personal-01-repository-delivery-baseline
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage-01-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  NODE_VERSION: 24.19.0
+  PNPM_VERSION: 11.23.0
+
+jobs:
+  policy:
+    name: P01 policy and frozen dependencies
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install pinned pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - name: Install pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - name: Frozen install
+        run: pnpm install --frozen-lockfile
+      - name: Repository, lock, secret, and documentation policy
+        run: |
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git status --porcelain)"
+          pnpm check:lock
+          pnpm check:secrets
+          pnpm check:docs
+
+  quality:
+    name: P01 static, unit, build, and release checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Canonical fast gate
+        run: pnpm check
+      - name: Advisory coverage
+        run: pnpm test:coverage
+      - name: Upload synthetic unit evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-UNIT-001-${{ github.run_id }}
+          path: |
+            coverage/
+            test-results/vitest-junit.xml
+          retention-days: 14
+          if-no-files-found: warn
+
+  postgres-process:
+    name: P01 PostgreSQL migration and process
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18.6-bookworm@sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108
+        env:
+          POSTGRES_DB: bestehen_ci
+          POSTGRES_PASSWORD: bestehen_ci
+          POSTGRES_USER: bestehen_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bestehen_ci -d bestehen_ci"
+          --health-interval 1s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgresql://bestehen_ci:bestehen_ci@127.0.0.1:5432/bestehen_ci
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Real PostgreSQL 18 migration and recovery
+        run: pnpm test:integration
+      - name: Worker startup, readiness, and signal contract
+        run: pnpm test:process
+      - name: Upload synthetic PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-PG-JOB-${{ github.run_id }}
+          path: test-results/vitest-junit.xml
+          retention-days: 14
+          if-no-files-found: warn
+
+  browser-accessibility:
+    name: P01 browser and accessibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Install pinned Chromium runtime
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Keyboard, focus, reflow, reduced-motion, and axe smoke
+        run: pnpm test:e2e
+      - name: Upload synthetic browser evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-A11Y-001-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/playwright/
+          retention-days: 14
+          if-no-files-found: warn
+
+  oci-runtime:
+    name: P01 OCI non-root read-only health and signal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      - run: pnpm install --frozen-lockfile
+      - name: Build and inspect both provider-neutral images
+        env:
+          OCI_EVIDENCE_PATH: evidence/oci.json
+        run: |
+          mkdir -p evidence
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          pnpm test:oci
+      - name: Upload OCI evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-OCI-${{ github.run_id }}
+          path: evidence/oci.json
+          retention-days: 14
+          if-no-files-found: warn
+
+  dependency-audit:
+    name: P01 exact-lock dependency audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Block critical advisories across the exact resolved lock
+        run: |
+          mkdir -p evidence
+          pnpm check:lock
+          pnpm audit --audit-level=critical --json | tee evidence/dependency-audit.json
+      - name: Generate dependency and license inventory
+        run: |
+          pnpm list --recursive --depth Infinity --json > evidence/dependencies.json
+          pnpm licenses list --json > evidence/licenses.json
+      - name: Upload dependency security evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-DEPS-001-${{ github.run_id }}
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: warn
+
+  evidence:
+    name: P01 evidence and release manifest
+    needs: [policy, quality, postgres-process, browser-accessibility, oci-runtime, dependency-audit]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Download OCI identity
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-OCI-${{ github.run_id }}
+          path: evidence
+      - name: Generate immutable dry-run manifest and dependency inventory
+        env:
+          CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          WEB_DIGEST=$(node -p "JSON.parse(require('fs').readFileSync('evidence/oci.json')).webDigest")
+          WORKER_DIGEST=$(node -p "JSON.parse(require('fs').readFileSync('evidence/oci.json')).workerDigest")
+          CHECK_ARGS=()
+          for CHECK_ID in P01-BASE-001 P01-SCOPE-001 P01-DEPS-001 P01-BOUNDARY-001 P01-TYPE-001 P01-STYLE-001 P01-UNIT-001 P01-CONFIG-001 P01-SECRET-001 P01-PG-001 P01-JOB-001 P01-HTTP-001 P01-A11Y-001 P01-OCI-WEB-001 P01-OCI-WORKER-001 P01-RELEASE-001 P01-DOC-001; do
+            CHECK_ARGS+=(--check "$CHECK_ID=$CHECK_URL")
+          done
+          node scripts/release-manifest.mjs --dry-run --commit "$CANDIDATE_SHA" --web-digest "$WEB_DIGEST" --worker-digest "$WORKER_DIGEST" "${CHECK_ARGS[@]}" > evidence/release-manifest.json
+          pnpm list --recursive --depth Infinity --json > evidence/dependencies.json
+          pnpm licenses list --json > evidence/licenses.json
+      - name: Upload redacted inventory and manifest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-RELEASE-001-${{ github.run_id }}
+          path: |
+            evidence/release-manifest.json
+            evidence/dependencies.json
+            evidence/licenses.json
+            evidence/oci.json
+          retention-days: 14
+          if-no-files-found: error

@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/m-elsharkawi/Bestehen-App/schemas/release-manifest.schema.json",
+  "title": "Bestehen release evidence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "commit",
+    "dirty",
+    "createdAt",
+    "builder",
+    "dependencies",
+    "images",
+    "database",
+    "runtime",
+    "tools",
+    "actions",
+    "containerBases",
+    "releaseAxes",
+    "flags",
+    "checks"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "dirty": { "const": false },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "builder": { "type": "string", "minLength": 1 },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lockSha256"],
+      "properties": { "lockSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" } }
+    },
+    "images": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["web", "worker"],
+      "properties": {
+        "web": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "worker": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "database": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["postgres", "minimumRevision", "maximumRevision", "migrationOwner"],
+      "properties": {
+        "postgres": { "const": "18.6" },
+        "minimumRevision": { "const": "baseline" },
+        "maximumRevision": { "const": "baseline" },
+        "migrationOwner": { "const": "explicit-migrator" }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node", "pnpm"],
+      "properties": { "node": { "const": "24.19.0" }, "pnpm": { "const": "11.23.0" } }
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["typescript", "biome", "vitest", "playwright"],
+      "properties": {
+        "typescript": { "const": "5.9.3" },
+        "biome": { "const": "2.5.10" },
+        "vitest": { "const": "4.1.11" },
+        "playwright": { "const": "1.62.1" }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkout",
+        "setupNode",
+        "pnpmSetup",
+        "uploadArtifact",
+        "downloadArtifact",
+        "setupBuildx",
+        "buildPush"
+      ],
+      "properties": {
+        "checkout": { "const": "3d3c42e5aac5ba805825da76410c181273ba90b1" },
+        "setupNode": { "const": "820762786026740c76f36085b0efc47a31fe5020" },
+        "pnpmSetup": { "const": "0977fd99725f1db4007ccb2928dbb4e90d06cc86" },
+        "uploadArtifact": { "const": "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a" },
+        "downloadArtifact": { "const": "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" },
+        "setupBuildx": { "const": "37fe631027851001ddb9b187196cc803df7f5f0e" },
+        "buildPush": { "const": "53b7df96c91f9c12dcc8a07bcb9ccacbed38856a" }
+      }
+    },
+    "containerBases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node", "postgres"],
+      "properties": {
+        "node": {
+          "const": "sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03"
+        },
+        "postgres": {
+          "const": "sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108"
+        }
+      }
+    },
+    "releaseAxes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["application", "content", "evaluation", "model"],
+      "properties": {
+        "application": { "const": "stage-01-baseline" },
+        "content": { "const": "not-produced" },
+        "evaluation": { "const": "not-produced" },
+        "model": { "const": "not-produced" }
+      }
+    },
+    "flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "guestPresentation",
+        "accountOptionalPresentation",
+        "externalProviderCalls",
+        "paidProductiveProcessing",
+        "publicObjectAccess",
+        "experimentalProductBehavior"
+      ],
+      "properties": {
+        "guestPresentation": { "const": false },
+        "accountOptionalPresentation": { "const": false },
+        "externalProviderCalls": { "const": false },
+        "paidProductiveProcessing": { "const": false },
+        "publicObjectAccess": { "const": false },
+        "experimentalProductBehavior": { "const": false }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "P01-BASE-001",
+        "P01-SCOPE-001",
+        "P01-DEPS-001",
+        "P01-BOUNDARY-001",
+        "P01-TYPE-001",
+        "P01-STYLE-001",
+        "P01-UNIT-001",
+        "P01-CONFIG-001",
+        "P01-SECRET-001",
+        "P01-PG-001",
+        "P01-JOB-001",
+        "P01-HTTP-001",
+        "P01-A11Y-001",
+        "P01-OCI-WEB-001",
+        "P01-OCI-WORKER-001",
+        "P01-RELEASE-001",
+        "P01-DOC-001"
+      ],
+      "properties": {
+        "P01-BASE-001": { "type": "string", "minLength": 1 },
+        "P01-SCOPE-001": { "type": "string", "minLength": 1 },
+        "P01-DEPS-001": { "type": "string", "minLength": 1 },
+        "P01-BOUNDARY-001": { "type": "string", "minLength": 1 },
+        "P01-TYPE-001": { "type": "string", "minLength": 1 },
+        "P01-STYLE-001": { "type": "string", "minLength": 1 },
+        "P01-UNIT-001": { "type": "string", "minLength": 1 },
+        "P01-CONFIG-001": { "type": "string", "minLength": 1 },
+        "P01-SECRET-001": { "type": "string", "minLength": 1 },
+        "P01-PG-001": { "type": "string", "minLength": 1 },
+        "P01-JOB-001": { "type": "string", "minLength": 1 },
+        "P01-HTTP-001": { "type": "string", "minLength": 1 },
+        "P01-A11Y-001": { "type": "string", "minLength": 1 },
+        "P01-OCI-WEB-001": { "type": "string", "minLength": 1 },
+        "P01-OCI-WORKER-001": { "type": "string", "minLength": 1 },
+        "P01-RELEASE-001": { "type": "string", "minLength": 1 },
+        "P01-DOC-001": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

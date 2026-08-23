@@ -1,0 +1,27 @@
+{
+  "name": "@bestehen/design-system",
+  "version": "0.0.0-private",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./src/styles.css"
+  },
+  "files": [
+    "dist",
+    "src/styles.css"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "peerDependencies": {
+    "react": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "react": "19.2.8"
+  }
+}

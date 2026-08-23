@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1.7
+FROM node:24.19.0-bookworm-slim@sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03 AS build
+WORKDIR /workspace
+ENV COREPACK_HOME=/corepack \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH
+RUN corepack enable && corepack prepare pnpm@11.23.0 --activate
+COPY . .
+RUN pnpm install --frozen-lockfile
+RUN pnpm build
+
+FROM node:24.19.0-bookworm-slim@sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03 AS runtime
+ARG OCI_CREATED
+ARG OCI_REVISION
+LABEL org.opencontainers.image.created=$OCI_CREATED \
+      io.bestehen.runtime.node="24.19.0" \
+      io.bestehen.runtime.pnpm="11.23.0" \
+      org.opencontainers.image.licenses="UNLICENSED" \
+      org.opencontainers.image.revision=$OCI_REVISION \
+      org.opencontainers.image.source="https://github.com/m-elsharkawi/Bestehen-App" \
+      org.opencontainers.image.title="Bestehen web" \
+      org.opencontainers.image.version="stage-01"
+ENV HOME=/tmp \
+    HOSTNAME=0.0.0.0 \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=production \
+    PORT=3000
+WORKDIR /app
+RUN groupadd --gid 10001 bestehen && \
+    useradd --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin bestehen
+COPY --from=build --chown=10001:10001 /workspace/apps/web/.next/standalone ./
+COPY --chown=10001:10001 scripts/healthcheck.mjs /app/healthcheck.mjs
+COPY --chown=10001:10001 scripts/web-entrypoint.mjs /app/web-entrypoint.mjs
+USER 10001:10001
+EXPOSE 3000
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+  CMD ["node", "/app/healthcheck.mjs", "3000", "/api/health/live"]
+STOPSIGNAL SIGTERM
+CMD ["node", "/app/web-entrypoint.mjs", "apps/web/server.js"]

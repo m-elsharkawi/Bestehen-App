@@ -1,0 +1,110 @@
+name: Stage 01 release-candidate evidence
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Exact 40-character candidate commit SHA
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage-01-release-candidate-${{ inputs.commit }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 24.19.0
+  PNPM_VERSION: 11.23.0
+  TEST_DATABASE_URL: postgresql://bestehen_ci:bestehen_ci@127.0.0.1:5432/bestehen_ci
+
+jobs:
+  release-candidate:
+    name: P01 exact-commit non-publishing release evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    services:
+      postgres:
+        image: postgres:18.6-bookworm@sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108
+        env:
+          POSTGRES_DB: bestehen_ci
+          POSTGRES_PASSWORD: bestehen_ci
+          POSTGRES_USER: bestehen_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bestehen_ci -d bestehen_ci"
+          --health-interval 1s
+          --health-timeout 3s
+          --health-retries 30
+    steps:
+      - name: Reject mutable candidate input
+        env:
+          CANDIDATE_SHA: ${{ inputs.commit }}
+        run: test "$(printf '%s' "$CANDIDATE_SHA" | sed -nE '/^[a-f0-9]{40}$/p')" = "$CANDIDATE_SHA"
+      - name: Check out exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.commit }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      - name: Verify immutable clean checkout
+        env:
+          CANDIDATE_SHA: ${{ inputs.commit }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git status --porcelain)"
+      - run: pnpm install --frozen-lockfile
+      - name: Full repository, PostgreSQL, process, and browser gates
+        run: |
+          pnpm check
+          pnpm check:advisories
+          pnpm test:integration
+          pnpm test:process
+          pnpm exec playwright install --with-deps chromium
+          pnpm test:e2e
+          pnpm check:docs
+      - name: Build both OCI artifacts once and prove runtime contracts
+        env:
+          OCI_EVIDENCE_PATH: evidence/oci.json
+        run: |
+          mkdir -p evidence
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          pnpm test:oci
+      - name: Generate exact release evidence
+        env:
+          CANDIDATE_SHA: ${{ inputs.commit }}
+          CHECK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          WEB_DIGEST=$(node -p "JSON.parse(require('fs').readFileSync('evidence/oci.json')).webDigest")
+          WORKER_DIGEST=$(node -p "JSON.parse(require('fs').readFileSync('evidence/oci.json')).workerDigest")
+          CHECK_ARGS=()
+          for CHECK_ID in P01-BASE-001 P01-SCOPE-001 P01-DEPS-001 P01-BOUNDARY-001 P01-TYPE-001 P01-STYLE-001 P01-UNIT-001 P01-CONFIG-001 P01-SECRET-001 P01-PG-001 P01-JOB-001 P01-HTTP-001 P01-A11Y-001 P01-OCI-WEB-001 P01-OCI-WORKER-001 P01-RELEASE-001 P01-DOC-001; do
+            CHECK_ARGS+=(--check "$CHECK_ID=$CHECK_URL")
+          done
+          node scripts/release-manifest.mjs --commit "$CANDIDATE_SHA" --web-digest "$WEB_DIGEST" --worker-digest "$WORKER_DIGEST" --output evidence/release-manifest.json "${CHECK_ARGS[@]}"
+          pnpm list --recursive --depth Infinity --json > evidence/dependencies.json
+          pnpm licenses list --json > evidence/licenses.json
+      - name: Upload immutable synthetic release evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ inputs.commit }}-P01-RELEASE-CANDIDATE-${{ github.run_id }}
+          path: |
+            evidence/
+            coverage/
+            playwright-report/
+            test-results/
+          retention-days: 90
+          if-no-files-found: warn

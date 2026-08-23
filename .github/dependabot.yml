@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 5
+    groups:
+      runtime-framework:
+        patterns:
+          - next
+          - react
+          - react-dom
+      database-runtime:
+        patterns:
+          - kysely
+          - pg
+          - pg-boss
+      development-tooling:
+        dependency-type: development
+    versioning-strategy: increase
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:30"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 3

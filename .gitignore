@@ -1,2 +1,30 @@
 .DS_Store
 */.DS_Store
+
+# Dependencies and generated output
+node_modules/
+.pnpm-store/
+dist/
+.next/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Local and test state
+.env
+.env.*
+!.env.example
+.local/
+local-objects/
+evidence/
+release-manifest.json
+
+# Logs, editor files, and secrets
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+.idea/
+.vscode/

@@ -1,0 +1,98 @@
+name: bestehen-local
+
+services:
+  postgres:
+    image: postgres:18.6-bookworm@sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108
+    environment:
+      POSTGRES_DB: bestehen_local
+      POSTGRES_PASSWORD: bestehen_local
+      POSTGRES_USER: bestehen_local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bestehen_local -d bestehen_local"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    ports:
+      - "127.0.0.1:5432:5432"
+    restart: unless-stopped
+    volumes:
+      - bestehen-postgres-18:/var/lib/postgresql
+
+  migrator:
+    profiles: ["images"]
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+      args:
+        OCI_CREATED: local-build
+        OCI_REVISION: local-development
+    command: ["node", "node_modules/@bestehen/infrastructure/dist/postgres/migrate-cli.js"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: &runtime-environment
+      BESTEHEN_AI_ADAPTER: fake
+      BESTEHEN_APP_ENV: local
+      BESTEHEN_AUTH_ADAPTER: fake
+      BESTEHEN_EMAIL_ADAPTER: fake
+      BESTEHEN_LOG_FORMAT: json
+      BESTEHEN_LOG_LEVEL: info
+      BESTEHEN_OBJECT_STORAGE_ADAPTER: fake
+      BESTEHEN_RELEASE_COMMIT: local-development
+      BESTEHEN_RELEASE_DIRTY: "true"
+      BESTEHEN_SCHEMA_MAX_REVISION: baseline
+      BESTEHEN_SCHEMA_MIN_REVISION: baseline
+      BESTEHEN_SHUTDOWN_GRACE_MS: "5000"
+      BESTEHEN_STT_ADAPTER: fake
+      BESTEHEN_TTS_ADAPTER: fake
+      BESTEHEN_WEB_PORT: "3000"
+      BESTEHEN_WORKER_PORT: "3001"
+      DATABASE_URL: postgresql://bestehen_local:bestehen_local@postgres:5432/bestehen_local
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+
+  web:
+    profiles: ["images"]
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        OCI_CREATED: local-build
+        OCI_REVISION: local-development
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+    environment:
+      <<: *runtime-environment
+    init: true
+    ports:
+      - "127.0.0.1:3000:3000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+
+  worker:
+    profiles: ["images"]
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+      args:
+        OCI_CREATED: local-build
+        OCI_REVISION: local-development
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+    environment:
+      <<: *runtime-environment
+    init: true
+    ports:
+      - "127.0.0.1:3001:3001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+
+volumes:
+  bestehen-postgres-18:
+    name: bestehen-postgres-18

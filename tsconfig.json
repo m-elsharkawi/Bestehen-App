@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/domain" },
+    { "path": "packages/contracts" },
+    { "path": "packages/application" },
+    { "path": "packages/configuration" },
+    { "path": "packages/infrastructure" },
+    { "path": "packages/content" },
+    { "path": "packages/design-system" },
+    { "path": "packages/test-support" },
+    { "path": "apps/worker" }
+  ]
+}
