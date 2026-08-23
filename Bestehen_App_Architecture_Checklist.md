@@ -1349,30 +1349,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define account-optional first use, anonymous/local identity, device identity, local-loss messaging, and what features work before sign-in.
-- [ ] Compare/select identity provider and sign-in/recovery strategy with portability, cost, privacy, and exit path.
-- [ ] Separate profile/preferences/schedule from derived evidence/readiness and define authorization/ownership boundaries.
-- [ ] Define anonymous-to-account adoption without duplicate evidence, multi-device sync, merge/conflict/tombstone rules, and idempotency.
-- [ ] Define human-readable/machine-readable export contents/versioning and full deletion orchestration across primary data, jobs, caches, providers, backups, and raw media.
-- [ ] Define account/provider migration, local reset, device loss, and recovery limitations honestly.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Research current identity pricing/limits, prefer a simple low-maintenance baseline, and document migration/cheaper fallback.
-- [ ] Security/privacy/rights — Define session/token handling, authorization, account takeover protections proportionate to scope, and deletion proof.
-- [ ] Accessibility — Sign-in/recovery/export/delete flows must be keyboard/screen-reader/reflow complete and avoid inaccessible CAPTCHA dependency where possible.
-- [ ] Failure/recovery — Sync/account/provider failure preserves local work; merge cannot duplicate evidence; deletion partial failure remains auditable/retryable.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Identity/account state diagram.
-- [ ] Include Anonymous adoption and sync sequences.
-- [ ] Include Data/profile ownership matrix.
-- [ ] Include Conflict/merge/deduplication table.
-- [ ] Include Export contract.
-- [ ] Include Deletion orchestration/proof flow and provider comparison.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/20-account-local-first-profile-sync-export-and-deletion.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define account-optional first use, anonymous/local identity, device identity, local-loss messaging, and what features work before sign-in.
+- [x] Compare/select identity provider and sign-in/recovery strategy with portability, cost, privacy, and exit path.
+- [x] Separate profile/preferences/schedule from derived evidence/readiness and define authorization/ownership boundaries.
+- [x] Define anonymous-to-account adoption without duplicate evidence, multi-device sync, merge/conflict/tombstone rules, and idempotency.
+- [x] Define human-readable/machine-readable export contents/versioning and full deletion orchestration across primary data, jobs, caches, providers, backups, and raw media.
+- [x] Define account/provider migration, local reset, device loss, and recovery limitations honestly.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Research current identity pricing/limits, prefer a simple low-maintenance baseline, and document migration/cheaper fallback.
+- [x] Security/privacy/rights — Define session/token handling, authorization, account takeover protections proportionate to scope, and deletion proof.
+- [x] Accessibility — Sign-in/recovery/export/delete flows must be keyboard/screen-reader/reflow complete and avoid inaccessible CAPTCHA dependency where possible.
+- [x] Failure/recovery — Sync/account/provider failure preserves local work; merge cannot duplicate evidence; deletion partial failure remains auditable/retryable.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Identity/account state diagram.
+- [x] Include Anonymous adoption and sync sequences.
+- [x] Include Data/profile ownership matrix.
+- [x] Include Conflict/merge/deduplication table.
+- [x] Include Export contract.
+- [x] Include Deletion orchestration/proof flow and provider comparison.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/20-account-local-first-profile-sync-export-and-deletion.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
