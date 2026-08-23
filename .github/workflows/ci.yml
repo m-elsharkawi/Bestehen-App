@@ -205,27 +205,46 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  dependency-review:
-    name: P01 dependency review
-    if: github.event_name == 'pull_request'
+  dependency-audit:
+    name: P01 exact-lock dependency audit
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      pull-requests: read
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.CANDIDATE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
-          fail-on-severity: critical
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Block critical advisories across the exact resolved lock
+        run: |
+          mkdir -p evidence
+          pnpm check:lock
+          pnpm audit --audit-level=critical --json | tee evidence/dependency-audit.json
+      - name: Generate dependency and license inventory
+        run: |
+          pnpm list --recursive --depth Infinity --json > evidence/dependencies.json
+          pnpm licenses list --json > evidence/licenses.json
+      - name: Upload dependency security evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.CANDIDATE_SHA }}-P01-DEPS-001-${{ github.run_id }}
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: warn
 
   evidence:
     name: P01 evidence and release manifest
-    needs: [policy, quality, postgres-process, browser-accessibility, oci-runtime]
+    needs: [policy, quality, postgres-process, browser-accessibility, oci-runtime, dependency-audit]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:

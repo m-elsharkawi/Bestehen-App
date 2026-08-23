@@ -92,7 +92,6 @@ export function validateManifest(manifest) {
     pnpmSetup: "0977fd99725f1db4007ccb2928dbb4e90d06cc86",
     uploadArtifact: "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
     downloadArtifact: "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
-    dependencyReview: "a1d282b36b6f3519aa1f3fc636f609c47dddb294",
     setupBuildx: "37fe631027851001ddb9b187196cc803df7f5f0e",
     buildPush: "53b7df96c91f9c12dcc8a07bcb9ccacbed38856a",
   };
@@ -170,7 +169,6 @@ export function createManifest(options) {
       pnpmSetup: "0977fd99725f1db4007ccb2928dbb4e90d06cc86",
       uploadArtifact: "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
       downloadArtifact: "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
-      dependencyReview: "a1d282b36b6f3519aa1f3fc636f609c47dddb294",
       setupBuildx: "37fe631027851001ddb9b187196cc803df7f5f0e",
       buildPush: "53b7df96c91f9c12dcc8a07bcb9ccacbed38856a",
     },

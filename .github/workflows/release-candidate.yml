@@ -69,6 +69,7 @@ jobs:
       - name: Full repository, PostgreSQL, process, and browser gates
         run: |
           pnpm check
+          pnpm check:advisories
           pnpm test:integration
           pnpm test:process
           pnpm exec playwright install --with-deps chromium
