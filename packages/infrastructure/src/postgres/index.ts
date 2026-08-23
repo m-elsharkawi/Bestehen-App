@@ -32,13 +32,17 @@ export interface DatabaseReadiness extends SchemaCompatibility {
 }
 
 export function createPostgresPool(databaseUrl: string, overrides: PoolConfig = {}): Pool {
-  return new Pool({
+  const pool = new Pool({
     connectionString: databaseUrl,
     max: 5,
     connectionTimeoutMillis: 3000,
     idleTimeoutMillis: 10_000,
     ...overrides,
   });
+  // Dependency loss on an idle client must degrade readiness, not crash the process or leak raw
+  // PostgreSQL detail. The next readiness query discards the failed client and proves recovery.
+  pool.on("error", () => undefined);
+  return pool;
 }
 
 async function observedRevision(pool: Pool): Promise<string> {
