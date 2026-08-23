@@ -572,30 +572,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define C0–C4 content classes, source/brief/task/form/item/content-family/version identities, and exact asset/media references.
-- [ ] Define approval levels from draft/quarantine through training, independent-B1, Readiness/P4, and Gold, including who may promote each class.
-- [ ] Define generation brief, deterministic structural checks, independent answer/rubric validation, human review, anti-copy, naturalness, and post-publication quality flow.
-- [ ] Define freshness/exposure/near-duplicate rules and independent form-family composition for retries, retention, mocks, and booking confirmation.
-- [ ] Model objective keys, productive rubrics, content-point obligations, distractor rationale, media manifests, and attribution/rights envelopes.
-- [ ] Define content serving, caching, version pinning, quarantine/takedown, replacement, and affected-evidence recomputation hooks.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Batch generation/TTS and cache approved assets; identify high-stakes human-review volume and storage/egress drivers.
-- [ ] Security/privacy/rights — Treat authoring input as untrusted; enforce rights eligibility and prevent restricted source expression from leaking into learner content.
-- [ ] Accessibility — Require alternative text/transcript metadata and accessible interaction form metadata before publication.
-- [ ] Failure/recovery — Defective or unavailable content is quarantined/replaced; learner evidence is targeted for correction without penalty.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Conceptual content/form/media model.
-- [ ] Include Approval lifecycle state diagram.
-- [ ] Include Content-family freshness/independence table.
-- [ ] Include QA/publication/quarantine sequence.
-- [ ] Include Rights/attribution envelope.
-- [ ] Include Serving/cache strategy and failure matrix.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/09-content-exercise-form-and-media-architecture.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define C0–C4 content classes, source/brief/task/form/item/content-family/version identities, and exact asset/media references.
+- [x] Define approval levels from draft/quarantine through training, independent-B1, Readiness/P4, and Gold, including who may promote each class.
+- [x] Define generation brief, deterministic structural checks, independent answer/rubric validation, human review, anti-copy, naturalness, and post-publication quality flow.
+- [x] Define freshness/exposure/near-duplicate rules and independent form-family composition for retries, retention, mocks, and booking confirmation.
+- [x] Model objective keys, productive rubrics, content-point obligations, distractor rationale, media manifests, and attribution/rights envelopes.
+- [x] Define content serving, caching, version pinning, quarantine/takedown, replacement, and affected-evidence recomputation hooks.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Batch generation/TTS and cache approved assets; identify high-stakes human-review volume and storage/egress drivers.
+- [x] Security/privacy/rights — Treat authoring input as untrusted; enforce rights eligibility and prevent restricted source expression from leaking into learner content.
+- [x] Accessibility — Require alternative text/transcript metadata and accessible interaction form metadata before publication.
+- [x] Failure/recovery — Defective or unavailable content is quarantined/replaced; learner evidence is targeted for correction without penalty.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Conceptual content/form/media model.
+- [x] Include Approval lifecycle state diagram.
+- [x] Include Content-family freshness/independence table.
+- [x] Include QA/publication/quarantine sequence.
+- [x] Include Rights/attribution envelope.
+- [x] Include Serving/cache strategy and failure matrix.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/09-content-exercise-form-and-media-architecture.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
