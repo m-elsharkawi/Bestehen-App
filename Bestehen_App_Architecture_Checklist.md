@@ -1826,30 +1826,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define local/dev/preview/staging/production topology and realistic private-project separation, data/configuration isolation, seeded test data, and access.
-- [ ] Define configuration/secrets, migration/deploy order, artifact builds, CI checks, provenance, dependency updates, and environment promotion.
-- [ ] Define feature flags and independent releases for application, schema, Corpus bundles, content/forms, blueprints, prompts/evaluators/models, and calibration parameters.
-- [ ] Define backward compatibility, rollback/roll-forward, cache invalidation, queued-job compatibility, and partial release behavior.
-- [ ] Define backups/restore drills, scheduled jobs, monitoring/alerts, incident/runbook expectations, maintenance, and low-ops ownership.
-- [ ] Define safe phased implementation/deployment slices that do not publish misleading partial Readiness or unsupported P4 claims.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Document idle/preview/staging/backup/observability costs and a minimal low-ops baseline with scale triggers.
-- [ ] Security/privacy/rights — Protect environments/secrets/artifacts, separate production data, and audit privileged releases.
-- [ ] Accessibility — Accessibility/browser/device gates run before promotion and cannot be deferred as polish.
-- [ ] Failure/recovery — Define failed deploy/migration/job/content/model release recovery and compatibility during rollback.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Environment/deployment diagram.
-- [ ] Include CI/CD and promotion flow.
-- [ ] Include Release-unit/version compatibility matrix.
-- [ ] Include Migration/rollback sequence.
-- [ ] Include Backup/restore/runbook catalog.
-- [ ] Include Feature-flag/phased-release safety table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/26-environments-ci-cd-release-and-operations.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define local/dev/preview/staging/production topology and realistic private-project separation, data/configuration isolation, seeded test data, and access.
+- [x] Define configuration/secrets, migration/deploy order, artifact builds, CI checks, provenance, dependency updates, and environment promotion.
+- [x] Define feature flags and independent releases for application, schema, Corpus bundles, content/forms, blueprints, prompts/evaluators/models, and calibration parameters.
+- [x] Define backward compatibility, rollback/roll-forward, cache invalidation, queued-job compatibility, and partial release behavior.
+- [x] Define backups/restore drills, scheduled jobs, monitoring/alerts, incident/runbook expectations, maintenance, and low-ops ownership.
+- [x] Define safe phased implementation/deployment slices that do not publish misleading partial Readiness or unsupported P4 claims.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Document idle/preview/staging/backup/observability costs and a minimal low-ops baseline with scale triggers.
+- [x] Security/privacy/rights — Protect environments/secrets/artifacts, separate production data, and audit privileged releases.
+- [x] Accessibility — Accessibility/browser/device gates run before promotion and cannot be deferred as polish.
+- [x] Failure/recovery — Define failed deploy/migration/job/content/model release recovery and compatibility during rollback.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Environment/deployment diagram.
+- [x] Include CI/CD and promotion flow.
+- [x] Include Release-unit/version compatibility matrix.
+- [x] Include Migration/rollback sequence.
+- [x] Include Backup/restore/runbook catalog.
+- [x] Include Feature-flag/phased-release safety table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/26-environments-ci-cd-release-and-operations.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
