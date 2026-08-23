@@ -20,3 +20,32 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0003](ADR-0003-quality-attributes-are-release-gates.md) | Quality attributes are release gates | Accepted | Stage 01 | `ARCH-S01-D05`, `D06`, `D07` | — |
 | [ADR-0004](ADR-0004-app-runtime-independent-from-corpus.md) | App runtime independent from Corpus | Accepted | Stage 02 | `ARCH-S02-D01`, `D02`, `D07` | — |
 | [ADR-0005](ADR-0005-app-semantic-authority-across-processors.md) | App semantic authority across processors | Accepted | Stage 02 | `ARCH-S02-D03`, `D04`, `D08`, `D09`, `D10` | — |
+| [ADR-0006](ADR-0006-typescript-nextjs-modular-monorepo.md) | TypeScript Next.js modular monorepo | Accepted | Stage 03 | `ARCH-S03-D01`, `D06`, `D07`, `D08` | — |
+| [ADR-0007](ADR-0007-postgresql-authority-and-durable-jobs.md) | PostgreSQL authority and durable jobs | Accepted | Stage 03 | `ARCH-S03-D02`, `D03` | — |
+| [ADR-0008](ADR-0008-render-single-region-managed-deployment.md) | Render single-region managed deployment | Accepted | Stage 03 | `ARCH-S03-D05` | — |
+| [ADR-0009](ADR-0009-private-eu-s3-compatible-object-storage.md) | Private EU S3-compatible object storage | Accepted | Stage 03 | `ARCH-S03-D04` | — |
+| [ADR-0010](ADR-0010-bounded-contexts-and-single-state-ownership.md) | Bounded contexts and single state ownership | Accepted | Stage 04 | `ARCH-S04-D01`, `D02`, `D04`–`D08`, `D10` | — |
+| [ADR-0011](ADR-0011-shared-five-skill-foundation-with-modality-extensions.md) | Shared five-skill foundation with modality extensions | Accepted | Stage 04 | `ARCH-S04-D03`, `D09` | — |
+| [ADR-0012](ADR-0012-append-oriented-relational-truth-and-bounded-persistence.md) | Append-oriented relational truth and bounded persistence | Accepted | Stage 05 | `ARCH-S05-D01`–`D10` | — |
+| [ADR-0013](ADR-0013-immutable-evidence-envelope-and-append-audited-validity.md) | Immutable evidence envelope and append-audited validity | Accepted | Stage 06 | `ARCH-S06-D01`–`D10` | — |
+| [ADR-0014](ADR-0014-deterministic-learner-projections-and-capability-obligations.md) | Deterministic learner projections and capability obligations | Accepted | Stage 07 | `ARCH-S07-D01`–`D10` | — |
+| [ADR-0015](ADR-0015-deterministic-coaching-policy-and-revisioned-session-execution.md) | Deterministic coaching policy and revisioned session execution | Accepted | Stage 08 | `ARCH-S08-D01`–`D06` | — |
+| [ADR-0016](ADR-0016-immutable-approved-content-manifests-and-family-independence.md) | Immutable approved content manifests and family independence | Accepted | Stage 09 | `ARCH-S09-D01`–`D10` | — |
+| [ADR-0017](ADR-0017-signed-immutable-corpus-bundles-and-atomic-app-promotion.md) | Signed immutable Corpus bundles and atomic App promotion | Accepted | Stage 10 | `ARCH-S10-D01`–`D10` | — |
+| [ADR-0018](ADR-0018-deterministic-versioned-readiness-and-reversible-booking-gate.md) | Deterministic versioned Readiness and reversible booking gate | Accepted | Stage 11 | `ARCH-S11-D01`–`D10` | — |
+| [ADR-0019](ADR-0019-versioned-http-contracts-and-durable-idempotent-asynchronous-work.md) | Versioned HTTP contracts and durable idempotent asynchronous work | Accepted | Stage 12 | `ARCH-S12-D01`–`D10` | — |
+| [ADR-0020](ADR-0020-server-first-frontend-composition-and-bounded-browser-state.md) | Server-first frontend composition and bounded browser state | Accepted | Stage 13 | `ARCH-S13-D01`–`D05`, `D10` | — |
+| [ADR-0021](ADR-0021-single-semantic-design-system-and-shared-five-skill-extension-contract.md) | Single semantic design system and shared five-skill extension contract | Accepted | Stage 13 | `ARCH-S13-D06`–`D11` | — |
+| [ADR-0022](ADR-0022-capability-gated-responsive-web-and-evidence-aware-accessibility.md) | Capability-gated responsive web and evidence-aware accessibility | Accepted | Stage 14 | `ARCH-S14-D01`–`D10` | — |
+| [ADR-0023](ADR-0023-deterministic-objective-task-runtime-and-immutable-outcomes.md) | Deterministic objective task runtime and immutable outcomes | Accepted | Stage 15 | `ARCH-S15-D01`–`D10` | — |
+| [ADR-0024](ADR-0024-pinned-batch-audio-and-evidence-sensitive-playback.md) | Pinned batch audio and evidence-sensitive playback | Accepted | Stage 16 | `ARCH-S16-D01`–`D10` | — |
+| [ADR-0025](ADR-0025-durable-writing-drafts-and-bounded-versioned-evaluation.md) | Durable Writing drafts and bounded versioned evaluation | Accepted | Stage 17 | `ARCH-S17-D01`–`D10` | — |
+| [ADR-0026](ADR-0026-ephemeral-voice-evidence-and-bounded-oral-evaluation.md) | Ephemeral voice evidence and bounded oral evaluation | Accepted | Stage 18 | `ARCH-S18-D01`–`D12` | — |
+| [ADR-0027](ADR-0027-capability-specific-ai-routes-and-evidence-governed-candidates.md) | Capability-specific AI routes and evidence-governed candidates | Accepted | Stage 19 | `ARCH-S19-D01`–`D12` | — |
+| [ADR-0028](ADR-0028-provider-portable-account-identity-and-id-preserving-local-first-lifecycle.md) | Provider-portable account identity and id-preserving local-first lifecycle | Accepted | Stage 20 | `ARCH-S20-D01`–`D12` | — |
+| [ADR-0029](ADR-0029-bounded-local-write-ahead-continuity-and-conservative-timer-reconstruction.md) | Bounded local write-ahead continuity and conservative timer reconstruction | Accepted | Stage 21 | `ARCH-S21-D01`–`D12` | — |
+| [ADR-0030](ADR-0030-deterministic-local-calendar-scheduling-and-replaceable-standards-web-push.md) | Deterministic local-calendar scheduling and replaceable standards Web Push | Accepted | Stage 22 | `ARCH-S22-D01`–`D12` | — |
+| [ADR-0031](ADR-0031-minimized-authoritative-trust-boundaries-and-bounded-retention.md) | Minimized authoritative trust boundaries and bounded retention | Accepted | Stage 23 | `ARCH-S23-D01`–`D12` | — |
+| [ADR-0032](ADR-0032-lean-evidence-derived-telemetry-frozen-calibration-and-measured-operating-gates.md) | Lean evidence-derived telemetry, frozen calibration, and measured operating gates | Accepted | Stage 24 | `ARCH-S24-D01`–`D12` | — |
+| [ADR-0033](ADR-0033-claim-based-risk-gates-and-immutable-release-evidence.md) | Claim-based risk gates and immutable release evidence | Accepted | Stage 25 | `ARCH-S25-D01`, `D04`, `D06`–`D09` | — |
+| [ADR-0034](ADR-0034-digest-bound-independent-release-units-and-conservative-promotion.md) | Digest-bound independent release units and conservative promotion | Accepted | Stage 26 | `ARCH-S26-D01`, `D04`–`D08`, `D10`–`D12` | — |

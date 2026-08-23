@@ -163,29 +163,29 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Compare and select the frontend, server/runtime, language, database/access layer, background-job mechanism, object/media storage, hosting, and deployment baseline.
-- [ ] Decide monorepo versus polyrepo and define package/module boundaries, dependency direction, shared contracts, and generated-artifact policy.
-- [ ] Define local-development, testing, build, package, lint/type, migration, and environment tooling at architecture level.
-- [ ] Set dependency admission/update policy, supported runtime/browser baselines, lockfile/reproducibility, and supply-chain expectations.
-- [ ] Compare managed-service simplicity, recurring/variable cost, free-tier limits, operational burden, portability, and exit path using current official sources.
-- [ ] Identify deliberately deferred provider choices owned by later media, AI, identity, notification, or operations stages.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Research current official pricing/quotas and include a cheaper fallback and measured upgrade trigger for each mutable commercial service.
-- [ ] Security/privacy/rights — Assess patch cadence, secrets integration, dependency provenance, and security-support lifetime.
-- [ ] Accessibility — Select a stack that can support semantic HTML, focus management, live regions, 320px reflow, and browser APIs without bespoke forks.
-- [ ] Failure/recovery — Document platform limitations, degraded-mode feasibility, and exit/migration strategy.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Weighted alternative matrix with official-source links/access dates.
-- [ ] Include Repository/module dependency diagram.
-- [ ] Include Toolchain and environment table.
-- [ ] Include Provider/stack cost and exit-risk table.
-- [ ] Include Consequential ADRs for selected durable choices.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/03-technology-stack-and-repository-strategy.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Compare and select the frontend, server/runtime, language, database/access layer, background-job mechanism, object/media storage, hosting, and deployment baseline.
+- [x] Decide monorepo versus polyrepo and define package/module boundaries, dependency direction, shared contracts, and generated-artifact policy.
+- [x] Define local-development, testing, build, package, lint/type, migration, and environment tooling at architecture level.
+- [x] Set dependency admission/update policy, supported runtime/browser baselines, lockfile/reproducibility, and supply-chain expectations.
+- [x] Compare managed-service simplicity, recurring/variable cost, free-tier limits, operational burden, portability, and exit path using current official sources.
+- [x] Identify deliberately deferred provider choices owned by later media, AI, identity, notification, or operations stages.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Research current official pricing/quotas and include a cheaper fallback and measured upgrade trigger for each mutable commercial service.
+- [x] Security/privacy/rights — Assess patch cadence, secrets integration, dependency provenance, and security-support lifetime.
+- [x] Accessibility — Select a stack that can support semantic HTML, focus management, live regions, 320px reflow, and browser APIs without bespoke forks.
+- [x] Failure/recovery — Document platform limitations, degraded-mode feasibility, and exit/migration strategy.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Weighted alternative matrix with official-source links/access dates.
+- [x] Include Repository/module dependency diagram.
+- [x] Include Toolchain and environment table.
+- [x] Include Provider/stack cost and exit-risk table.
+- [x] Include Consequential ADRs for selected durable choices.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/03-technology-stack-and-repository-strategy.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -229,29 +229,29 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define ubiquitous language and bounded contexts/modules for learner/profile, attempts/sessions, evidence, coaching, mistake/review, progression, content/forms, Corpus publication, readiness/mocks, productive evaluation, and operations.
-- [ ] Assign aggregate/state-machine/policy/value-object ownership and legal dependency directions between contexts.
-- [ ] Map every product and design state to one authoritative domain owner; distinguish domain state from UI projection and provider schema.
-- [ ] Model shared five-skill foundations with modality-specific extensions rather than five feature stacks.
-- [ ] Define commands, policies, domain services, projections, and anti-corruption layers conceptually without selecting schemas or endpoint syntax.
-- [ ] Resolve naming differences such as `stabilizing/stabilising`, historical/unconfirmed, resolved/reopened, readiness bands, and validity states without losing product semantics.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Favor modular-monolith boundaries and in-process policies until an independently scalable/isolatable need is proven.
-- [ ] Security/privacy/rights — Identify sensitive aggregates and authorization boundaries without forcing accounts onto first use.
-- [ ] Accessibility — Represent accommodations/capabilities and evidence meaning in domain contracts, not UI-only flags.
-- [ ] Failure/recovery — Model non-learner invalidation, Pending, partial validity, and local degradation as domain outcomes.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Bounded-context map.
-- [ ] Include Authoritative state-ownership table.
-- [ ] Include Ubiquitous-language glossary.
-- [ ] Include Aggregate/policy responsibility table.
-- [ ] Include Cross-context dependency rules and anti-corruption boundaries.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/04-domain-model-and-bounded-contexts.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define ubiquitous language and bounded contexts/modules for learner/profile, attempts/sessions, evidence, coaching, mistake/review, progression, content/forms, Corpus publication, readiness/mocks, productive evaluation, and operations.
+- [x] Assign aggregate/state-machine/policy/value-object ownership and legal dependency directions between contexts.
+- [x] Map every product and design state to one authoritative domain owner; distinguish domain state from UI projection and provider schema.
+- [x] Model shared five-skill foundations with modality-specific extensions rather than five feature stacks.
+- [x] Define commands, policies, domain services, projections, and anti-corruption layers conceptually without selecting schemas or endpoint syntax.
+- [x] Resolve naming differences such as `stabilizing/stabilising`, historical/unconfirmed, resolved/reopened, readiness bands, and validity states without losing product semantics.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Favor modular-monolith boundaries and in-process policies until an independently scalable/isolatable need is proven.
+- [x] Security/privacy/rights — Identify sensitive aggregates and authorization boundaries without forcing accounts onto first use.
+- [x] Accessibility — Represent accommodations/capabilities and evidence meaning in domain contracts, not UI-only flags.
+- [x] Failure/recovery — Model non-learner invalidation, Pending, partial validity, and local degradation as domain outcomes.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Bounded-context map.
+- [x] Include Authoritative state-ownership table.
+- [x] Include Ubiquitous-language glossary.
+- [x] Include Aggregate/policy responsibility table.
+- [x] Include Cross-context dependency rules and anti-corruption boundaries.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/04-domain-model-and-bounded-contexts.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -294,30 +294,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Classify data by owner, purpose, sensitivity, authority, mutability, retention, exportability, and deletion behavior.
-- [ ] Select persistence technologies and map relational/document/blob/local/cache needs to them without a premature warehouse or time-series platform.
-- [ ] Define stable identifiers, content/evidence family identity, timestamps, learner locale/time zone, ordering, and clock semantics.
-- [ ] Define transaction boundaries, consistency requirements, concurrency strategy, and how append-only facts coexist with mutable corrections/projections.
-- [ ] Define migration, backward/forward compatibility, schema versioning, historical correction, backup/restore, and data-integrity validation.
-- [ ] Separate local anonymous state, synchronized server state, cached Corpus/content bundles, raw media, and derived projections.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Choose the smallest durable managed/local combination and quantify idle, storage, backup, egress, and growth drivers.
-- [ ] Security/privacy/rights — Map encryption, access boundaries, sensitive fields, deletion proof, and backup retention.
-- [ ] Accessibility — Persist only access preferences/conditions needed for experience/evidence; avoid inferring disability.
-- [ ] Failure/recovery — Define corruption, partial write, retry, restore, and projection-rebuild behavior.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Data ownership/classification matrix.
-- [ ] Include Conceptual ER/data map.
-- [ ] Include Transaction/consistency table.
-- [ ] Include Schema-evolution and correction flow.
-- [ ] Include Backup/restore and retention summary.
-- [ ] Include Database/storage alternatives and ADR.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/05-data-ownership-persistence-and-schema-evolution.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Classify data by owner, purpose, sensitivity, authority, mutability, retention, exportability, and deletion behavior.
+- [x] Select persistence technologies and map relational/document/blob/local/cache needs to them without a premature warehouse or time-series platform.
+- [x] Define stable identifiers, content/evidence family identity, timestamps, learner locale/time zone, ordering, and clock semantics.
+- [x] Define transaction boundaries, consistency requirements, concurrency strategy, and how append-only facts coexist with mutable corrections/projections.
+- [x] Define migration, backward/forward compatibility, schema versioning, historical correction, backup/restore, and data-integrity validation.
+- [x] Separate local anonymous state, synchronized server state, cached Corpus/content bundles, raw media, and derived projections.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Choose the smallest durable managed/local combination and quantify idle, storage, backup, egress, and growth drivers.
+- [x] Security/privacy/rights — Map encryption, access boundaries, sensitive fields, deletion proof, and backup retention.
+- [x] Accessibility — Persist only access preferences/conditions needed for experience/evidence; avoid inferring disability.
+- [x] Failure/recovery — Define corruption, partial write, retry, restore, and projection-rebuild behavior.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Data ownership/classification matrix.
+- [x] Include Conceptual ER/data map.
+- [x] Include Transaction/consistency table.
+- [x] Include Schema-evolution and correction flow.
+- [x] Include Backup/restore and retention summary.
+- [x] Include Database/storage alternatives and ADR.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/05-data-ownership-persistence-and-schema-evolution.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -365,30 +365,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define immutable observation/attempt/evidence identities, episode and content-family independence, provenance, and the boundary between facts and derived claims.
-- [ ] Specify `valid`, `partially_valid`, `pending`, `interrupted`, and `not_counted`, including affected scope and who may transition each state.
-- [ ] Represent assistance, timing, playback, transcript/reference exposure, freshness, target conditions, accessibility conditions, and direct modality as explicit dimensions.
-- [ ] Carry blueprint, taxonomy, content, form, rubric, evaluator, prompt, calculation, and contract versions through evidence and projections.
-- [ ] Define idempotent ingestion, correction, invalidation, quarantine/takedown effects, targeted recomputation, and audit history.
-- [ ] Forbid any pass-probability field/model before the product gate and represent missing estimates as absence, never zero.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Use deterministic projections/recomputation and targeted rebuilds; avoid an event-streaming platform unless measurements justify it.
-- [ ] Security/privacy/rights — Make evidence correction/invalidation and privileged overrides auditable; minimize external evaluator payloads.
-- [ ] Accessibility — Record the actual condition and affected claim without treating access support as learner failure.
-- [ ] Failure/recovery — Preserve unaffected scope and Pending work while avoiding duplicate evidence on retry/reconnect.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Evidence envelope/pseudotype.
-- [ ] Include Validity state machine.
-- [ ] Include Version lineage table.
-- [ ] Include Invalidation/recomputation sequence diagrams.
-- [ ] Include Idempotency and audit-boundary table.
-- [ ] Include State/API projection mapping for design labels.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/06-evidence-ledger-validity-versioning-and-audit.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define immutable observation/attempt/evidence identities, episode and content-family independence, provenance, and the boundary between facts and derived claims.
+- [x] Specify `valid`, `partially_valid`, `pending`, `interrupted`, and `not_counted`, including affected scope and who may transition each state.
+- [x] Represent assistance, timing, playback, transcript/reference exposure, freshness, target conditions, accessibility conditions, and direct modality as explicit dimensions.
+- [x] Carry blueprint, taxonomy, content, form, rubric, evaluator, prompt, calculation, and contract versions through evidence and projections.
+- [x] Define idempotent ingestion, correction, invalidation, quarantine/takedown effects, targeted recomputation, and audit history.
+- [x] Forbid any pass-probability field/model before the product gate and represent missing estimates as absence, never zero.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Use deterministic projections/recomputation and targeted rebuilds; avoid an event-streaming platform unless measurements justify it.
+- [x] Security/privacy/rights — Make evidence correction/invalidation and privileged overrides auditable; minimize external evaluator payloads.
+- [x] Accessibility — Record the actual condition and affected claim without treating access support as learner failure.
+- [x] Failure/recovery — Preserve unaffected scope and Pending work while avoiding duplicate evidence on retry/reconnect.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Evidence envelope/pseudotype.
+- [x] Include Validity state machine.
+- [x] Include Version lineage table.
+- [x] Include Invalidation/recomputation sequence diagrams.
+- [x] Include Idempotency and audit-boundary table.
+- [x] Include State/API projection mapping for design labels.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/06-evidence-ledger-validity-versioning-and-audit.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -431,30 +431,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define deterministic projections for capability/mastery, confidence, freshness, stability, assistance dependence, timing, direct lane, coverage, and readiness contribution without duplicating readiness.
-- [ ] Implement conceptually the Candidate → Known → Repairing → Stabilizing → Repaired → Resolved lifecycle plus Historical/Unconfirmed and Reopened paths.
-- [ ] Define promotion, recurrence, opportunity denominators, confidence, cross-skill influence, stale history, and re-opening semantics.
-- [ ] Represent P0–P4 profiles per task family/direct-evidence lane and one-axis promotion/regression probes.
-- [ ] Define due review/retention obligations, windows, natural-practice satisfaction, missed-day behavior, capping, and deterministic scheduling.
-- [ ] Define explainable recalculation inputs, versioned empirical defaults, and projection invalidation.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Keep scheduling and projections deterministic; model calls may inform bounded diagnosis but never run merely to update the learner model.
-- [ ] Security/privacy/rights — Keep sensitive learner history inside App and export/delete it coherently.
-- [ ] Accessibility — Ensure alternate inputs create equivalent evidence when they test the same capability; represent changed conditions explicitly otherwise.
-- [ ] Failure/recovery — Unknown cause, invalid task, stale data, and recalculation failure remain explicit and recoverable.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Projection ownership table.
-- [ ] Include Mistake lifecycle state diagram.
-- [ ] Include Progression profile model/table.
-- [ ] Include Review obligation/scheduling state machine.
-- [ ] Include Cross-lane influence matrix.
-- [ ] Include Worked recalculation examples.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/07-learner-model-mistake-memory-progression-and-review.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define deterministic projections for capability/mastery, confidence, freshness, stability, assistance dependence, timing, direct lane, coverage, and readiness contribution without duplicating readiness.
+- [x] Implement conceptually the Candidate → Known → Repairing → Stabilizing → Repaired → Resolved lifecycle plus Historical/Unconfirmed and Reopened paths.
+- [x] Define promotion, recurrence, opportunity denominators, confidence, cross-skill influence, stale history, and re-opening semantics.
+- [x] Represent P0–P4 profiles per task family/direct-evidence lane and one-axis promotion/regression probes.
+- [x] Define due review/retention obligations, windows, natural-practice satisfaction, missed-day behavior, capping, and deterministic scheduling.
+- [x] Define explainable recalculation inputs, versioned empirical defaults, and projection invalidation.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Keep scheduling and projections deterministic; model calls may inform bounded diagnosis but never run merely to update the learner model.
+- [x] Security/privacy/rights — Keep sensitive learner history inside App and export/delete it coherently.
+- [x] Accessibility — Ensure alternate inputs create equivalent evidence when they test the same capability; represent changed conditions explicitly otherwise.
+- [x] Failure/recovery — Unknown cause, invalid task, stale data, and recalculation failure remain explicit and recoverable.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Projection ownership table.
+- [x] Include Mistake lifecycle state diagram.
+- [x] Include Progression profile model/table.
+- [x] Include Review obligation/scheduling state machine.
+- [x] Include Cross-lane influence matrix.
+- [x] Include Worked recalculation examples.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/07-learner-model-mistake-memory-progression-and-review.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -501,30 +501,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define daily-plan inputs, lexicographic priority tiers, within-tier comparison, deterministic selection, tie-breaking, and structured reason codes.
-- [ ] Define `Coach me` versus `Just practice X`, alternative plans, time/context changes, early target-condition/mock choices, and non-punitive overrides.
-- [ ] Define session/activity/attempt boundaries, plan assembly, one dominant action, limited secondary scope, partial completion, stop, resume, and replanning.
-- [ ] Model Observe → Attempt → Diagnose → Repair → Retry → Remember with allowed compression/deferment and productive Pending branches.
-- [ ] Separate deterministic policy from bounded model-assisted diagnosis/copy and define reviewed fallback reasons/copy.
-- [ ] Define state ownership and concurrency when evaluations arrive after the learner continues or a plan changes.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — No per-session premium planner; use structured deterministic policy, cached content, and templated explanations.
-- [ ] Security/privacy/rights — Do not send full learner history to models just to choose or phrase a plan.
-- [ ] Accessibility — Capability/access context may change activity eligibility but must not globally block the App.
-- [ ] Failure/recovery — A plan assembly/content/evaluator failure yields a specific fallback or alternative activity without learner penalty.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Planning decision table/pseudologic.
-- [ ] Include Session and canonical-loop state diagrams.
-- [ ] Include Coach-me/Just-practice sequences.
-- [ ] Include Override/consequence matrix.
-- [ ] Include Reason-code and fallback-copy contract.
-- [ ] Include Partial completion/resume table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/08-coaching-engine-and-session-state-machines.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define daily-plan inputs, lexicographic priority tiers, within-tier comparison, deterministic selection, tie-breaking, and structured reason codes.
+- [x] Define `Coach me` versus `Just practice X`, alternative plans, time/context changes, early target-condition/mock choices, and non-punitive overrides.
+- [x] Define session/activity/attempt boundaries, plan assembly, one dominant action, limited secondary scope, partial completion, stop, resume, and replanning.
+- [x] Model Observe → Attempt → Diagnose → Repair → Retry → Remember with allowed compression/deferment and productive Pending branches.
+- [x] Separate deterministic policy from bounded model-assisted diagnosis/copy and define reviewed fallback reasons/copy.
+- [x] Define state ownership and concurrency when evaluations arrive after the learner continues or a plan changes.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — No per-session premium planner; use structured deterministic policy, cached content, and templated explanations.
+- [x] Security/privacy/rights — Do not send full learner history to models just to choose or phrase a plan.
+- [x] Accessibility — Capability/access context may change activity eligibility but must not globally block the App.
+- [x] Failure/recovery — A plan assembly/content/evaluator failure yields a specific fallback or alternative activity without learner penalty.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Planning decision table/pseudologic.
+- [x] Include Session and canonical-loop state diagrams.
+- [x] Include Coach-me/Just-practice sequences.
+- [x] Include Override/consequence matrix.
+- [x] Include Reason-code and fallback-copy contract.
+- [x] Include Partial completion/resume table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/08-coaching-engine-and-session-state-machines.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -572,30 +572,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define C0–C4 content classes, source/brief/task/form/item/content-family/version identities, and exact asset/media references.
-- [ ] Define approval levels from draft/quarantine through training, independent-B1, Readiness/P4, and Gold, including who may promote each class.
-- [ ] Define generation brief, deterministic structural checks, independent answer/rubric validation, human review, anti-copy, naturalness, and post-publication quality flow.
-- [ ] Define freshness/exposure/near-duplicate rules and independent form-family composition for retries, retention, mocks, and booking confirmation.
-- [ ] Model objective keys, productive rubrics, content-point obligations, distractor rationale, media manifests, and attribution/rights envelopes.
-- [ ] Define content serving, caching, version pinning, quarantine/takedown, replacement, and affected-evidence recomputation hooks.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Batch generation/TTS and cache approved assets; identify high-stakes human-review volume and storage/egress drivers.
-- [ ] Security/privacy/rights — Treat authoring input as untrusted; enforce rights eligibility and prevent restricted source expression from leaking into learner content.
-- [ ] Accessibility — Require alternative text/transcript metadata and accessible interaction form metadata before publication.
-- [ ] Failure/recovery — Defective or unavailable content is quarantined/replaced; learner evidence is targeted for correction without penalty.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Conceptual content/form/media model.
-- [ ] Include Approval lifecycle state diagram.
-- [ ] Include Content-family freshness/independence table.
-- [ ] Include QA/publication/quarantine sequence.
-- [ ] Include Rights/attribution envelope.
-- [ ] Include Serving/cache strategy and failure matrix.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/09-content-exercise-form-and-media-architecture.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define C0–C4 content classes, source/brief/task/form/item/content-family/version identities, and exact asset/media references.
+- [x] Define approval levels from draft/quarantine through training, independent-B1, Readiness/P4, and Gold, including who may promote each class.
+- [x] Define generation brief, deterministic structural checks, independent answer/rubric validation, human review, anti-copy, naturalness, and post-publication quality flow.
+- [x] Define freshness/exposure/near-duplicate rules and independent form-family composition for retries, retention, mocks, and booking confirmation.
+- [x] Model objective keys, productive rubrics, content-point obligations, distractor rationale, media manifests, and attribution/rights envelopes.
+- [x] Define content serving, caching, version pinning, quarantine/takedown, replacement, and affected-evidence recomputation hooks.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Batch generation/TTS and cache approved assets; identify high-stakes human-review volume and storage/egress drivers.
+- [x] Security/privacy/rights — Treat authoring input as untrusted; enforce rights eligibility and prevent restricted source expression from leaking into learner content.
+- [x] Accessibility — Require alternative text/transcript metadata and accessible interaction form metadata before publication.
+- [x] Failure/recovery — Defective or unavailable content is quarantined/replaced; learner evidence is targeted for correction without penalty.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Conceptual content/form/media model.
+- [x] Include Approval lifecycle state diagram.
+- [x] Include Content-family freshness/independence table.
+- [x] Include QA/publication/quarantine sequence.
+- [x] Include Rights/attribution envelope.
+- [x] Include Serving/cache strategy and failure matrix.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/09-content-exercise-form-and-media-architecture.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -635,30 +635,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Choose and specify App request/Corpus publication contract style: bundles, API, files, or hybrid, with evidence-based comparison.
-- [ ] Map six information families plus governance envelopes into versioned App-consumable contracts without leaking Corpus tables.
-- [ ] Define asynchronous publication, acceptance/promotion, immutable bundle/version identity, cache layout, rollback, and offline/runtime fallback.
-- [ ] Define contract/model/payload version compatibility, stable IDs, taxonomy/blueprint migrations, deprecation, and unsupported-major behavior.
-- [ ] Define confidence, currentness, source breadth, analytical independence, use eligibility, exact-asset rights, attribution, takedown, and reclassification handling.
-- [ ] Prove normal practice and previously approved P4 content continue during Corpus downtime and that Corpus never receives learner state.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer batched immutable publication and local/cache reads; quantify storage, transfer, refresh, and invalidation costs.
-- [ ] Security/privacy/rights — Authenticate authoring/publication channels, validate signatures/checksums where justified, and enforce rights/takedown.
-- [ ] Accessibility — Carry accessibility metadata and do not publish learner tasks missing required alternatives.
-- [ ] Failure/recovery — Define no-match, sparse evidence, stale bundle, incompatible major, revoked asset, and Corpus outage behavior.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Contract/bundle pseudotypes.
-- [ ] Include Publication/acceptance sequence.
-- [ ] Include Compatibility matrix.
-- [ ] Include Cache/fallback state table.
-- [ ] Include Rights/change impact matrix.
-- [ ] Include Corpus-downtime walkthrough.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/10-corpus-integration-compatibility-cache-and-rights.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Choose and specify App request/Corpus publication contract style: bundles, API, files, or hybrid, with evidence-based comparison.
+- [x] Map six information families plus governance envelopes into versioned App-consumable contracts without leaking Corpus tables.
+- [x] Define asynchronous publication, acceptance/promotion, immutable bundle/version identity, cache layout, rollback, and offline/runtime fallback.
+- [x] Define contract/model/payload version compatibility, stable IDs, taxonomy/blueprint migrations, deprecation, and unsupported-major behavior.
+- [x] Define confidence, currentness, source breadth, analytical independence, use eligibility, exact-asset rights, attribution, takedown, and reclassification handling.
+- [x] Prove normal practice and previously approved P4 content continue during Corpus downtime and that Corpus never receives learner state.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer batched immutable publication and local/cache reads; quantify storage, transfer, refresh, and invalidation costs.
+- [x] Security/privacy/rights — Authenticate authoring/publication channels, validate signatures/checksums where justified, and enforce rights/takedown.
+- [x] Accessibility — Carry accessibility metadata and do not publish learner tasks missing required alternatives.
+- [x] Failure/recovery — Define no-match, sparse evidence, stale bundle, incompatible major, revoked asset, and Corpus outage behavior.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Contract/bundle pseudotypes.
+- [x] Include Publication/acceptance sequence.
+- [x] Include Compatibility matrix.
+- [x] Include Cache/fallback state table.
+- [x] Include Rights/change impact matrix.
+- [x] Include Corpus-downtime walkthrough.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/10-corpus-integration-compatibility-cache-and-rights.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -703,31 +703,31 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Represent the versioned official blueprint, scoring units, Written 225/135 gate, Oral 75/45 gate, official 60 line, and Bestehen Safe margin as distinguishable data.
-- [ ] Specify eligibility and aggregation from independent evidence episodes to scoring units, sections, components, planning ranges, confidence, bands, reasons, and bottleneck index.
-- [ ] Define all six client states: `evidence_building`, `not_ready`, `borderline`, `safe`, `ready_to_book`, and `stale_contradicted`, including absent estimate versus zero.
-- [ ] Define mock scopes, form-family independence, correlated occasion handling, target-condition validity, partial/pending result behavior, and immutable original mock outcomes.
-- [ ] Specify Ready-to-Book as a reversible gate over Safe/current evidence with all Stage 17 gates and granular failure reasons; UI grouping may not drop a gate.
-- [ ] Define recalculation/invalidation for evidence correction, content defect, evaluator correction, staleness, contradiction, and blueprint change.
-- [ ] Version all empirical parameters and explicitly prohibit pass probability until calibrated with independent outcomes and the product gate is satisfied.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — All scoring/readiness/gating is deterministic; AI may create structured evaluator observations but never computes the final claim in a recurring call.
-- [ ] Security/privacy/rights — Protect consequential calculations, version/audit history, and privileged blueprint/calibration updates.
-- [ ] Accessibility — Return complete textual meaning for every chart/band/gate and preserve evidence-equivalent accommodations.
-- [ ] Failure/recovery — Pending productive evaluation blocks dependent conclusions only; missing evidence is absence; partial mock scope cannot silently become whole-mock validity.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Scoring/readiness calculation specification.
-- [ ] Include Readiness and Ready-to-Book state diagrams.
-- [ ] Include Eligibility/reason discriminated unions or pseudotypes.
-- [ ] Include Mock validity/scope matrix.
-- [ ] Include Recomputation sequence and audit table.
-- [ ] Include Worked missing/pending/partial/contradicted examples.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/11-readiness-scoring-mocks-and-ready-to-book.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Represent the versioned official blueprint, scoring units, Written 225/135 gate, Oral 75/45 gate, official 60 line, and Bestehen Safe margin as distinguishable data.
+- [x] Specify eligibility and aggregation from independent evidence episodes to scoring units, sections, components, planning ranges, confidence, bands, reasons, and bottleneck index.
+- [x] Define all six client states: `evidence_building`, `not_ready`, `borderline`, `safe`, `ready_to_book`, and `stale_contradicted`, including absent estimate versus zero.
+- [x] Define mock scopes, form-family independence, correlated occasion handling, target-condition validity, partial/pending result behavior, and immutable original mock outcomes.
+- [x] Specify Ready-to-Book as a reversible gate over Safe/current evidence with all Stage 17 gates and granular failure reasons; UI grouping may not drop a gate.
+- [x] Define recalculation/invalidation for evidence correction, content defect, evaluator correction, staleness, contradiction, and blueprint change.
+- [x] Version all empirical parameters and explicitly prohibit pass probability until calibrated with independent outcomes and the product gate is satisfied.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — All scoring/readiness/gating is deterministic; AI may create structured evaluator observations but never computes the final claim in a recurring call.
+- [x] Security/privacy/rights — Protect consequential calculations, version/audit history, and privileged blueprint/calibration updates.
+- [x] Accessibility — Return complete textual meaning for every chart/band/gate and preserve evidence-equivalent accommodations.
+- [x] Failure/recovery — Pending productive evaluation blocks dependent conclusions only; missing evidence is absence; partial mock scope cannot silently become whole-mock validity.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Scoring/readiness calculation specification.
+- [x] Include Readiness and Ready-to-Book state diagrams.
+- [x] Include Eligibility/reason discriminated unions or pseudotypes.
+- [x] Include Mock validity/scope matrix.
+- [x] Include Recomputation sequence and audit table.
+- [x] Include Worked missing/pending/partial/contradicted examples.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/11-readiness-scoring-mocks-and-ready-to-book.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -779,30 +779,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Choose client/server contract style and define command/query/resource boundaries, versioning, validation, pagination, concurrency, and generated contract documentation.
-- [ ] Define a discriminated error/result taxonomy that preserves evidence validity, pending, partial scope, conflict, capability, rights, and retryability.
-- [ ] Specify long-running productive evaluation/content/media jobs, state transitions, polling/push/callback choice, deadlines, cancellation, and late-result behavior.
-- [ ] Separate domain events, integration events, and internal jobs; introduce outbox/queue infrastructure only where loss/duplication risk justifies it.
-- [ ] Define idempotency keys and deduplication boundaries for attempts, checkpoints, submissions, evaluation requests/results, notifications, Corpus publication, and deletion.
-- [ ] Define optimistic concurrency/conflict behavior for anonymous-to-account merge, multiple devices, session resume, and version changes.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer simple request/response plus a durable background-job mechanism over a general event platform.
-- [ ] Security/privacy/rights — Define authentication/authorization per contract, validation, abuse limits, secret boundaries, and minimum AI payload.
-- [ ] Accessibility — APIs return semantic labels, reasons, alternatives, and focus/live-region hints where the design contract requires them.
-- [ ] Failure/recovery — Retries are explicit and idempotent; late/pending/duplicate results cannot overwrite newer truth.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include API style alternative/decision table.
-- [ ] Include Resource/command/query catalog.
-- [ ] Include Error/result taxonomy.
-- [ ] Include Job/event state diagrams.
-- [ ] Include Idempotency/concurrency matrix.
-- [ ] Include Representative non-production contract examples.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/12-api-contracts-jobs-events-and-idempotency.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Choose client/server contract style and define command/query/resource boundaries, versioning, validation, pagination, concurrency, and generated contract documentation.
+- [x] Define a discriminated error/result taxonomy that preserves evidence validity, pending, partial scope, conflict, capability, rights, and retryability.
+- [x] Specify long-running productive evaluation/content/media jobs, state transitions, polling/push/callback choice, deadlines, cancellation, and late-result behavior.
+- [x] Separate domain events, integration events, and internal jobs; introduce outbox/queue infrastructure only where loss/duplication risk justifies it.
+- [x] Define idempotency keys and deduplication boundaries for attempts, checkpoints, submissions, evaluation requests/results, notifications, Corpus publication, and deletion.
+- [x] Define optimistic concurrency/conflict behavior for anonymous-to-account merge, multiple devices, session resume, and version changes.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer simple request/response plus a durable background-job mechanism over a general event platform.
+- [x] Security/privacy/rights — Define authentication/authorization per contract, validation, abuse limits, secret boundaries, and minimum AI payload.
+- [x] Accessibility — APIs return semantic labels, reasons, alternatives, and focus/live-region hints where the design contract requires them.
+- [x] Failure/recovery — Retries are explicit and idempotent; late/pending/duplicate results cannot overwrite newer truth.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include API style alternative/decision table.
+- [x] Include Resource/command/query catalog.
+- [x] Include Error/result taxonomy.
+- [x] Include Job/event state diagrams.
+- [x] Include Idempotency/concurrency matrix.
+- [x] Include Representative non-production contract examples.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/12-api-contracts-jobs-events-and-idempotency.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -851,30 +851,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define responsive web application composition, routing, four-destination IA, focused attempt/mock shells, feature-module boundaries, and dependency direction.
-- [ ] Define server/client/local/form state ownership, query/cache invalidation, draft state, optimistic UI limits, and how authoritative domain state becomes UI projections.
-- [ ] Define one shared component library and extension points for five skill-specific input regions; prevent skill-specific forks of shell/result/repair/evidence behavior.
-- [ ] Map 25 named semantic design tokens across light/dark modes, typography roles, 18-icon subset, Threshold B logo assets, theme override, and asset delivery.
-- [ ] Define component contracts for all validity/readiness/failure/pending states, progressive disclosure, error boundaries, empty states, and read-only evidence labels.
-- [ ] Create a screen/flow/component-to-module/API traceability map without treating each design frame as a separate route or backend service.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer one web client and one shared library; avoid duplicate state stores/frameworks and unnecessary client analytics.
-- [ ] Security/privacy/rights — Prevent XSS/content injection, protect tokens/secrets from the client, and make system-owned states read-only.
-- [ ] Accessibility — Build semantics/focus/live regions/reduced motion into shared primitives rather than per-screen fixes.
-- [ ] Failure/recovery — Use local error boundaries and recovery state contracts; one failed capability must not crash the whole App.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Frontend/module/component dependency diagram.
-- [ ] Include Route/shell/state ownership table.
-- [ ] Include Design-token/theme/asset architecture.
-- [ ] Include Design screen/flow/component mapping.
-- [ ] Include Error-boundary/degradation plan.
-- [ ] Include Shared-shell extension contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/13-frontend-application-and-design-system-architecture.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define responsive web application composition, routing, four-destination IA, focused attempt/mock shells, feature-module boundaries, and dependency direction.
+- [x] Define server/client/local/form state ownership, query/cache invalidation, draft state, optimistic UI limits, and how authoritative domain state becomes UI projections.
+- [x] Define one shared component library and extension points for five skill-specific input regions; prevent skill-specific forks of shell/result/repair/evidence behavior.
+- [x] Map 25 named semantic design tokens across light/dark modes, typography roles, 18-icon subset, Threshold B logo assets, theme override, and asset delivery.
+- [x] Define component contracts for all validity/readiness/failure/pending states, progressive disclosure, error boundaries, empty states, and read-only evidence labels.
+- [x] Create a screen/flow/component-to-module/API traceability map without treating each design frame as a separate route or backend service.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer one web client and one shared library; avoid duplicate state stores/frameworks and unnecessary client analytics.
+- [x] Security/privacy/rights — Prevent XSS/content injection, protect tokens/secrets from the client, and make system-owned states read-only.
+- [x] Accessibility — Build semantics/focus/live regions/reduced motion into shared primitives rather than per-screen fixes.
+- [x] Failure/recovery — Use local error boundaries and recovery state contracts; one failed capability must not crash the whole App.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Frontend/module/component dependency diagram.
+- [x] Include Route/shell/state ownership table.
+- [x] Include Design-token/theme/asset architecture.
+- [x] Include Design screen/flow/component mapping.
+- [x] Include Error-boundary/degradation plan.
+- [x] Include Shared-shell extension contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/13-frontend-application-and-design-system-architecture.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -915,30 +915,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Lock breakpoint/layout contract for ≤479, 480–767, 768–1023, 1024–1279, and ≥1280, including max measures, navigation changes, dialog/sheet behavior, and focused shells.
-- [ ] Define capability detection/preflight and activity-level eligibility for storage, microphone, audio, media formats, checkpoint durability, notifications, and private/embedded contexts.
-- [ ] Specify WCAG 2.2 AA mechanics for semantics, focus, keyboard, live regions, labels/errors, chart text/table alternatives, drag-free input, target sizes, 200% zoom, 320px reflow, and reduced motion.
-- [ ] Define timer/recording announcements, priority, focus movement, shortcuts, and conflicts with browser/screen-reader bindings.
-- [ ] Choose and justify browser/device support and automated/manual test matrix from current capability evidence.
-- [ ] Define evidence-equivalent versus evidence-altering accessibility conditions and the architecture contract for verified future accommodation profiles.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Bound the support matrix to current/current-previous major families and automate high-value checks before adding breadth.
-- [ ] Security/privacy/rights — Treat permission/capability checks contextually; never capture microphone in the background.
-- [ ] Accessibility — This stage owns the complete acceptance contract and must turn every design criterion into a testable mechanism.
-- [ ] Failure/recovery — Unsupported/denied/broken capability blocks only the affected high-stakes action and offers valid alternatives.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Responsive behavior matrix.
-- [ ] Include Capability/preflight state model.
-- [ ] Include Accessibility semantic/focus/live-region contract.
-- [ ] Include Browser/device support matrix with official-source access dates.
-- [ ] Include Evidence/accommodation matrix.
-- [ ] Include Acceptance-test catalog.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/14-responsive-accessibility-browser-and-device-architecture.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Lock breakpoint/layout contract for ≤479, 480–767, 768–1023, 1024–1279, and ≥1280, including max measures, navigation changes, dialog/sheet behavior, and focused shells.
+- [x] Define capability detection/preflight and activity-level eligibility for storage, microphone, audio, media formats, checkpoint durability, notifications, and private/embedded contexts.
+- [x] Specify WCAG 2.2 AA mechanics for semantics, focus, keyboard, live regions, labels/errors, chart text/table alternatives, drag-free input, target sizes, 200% zoom, 320px reflow, and reduced motion.
+- [x] Define timer/recording announcements, priority, focus movement, shortcuts, and conflicts with browser/screen-reader bindings.
+- [x] Choose and justify browser/device support and automated/manual test matrix from current capability evidence.
+- [x] Define evidence-equivalent versus evidence-altering accessibility conditions and the architecture contract for verified future accommodation profiles.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Bound the support matrix to current/current-previous major families and automate high-value checks before adding breadth.
+- [x] Security/privacy/rights — Treat permission/capability checks contextually; never capture microphone in the background.
+- [x] Accessibility — This stage owns the complete acceptance contract and must turn every design criterion into a testable mechanism.
+- [x] Failure/recovery — Unsupported/denied/broken capability blocks only the affected high-stakes action and offers valid alternatives.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Responsive behavior matrix.
+- [x] Include Capability/preflight state model.
+- [x] Include Accessibility semantic/focus/live-region contract.
+- [x] Include Browser/device support matrix with official-source access dates.
+- [x] Include Evidence/accommodation matrix.
+- [x] Include Acceptance-test catalog.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/14-responsive-accessibility-browser-and-device-architecture.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -986,30 +986,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define task runtime contracts for R1–R3 and SB1–SB2, including instruction/stimulus/item/option/gap/matching representations and form-level shared blocks.
-- [ ] Specify select, matching, select-then-place, and cloze interactions with identical pointer/keyboard evidence and deterministic validation/scoring.
-- [ ] Define attempt shell extensions, navigation, shared Reading+Language Elements timing, answer submission, exposure, and immutable original outcome.
-- [ ] Define decisive-evidence spans, distractor rationale, cause/repair contract, fresh-equivalent retry, delayed return, and content-family independence.
-- [ ] Define assistance/translation/word-help/timing labels and eligibility effects without conflating offered with used help.
-- [ ] Handle ambiguity/defect reports, invalidation, replacement, and recalculation without learner failure.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Zero runtime AI for ordinary objective scoring/explanation selection; precompute reviewed explanations and variants.
-- [ ] Security/privacy/rights — Sanitize content and prevent answer-key leakage before submission.
-- [ ] Accessibility — All matching/cloze/select interactions require semantic, keyboard, zoom, and screen-reader equivalence.
-- [ ] Failure/recovery — Preserve submitted work and unaffected evidence; ambiguous/defective items become not_counted and trigger targeted recomputation.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Task/form/response pseudotypes.
-- [ ] Include Runtime and scoring state diagrams.
-- [ ] Include Interaction/accessibility equivalence table.
-- [ ] Include Assistance/exposure/validity matrix.
-- [ ] Include Defect/invalidation sequence.
-- [ ] Include Shared-shell extension map.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/15-reading-and-language-elements-runtime.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define task runtime contracts for R1–R3 and SB1–SB2, including instruction/stimulus/item/option/gap/matching representations and form-level shared blocks.
+- [x] Specify select, matching, select-then-place, and cloze interactions with identical pointer/keyboard evidence and deterministic validation/scoring.
+- [x] Define attempt shell extensions, navigation, shared Reading+Language Elements timing, answer submission, exposure, and immutable original outcome.
+- [x] Define decisive-evidence spans, distractor rationale, cause/repair contract, fresh-equivalent retry, delayed return, and content-family independence.
+- [x] Define assistance/translation/word-help/timing labels and eligibility effects without conflating offered with used help.
+- [x] Handle ambiguity/defect reports, invalidation, replacement, and recalculation without learner failure.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Zero runtime AI for ordinary objective scoring/explanation selection; precompute reviewed explanations and variants.
+- [x] Security/privacy/rights — Sanitize content and prevent answer-key leakage before submission.
+- [x] Accessibility — All matching/cloze/select interactions require semantic, keyboard, zoom, and screen-reader equivalence.
+- [x] Failure/recovery — Preserve submitted work and unaffected evidence; ambiguous/defective items become not_counted and trigger targeted recomputation.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Task/form/response pseudotypes.
+- [x] Include Runtime and scoring state diagrams.
+- [x] Include Interaction/accessibility equivalence table.
+- [x] Include Assistance/exposure/validity matrix.
+- [x] Include Defect/invalidation sequence.
+- [x] Include Shared-shell extension map.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/15-reading-and-language-elements-runtime.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1057,30 +1057,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define H1–H3 runtime/playback contracts, audio manifests, playback/reference limits, replay accounting, speed/voice metadata, and transcript gating.
-- [ ] Select storage/CDN/delivery formats and cache/preload strategy from current browser support, cost, licensing, and accessibility evidence.
-- [ ] Define batch TTS/human-audited/native benchmark pipeline boundary, asset versioning, pronunciation QA, and evidence role.
-- [ ] Define measured-block media preflight, locally-ready criteria, timer/playback integrity, reconnect/offline/poor-connectivity behavior, and no duplicate playback/evidence.
-- [ ] Define instructional text alternatives versus target Listening transcript restrictions and evidence-altering accommodations.
-- [ ] Handle missing/corrupt/late audio, device output problems, backgrounding, and replacement without learner failure.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Batch/cache TTS, avoid per-play generation, measure storage/CDN/egress and define human-audio upgrade triggers.
-- [ ] Security/privacy/rights — Use signed/controlled asset access where needed, enforce rights, and avoid leaking restricted transcripts.
-- [ ] Accessibility — Instructional audio has text equivalents; target Listening remains evidence-sensitive with honest accommodation labels.
-- [ ] Failure/recovery — Audio failure is not_counted; preflight prevents false clean claims and unrelated skills remain available.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Media manifest/asset pseudotypes.
-- [ ] Include Playback state machine.
-- [ ] Include Delivery/storage/format comparison with official browser/price sources.
-- [ ] Include Preflight/failure matrix.
-- [ ] Include TTS/audit publication flow.
-- [ ] Include Offline/cache sequence.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/16-listening-audio-tts-and-media-delivery.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define H1–H3 runtime/playback contracts, audio manifests, playback/reference limits, replay accounting, speed/voice metadata, and transcript gating.
+- [x] Select storage/CDN/delivery formats and cache/preload strategy from current browser support, cost, licensing, and accessibility evidence.
+- [x] Define batch TTS/human-audited/native benchmark pipeline boundary, asset versioning, pronunciation QA, and evidence role.
+- [x] Define measured-block media preflight, locally-ready criteria, timer/playback integrity, reconnect/offline/poor-connectivity behavior, and no duplicate playback/evidence.
+- [x] Define instructional text alternatives versus target Listening transcript restrictions and evidence-altering accommodations.
+- [x] Handle missing/corrupt/late audio, device output problems, backgrounding, and replacement without learner failure.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Batch/cache TTS, avoid per-play generation, measure storage/CDN/egress and define human-audio upgrade triggers.
+- [x] Security/privacy/rights — Use signed/controlled asset access where needed, enforce rights, and avoid leaking restricted transcripts.
+- [x] Accessibility — Instructional audio has text equivalents; target Listening remains evidence-sensitive with honest accommodation labels.
+- [x] Failure/recovery — Audio failure is not_counted; preflight prevents false clean claims and unrelated skills remain available.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Media manifest/asset pseudotypes.
+- [x] Include Playback state machine.
+- [x] Include Delivery/storage/format comparison with official browser/price sources.
+- [x] Include Preflight/failure matrix.
+- [x] Include TTS/audit publication flow.
+- [x] Include Offline/cache sequence.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/16-listening-audio-tts-and-media-delivery.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1131,30 +1131,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define prompt/scenario/register/content-point/rubric model and learner draft, submitted response, revision, fresh transfer, and evaluation identities.
-- [ ] Design editor state, content-point checklist, autosave/checkpoint cadence, local/server recovery, offline continuation, conflict handling, and measured loss bound.
-- [ ] Define timer/submit/finalization semantics and preserve honest timing through reload, offline, retry, and late sync.
-- [ ] Define deterministic prechecks and one structured evaluator contract with rubric outputs, evidence spans, confidence, version, disagreement, one escalation, Pending, and correction.
-- [ ] Separate same-prompt revision learning value from original score and fresh independent Writing evidence.
-- [ ] Define Writing retention/export/deletion, minimum AI payload, and immutable/auditable evaluator corrections.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — One bounded structured call after deterministic checks; cache/deduplicate safely and escalate once only for justified uncertainty.
-- [ ] Security/privacy/rights — Protect learner text, minimize provider payload, restrict access, and make deletion/evaluator correction auditable.
-- [ ] Accessibility — Ensure obligations/prompt/editor remain usable at reflow/zoom and via keyboard/screen reader with visible save state.
-- [ ] Failure/recovery — Draft survives; evaluation may remain Pending; no outage becomes a weak Writing score.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Writing domain/evaluator pseudotypes.
-- [ ] Include Editor/autosave/recovery state diagram.
-- [ ] Include Submission/evaluation/escalation sequence.
-- [ ] Include Timing/conflict matrix.
-- [ ] Include Retention/export/deletion flow.
-- [ ] Include Failure/Pending UI contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/17-writing-editor-autosave-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define prompt/scenario/register/content-point/rubric model and learner draft, submitted response, revision, fresh transfer, and evaluation identities.
+- [x] Design editor state, content-point checklist, autosave/checkpoint cadence, local/server recovery, offline continuation, conflict handling, and measured loss bound.
+- [x] Define timer/submit/finalization semantics and preserve honest timing through reload, offline, retry, and late sync.
+- [x] Define deterministic prechecks and one structured evaluator contract with rubric outputs, evidence spans, confidence, version, disagreement, one escalation, Pending, and correction.
+- [x] Separate same-prompt revision learning value from original score and fresh independent Writing evidence.
+- [x] Define Writing retention/export/deletion, minimum AI payload, and immutable/auditable evaluator corrections.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — One bounded structured call after deterministic checks; cache/deduplicate safely and escalate once only for justified uncertainty.
+- [x] Security/privacy/rights — Protect learner text, minimize provider payload, restrict access, and make deletion/evaluator correction auditable.
+- [x] Accessibility — Ensure obligations/prompt/editor remain usable at reflow/zoom and via keyboard/screen reader with visible save state.
+- [x] Failure/recovery — Draft survives; evaluation may remain Pending; no outage becomes a weak Writing score.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Writing domain/evaluator pseudotypes.
+- [x] Include Editor/autosave/recovery state diagram.
+- [x] Include Submission/evaluation/escalation sequence.
+- [x] Include Timing/conflict matrix.
+- [x] Include Retention/export/deletion flow.
+- [x] Include Failure/Pending UI contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/17-writing-editor-autosave-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1207,30 +1207,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define contextual microphone permission, device selection, preflight, capture/turn/chunk/session identities, persistence, and explicit recording state.
-- [ ] Define STT/transcript confidence, learner correction limits, transcript/reference role, and why STT cannot independently judge pronunciation.
-- [ ] Define fixed/scripted versus adaptive turn-based partner contracts, S1–S3 state machines, preparation, turn completion, latency, interruption, and bounded fallback.
-- [ ] Define structured oral evaluator contract, actual-voice requirement, rubric/interaction evidence, confidence/disagreement, one escalation, Pending, and correction.
-- [ ] Define raw-audio lifecycle: minimal capture/use, one escalation, deletion after finalized evaluation, and seven-day pending ceiling while structured evidence remains auditable.
-- [ ] Handle denied permission, silent/wrong device, clipped audio, partner/evaluator outage, backgrounding, and typed rehearsal without substituting typed work for oral evidence.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer fixed/turn-based modes; reserve adaptive generation and stronger evaluation for cases where learner meaning/evidence stakes justify it.
-- [ ] Security/privacy/rights — Contextual permission, visible capture, pseudonymous provider calls, encryption, ephemeral raw audio, and deletion proof are mandatory.
-- [ ] Accessibility — Offer learning alternatives without mislabelling typed/captioned interaction as standard oral evidence.
-- [ ] Failure/recovery — Bad capture/provider behavior creates Pending/not_counted/interrupted states, never a low oral score.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Capture/turn/session pseudotypes.
-- [ ] Include Permission/preflight/capture state diagram.
-- [ ] Include Partner-turn sequence and fallback table.
-- [ ] Include STT/evaluator confidence/escalation contract.
-- [ ] Include Raw-audio deletion sequence.
-- [ ] Include Failure/evidence consequence matrix.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/18-speaking-audio-stt-partner-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define contextual microphone permission, device selection, preflight, capture/turn/chunk/session identities, persistence, and explicit recording state.
+- [x] Define STT/transcript confidence, learner correction limits, transcript/reference role, and why STT cannot independently judge pronunciation.
+- [x] Define fixed/scripted versus adaptive turn-based partner contracts, S1–S3 state machines, preparation, turn completion, latency, interruption, and bounded fallback.
+- [x] Define structured oral evaluator contract, actual-voice requirement, rubric/interaction evidence, confidence/disagreement, one escalation, Pending, and correction.
+- [x] Define raw-audio lifecycle: minimal capture/use, one escalation, deletion after finalized evaluation, and seven-day pending ceiling while structured evidence remains auditable.
+- [x] Handle denied permission, silent/wrong device, clipped audio, partner/evaluator outage, backgrounding, and typed rehearsal without substituting typed work for oral evidence.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer fixed/turn-based modes; reserve adaptive generation and stronger evaluation for cases where learner meaning/evidence stakes justify it.
+- [x] Security/privacy/rights — Contextual permission, visible capture, pseudonymous provider calls, encryption, ephemeral raw audio, and deletion proof are mandatory.
+- [x] Accessibility — Offer learning alternatives without mislabelling typed/captioned interaction as standard oral evidence.
+- [x] Failure/recovery — Bad capture/provider behavior creates Pending/not_counted/interrupted states, never a low oral score.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Capture/turn/session pseudotypes.
+- [x] Include Permission/preflight/capture state diagram.
+- [x] Include Partner-turn sequence and fallback table.
+- [x] Include STT/evaluator confidence/escalation contract.
+- [x] Include Raw-audio deletion sequence.
+- [x] Include Failure/evidence consequence matrix.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/18-speaking-audio-stt-partner-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1279,30 +1279,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Inventory allowed AI capabilities and explicitly excluded uses such as routine objective scoring, per-session planning, readiness calculation, analytics summaries, or decorative coach wording.
-- [ ] Choose provider abstraction depth by capability and define structured schemas, prompt/evaluator/version registry, deterministic validation, and response provenance.
-- [ ] Define capability-specific model routing, confidence, one-escalation policy, disagreement, timeout, retry/deduplication, circuit breaker, Pending, and cheaper fallback.
-- [ ] Define benchmark/golden sets, release gates, drift/repeatability/bias checks, rollback, and provider/model substitution.
-- [ ] Define minimum/pseudonymous payload, retention/training controls, secrets, regional/processor concerns, and logging redaction without invented legal claims.
-- [ ] Define per-capability token/audio/model cost accounting and cost per useful productive evidence unit, budgets/alerts, and upgrade triggers using current official pricing.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — This stage owns variable model-cost measurement and must include cheaper/provider-independent fallbacks, not a speculative fixed euro budget.
-- [ ] Security/privacy/rights — Own secrets, payload minimization, redaction, provider data-use settings, and no hidden model-training contribution.
-- [ ] Accessibility — Generated feedback must preserve structured semantics and never replace required text alternatives.
-- [ ] Failure/recovery — Timeout/low confidence/outage becomes Pending or deterministic fallback and does not block unrelated work.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include AI capability/routing matrix.
-- [ ] Include Gateway/evaluation sequence diagrams.
-- [ ] Include Schema/version/confidence contract.
-- [ ] Include Benchmark/release gate table.
-- [ ] Include Provider/price/exit comparison with official links/access dates.
-- [ ] Include Cost/fallback/circuit-breaker table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/19-ai-gateway-model-governance-evaluation-and-cost.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Inventory allowed AI capabilities and explicitly excluded uses such as routine objective scoring, per-session planning, readiness calculation, analytics summaries, or decorative coach wording.
+- [x] Choose provider abstraction depth by capability and define structured schemas, prompt/evaluator/version registry, deterministic validation, and response provenance.
+- [x] Define capability-specific model routing, confidence, one-escalation policy, disagreement, timeout, retry/deduplication, circuit breaker, Pending, and cheaper fallback.
+- [x] Define benchmark/golden sets, release gates, drift/repeatability/bias checks, rollback, and provider/model substitution.
+- [x] Define minimum/pseudonymous payload, retention/training controls, secrets, regional/processor concerns, and logging redaction without invented legal claims.
+- [x] Define per-capability token/audio/model cost accounting and cost per useful productive evidence unit, budgets/alerts, and upgrade triggers using current official pricing.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — This stage owns variable model-cost measurement and must include cheaper/provider-independent fallbacks, not a speculative fixed euro budget.
+- [x] Security/privacy/rights — Own secrets, payload minimization, redaction, provider data-use settings, and no hidden model-training contribution.
+- [x] Accessibility — Generated feedback must preserve structured semantics and never replace required text alternatives.
+- [x] Failure/recovery — Timeout/low confidence/outage becomes Pending or deterministic fallback and does not block unrelated work.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include AI capability/routing matrix.
+- [x] Include Gateway/evaluation sequence diagrams.
+- [x] Include Schema/version/confidence contract.
+- [x] Include Benchmark/release gate table.
+- [x] Include Provider/price/exit comparison with official links/access dates.
+- [x] Include Cost/fallback/circuit-breaker table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/19-ai-gateway-model-governance-evaluation-and-cost.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1349,30 +1349,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define account-optional first use, anonymous/local identity, device identity, local-loss messaging, and what features work before sign-in.
-- [ ] Compare/select identity provider and sign-in/recovery strategy with portability, cost, privacy, and exit path.
-- [ ] Separate profile/preferences/schedule from derived evidence/readiness and define authorization/ownership boundaries.
-- [ ] Define anonymous-to-account adoption without duplicate evidence, multi-device sync, merge/conflict/tombstone rules, and idempotency.
-- [ ] Define human-readable/machine-readable export contents/versioning and full deletion orchestration across primary data, jobs, caches, providers, backups, and raw media.
-- [ ] Define account/provider migration, local reset, device loss, and recovery limitations honestly.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Research current identity pricing/limits, prefer a simple low-maintenance baseline, and document migration/cheaper fallback.
-- [ ] Security/privacy/rights — Define session/token handling, authorization, account takeover protections proportionate to scope, and deletion proof.
-- [ ] Accessibility — Sign-in/recovery/export/delete flows must be keyboard/screen-reader/reflow complete and avoid inaccessible CAPTCHA dependency where possible.
-- [ ] Failure/recovery — Sync/account/provider failure preserves local work; merge cannot duplicate evidence; deletion partial failure remains auditable/retryable.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Identity/account state diagram.
-- [ ] Include Anonymous adoption and sync sequences.
-- [ ] Include Data/profile ownership matrix.
-- [ ] Include Conflict/merge/deduplication table.
-- [ ] Include Export contract.
-- [ ] Include Deletion orchestration/proof flow and provider comparison.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/20-account-local-first-profile-sync-export-and-deletion.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define account-optional first use, anonymous/local identity, device identity, local-loss messaging, and what features work before sign-in.
+- [x] Compare/select identity provider and sign-in/recovery strategy with portability, cost, privacy, and exit path.
+- [x] Separate profile/preferences/schedule from derived evidence/readiness and define authorization/ownership boundaries.
+- [x] Define anonymous-to-account adoption without duplicate evidence, multi-device sync, merge/conflict/tombstone rules, and idempotency.
+- [x] Define human-readable/machine-readable export contents/versioning and full deletion orchestration across primary data, jobs, caches, providers, backups, and raw media.
+- [x] Define account/provider migration, local reset, device loss, and recovery limitations honestly.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Research current identity pricing/limits, prefer a simple low-maintenance baseline, and document migration/cheaper fallback.
+- [x] Security/privacy/rights — Define session/token handling, authorization, account takeover protections proportionate to scope, and deletion proof.
+- [x] Accessibility — Sign-in/recovery/export/delete flows must be keyboard/screen-reader/reflow complete and avoid inaccessible CAPTCHA dependency where possible.
+- [x] Failure/recovery — Sync/account/provider failure preserves local work; merge cannot duplicate evidence; deletion partial failure remains auditable/retryable.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Identity/account state diagram.
+- [x] Include Anonymous adoption and sync sequences.
+- [x] Include Data/profile ownership matrix.
+- [x] Include Conflict/merge/deduplication table.
+- [x] Include Export contract.
+- [x] Include Deletion orchestration/proof flow and provider comparison.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/20-account-local-first-profile-sync-export-and-deletion.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1424,30 +1424,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define capability-based offline matrix for loaded objective work, Writing, Listening, Speaking, productive evaluation, mocks, readiness, sync, and content fetch.
-- [ ] Decide service worker/PWA scope from evidence, browser limitations, cache invalidation, and operating cost rather than installability theater.
-- [ ] Define checkpoints, local queue, reconnect, retry/idempotency, merge/conflict/tombstone behavior, and explicit data-loss bounds per activity.
-- [ ] Define authoritative monotonic/wall-clock use, server timestamps, timer reconstruction, page backgrounding, sleep/device-clock changes, and honest timing labels.
-- [ ] Define interruption/resume choices and the smallest affected evidence scope for ordinary tasks, continuous blocks, and mocks.
-- [ ] Define recovery UI/domain states and transitions for crash, reload, network loss, provider outage, stale content/version, and local-storage loss.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Use browser/local primitives and a simple queue before dedicated offline-sync infrastructure; state storage/egress/cache drivers.
-- [ ] Security/privacy/rights — Protect local sensitive data, bound cache retention, and avoid exposing raw audio/content in uncontrolled caches.
-- [ ] Accessibility — Recovery choices, timer state, and offline notices remain semantically announced and operable.
-- [ ] Failure/recovery — Reconnection cannot duplicate evidence; background/pause conditions cannot silently retain target validity.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Offline capability matrix.
-- [ ] Include Checkpoint/queue/reconnect state diagram.
-- [ ] Include Timer integrity model and threat/failure table.
-- [ ] Include Conflict-resolution matrix.
-- [ ] Include Mock interruption/resume sequence.
-- [ ] Include Data-loss budgets and recovery UI contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/21-offline-checkpointing-recovery-conflicts-and-timing-integrity.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define capability-based offline matrix for loaded objective work, Writing, Listening, Speaking, productive evaluation, mocks, readiness, sync, and content fetch.
+- [x] Decide service worker/PWA scope from evidence, browser limitations, cache invalidation, and operating cost rather than installability theater.
+- [x] Define checkpoints, local queue, reconnect, retry/idempotency, merge/conflict/tombstone behavior, and explicit data-loss bounds per activity.
+- [x] Define authoritative monotonic/wall-clock use, server timestamps, timer reconstruction, page backgrounding, sleep/device-clock changes, and honest timing labels.
+- [x] Define interruption/resume choices and the smallest affected evidence scope for ordinary tasks, continuous blocks, and mocks.
+- [x] Define recovery UI/domain states and transitions for crash, reload, network loss, provider outage, stale content/version, and local-storage loss.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Use browser/local primitives and a simple queue before dedicated offline-sync infrastructure; state storage/egress/cache drivers.
+- [x] Security/privacy/rights — Protect local sensitive data, bound cache retention, and avoid exposing raw audio/content in uncontrolled caches.
+- [x] Accessibility — Recovery choices, timer state, and offline notices remain semantically announced and operable.
+- [x] Failure/recovery — Reconnection cannot duplicate evidence; background/pause conditions cannot silently retain target validity.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Offline capability matrix.
+- [x] Include Checkpoint/queue/reconnect state diagram.
+- [x] Include Timer integrity model and threat/failure table.
+- [x] Include Conflict-resolution matrix.
+- [x] Include Mock interruption/resume sequence.
+- [x] Include Data-loss budgets and recovery UI contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/21-offline-checkpointing-recovery-conflicts-and-timing-integrity.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1494,30 +1494,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Model schedule preferences, local time zone, quiet hours, travel/time-zone changes, target month/range, planned date, booked date, milestones, and post-exam state.
-- [ ] Define in-app versus web-push/email/other reminder transport selection and permission lifecycle with current browser/provider research.
-- [ ] Implement conceptual reminder types, grouped obligations, one/day and rolling-seven-day caps, booked-period cap, exam-day exception, deduplication, suppression, and ignored-reminder behavior.
-- [ ] Define background-job scheduling, DST/calendar/time-zone semantics, delivery windows, stale-job cancellation, idempotency, and multi-device duplication prevention.
-- [ ] Define reviewed template/reason data rather than model-generated engagement copy and preserve learner opt-out/control.
-- [ ] Define privacy/retention/export/delete behavior for schedules, notification endpoints, delivery logs, and exam dates.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Research official provider/browser limits and prefer in-app/local/simple scheduled delivery with a cheaper fallback.
-- [ ] Security/privacy/rights — Protect endpoints, tokens, dates, and message contents; avoid exposing sensitive performance details on lock screens by default.
-- [ ] Accessibility — Notification settings/copy and in-app equivalents must remain accessible and understandable.
-- [ ] Failure/recovery — Late/duplicate/disabled/unavailable delivery causes no missed-day penalty or backlog and stale jobs are cancelled.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Schedule/date/notification model.
-- [ ] Include Delivery/suppression state diagram.
-- [ ] Include Reminder cap/deduplication matrix.
-- [ ] Include Time-zone/DST examples.
-- [ ] Include Transport/provider alternative and cost table.
-- [ ] Include Permission/privacy/failure contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/22-notifications-scheduling-and-time-zones.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Model schedule preferences, local time zone, quiet hours, travel/time-zone changes, target month/range, planned date, booked date, milestones, and post-exam state.
+- [x] Define in-app versus web-push/email/other reminder transport selection and permission lifecycle with current browser/provider research.
+- [x] Implement conceptual reminder types, grouped obligations, one/day and rolling-seven-day caps, booked-period cap, exam-day exception, deduplication, suppression, and ignored-reminder behavior.
+- [x] Define background-job scheduling, DST/calendar/time-zone semantics, delivery windows, stale-job cancellation, idempotency, and multi-device duplication prevention.
+- [x] Define reviewed template/reason data rather than model-generated engagement copy and preserve learner opt-out/control.
+- [x] Define privacy/retention/export/delete behavior for schedules, notification endpoints, delivery logs, and exam dates.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Research official provider/browser limits and prefer in-app/local/simple scheduled delivery with a cheaper fallback.
+- [x] Security/privacy/rights — Protect endpoints, tokens, dates, and message contents; avoid exposing sensitive performance details on lock screens by default.
+- [x] Accessibility — Notification settings/copy and in-app equivalents must remain accessible and understandable.
+- [x] Failure/recovery — Late/duplicate/disabled/unavailable delivery causes no missed-day penalty or backlog and stale jobs are cancelled.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Schedule/date/notification model.
+- [x] Include Delivery/suppression state diagram.
+- [x] Include Reminder cap/deduplication matrix.
+- [x] Include Time-zone/DST examples.
+- [x] Include Transport/provider alternative and cost table.
+- [x] Include Permission/privacy/failure contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/22-notifications-scheduling-and-time-zones.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1580,30 +1580,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Create end-to-end data-flow inventory and threat model for anonymous/local use, accounts, sync, content, Corpus publication, AI/STT/TTS, notifications, analytics, operator access, and deletion.
-- [ ] Define authentication/authorization, trust boundaries, secrets/key rotation, encryption, headers/session security, abuse/rate limits, and audit logging proportionate to private/public scope.
-- [ ] Define data minimization/purpose, pseudonymous external calls, provider/processor boundaries, redaction, and no hidden model-training contribution.
-- [ ] Define retention for structured evidence, Writing, transcripts, raw audio, analytics/logs, exports, deletion tombstones, backups, and third-party copies.
-- [ ] Define rights-aware serving, attribution, asset access, takedown/quarantine, anti-copy, and source-expression leakage controls.
-- [ ] Define dependency/supply-chain, content/prompt injection, malicious uploads, cost abuse, incident expectations, and public-launch hardening triggers without asserting legal compliance.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Security controls must be proportionate but consequential data/rights protections cannot be traded away for cost.
-- [ ] Security/privacy/rights — This stage is the primary owner; cite current official security guidance and separate architecture from later jurisdiction-specific legal review.
-- [ ] Accessibility — Security/consent/delete/auth controls cannot create inaccessible core flows or silently penalize access needs.
-- [ ] Failure/recovery — Partial deletion, provider outage, incident, rights revocation, and key compromise have explicit containment/retry/audit behavior.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Threat model/data-flow diagrams.
-- [ ] Include Data/processor/retention matrix.
-- [ ] Include Authorization/secrets/control table.
-- [ ] Include Rights/takedown flow.
-- [ ] Include Abuse/supply-chain risk register.
-- [ ] Include Incident and public-hardening trigger table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/23-security-privacy-rights-retention-and-threat-model.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Create end-to-end data-flow inventory and threat model for anonymous/local use, accounts, sync, content, Corpus publication, AI/STT/TTS, notifications, analytics, operator access, and deletion.
+- [x] Define authentication/authorization, trust boundaries, secrets/key rotation, encryption, headers/session security, abuse/rate limits, and audit logging proportionate to private/public scope.
+- [x] Define data minimization/purpose, pseudonymous external calls, provider/processor boundaries, redaction, and no hidden model-training contribution.
+- [x] Define retention for structured evidence, Writing, transcripts, raw audio, analytics/logs, exports, deletion tombstones, backups, and third-party copies.
+- [x] Define rights-aware serving, attribution, asset access, takedown/quarantine, anti-copy, and source-expression leakage controls.
+- [x] Define dependency/supply-chain, content/prompt injection, malicious uploads, cost abuse, incident expectations, and public-launch hardening triggers without asserting legal compliance.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Security controls must be proportionate but consequential data/rights protections cannot be traded away for cost.
+- [x] Security/privacy/rights — This stage is the primary owner; cite current official security guidance and separate architecture from later jurisdiction-specific legal review.
+- [x] Accessibility — Security/consent/delete/auth controls cannot create inaccessible core flows or silently penalize access needs.
+- [x] Failure/recovery — Partial deletion, provider outage, incident, rights revocation, and key compromise have explicit containment/retry/audit behavior.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Threat model/data-flow diagrams.
+- [x] Include Data/processor/retention matrix.
+- [x] Include Authorization/secrets/control table.
+- [x] Include Rights/takedown flow.
+- [x] Include Abuse/supply-chain risk register.
+- [x] Include Incident and public-hardening trigger table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/23-security-privacy-rights-retention-and-threat-model.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1671,30 +1671,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define lean product/evidence/quality/cost event catalog, purpose, schemas, sampling, retention, privacy, and frozen prediction/readiness snapshots.
-- [ ] Specify DSRA, Useful Session Outcome, transfer/retention, evaluator/content quality, mock-to-real, calibration, and cost metrics without circular validation.
-- [ ] Define calibration datasets, versioning, backtesting, sample-size disclosure, drift/recalibration gates, and pass-probability activation boundary.
-- [ ] Define logs/metrics/traces/correlation/redaction, dashboards, alerts, SLO-style internal targets, incident evidence, and no invasive session replay.
-- [ ] Consolidate L0–L3 latency, autosave/data-loss, availability/degradation, media/AI reliability, capacity, and storage/model/media cost budgets.
-- [ ] Define measured upgrade/scale triggers and per-capability cost per useful productive evidence unit for a personal-project operating baseline.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Own consolidated cost measurement, budgets/alerts, provider/media/storage drivers, and progressive upgrade triggers without inventing owner budget.
-- [ ] Security/privacy/rights — Minimize telemetry, redact sensitive content/audio, control access/retention, and avoid demographic collection without purpose.
-- [ ] Accessibility — Measure technical/accessibility invalidation and latency fairness without tracking disability unnecessarily.
-- [ ] Failure/recovery — Observability must distinguish learner outcome from content/media/evaluator/system failure and support targeted recomputation/incidents.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Event/metric catalog.
-- [ ] Include Calibration data-flow and frozen-snapshot model.
-- [ ] Include Observability/redaction matrix.
-- [ ] Include Performance/reliability budget table.
-- [ ] Include Capacity/cost model and alert/upgrade triggers.
-- [ ] Include Dashboard/operating baseline.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/24-analytics-calibration-observability-performance-reliability-and-cost.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define lean product/evidence/quality/cost event catalog, purpose, schemas, sampling, retention, privacy, and frozen prediction/readiness snapshots.
+- [x] Specify DSRA, Useful Session Outcome, transfer/retention, evaluator/content quality, mock-to-real, calibration, and cost metrics without circular validation.
+- [x] Define calibration datasets, versioning, backtesting, sample-size disclosure, drift/recalibration gates, and pass-probability activation boundary.
+- [x] Define logs/metrics/traces/correlation/redaction, dashboards, alerts, SLO-style internal targets, incident evidence, and no invasive session replay.
+- [x] Consolidate L0–L3 latency, autosave/data-loss, availability/degradation, media/AI reliability, capacity, and storage/model/media cost budgets.
+- [x] Define measured upgrade/scale triggers and per-capability cost per useful productive evidence unit for a personal-project operating baseline.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Own consolidated cost measurement, budgets/alerts, provider/media/storage drivers, and progressive upgrade triggers without inventing owner budget.
+- [x] Security/privacy/rights — Minimize telemetry, redact sensitive content/audio, control access/retention, and avoid demographic collection without purpose.
+- [x] Accessibility — Measure technical/accessibility invalidation and latency fairness without tracking disability unnecessarily.
+- [x] Failure/recovery — Observability must distinguish learner outcome from content/media/evaluator/system failure and support targeted recomputation/incidents.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Event/metric catalog.
+- [x] Include Calibration data-flow and frozen-snapshot model.
+- [x] Include Observability/redaction matrix.
+- [x] Include Performance/reliability budget table.
+- [x] Include Capacity/cost model and alert/upgrade triggers.
+- [x] Include Dashboard/operating baseline.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/24-analytics-calibration-observability-performance-reliability-and-cost.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1754,30 +1754,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define test strategy/pyramid by domain, contract, persistence, UI, browser/device, content, evaluator, media, security, recovery, performance, and operations layers.
-- [ ] Specify invariant/property/model/state-machine tests for evidence, scoring, Readiness, Ready-to-Book, Mistake Memory, review, coaching, idempotency, and timing.
-- [ ] Define contract/compatibility/migration/backup/restore tests for App, Corpus bundles, APIs, jobs, local sync, and deletion.
-- [ ] Define golden forms/content QA plus Writing evaluator, Speaking evaluator, STT, TTS/audio, and partner benchmark/release gates.
-- [ ] Define WCAG/manual/automated, keyboard/screen-reader, 320px/200%, responsive, browser/device, offline/recovery, timer, security, privacy, rights, and cost-regression tests.
-- [ ] Assign release-blocking versus advisory gates, test data/privacy, ownership, evidence artifacts, flake policy, and exception process.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Use risk-based automation; benchmark model/media costs and catch cost regressions in release gates.
-- [ ] Security/privacy/rights — Include abuse, auth, secrets, injection, dependency, rights, export/delete, and privacy tests.
-- [ ] Accessibility — Own automated plus manual assistive-technology release gates for all core flows.
-- [ ] Failure/recovery — Test every recovery/Pending/partial/not_counted path, duplicate delivery, and targeted recomputation.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Test strategy and ownership matrix.
-- [ ] Include Invariant/property/state-machine catalog.
-- [ ] Include Benchmark/golden-set gate table.
-- [ ] Include Accessibility/browser/device test matrix.
-- [ ] Include Release-blocking quality gate table.
-- [ ] Include Test-data/privacy and evidence-retention plan.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/25-testing-evaluation-and-quality-gates.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define test strategy/pyramid by domain, contract, persistence, UI, browser/device, content, evaluator, media, security, recovery, performance, and operations layers.
+- [x] Specify invariant/property/model/state-machine tests for evidence, scoring, Readiness, Ready-to-Book, Mistake Memory, review, coaching, idempotency, and timing.
+- [x] Define contract/compatibility/migration/backup/restore tests for App, Corpus bundles, APIs, jobs, local sync, and deletion.
+- [x] Define golden forms/content QA plus Writing evaluator, Speaking evaluator, STT, TTS/audio, and partner benchmark/release gates.
+- [x] Define WCAG/manual/automated, keyboard/screen-reader, 320px/200%, responsive, browser/device, offline/recovery, timer, security, privacy, rights, and cost-regression tests.
+- [x] Assign release-blocking versus advisory gates, test data/privacy, ownership, evidence artifacts, flake policy, and exception process.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Use risk-based automation; benchmark model/media costs and catch cost regressions in release gates.
+- [x] Security/privacy/rights — Include abuse, auth, secrets, injection, dependency, rights, export/delete, and privacy tests.
+- [x] Accessibility — Own automated plus manual assistive-technology release gates for all core flows.
+- [x] Failure/recovery — Test every recovery/Pending/partial/not_counted path, duplicate delivery, and targeted recomputation.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Test strategy and ownership matrix.
+- [x] Include Invariant/property/state-machine catalog.
+- [x] Include Benchmark/golden-set gate table.
+- [x] Include Accessibility/browser/device test matrix.
+- [x] Include Release-blocking quality gate table.
+- [x] Include Test-data/privacy and evidence-retention plan.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/25-testing-evaluation-and-quality-gates.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1826,30 +1826,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define local/dev/preview/staging/production topology and realistic private-project separation, data/configuration isolation, seeded test data, and access.
-- [ ] Define configuration/secrets, migration/deploy order, artifact builds, CI checks, provenance, dependency updates, and environment promotion.
-- [ ] Define feature flags and independent releases for application, schema, Corpus bundles, content/forms, blueprints, prompts/evaluators/models, and calibration parameters.
-- [ ] Define backward compatibility, rollback/roll-forward, cache invalidation, queued-job compatibility, and partial release behavior.
-- [ ] Define backups/restore drills, scheduled jobs, monitoring/alerts, incident/runbook expectations, maintenance, and low-ops ownership.
-- [ ] Define safe phased implementation/deployment slices that do not publish misleading partial Readiness or unsupported P4 claims.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Document idle/preview/staging/backup/observability costs and a minimal low-ops baseline with scale triggers.
-- [ ] Security/privacy/rights — Protect environments/secrets/artifacts, separate production data, and audit privileged releases.
-- [ ] Accessibility — Accessibility/browser/device gates run before promotion and cannot be deferred as polish.
-- [ ] Failure/recovery — Define failed deploy/migration/job/content/model release recovery and compatibility during rollback.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Environment/deployment diagram.
-- [ ] Include CI/CD and promotion flow.
-- [ ] Include Release-unit/version compatibility matrix.
-- [ ] Include Migration/rollback sequence.
-- [ ] Include Backup/restore/runbook catalog.
-- [ ] Include Feature-flag/phased-release safety table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/26-environments-ci-cd-release-and-operations.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define local/dev/preview/staging/production topology and realistic private-project separation, data/configuration isolation, seeded test data, and access.
+- [x] Define configuration/secrets, migration/deploy order, artifact builds, CI checks, provenance, dependency updates, and environment promotion.
+- [x] Define feature flags and independent releases for application, schema, Corpus bundles, content/forms, blueprints, prompts/evaluators/models, and calibration parameters.
+- [x] Define backward compatibility, rollback/roll-forward, cache invalidation, queued-job compatibility, and partial release behavior.
+- [x] Define backups/restore drills, scheduled jobs, monitoring/alerts, incident/runbook expectations, maintenance, and low-ops ownership.
+- [x] Define safe phased implementation/deployment slices that do not publish misleading partial Readiness or unsupported P4 claims.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Document idle/preview/staging/backup/observability costs and a minimal low-ops baseline with scale triggers.
+- [x] Security/privacy/rights — Protect environments/secrets/artifacts, separate production data, and audit privileged releases.
+- [x] Accessibility — Accessibility/browser/device gates run before promotion and cannot be deferred as polish.
+- [x] Failure/recovery — Define failed deploy/migration/job/content/model release recovery and compatibility during rollback.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Environment/deployment diagram.
+- [x] Include CI/CD and promotion flow.
+- [x] Include Release-unit/version compatibility matrix.
+- [x] Include Migration/rollback sequence.
+- [x] Include Backup/restore/runbook catalog.
+- [x] Include Feature-flag/phased-release safety table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/26-environments-ci-cd-release-and-operations.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1909,30 +1909,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Validate all prior architecture documents against the nine product scenarios and design Flows A–G with concrete component/state/data/API/failure paths.
-- [ ] Build a cross-stage failure/recovery matrix for AI, audio, microphone, network, browser, content, evaluator, Corpus, identity, notification, storage, and deployment failures.
-- [ ] Walk through threat, privacy, rights, retention/deletion, accessibility, cost, latency, timing, idempotency, and operability for each consequential scenario.
-- [ ] Detect contradictory ownership, duplicate truth, missing state, circular dependency, version gap, hidden live dependency, and implementation invention.
-- [ ] Amend earlier architecture documents and ADRs only where evidence requires it, recording every amendment and checklist impact.
-- [ ] Answer every architecture-completeness question from the master plan and prove each product/design invariant has an owner and test.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Validate variable-cost bounds and low-cost fallbacks in every productive/media/provider path.
-- [ ] Security/privacy/rights — Validate end-to-end data minimization, rights, deletion, processor, auth, and incident paths.
-- [ ] Accessibility — Validate equal completion/evidence paths for all seven design flows and representative skill tasks.
-- [ ] Failure/recovery — Prove unaffected scope survives and no system fault becomes learner failure in every representative case.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Scenario walkthrough matrix.
-- [ ] Include Failure/recovery matrix.
-- [ ] Include Cross-stage consistency/ownership audit.
-- [ ] Include Threat/cost/latency/privacy/accessibility walkthroughs.
-- [ ] Include Amendment log and residual risk register.
-- [ ] Include Go/no-go definition-of-done result.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/27-end-to-end-architecture-validation.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Validate all prior architecture documents against the nine product scenarios and design Flows A–G with concrete component/state/data/API/failure paths.
+- [x] Build a cross-stage failure/recovery matrix for AI, audio, microphone, network, browser, content, evaluator, Corpus, identity, notification, storage, and deployment failures.
+- [x] Walk through threat, privacy, rights, retention/deletion, accessibility, cost, latency, timing, idempotency, and operability for each consequential scenario.
+- [x] Detect contradictory ownership, duplicate truth, missing state, circular dependency, version gap, hidden live dependency, and implementation invention.
+- [x] Amend earlier architecture documents and ADRs only where evidence requires it, recording every amendment and checklist impact.
+- [x] Answer every architecture-completeness question from the master plan and prove each product/design invariant has an owner and test.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Validate variable-cost bounds and low-cost fallbacks in every productive/media/provider path.
+- [x] Security/privacy/rights — Validate end-to-end data minimization, rights, deletion, processor, auth, and incident paths.
+- [x] Accessibility — Validate equal completion/evidence paths for all seven design flows and representative skill tasks.
+- [x] Failure/recovery — Prove unaffected scope survives and no system fault becomes learner failure in every representative case.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Scenario walkthrough matrix.
+- [x] Include Failure/recovery matrix.
+- [x] Include Cross-stage consistency/ownership audit.
+- [x] Include Threat/cost/latency/privacy/accessibility walkthroughs.
+- [x] Include Amendment log and residual risk register.
+- [x] Include Go/no-go definition-of-done result.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/27-end-to-end-architecture-validation.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -1991,30 +1991,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Consolidate Stages 01–27 into one authoritative implementation-facing architecture without erasing detailed stage rationale.
-- [ ] Produce C4 context/container/component/deployment views plus module, data, state, contract, job, trust, and release ownership maps.
-- [ ] State authoritative decisions, accepted ADR index/status, versions, compatibility, failure/recovery, security/privacy/rights, accessibility, performance/reliability, operations, and cost requirements.
-- [ ] Create dependency-aware phased implementation slices that exercise vertical evidence truth and never expose misleading partial Readiness.
-- [ ] Create critical path, risk register, validation/upgrade triggers, intentionally deferred implementation choices, and owner questions.
-- [ ] Audit complete product → design → architecture → implementation traceability and final definition of done.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Include realistic launch/usage cost drivers, measurement, alerts, fallbacks, and upgrade triggers; do not invent owner budget.
-- [ ] Security/privacy/rights — Consolidate the full threat/privacy/rights/retention/export/deletion contract and required later legal review.
-- [ ] Accessibility — Consolidate WCAG/responsive/browser/device acceptance and test ownership as implementation requirements.
-- [ ] Failure/recovery — Consolidate Pending/partial/interrupted/not_counted/recovery semantics and operational runbooks.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Authoritative architecture specification.
-- [ ] Include C4 and supporting architecture diagrams.
-- [ ] Include Module/state/data/API/job/deployment ownership tables.
-- [ ] Include ADR index.
-- [ ] Include Phased implementation roadmap and critical path.
-- [ ] Include Risk/decision/traceability/definition-of-done audit.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/28-bestehen-app-architecture-specification.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Consolidate Stages 01–27 into one authoritative implementation-facing architecture without erasing detailed stage rationale.
+- [x] Produce C4 context/container/component/deployment views plus module, data, state, contract, job, trust, and release ownership maps.
+- [x] State authoritative decisions, accepted ADR index/status, versions, compatibility, failure/recovery, security/privacy/rights, accessibility, performance/reliability, operations, and cost requirements.
+- [x] Create dependency-aware phased implementation slices that exercise vertical evidence truth and never expose misleading partial Readiness.
+- [x] Create critical path, risk register, validation/upgrade triggers, intentionally deferred implementation choices, and owner questions.
+- [x] Audit complete product → design → architecture → implementation traceability and final definition of done.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Include realistic launch/usage cost drivers, measurement, alerts, fallbacks, and upgrade triggers; do not invent owner budget.
+- [x] Security/privacy/rights — Consolidate the full threat/privacy/rights/retention/export/deletion contract and required later legal review.
+- [x] Accessibility — Consolidate WCAG/responsive/browser/device acceptance and test ownership as implementation requirements.
+- [x] Failure/recovery — Consolidate Pending/partial/interrupted/not_counted/recovery semantics and operational runbooks.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Authoritative architecture specification.
+- [x] Include C4 and supporting architecture diagrams.
+- [x] Include Module/state/data/API/job/deployment ownership tables.
+- [x] Include ADR index.
+- [x] Include Phased implementation roadmap and critical path.
+- [x] Include Risk/decision/traceability/definition-of-done audit.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/28-bestehen-app-architecture-specification.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -2030,21 +2030,21 @@
 
 ## Complete architecture definition of done
 
-- [ ] Every product state has one authoritative domain owner and every design state is produced from explicit domain/API state rather than UI guesswork.
-- [ ] Evidence, validity, assistance, timing, freshness, exposure, mock, evaluator, blueprint, calculation, and failure semantics are versioned, explainable, and auditable.
-- [ ] Written and Oral remain independent pass gates; missing Readiness is absence rather than zero; no prohibited pass-probability field/model/template/event exists.
-- [ ] Safe, Ready to Book, and stale/contradicted behavior are distinct; all Stage 17 gates and reason states survive API/UI projection.
-- [ ] All five skills share attempt/session/result/repair/evidence foundations while Reading/Language Elements, Listening, Writing, and Speaking preserve valid modality differences.
-- [ ] The complete Mistake Memory lifecycle, local P0–P4 progression, due review, fresh retry, delayed transfer, and retention semantics have owned deterministic projections.
-- [ ] Normal practice and approved P4 content work when Corpus is unavailable; no learner data is sent to Corpus; rights and confidence remain separate.
-- [ ] Routine objective work is deterministic/pre-generated/cached; Writing/Speaking AI is structured, bounded, benchmarked, costed, and has Pending/deterministic fallbacks.
-- [ ] Account-optional first use, anonymous adoption, sync/conflict, privacy, retention, export, deletion, raw-audio ephemerality, and provider cleanup work end to end.
-- [ ] WCAG 2.2 AA, fixed responsive behavior, browser/device capability, keyboard/screen-reader equivalence, 200% zoom, 320px reflow, reduced motion, and text alternatives are architecturally supported and release-gated.
-- [ ] Offline/loaded-work continuity, checkpointing, timer integrity, interruption, resume, idempotency, local degradation, partial scope, Pending, and not-counted recovery states are complete.
-- [ ] Security, privacy, rights, threat, abuse, dependency, secrets, audit, incident, and no-invented-legal-claim boundaries are documented.
-- [ ] Analytics/calibration avoids circular validation and invasive replay; performance, reliability, variable cost, budgets/alerts, fallbacks, and personal-project operations are realistic.
-- [ ] Tests and quality gates cover every consequential learner claim, content/evaluator/media benchmark, migration, browser/device/accessibility, failure, cost, and security path.
-- [ ] Corpus/App contracts, APIs/jobs/events, schemas, releases, backups, rollback, and compatibility work through version changes and downtime.
-- [ ] The nine product scenarios and design Flows A–G survive end-to-end validation with threat/cost/latency/privacy/accessibility/failure walkthroughs.
-- [ ] Implementation can be phased without publishing misleading partial Readiness, unsupported P4 claims, or an objective-only product that omits pass-critical Writing/Oral evidence.
-- [ ] The final architecture specification includes C4/data/state/deployment views, ADR index, traceability, critical path, phased roadmap, risk register, and no major ad hoc decision left to a feature implementer.
+- [x] Every product state has one authoritative domain owner and every design state is produced from explicit domain/API state rather than UI guesswork.
+- [x] Evidence, validity, assistance, timing, freshness, exposure, mock, evaluator, blueprint, calculation, and failure semantics are versioned, explainable, and auditable.
+- [x] Written and Oral remain independent pass gates; missing Readiness is absence rather than zero; no prohibited pass-probability field/model/template/event exists.
+- [x] Safe, Ready to Book, and stale/contradicted behavior are distinct; all Stage 17 gates and reason states survive API/UI projection.
+- [x] All five skills share attempt/session/result/repair/evidence foundations while Reading/Language Elements, Listening, Writing, and Speaking preserve valid modality differences.
+- [x] The complete Mistake Memory lifecycle, local P0–P4 progression, due review, fresh retry, delayed transfer, and retention semantics have owned deterministic projections.
+- [x] Normal practice and approved P4 content work when Corpus is unavailable; no learner data is sent to Corpus; rights and confidence remain separate.
+- [x] Routine objective work is deterministic/pre-generated/cached; Writing/Speaking AI is structured, bounded, benchmarked, costed, and has Pending/deterministic fallbacks.
+- [x] Account-optional first use, anonymous adoption, sync/conflict, privacy, retention, export, deletion, raw-audio ephemerality, and provider cleanup work end to end.
+- [x] WCAG 2.2 AA, fixed responsive behavior, browser/device capability, keyboard/screen-reader equivalence, 200% zoom, 320px reflow, reduced motion, and text alternatives are architecturally supported and release-gated.
+- [x] Offline/loaded-work continuity, checkpointing, timer integrity, interruption, resume, idempotency, local degradation, partial scope, Pending, and not-counted recovery states are complete.
+- [x] Security, privacy, rights, threat, abuse, dependency, secrets, audit, incident, and no-invented-legal-claim boundaries are documented.
+- [x] Analytics/calibration avoids circular validation and invasive replay; performance, reliability, variable cost, budgets/alerts, fallbacks, and personal-project operations are realistic.
+- [x] Tests and quality gates cover every consequential learner claim, content/evaluator/media benchmark, migration, browser/device/accessibility, failure, cost, and security path.
+- [x] Corpus/App contracts, APIs/jobs/events, schemas, releases, backups, rollback, and compatibility work through version changes and downtime.
+- [x] The nine product scenarios and design Flows A–G survive end-to-end validation with threat/cost/latency/privacy/accessibility/failure walkthroughs.
+- [x] Implementation can be phased without publishing misleading partial Readiness, unsupported P4 claims, or an objective-only product that omits pass-critical Writing/Oral evidence.
+- [x] The final architecture specification includes C4/data/state/deployment views, ADR index, traceability, critical path, phased roadmap, risk register, and no major ad hoc decision left to a feature implementer.
