@@ -123,7 +123,7 @@ Each `BenchmarkRelease` records dataset/rights revision, inclusion/exclusion, sp
 | Complete processes | onboarding/account-optional, every skill, mock, Readiness/text table, review, auth/OTP, export/delete, recovery, notification controls | all pages/states in process must meet WCAG 2.2 AA; partial screen success cannot release the flow |
 | Manual semantics | focus order/restoration/traps; live-region strings/no timer ticks; `lang=de`; chart text/table; select-then-place; target size; non-color; error recovery | one equivalent outcome and identical evidence semantics; accessibility support never answer assistance |
 
-The 24 registered mobile screens are all exercised at 320px and 200% text zoom; representative state combinations are risk-paired rather than a combinatorial screenshot dump. Current/prior manifests name exact browser/OS/AT versions. Playwright patched WebKit/Firefox and mobile emulation are labelled honestly and cannot satisfy branded/physical evidence.
+All 26 current numbered mobile design frames in Stage 13's semantic-ID/frame mapping are exercised at 320px and 200% text zoom; representative state combinations are risk-paired rather than a combinatorial screenshot dump. Tests resolve the current mapping rather than the design narrative's stale “24 mobile screens” count, and a changed frame inventory requires mapping reconciliation before promotion. Current/prior manifests name exact browser/OS/AT versions. Playwright patched WebKit/Firefox and mobile emulation are labelled honestly and cannot satisfy branded/physical evidence.
 
 ## 9. Release-blocking quality gates
 
