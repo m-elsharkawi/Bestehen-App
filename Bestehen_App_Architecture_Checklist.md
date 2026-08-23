@@ -779,30 +779,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Choose client/server contract style and define command/query/resource boundaries, versioning, validation, pagination, concurrency, and generated contract documentation.
-- [ ] Define a discriminated error/result taxonomy that preserves evidence validity, pending, partial scope, conflict, capability, rights, and retryability.
-- [ ] Specify long-running productive evaluation/content/media jobs, state transitions, polling/push/callback choice, deadlines, cancellation, and late-result behavior.
-- [ ] Separate domain events, integration events, and internal jobs; introduce outbox/queue infrastructure only where loss/duplication risk justifies it.
-- [ ] Define idempotency keys and deduplication boundaries for attempts, checkpoints, submissions, evaluation requests/results, notifications, Corpus publication, and deletion.
-- [ ] Define optimistic concurrency/conflict behavior for anonymous-to-account merge, multiple devices, session resume, and version changes.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer simple request/response plus a durable background-job mechanism over a general event platform.
-- [ ] Security/privacy/rights — Define authentication/authorization per contract, validation, abuse limits, secret boundaries, and minimum AI payload.
-- [ ] Accessibility — APIs return semantic labels, reasons, alternatives, and focus/live-region hints where the design contract requires them.
-- [ ] Failure/recovery — Retries are explicit and idempotent; late/pending/duplicate results cannot overwrite newer truth.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include API style alternative/decision table.
-- [ ] Include Resource/command/query catalog.
-- [ ] Include Error/result taxonomy.
-- [ ] Include Job/event state diagrams.
-- [ ] Include Idempotency/concurrency matrix.
-- [ ] Include Representative non-production contract examples.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/12-api-contracts-jobs-events-and-idempotency.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Choose client/server contract style and define command/query/resource boundaries, versioning, validation, pagination, concurrency, and generated contract documentation.
+- [x] Define a discriminated error/result taxonomy that preserves evidence validity, pending, partial scope, conflict, capability, rights, and retryability.
+- [x] Specify long-running productive evaluation/content/media jobs, state transitions, polling/push/callback choice, deadlines, cancellation, and late-result behavior.
+- [x] Separate domain events, integration events, and internal jobs; introduce outbox/queue infrastructure only where loss/duplication risk justifies it.
+- [x] Define idempotency keys and deduplication boundaries for attempts, checkpoints, submissions, evaluation requests/results, notifications, Corpus publication, and deletion.
+- [x] Define optimistic concurrency/conflict behavior for anonymous-to-account merge, multiple devices, session resume, and version changes.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer simple request/response plus a durable background-job mechanism over a general event platform.
+- [x] Security/privacy/rights — Define authentication/authorization per contract, validation, abuse limits, secret boundaries, and minimum AI payload.
+- [x] Accessibility — APIs return semantic labels, reasons, alternatives, and focus/live-region hints where the design contract requires them.
+- [x] Failure/recovery — Retries are explicit and idempotent; late/pending/duplicate results cannot overwrite newer truth.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include API style alternative/decision table.
+- [x] Include Resource/command/query catalog.
+- [x] Include Error/result taxonomy.
+- [x] Include Job/event state diagrams.
+- [x] Include Idempotency/concurrency matrix.
+- [x] Include Representative non-production contract examples.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/12-api-contracts-jobs-events-and-idempotency.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
