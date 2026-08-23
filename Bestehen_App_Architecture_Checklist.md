@@ -986,30 +986,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define task runtime contracts for R1–R3 and SB1–SB2, including instruction/stimulus/item/option/gap/matching representations and form-level shared blocks.
-- [ ] Specify select, matching, select-then-place, and cloze interactions with identical pointer/keyboard evidence and deterministic validation/scoring.
-- [ ] Define attempt shell extensions, navigation, shared Reading+Language Elements timing, answer submission, exposure, and immutable original outcome.
-- [ ] Define decisive-evidence spans, distractor rationale, cause/repair contract, fresh-equivalent retry, delayed return, and content-family independence.
-- [ ] Define assistance/translation/word-help/timing labels and eligibility effects without conflating offered with used help.
-- [ ] Handle ambiguity/defect reports, invalidation, replacement, and recalculation without learner failure.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Zero runtime AI for ordinary objective scoring/explanation selection; precompute reviewed explanations and variants.
-- [ ] Security/privacy/rights — Sanitize content and prevent answer-key leakage before submission.
-- [ ] Accessibility — All matching/cloze/select interactions require semantic, keyboard, zoom, and screen-reader equivalence.
-- [ ] Failure/recovery — Preserve submitted work and unaffected evidence; ambiguous/defective items become not_counted and trigger targeted recomputation.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Task/form/response pseudotypes.
-- [ ] Include Runtime and scoring state diagrams.
-- [ ] Include Interaction/accessibility equivalence table.
-- [ ] Include Assistance/exposure/validity matrix.
-- [ ] Include Defect/invalidation sequence.
-- [ ] Include Shared-shell extension map.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/15-reading-and-language-elements-runtime.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define task runtime contracts for R1–R3 and SB1–SB2, including instruction/stimulus/item/option/gap/matching representations and form-level shared blocks.
+- [x] Specify select, matching, select-then-place, and cloze interactions with identical pointer/keyboard evidence and deterministic validation/scoring.
+- [x] Define attempt shell extensions, navigation, shared Reading+Language Elements timing, answer submission, exposure, and immutable original outcome.
+- [x] Define decisive-evidence spans, distractor rationale, cause/repair contract, fresh-equivalent retry, delayed return, and content-family independence.
+- [x] Define assistance/translation/word-help/timing labels and eligibility effects without conflating offered with used help.
+- [x] Handle ambiguity/defect reports, invalidation, replacement, and recalculation without learner failure.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Zero runtime AI for ordinary objective scoring/explanation selection; precompute reviewed explanations and variants.
+- [x] Security/privacy/rights — Sanitize content and prevent answer-key leakage before submission.
+- [x] Accessibility — All matching/cloze/select interactions require semantic, keyboard, zoom, and screen-reader equivalence.
+- [x] Failure/recovery — Preserve submitted work and unaffected evidence; ambiguous/defective items become not_counted and trigger targeted recomputation.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Task/form/response pseudotypes.
+- [x] Include Runtime and scoring state diagrams.
+- [x] Include Interaction/accessibility equivalence table.
+- [x] Include Assistance/exposure/validity matrix.
+- [x] Include Defect/invalidation sequence.
+- [x] Include Shared-shell extension map.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/15-reading-and-language-elements-runtime.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
