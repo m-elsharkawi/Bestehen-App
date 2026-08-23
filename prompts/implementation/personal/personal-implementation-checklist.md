@@ -12,7 +12,7 @@ This is the live, authoritative progress ledger for the personal program. Worker
 
 ## 01 — Repository and delivery baseline
 
-- [ ] 01P Planning accepted — evidence: pending
+- [~] 01P Planning accepted — evidence: `Implementation/Personal/01-repository-delivery-baseline/plan.md` (`P01-PLAN`; independent acceptance pending)
 - [ ] 01E Execution accepted — evidence: pending
 - [ ] Approved stack, package boundaries, exact lock/runtime versions, containers, and CI gates are reproducible.
 - [ ] Personal deployment-profile decision preserves provider and commercial exit seams.
