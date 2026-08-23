@@ -19,7 +19,7 @@ This is the live, authoritative progress ledger for the personal program. Worker
 
 ## 02 — Provider accounts and service setup
 
-- [ ] 02P Planning accepted — evidence: pending
+- [~] 02P Planning in progress — evidence: `Implementation/Personal/02-provider-service-setup/plan.md`; draft PR pending; `P02-PLAN`
 - [ ] 02E Execution accepted — evidence: pending
 - [ ] GitHub, Coolify, Pangolin, R2, Auth0, SES, AI/STT/TTS, secrets, budget, backup, and recovery guides are verified.
 - [ ] Configuration schemas and fake contracts pass without live accounts; manual gates are named honestly.
