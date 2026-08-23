@@ -2,20 +2,21 @@
 
 Date: 2026-08-23
 
-Status: `02E` repository execution candidate complete and awaiting independent
-orchestrator acceptance; not accepted, merged, deployed, or service-ready
+Status: `02E` repository execution accepted independently; not merged, deployed,
+or service-ready
 
 Draft PR: [#3](https://github.com/m-elsharkawi/Bestehen-App/pull/3)
 
-Verified implementation candidate: `52be044955086924c35bdf9dcdddd988c03b65db`
+Accepted reviewed candidate: `241b8a2828680a40b399c0be7f2863a76fa097f5`
 
-Passing candidate run:
-[32665918536](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32665918536)
+Passing exact-candidate runs:
+[push 32666424947](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32666424947) and
+[pull request 32666427818](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32666427818)
 
-The final evidence-only commit is the commit containing this handoff. Its exact SHA
-is recorded in the PR execution-evidence comment because a commit cannot truthfully
-contain its own SHA. The checklist remains `[~]`; only independent orchestrator
-acceptance may change `02E` to `[x]`.
+Independent acceptance:
+[PR comment 5388485710](https://github.com/m-elsharkawi/Bestehen-App/pull/3#issuecomment-5388485710).
+The checklist now records `02E` as `[x]`. Merge and the post-02E service-readiness
+checkpoint remain separate owner gates.
 
 ## Source, authority, and ancestry
 
