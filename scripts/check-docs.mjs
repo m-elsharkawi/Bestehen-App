@@ -1,7 +1,11 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
+const personalGuides = readdirSync("docs/setup/personal")
+  .filter((name) => name.endsWith(".md"))
+  .map((name) => `docs/setup/personal/${name}`)
+  .sort();
 const documents = [
   "README.md",
   "docs/architecture/package-boundaries.md",
@@ -9,6 +13,16 @@ const documents = [
   "docs/local-development.md",
   "docs/delivery.md",
   "docs/decisions/IDR-0001-personal-deployment-profile.md",
+  ...personalGuides,
+];
+const actionFields = [
+  "Owner",
+  "Action",
+  "Expected result",
+  "How to verify",
+  "Evidence",
+  "Rollback",
+  "NEVER PASTE HERE",
 ];
 const configurationFields = [
   "BESTEHEN_APP_ENV",
@@ -63,6 +77,20 @@ for (const document of documents) {
   }
 }
 
+for (const guide of personalGuides.filter((name) => !name.endsWith("/README.md"))) {
+  const actions = readFileSync(guide, "utf8").split(/^### /gm).slice(1);
+  if (actions.length === 0) throw new Error(`Personal setup guide has no action blocks: ${guide}`);
+  for (const action of actions) {
+    const step = action.match(/^`([A-Z0-9]+-[0-9]{2})`/)?.[1];
+    if (!step) throw new Error(`Personal setup guide has an invalid step heading: ${guide}`);
+    for (const field of actionFields) {
+      const occurrences = action.match(new RegExp(`^- \\*\\*${field}:\\*\\*`, "gm"))?.length ?? 0;
+      if (occurrences !== 1)
+        throw new Error(`${guide} ${step} must contain exactly one ${field} field`);
+    }
+  }
+}
+
 const configuration = readFileSync("docs/configuration.md", "utf8");
 const missingFields = configurationFields.filter(
   (field) => !configuration.includes(`\`${field}\``),
@@ -75,5 +103,5 @@ for (const command of ["pnpm install --frozen-lockfile", "pnpm db:migrate", "pnp
   if (!readme.includes(command)) throw new Error(`README missing canonical command: ${command}`);
 }
 process.stdout.write(
-  `Documentation links, fences, commands, and ${configurationFields.length} configuration fields are valid.\n`,
+  `P02-DOC-001 passed: links, fences, ${personalGuides.length - 1} guides, action fields, commands, and ${configurationFields.length} configuration fields are valid.\n`,
 );
