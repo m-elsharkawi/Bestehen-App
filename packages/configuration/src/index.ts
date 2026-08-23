@@ -8,6 +8,16 @@ const strictBoolean = z
 
 const positivePort = z.coerce.number().int().min(1).max(65_535);
 const positiveMicroUsd = z.coerce.number().int().positive();
+function isLoopbackHostname(hostname: string): boolean {
+  const normalized = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  return (
+    normalized === "localhost" ||
+    normalized.endsWith(".localhost") ||
+    normalized === "::1" ||
+    /^127(?:\.\d{1,3}){3}$/.test(normalized)
+  );
+}
+
 const httpsOrigin = z
   .string()
   .url()
@@ -18,7 +28,8 @@ const httpsOrigin = z
       url.pathname === "/" &&
       !url.search &&
       !url.hash &&
-      !url.hostname.includes("*")
+      !url.hostname.includes("*") &&
+      !isLoopbackHostname(url.hostname)
     );
   });
 const auth0EuIssuer = httpsOrigin.refine((value) =>

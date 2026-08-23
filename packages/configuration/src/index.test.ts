@@ -99,6 +99,10 @@ describe("server configuration", () => {
       "BESTEHEN_AUTH0_ISSUER_BASE_URL",
     ],
     [
+      { ...configuredStagingEnvironment(), BESTEHEN_APPLICATION_BASE_URL: "https://localhost" },
+      "BESTEHEN_APPLICATION_BASE_URL",
+    ],
+    [
       { ...configuredStagingEnvironment(), BESTEHEN_S3_REGION: "eu-central-1" },
       "BESTEHEN_S3_REGION",
     ],
