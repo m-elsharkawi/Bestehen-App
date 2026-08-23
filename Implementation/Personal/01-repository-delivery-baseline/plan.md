@@ -1,6 +1,8 @@
 # Personal Stage 01 — repository and delivery baseline plan
 
-Status: execution-ready Planning proposal; independent acceptance is pending.
+Status: Planning accepted at input commit
+`233eb0c84e092e5bdda88a1f3692bd41ddc07d3e`; durable evidence:
+[PR #1 acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/1#issuecomment-5387482785).
 
 Planning date: 2026-08-23 (Europe/Berlin).
 
