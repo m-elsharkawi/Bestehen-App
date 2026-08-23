@@ -1131,30 +1131,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define prompt/scenario/register/content-point/rubric model and learner draft, submitted response, revision, fresh transfer, and evaluation identities.
-- [ ] Design editor state, content-point checklist, autosave/checkpoint cadence, local/server recovery, offline continuation, conflict handling, and measured loss bound.
-- [ ] Define timer/submit/finalization semantics and preserve honest timing through reload, offline, retry, and late sync.
-- [ ] Define deterministic prechecks and one structured evaluator contract with rubric outputs, evidence spans, confidence, version, disagreement, one escalation, Pending, and correction.
-- [ ] Separate same-prompt revision learning value from original score and fresh independent Writing evidence.
-- [ ] Define Writing retention/export/deletion, minimum AI payload, and immutable/auditable evaluator corrections.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — One bounded structured call after deterministic checks; cache/deduplicate safely and escalate once only for justified uncertainty.
-- [ ] Security/privacy/rights — Protect learner text, minimize provider payload, restrict access, and make deletion/evaluator correction auditable.
-- [ ] Accessibility — Ensure obligations/prompt/editor remain usable at reflow/zoom and via keyboard/screen reader with visible save state.
-- [ ] Failure/recovery — Draft survives; evaluation may remain Pending; no outage becomes a weak Writing score.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Writing domain/evaluator pseudotypes.
-- [ ] Include Editor/autosave/recovery state diagram.
-- [ ] Include Submission/evaluation/escalation sequence.
-- [ ] Include Timing/conflict matrix.
-- [ ] Include Retention/export/deletion flow.
-- [ ] Include Failure/Pending UI contract.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/17-writing-editor-autosave-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define prompt/scenario/register/content-point/rubric model and learner draft, submitted response, revision, fresh transfer, and evaluation identities.
+- [x] Design editor state, content-point checklist, autosave/checkpoint cadence, local/server recovery, offline continuation, conflict handling, and measured loss bound.
+- [x] Define timer/submit/finalization semantics and preserve honest timing through reload, offline, retry, and late sync.
+- [x] Define deterministic prechecks and one structured evaluator contract with rubric outputs, evidence spans, confidence, version, disagreement, one escalation, Pending, and correction.
+- [x] Separate same-prompt revision learning value from original score and fresh independent Writing evidence.
+- [x] Define Writing retention/export/deletion, minimum AI payload, and immutable/auditable evaluator corrections.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — One bounded structured call after deterministic checks; cache/deduplicate safely and escalate once only for justified uncertainty.
+- [x] Security/privacy/rights — Protect learner text, minimize provider payload, restrict access, and make deletion/evaluator correction auditable.
+- [x] Accessibility — Ensure obligations/prompt/editor remain usable at reflow/zoom and via keyboard/screen reader with visible save state.
+- [x] Failure/recovery — Draft survives; evaluation may remain Pending; no outage becomes a weak Writing score.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Writing domain/evaluator pseudotypes.
+- [x] Include Editor/autosave/recovery state diagram.
+- [x] Include Submission/evaluation/escalation sequence.
+- [x] Include Timing/conflict matrix.
+- [x] Include Retention/export/deletion flow.
+- [x] Include Failure/Pending UI contract.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/17-writing-editor-autosave-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

@@ -39,3 +39,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0022](ADR-0022-capability-gated-responsive-web-and-evidence-aware-accessibility.md) | Capability-gated responsive web and evidence-aware accessibility | Accepted | Stage 14 | `ARCH-S14-D01`–`D10` | — |
 | [ADR-0023](ADR-0023-deterministic-objective-task-runtime-and-immutable-outcomes.md) | Deterministic objective task runtime and immutable outcomes | Accepted | Stage 15 | `ARCH-S15-D01`–`D10` | — |
 | [ADR-0024](ADR-0024-pinned-batch-audio-and-evidence-sensitive-playback.md) | Pinned batch audio and evidence-sensitive playback | Accepted | Stage 16 | `ARCH-S16-D01`–`D10` | — |
+| [ADR-0025](ADR-0025-durable-writing-drafts-and-bounded-versioned-evaluation.md) | Durable Writing drafts and bounded versioned evaluation | Accepted | Stage 17 | `ARCH-S17-D01`–`D10` | — |
