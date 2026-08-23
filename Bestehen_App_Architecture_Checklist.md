@@ -1279,30 +1279,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Inventory allowed AI capabilities and explicitly excluded uses such as routine objective scoring, per-session planning, readiness calculation, analytics summaries, or decorative coach wording.
-- [ ] Choose provider abstraction depth by capability and define structured schemas, prompt/evaluator/version registry, deterministic validation, and response provenance.
-- [ ] Define capability-specific model routing, confidence, one-escalation policy, disagreement, timeout, retry/deduplication, circuit breaker, Pending, and cheaper fallback.
-- [ ] Define benchmark/golden sets, release gates, drift/repeatability/bias checks, rollback, and provider/model substitution.
-- [ ] Define minimum/pseudonymous payload, retention/training controls, secrets, regional/processor concerns, and logging redaction without invented legal claims.
-- [ ] Define per-capability token/audio/model cost accounting and cost per useful productive evidence unit, budgets/alerts, and upgrade triggers using current official pricing.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — This stage owns variable model-cost measurement and must include cheaper/provider-independent fallbacks, not a speculative fixed euro budget.
-- [ ] Security/privacy/rights — Own secrets, payload minimization, redaction, provider data-use settings, and no hidden model-training contribution.
-- [ ] Accessibility — Generated feedback must preserve structured semantics and never replace required text alternatives.
-- [ ] Failure/recovery — Timeout/low confidence/outage becomes Pending or deterministic fallback and does not block unrelated work.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include AI capability/routing matrix.
-- [ ] Include Gateway/evaluation sequence diagrams.
-- [ ] Include Schema/version/confidence contract.
-- [ ] Include Benchmark/release gate table.
-- [ ] Include Provider/price/exit comparison with official links/access dates.
-- [ ] Include Cost/fallback/circuit-breaker table.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/19-ai-gateway-model-governance-evaluation-and-cost.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Inventory allowed AI capabilities and explicitly excluded uses such as routine objective scoring, per-session planning, readiness calculation, analytics summaries, or decorative coach wording.
+- [x] Choose provider abstraction depth by capability and define structured schemas, prompt/evaluator/version registry, deterministic validation, and response provenance.
+- [x] Define capability-specific model routing, confidence, one-escalation policy, disagreement, timeout, retry/deduplication, circuit breaker, Pending, and cheaper fallback.
+- [x] Define benchmark/golden sets, release gates, drift/repeatability/bias checks, rollback, and provider/model substitution.
+- [x] Define minimum/pseudonymous payload, retention/training controls, secrets, regional/processor concerns, and logging redaction without invented legal claims.
+- [x] Define per-capability token/audio/model cost accounting and cost per useful productive evidence unit, budgets/alerts, and upgrade triggers using current official pricing.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — This stage owns variable model-cost measurement and must include cheaper/provider-independent fallbacks, not a speculative fixed euro budget.
+- [x] Security/privacy/rights — Own secrets, payload minimization, redaction, provider data-use settings, and no hidden model-training contribution.
+- [x] Accessibility — Generated feedback must preserve structured semantics and never replace required text alternatives.
+- [x] Failure/recovery — Timeout/low confidence/outage becomes Pending or deterministic fallback and does not block unrelated work.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include AI capability/routing matrix.
+- [x] Include Gateway/evaluation sequence diagrams.
+- [x] Include Schema/version/confidence contract.
+- [x] Include Benchmark/release gate table.
+- [x] Include Provider/price/exit comparison with official links/access dates.
+- [x] Include Cost/fallback/circuit-breaker table.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/19-ai-gateway-model-governance-evaluation-and-cost.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 

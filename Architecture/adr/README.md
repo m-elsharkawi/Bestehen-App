@@ -41,3 +41,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0024](ADR-0024-pinned-batch-audio-and-evidence-sensitive-playback.md) | Pinned batch audio and evidence-sensitive playback | Accepted | Stage 16 | `ARCH-S16-D01`–`D10` | — |
 | [ADR-0025](ADR-0025-durable-writing-drafts-and-bounded-versioned-evaluation.md) | Durable Writing drafts and bounded versioned evaluation | Accepted | Stage 17 | `ARCH-S17-D01`–`D10` | — |
 | [ADR-0026](ADR-0026-ephemeral-voice-evidence-and-bounded-oral-evaluation.md) | Ephemeral voice evidence and bounded oral evaluation | Accepted | Stage 18 | `ARCH-S18-D01`–`D12` | — |
+| [ADR-0027](ADR-0027-capability-specific-ai-routes-and-evidence-governed-candidates.md) | Capability-specific AI routes and evidence-governed candidates | Accepted | Stage 19 | `ARCH-S19-D01`–`D12` | — |
