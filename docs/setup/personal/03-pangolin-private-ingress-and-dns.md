@@ -60,4 +60,3 @@ an ingress control; Stage 03's App issuer+subject owner authorization remains ma
 - **Evidence:** allowed port classes, denied port classes, TLS/health result, versions, and date.
 - **Rollback:** close the newly opened rule or disable the resource; verify denial before deleting configuration.
 - **NEVER PASTE HERE:** scan output with IPs/hostnames, firewall dump, certificate private material, private URLs, or authentication/session detail.
-

@@ -84,4 +84,3 @@ guarantees the required boundary. Its S3 endpoint is
 - **Evidence:** aggregate count/size, manifest digest, result, cleanup/revocation state, and date.
 - **Rollback:** return the adapter to the verified predecessor while both copies remain protected; delete neither until duties are checked.
 - **NEVER PASTE HERE:** key list, object/body sample, credential, account ID, target URL, learner identifier, or source expression.
-

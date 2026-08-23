@@ -115,4 +115,3 @@ magic link or password. App routes and server authorization are Stage 03 work.
 - **Evidence:** credential class/version, overlap/revoke result, migration manifest digest, and date.
 - **Rollback:** reactivate only a still-valid verified predecessor during overlap; otherwise keep sign-in closed and use the documented recovery limit.
 - **NEVER PASTE HERE:** recovery code, email, issuer/subject, export body, client/Action/session secret, signing material, token, or App principal ID.
-

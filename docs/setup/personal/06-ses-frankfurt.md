@@ -92,4 +92,3 @@ suppression, SMTP credentials, and configuration sets are regional.
 - **Evidence:** gate state `owner_pending`/`verified`/`failed`, configuration digest, transition/rollback result, and date.
 - **Rollback:** remain in sandbox with product email disabled after denial; restore the verified predecessor only while valid.
 - **NEVER PASTE HERE:** production-access form, legal/billing/contact detail, domain/address, suppression export, messages, or credentials.
-

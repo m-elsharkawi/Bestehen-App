@@ -46,4 +46,3 @@ and [rulesets](https://docs.github.com/en/repositories/configuring-branches-and-
 - **Evidence:** public repository coordinates, exact commit, run URL, and `verified`/`failed` only.
 - **Rollback:** Stop before deployment on mismatch; fetch and repeat from the accepted commit.
 - **NEVER PASTE HERE:** authenticated remote URL, SSH key, token, private owner detail, or environment dump.
-

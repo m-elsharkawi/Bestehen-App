@@ -64,4 +64,3 @@ the owner password manager, or offline recovery custody.
 - **Evidence:** scope, provider-neutral manifest digest, result/cleanup/rollback, remaining retention, and date.
 - **Rollback:** restore the verified predecessor only before destructive closure and only if rights/security/deletion controls permit it.
 - **NEVER PASTE HERE:** export contents, identities, objects, credentials, account IDs, provider messages, private URLs, or deletion receipt with personal data.
-

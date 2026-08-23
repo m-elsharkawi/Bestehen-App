@@ -105,4 +105,3 @@ time, and rollback predecessor. Stage 02 makes no real call.
 - **Evidence:** admission state, region/engine, benchmark digest if any, result, and date.
 - **Rollback:** revoke the synthesis principal and return to reviewed predecessor media; learner attempts never depend on live Polly.
 - **NEVER PASTE HERE:** IAM identity/credential, script/SSML, generated audio, AWS account ID, voice sample, or benchmark content.
-
