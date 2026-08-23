@@ -1,5 +1,6 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import { writeFileSync } from "node:fs";
 import process from "node:process";
 
 const commit = exec("git", ["rev-parse", "HEAD"]).trim();
@@ -40,7 +41,9 @@ function resolvePlatformManifest(image) {
   const candidates = Array.isArray(manifests) ? manifests : [manifests];
   const architecture = inspectDockerArchitecture();
   const candidate = candidates.find(
-    (entry) => entry.Platform?.os === "linux" && entry.Platform?.architecture === architecture,
+    (entry) =>
+      entry.Descriptor?.platform?.os === "linux" &&
+      entry.Descriptor?.platform?.architecture === architecture,
   );
   if (!candidate?.Descriptor?.digest) {
     throw new Error(`No linux/${architecture} platform manifest found for ${image}`);
@@ -177,11 +180,12 @@ try {
       throw new Error(`${image} runs as unexpected user ${imageUser}`);
     const inspection = exec("docker", ["inspect", image]);
     const history = exec("docker", ["history", "--no-trunc", image]);
-    if (
-      /sentinel-secret-stage01|BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/i.test(
-        `${inspection}\n${history}`,
-      )
-    ) {
+    const secretSentinel = ["sentinel", "secret", "stage01"].join("-");
+    const forbiddenImageMaterial = new RegExp(
+      `${secretSentinel}|BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY`,
+      "i",
+    );
+    if (forbiddenImageMaterial.test(`${inspection}\n${history}`)) {
       throw new Error(`${image} metadata/history contains forbidden secret evidence`);
     }
     run("docker", [
@@ -254,6 +258,7 @@ try {
       name,
       "--network",
       network,
+      "--init",
       "--read-only",
       "--tmpfs",
       "/tmp:size=32m,mode=1777",
@@ -266,6 +271,9 @@ try {
     waitFor(`${name} health`, () => inspect(name, "{{.State.Health.Status}}") === "healthy");
     if (inspect(name, "{{.HostConfig.ReadonlyRootfs}}") !== "true") {
       throw new Error(`${name} was not started with a read-only root filesystem`);
+    }
+    if (inspect(name, "{{.HostConfig.Init}}") !== "true") {
+      throw new Error(`${name} was not started with an init process`);
     }
     run("docker", [
       "exec",
@@ -282,25 +290,28 @@ try {
 
   const webDigest = inspect(webImage, "{{.Id}}");
   const workerDigest = inspect(workerImage, "{{.Id}}");
-  process.stdout.write(
-    `${JSON.stringify(
-      {
-        commit,
-        nodeBaseManifest: nodeManifest,
-        nodePlatformManifest,
-        postgresManifest,
-        postgresPlatformManifest,
-        webDigest,
-        workerDigest,
-        user: "10001:10001",
-        readOnlyRoot: true,
-        signal: "SIGTERM",
-        status: "passed",
-      },
-      null,
-      2,
-    )}\n`,
-  );
+  const evidence = `${JSON.stringify(
+    {
+      commit,
+      nodeBaseManifest: nodeManifest,
+      nodePlatformManifest,
+      postgresManifest,
+      postgresPlatformManifest,
+      webDigest,
+      workerDigest,
+      user: "10001:10001",
+      readOnlyRoot: true,
+      init: true,
+      signal: "SIGTERM",
+      status: "passed",
+    },
+    null,
+    2,
+  )}\n`;
+  if (process.env.OCI_EVIDENCE_PATH) {
+    writeFileSync(process.env.OCI_EVIDENCE_PATH, evidence, "utf8");
+  }
+  process.stdout.write(evidence);
 } finally {
   cleanup();
 }

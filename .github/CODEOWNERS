@@ -1,0 +1,9 @@
+* @m-elsharkawi
+/.github/ @m-elsharkawi
+/Dockerfile.* @m-elsharkawi
+/compose.yaml @m-elsharkawi
+/pnpm-lock.yaml @m-elsharkawi
+/packages/configuration/ @m-elsharkawi
+/packages/infrastructure/src/postgres/ @m-elsharkawi
+/docs/decisions/ @m-elsharkawi
+/schemas/ @m-elsharkawi

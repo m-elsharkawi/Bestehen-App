@@ -14,6 +14,8 @@ FROM node:24.19.0-bookworm-slim@sha256:3638d9a6fe4030bd716be989438248074489337ba
 ARG OCI_CREATED
 ARG OCI_REVISION
 LABEL org.opencontainers.image.created=$OCI_CREATED \
+      io.bestehen.runtime.node="24.19.0" \
+      io.bestehen.runtime.pnpm="11.23.0" \
       org.opencontainers.image.licenses="UNLICENSED" \
       org.opencontainers.image.revision=$OCI_REVISION \
       org.opencontainers.image.source="https://github.com/m-elsharkawi/Bestehen-App" \

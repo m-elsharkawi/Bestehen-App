@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
-import { withIsolatedDatabase } from "@bestehen/test-support";
+import { setSyntheticDatabaseAvailability, withIsolatedDatabase } from "@bestehen/test-support";
 import { migrateDatabase } from "@bestehen/infrastructure";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -61,6 +61,10 @@ describe.skipIf(!testDatabaseUrl)("worker process", () => {
         stdio: ["ignore", "pipe", "pipe"],
       });
       children.add(child);
+      await waitFor(`http://127.0.0.1:${port}/health/ready`, 200);
+      await setSyntheticDatabaseAvailability(databaseUrl, false);
+      await waitFor(`http://127.0.0.1:${port}/health/ready`, 503);
+      await setSyntheticDatabaseAvailability(databaseUrl, true);
       await waitFor(`http://127.0.0.1:${port}/health/ready`, 200);
       const notFound = await fetch(`http://127.0.0.1:${port}/work`);
       expect(notFound.status).toBe(404);
