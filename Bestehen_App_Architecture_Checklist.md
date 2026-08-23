@@ -1991,30 +1991,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Consolidate Stages 01–27 into one authoritative implementation-facing architecture without erasing detailed stage rationale.
-- [ ] Produce C4 context/container/component/deployment views plus module, data, state, contract, job, trust, and release ownership maps.
-- [ ] State authoritative decisions, accepted ADR index/status, versions, compatibility, failure/recovery, security/privacy/rights, accessibility, performance/reliability, operations, and cost requirements.
-- [ ] Create dependency-aware phased implementation slices that exercise vertical evidence truth and never expose misleading partial Readiness.
-- [ ] Create critical path, risk register, validation/upgrade triggers, intentionally deferred implementation choices, and owner questions.
-- [ ] Audit complete product → design → architecture → implementation traceability and final definition of done.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Include realistic launch/usage cost drivers, measurement, alerts, fallbacks, and upgrade triggers; do not invent owner budget.
-- [ ] Security/privacy/rights — Consolidate the full threat/privacy/rights/retention/export/deletion contract and required later legal review.
-- [ ] Accessibility — Consolidate WCAG/responsive/browser/device acceptance and test ownership as implementation requirements.
-- [ ] Failure/recovery — Consolidate Pending/partial/interrupted/not_counted/recovery semantics and operational runbooks.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Authoritative architecture specification.
-- [ ] Include C4 and supporting architecture diagrams.
-- [ ] Include Module/state/data/API/job/deployment ownership tables.
-- [ ] Include ADR index.
-- [ ] Include Phased implementation roadmap and critical path.
-- [ ] Include Risk/decision/traceability/definition-of-done audit.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/28-bestehen-app-architecture-specification.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Consolidate Stages 01–27 into one authoritative implementation-facing architecture without erasing detailed stage rationale.
+- [x] Produce C4 context/container/component/deployment views plus module, data, state, contract, job, trust, and release ownership maps.
+- [x] State authoritative decisions, accepted ADR index/status, versions, compatibility, failure/recovery, security/privacy/rights, accessibility, performance/reliability, operations, and cost requirements.
+- [x] Create dependency-aware phased implementation slices that exercise vertical evidence truth and never expose misleading partial Readiness.
+- [x] Create critical path, risk register, validation/upgrade triggers, intentionally deferred implementation choices, and owner questions.
+- [x] Audit complete product → design → architecture → implementation traceability and final definition of done.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Include realistic launch/usage cost drivers, measurement, alerts, fallbacks, and upgrade triggers; do not invent owner budget.
+- [x] Security/privacy/rights — Consolidate the full threat/privacy/rights/retention/export/deletion contract and required later legal review.
+- [x] Accessibility — Consolidate WCAG/responsive/browser/device acceptance and test ownership as implementation requirements.
+- [x] Failure/recovery — Consolidate Pending/partial/interrupted/not_counted/recovery semantics and operational runbooks.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Authoritative architecture specification.
+- [x] Include C4 and supporting architecture diagrams.
+- [x] Include Module/state/data/API/job/deployment ownership tables.
+- [x] Include ADR index.
+- [x] Include Phased implementation roadmap and critical path.
+- [x] Include Risk/decision/traceability/definition-of-done audit.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/28-bestehen-app-architecture-specification.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
@@ -2030,21 +2030,21 @@
 
 ## Complete architecture definition of done
 
-- [ ] Every product state has one authoritative domain owner and every design state is produced from explicit domain/API state rather than UI guesswork.
-- [ ] Evidence, validity, assistance, timing, freshness, exposure, mock, evaluator, blueprint, calculation, and failure semantics are versioned, explainable, and auditable.
-- [ ] Written and Oral remain independent pass gates; missing Readiness is absence rather than zero; no prohibited pass-probability field/model/template/event exists.
-- [ ] Safe, Ready to Book, and stale/contradicted behavior are distinct; all Stage 17 gates and reason states survive API/UI projection.
-- [ ] All five skills share attempt/session/result/repair/evidence foundations while Reading/Language Elements, Listening, Writing, and Speaking preserve valid modality differences.
-- [ ] The complete Mistake Memory lifecycle, local P0–P4 progression, due review, fresh retry, delayed transfer, and retention semantics have owned deterministic projections.
-- [ ] Normal practice and approved P4 content work when Corpus is unavailable; no learner data is sent to Corpus; rights and confidence remain separate.
-- [ ] Routine objective work is deterministic/pre-generated/cached; Writing/Speaking AI is structured, bounded, benchmarked, costed, and has Pending/deterministic fallbacks.
-- [ ] Account-optional first use, anonymous adoption, sync/conflict, privacy, retention, export, deletion, raw-audio ephemerality, and provider cleanup work end to end.
-- [ ] WCAG 2.2 AA, fixed responsive behavior, browser/device capability, keyboard/screen-reader equivalence, 200% zoom, 320px reflow, reduced motion, and text alternatives are architecturally supported and release-gated.
-- [ ] Offline/loaded-work continuity, checkpointing, timer integrity, interruption, resume, idempotency, local degradation, partial scope, Pending, and not-counted recovery states are complete.
-- [ ] Security, privacy, rights, threat, abuse, dependency, secrets, audit, incident, and no-invented-legal-claim boundaries are documented.
-- [ ] Analytics/calibration avoids circular validation and invasive replay; performance, reliability, variable cost, budgets/alerts, fallbacks, and personal-project operations are realistic.
-- [ ] Tests and quality gates cover every consequential learner claim, content/evaluator/media benchmark, migration, browser/device/accessibility, failure, cost, and security path.
-- [ ] Corpus/App contracts, APIs/jobs/events, schemas, releases, backups, rollback, and compatibility work through version changes and downtime.
-- [ ] The nine product scenarios and design Flows A–G survive end-to-end validation with threat/cost/latency/privacy/accessibility/failure walkthroughs.
-- [ ] Implementation can be phased without publishing misleading partial Readiness, unsupported P4 claims, or an objective-only product that omits pass-critical Writing/Oral evidence.
-- [ ] The final architecture specification includes C4/data/state/deployment views, ADR index, traceability, critical path, phased roadmap, risk register, and no major ad hoc decision left to a feature implementer.
+- [x] Every product state has one authoritative domain owner and every design state is produced from explicit domain/API state rather than UI guesswork.
+- [x] Evidence, validity, assistance, timing, freshness, exposure, mock, evaluator, blueprint, calculation, and failure semantics are versioned, explainable, and auditable.
+- [x] Written and Oral remain independent pass gates; missing Readiness is absence rather than zero; no prohibited pass-probability field/model/template/event exists.
+- [x] Safe, Ready to Book, and stale/contradicted behavior are distinct; all Stage 17 gates and reason states survive API/UI projection.
+- [x] All five skills share attempt/session/result/repair/evidence foundations while Reading/Language Elements, Listening, Writing, and Speaking preserve valid modality differences.
+- [x] The complete Mistake Memory lifecycle, local P0–P4 progression, due review, fresh retry, delayed transfer, and retention semantics have owned deterministic projections.
+- [x] Normal practice and approved P4 content work when Corpus is unavailable; no learner data is sent to Corpus; rights and confidence remain separate.
+- [x] Routine objective work is deterministic/pre-generated/cached; Writing/Speaking AI is structured, bounded, benchmarked, costed, and has Pending/deterministic fallbacks.
+- [x] Account-optional first use, anonymous adoption, sync/conflict, privacy, retention, export, deletion, raw-audio ephemerality, and provider cleanup work end to end.
+- [x] WCAG 2.2 AA, fixed responsive behavior, browser/device capability, keyboard/screen-reader equivalence, 200% zoom, 320px reflow, reduced motion, and text alternatives are architecturally supported and release-gated.
+- [x] Offline/loaded-work continuity, checkpointing, timer integrity, interruption, resume, idempotency, local degradation, partial scope, Pending, and not-counted recovery states are complete.
+- [x] Security, privacy, rights, threat, abuse, dependency, secrets, audit, incident, and no-invented-legal-claim boundaries are documented.
+- [x] Analytics/calibration avoids circular validation and invasive replay; performance, reliability, variable cost, budgets/alerts, fallbacks, and personal-project operations are realistic.
+- [x] Tests and quality gates cover every consequential learner claim, content/evaluator/media benchmark, migration, browser/device/accessibility, failure, cost, and security path.
+- [x] Corpus/App contracts, APIs/jobs/events, schemas, releases, backups, rollback, and compatibility work through version changes and downtime.
+- [x] The nine product scenarios and design Flows A–G survive end-to-end validation with threat/cost/latency/privacy/accessibility/failure walkthroughs.
+- [x] Implementation can be phased without publishing misleading partial Readiness, unsupported P4 claims, or an objective-only product that omits pass-critical Writing/Oral evidence.
+- [x] The final architecture specification includes C4/data/state/deployment views, ADR index, traceability, critical path, phased roadmap, risk register, and no major ad hoc decision left to a feature implementer.
