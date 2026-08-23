@@ -40,3 +40,4 @@ This directory is the live index for consequential, durable architecture choices
 | [ADR-0023](ADR-0023-deterministic-objective-task-runtime-and-immutable-outcomes.md) | Deterministic objective task runtime and immutable outcomes | Accepted | Stage 15 | `ARCH-S15-D01`–`D10` | — |
 | [ADR-0024](ADR-0024-pinned-batch-audio-and-evidence-sensitive-playback.md) | Pinned batch audio and evidence-sensitive playback | Accepted | Stage 16 | `ARCH-S16-D01`–`D10` | — |
 | [ADR-0025](ADR-0025-durable-writing-drafts-and-bounded-versioned-evaluation.md) | Durable Writing drafts and bounded versioned evaluation | Accepted | Stage 17 | `ARCH-S17-D01`–`D10` | — |
+| [ADR-0026](ADR-0026-ephemeral-voice-evidence-and-bounded-oral-evaluation.md) | Ephemeral voice evidence and bounded oral evaluation | Accepted | Stage 18 | `ARCH-S18-D01`–`D12` | — |

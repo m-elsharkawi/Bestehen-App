@@ -1207,30 +1207,30 @@
 
 ### Decisions and checks
 
-- [ ] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
-- [ ] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
-- [ ] Define contextual microphone permission, device selection, preflight, capture/turn/chunk/session identities, persistence, and explicit recording state.
-- [ ] Define STT/transcript confidence, learner correction limits, transcript/reference role, and why STT cannot independently judge pronunciation.
-- [ ] Define fixed/scripted versus adaptive turn-based partner contracts, S1–S3 state machines, preparation, turn completion, latency, interruption, and bounded fallback.
-- [ ] Define structured oral evaluator contract, actual-voice requirement, rubric/interaction evidence, confidence/disagreement, one escalation, Pending, and correction.
-- [ ] Define raw-audio lifecycle: minimal capture/use, one escalation, deletion after finalized evaluation, and seven-day pending ceiling while structured evidence remains auditable.
-- [ ] Handle denied permission, silent/wrong device, clipped audio, partner/evaluator outage, backgrounding, and typed rehearsal without substituting typed work for oral evidence.
-- [ ] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
-- [ ] Cost/sustainability — Prefer fixed/turn-based modes; reserve adaptive generation and stronger evaluation for cases where learner meaning/evidence stakes justify it.
-- [ ] Security/privacy/rights — Contextual permission, visible capture, pseudonymous provider calls, encryption, ephemeral raw audio, and deletion proof are mandatory.
-- [ ] Accessibility — Offer learning alternatives without mislabelling typed/captioned interaction as standard oral evidence.
-- [ ] Failure/recovery — Bad capture/provider behavior creates Pending/not_counted/interrupted states, never a low oral score.
-- [ ] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
-- [ ] Include Capture/turn/session pseudotypes.
-- [ ] Include Permission/preflight/capture state diagram.
-- [ ] Include Partner-turn sequence and fallback table.
-- [ ] Include STT/evaluator confidence/escalation contract.
-- [ ] Include Raw-audio deletion sequence.
-- [ ] Include Failure/evidence consequence matrix.
-- [ ] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
-- [ ] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
-- [ ] Create/update the exact deliverable `Architecture/18-speaking-audio-stt-partner-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
-- [ ] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
+- [x] Fetch every required input from `main`, record current blob SHA/commit, and reconcile prior-stage continuity before deciding.
+- [x] Apply source authority and Stage 27 precedence; record exact-path contradictions rather than editing shaping/design sources.
+- [x] Define contextual microphone permission, device selection, preflight, capture/turn/chunk/session identities, persistence, and explicit recording state.
+- [x] Define STT/transcript confidence, learner correction limits, transcript/reference role, and why STT cannot independently judge pronunciation.
+- [x] Define fixed/scripted versus adaptive turn-based partner contracts, S1–S3 state machines, preparation, turn completion, latency, interruption, and bounded fallback.
+- [x] Define structured oral evaluator contract, actual-voice requirement, rubric/interaction evidence, confidence/disagreement, one escalation, Pending, and correction.
+- [x] Define raw-audio lifecycle: minimal capture/use, one escalation, deletion after finalized evaluation, and seven-day pending ceiling while structured evidence remains auditable.
+- [x] Handle denied permission, silent/wrong device, clipped audio, partner/evaluator outage, backgrounding, and typed rehearsal without substituting typed work for oral evidence.
+- [x] Compare credible alternatives, include the simplest sufficient option, document the recommendation/rationale/consequences, and define exit or fallback paths.
+- [x] Cost/sustainability — Prefer fixed/turn-based modes; reserve adaptive generation and stronger evaluation for cases where learner meaning/evidence stakes justify it.
+- [x] Security/privacy/rights — Contextual permission, visible capture, pseudonymous provider calls, encryption, ephemeral raw audio, and deletion proof are mandatory.
+- [x] Accessibility — Offer learning alternatives without mislabelling typed/captioned interaction as standard oral evidence.
+- [x] Failure/recovery — Bad capture/provider behavior creates Pending/not_counted/interrupted states, never a low oral score.
+- [x] Define data, API, state, ownership, compatibility, and versioning implications at this stage's boundary.
+- [x] Include Capture/turn/session pseudotypes.
+- [x] Include Permission/preflight/capture state diagram.
+- [x] Include Partner-turn sequence and fallback table.
+- [x] Include STT/evaluator confidence/escalation contract.
+- [x] Include Raw-audio deletion sequence.
+- [x] Include Failure/evidence consequence matrix.
+- [x] Create or update ADRs only for consequential durable choices; record status, alternatives, traceability, consequences, and review trigger.
+- [x] Map decisions to product/design sources and downstream stages; list dependencies, risks, validation needs, upgrade triggers/fallbacks, and intentionally deferred implementation choices.
+- [x] Create/update the exact deliverable `Architecture/18-speaking-audio-stt-partner-and-evaluation-pipeline.md` and re-fetch it plus this checklist before final completion.
+- [x] Leave any true owner blocker unchecked with `Blocked — owner decision required:`; do not mark architecture/implementation work complete merely because it was discussed.
 
 ### Must preserve / must not reopen
 
