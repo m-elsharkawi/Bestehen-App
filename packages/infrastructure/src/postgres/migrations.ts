@@ -55,7 +55,8 @@ CREATE TABLE app.profile_facts (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), fact_kind text NOT NULL,
   operation_id uuid NOT NULL, learner_sequence bigint NOT NULL CHECK (learner_sequence > 0), schema_major integer NOT NULL CHECK (schema_major=1),
   payload jsonb NOT NULL, occurred_at timestamptz, recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(), effective_at timestamptz NOT NULL,
-  supersedes_id uuid REFERENCES app.profile_facts(id), UNIQUE(learner_scope_id,operation_id,fact_kind), UNIQUE(learner_scope_id,learner_sequence)
+  supersedes_id uuid, UNIQUE(learner_scope_id,operation_id,fact_kind), UNIQUE(learner_scope_id,learner_sequence), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,supersedes_id) REFERENCES app.profile_facts(learner_scope_id,id)
 );
 CREATE TABLE app.release_units (
   id uuid PRIMARY KEY, unit_type text NOT NULL, name text NOT NULL, semantic_version text NOT NULL, digest text NOT NULL CHECK(length(digest)=64),
@@ -105,32 +106,39 @@ const learnerFactsSql = `
 CREATE TABLE app.plan_revisions (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), source_cut bigint NOT NULL CHECK(source_cut>=0),
   policy_release text NOT NULL, reason_release text NOT NULL, template_release text NOT NULL, content_release text NOT NULL,
-  intents jsonb NOT NULL, reasons jsonb NOT NULL, checksum text NOT NULL CHECK(length(checksum)=64), predecessor_id uuid REFERENCES app.plan_revisions(id),
-  created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), UNIQUE(learner_scope_id,checksum)
+  intents jsonb NOT NULL, reasons jsonb NOT NULL, checksum text NOT NULL CHECK(length(checksum)=64), predecessor_id uuid,
+  created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), UNIQUE(learner_scope_id,checksum), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,predecessor_id) REFERENCES app.plan_revisions(learner_scope_id,id)
 );
 CREATE INDEX plan_revisions_scope_cut_idx ON app.plan_revisions(learner_scope_id,source_cut DESC);
 CREATE TABLE app.sessions (
-  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), plan_revision_id uuid NOT NULL REFERENCES app.plan_revisions(id),
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), plan_revision_id uuid NOT NULL,
   state text NOT NULL CHECK(state IN ('assembling','offered','active','updating','paused','partially_completed','completed','replanned','blocked','unavailable','failed','deleted')),
-  resource_version bigint NOT NULL DEFAULT 1 CHECK(resource_version>0), started_at timestamptz, terminal_at timestamptz
+  resource_version bigint NOT NULL DEFAULT 1 CHECK(resource_version>0), started_at timestamptz, terminal_at timestamptz,
+  UNIQUE(learner_scope_id,id), FOREIGN KEY(learner_scope_id,plan_revision_id) REFERENCES app.plan_revisions(learner_scope_id,id)
 );
 CREATE INDEX sessions_scope_state_idx ON app.sessions(learner_scope_id,state);
 CREATE TABLE app.activity_occurrences (
-  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), session_id uuid NOT NULL REFERENCES app.sessions(id),
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), session_id uuid NOT NULL,
   operation_id uuid NOT NULL, state text NOT NULL, resource_version bigint NOT NULL DEFAULT 1, meaningful_boundary_at timestamptz, terminal_at timestamptz,
-  UNIQUE(learner_scope_id,operation_id)
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,session_id) REFERENCES app.sessions(learner_scope_id,id)
 );
 CREATE TABLE app.coaching_episodes (
-  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), activity_occurrence_id uuid NOT NULL REFERENCES app.activity_occurrences(id),
-  state text NOT NULL, resource_version bigint NOT NULL DEFAULT 1, terminal_at timestamptz
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), activity_occurrence_id uuid NOT NULL,
+  state text NOT NULL, resource_version bigint NOT NULL DEFAULT 1, terminal_at timestamptz,
+  UNIQUE(learner_scope_id,id), FOREIGN KEY(learner_scope_id,activity_occurrence_id) REFERENCES app.activity_occurrences(learner_scope_id,id)
 );
 CREATE TABLE app.attempts (
-  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), session_id uuid NOT NULL REFERENCES app.sessions(id),
-  activity_occurrence_id uuid NOT NULL REFERENCES app.activity_occurrences(id), episode_id uuid NOT NULL REFERENCES app.coaching_episodes(id),
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), session_id uuid NOT NULL,
+  activity_occurrence_id uuid NOT NULL, episode_id uuid NOT NULL,
   content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id), modality text NOT NULL CHECK(modality IN ('reading','language_elements','listening','writing','speaking')),
   direct_lane text NOT NULL, state text NOT NULL CHECK(state IN ('started','checkpointed','submitted','completed','interrupted','not_counted')),
   resource_version bigint NOT NULL DEFAULT 1, operation_id uuid NOT NULL, occurred_at timestamptz, recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(), terminal_hash text,
-  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id), CHECK(terminal_hash IS NULL OR length(terminal_hash)=64)
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id), CHECK(terminal_hash IS NULL OR length(terminal_hash)=64),
+  FOREIGN KEY(learner_scope_id,session_id) REFERENCES app.sessions(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,activity_occurrence_id) REFERENCES app.activity_occurrences(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,episode_id) REFERENCES app.coaching_episodes(learner_scope_id,id)
 );
 CREATE INDEX attempts_scope_state_idx ON app.attempts(learner_scope_id,state,recorded_at DESC);
 CREATE TABLE app.attempt_checkpoints (
@@ -146,56 +154,73 @@ CREATE TABLE app.response_facts (
 );
 CREATE TABLE app.condition_facts (LIKE app.response_facts INCLUDING ALL);
 CREATE TABLE app.exposure_facts (LIKE app.response_facts INCLUDING ALL);
+ALTER TABLE app.condition_facts ADD FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id);
+ALTER TABLE app.exposure_facts ADD FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id);
 CREATE TABLE app.independent_occasions (
-  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), episode_id uuid NOT NULL REFERENCES app.coaching_episodes(id),
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), episode_id uuid NOT NULL,
   mock_occasion_id uuid, independence_class text NOT NULL CHECK(independence_class IN ('first_attempt','immediate_retry','delayed_transfer','retention_check','repeated_exposed_practice','mock_measurement')),
-  family_relation text NOT NULL, policy_release text NOT NULL
+  family_relation text NOT NULL, policy_release text NOT NULL, UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,episode_id) REFERENCES app.coaching_episodes(learner_scope_id,id)
 );
 CREATE TABLE app.evidence_observations (
-  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), attempt_id uuid NOT NULL REFERENCES app.attempts(id),
-  occasion_id uuid NOT NULL REFERENCES app.independent_occasions(id), operation_id uuid NOT NULL, direct_lane text NOT NULL,
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), attempt_id uuid NOT NULL,
+  occasion_id uuid NOT NULL, operation_id uuid NOT NULL, direct_lane text NOT NULL,
   supported_scope jsonb NOT NULL, outcome jsonb NOT NULL, conditions jsonb NOT NULL, evaluation jsonb NOT NULL, compatibility jsonb NOT NULL,
   learner_sequence bigint NOT NULL CHECK(learner_sequence>0), recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
-  current_assertion_id uuid, UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,learner_sequence)
+  current_assertion_id uuid, UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,learner_sequence), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,occasion_id) REFERENCES app.independent_occasions(learner_scope_id,id)
 );
 CREATE INDEX evidence_observations_scope_sequence_idx ON app.evidence_observations(learner_scope_id,learner_sequence);
 CREATE TABLE app.validity_assertions (
-  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), observation_id uuid NOT NULL REFERENCES app.evidence_observations(id),
-  prior_assertion_id uuid REFERENCES app.validity_assertions(id), state text NOT NULL CHECK(state IN ('valid','partially_valid','pending','interrupted','not_counted')),
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), observation_id uuid NOT NULL,
+  prior_assertion_id uuid, state text NOT NULL CHECK(state IN ('valid','partially_valid','pending','interrupted','not_counted')),
   affected_scope jsonb NOT NULL, unaffected_scope jsonb NOT NULL, reason_registry_id text NOT NULL, reason_code text NOT NULL,
   asserted_owner text NOT NULL, actor_ref text NOT NULL, evidence_ref text NOT NULL, effective_at timestamptz NOT NULL,
   recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(), release text NOT NULL,
+  UNIQUE(learner_scope_id,id), FOREIGN KEY(learner_scope_id,observation_id) REFERENCES app.evidence_observations(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,prior_assertion_id) REFERENCES app.validity_assertions(learner_scope_id,id),
   FOREIGN KEY(reason_registry_id,reason_code) REFERENCES app.reason_codes(registry_id,code),
   CHECK(state NOT IN ('partially_valid','pending') OR (jsonb_array_length(affected_scope)>0 AND jsonb_array_length(unaffected_scope)>0))
 );
-ALTER TABLE app.evidence_observations ADD CONSTRAINT evidence_current_assertion_fk FOREIGN KEY(current_assertion_id) REFERENCES app.validity_assertions(id);
+ALTER TABLE app.evidence_observations ADD CONSTRAINT evidence_current_assertion_fk FOREIGN KEY(learner_scope_id,current_assertion_id) REFERENCES app.validity_assertions(learner_scope_id,id);
 CREATE INDEX validity_assertions_scope_observation_idx ON app.validity_assertions(learner_scope_id,observation_id,recorded_at);
 CREATE TABLE app.evidence_corrections (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), operation_id uuid NOT NULL,
-  target_observation_id uuid REFERENCES app.evidence_observations(id), target_assertion_id uuid REFERENCES app.validity_assertions(id),
+  target_observation_id uuid, target_assertion_id uuid,
   selector_digest text NOT NULL CHECK(length(selector_digest)=64), impact_digest text NOT NULL CHECK(length(impact_digest)=64),
   reason_registry_id text NOT NULL, reason_code text NOT NULL, asserted_owner text NOT NULL, requested_projections jsonb NOT NULL,
-  supersedes_id uuid REFERENCES app.evidence_corrections(id), recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  supersedes_id uuid, recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
   FOREIGN KEY(reason_registry_id,reason_code) REFERENCES app.reason_codes(registry_id,code), UNIQUE(learner_scope_id,operation_id),
-  UNIQUE(learner_scope_id,asserted_owner,impact_digest), CHECK(target_observation_id IS NOT NULL OR target_assertion_id IS NOT NULL)
+  UNIQUE(learner_scope_id,asserted_owner,impact_digest), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,target_observation_id) REFERENCES app.evidence_observations(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,target_assertion_id) REFERENCES app.validity_assertions(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,supersedes_id) REFERENCES app.evidence_corrections(learner_scope_id,id),
+  CHECK(target_observation_id IS NOT NULL OR target_assertion_id IS NOT NULL)
 );
 CREATE TABLE app.projection_generations (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), owner text NOT NULL,
   kind text NOT NULL CHECK(kind IN ('capability','weakness','progression','readiness')), availability text NOT NULL CHECK(availability IN ('current','recomputing','stale','blocked_by_pending','unavailable','failed','deleted')),
   source_cut bigint NOT NULL CHECK(source_cut>=0), selector_digest text NOT NULL CHECK(length(selector_digest)=64), correction_digest text NOT NULL CHECK(length(correction_digest)=64),
   rules_release text NOT NULL, calibration_release text NOT NULL, target_release text, payload jsonb NOT NULL,
-  checksum text NOT NULL CHECK(length(checksum)=64), predecessor_id uuid REFERENCES app.projection_generations(id), created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), published_at timestamptz,
-  UNIQUE(learner_scope_id,kind,source_cut,rules_release,calibration_release,selector_digest,correction_digest)
+  checksum text NOT NULL CHECK(length(checksum)=64), predecessor_id uuid, created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), published_at timestamptz,
+  UNIQUE(learner_scope_id,kind,source_cut,rules_release,calibration_release,selector_digest,correction_digest),
+  UNIQUE(learner_scope_id,id), UNIQUE(learner_scope_id,kind,id),
+  FOREIGN KEY(learner_scope_id,predecessor_id) REFERENCES app.projection_generations(learner_scope_id,id)
 );
 CREATE INDEX projection_generations_scope_kind_cut_idx ON app.projection_generations(learner_scope_id,kind,source_cut DESC);
 CREATE TABLE app.current_projection_pointers (
-  learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), kind text NOT NULL, generation_id uuid NOT NULL REFERENCES app.projection_generations(id),
-  resource_version bigint NOT NULL CHECK(resource_version>0), PRIMARY KEY(learner_scope_id,kind)
+  learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), kind text NOT NULL, generation_id uuid NOT NULL,
+  resource_version bigint NOT NULL CHECK(resource_version>0), PRIMARY KEY(learner_scope_id,kind),
+  FOREIGN KEY(learner_scope_id,kind,generation_id) REFERENCES app.projection_generations(learner_scope_id,kind,id)
 );
 CREATE TABLE app.projection_source_refs (
-  generation_id uuid NOT NULL REFERENCES app.projection_generations(id), observation_id uuid NOT NULL REFERENCES app.evidence_observations(id),
-  assertion_id uuid NOT NULL REFERENCES app.validity_assertions(id), disposition text NOT NULL CHECK(disposition IN ('included','excluded')),
-  reason_code text NOT NULL, PRIMARY KEY(generation_id,observation_id,assertion_id)
+  learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), generation_id uuid NOT NULL, observation_id uuid NOT NULL,
+  assertion_id uuid NOT NULL, disposition text NOT NULL CHECK(disposition IN ('included','excluded')),
+  reason_code text NOT NULL, PRIMARY KEY(generation_id,observation_id,assertion_id),
+  FOREIGN KEY(learner_scope_id,generation_id) REFERENCES app.projection_generations(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,observation_id) REFERENCES app.evidence_observations(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,assertion_id) REFERENCES app.validity_assertions(learner_scope_id,id)
 );
 CREATE TABLE app.weakness_transitions (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), weakness_id uuid NOT NULL, claim_key text NOT NULL,
@@ -213,12 +238,14 @@ CREATE TABLE app.progression_profiles (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), task_family_id uuid NOT NULL REFERENCES app.content_families(id),
   direct_lane text NOT NULL, progression text NOT NULL CHECK(progression IN ('P0','P1','P2','P3','P4')),
   adoption text NOT NULL CHECK(adoption IN ('confirmed','probe_eligible','probing','provisional','recovering')), axes jsonb NOT NULL,
-  source_cut bigint NOT NULL, generation_id uuid NOT NULL REFERENCES app.projection_generations(id), UNIQUE(learner_scope_id,task_family_id,direct_lane,generation_id)
+  source_cut bigint NOT NULL, generation_id uuid NOT NULL, UNIQUE(learner_scope_id,task_family_id,direct_lane,generation_id),
+  FOREIGN KEY(learner_scope_id,generation_id) REFERENCES app.projection_generations(learner_scope_id,id)
 );
 CREATE TABLE app.readiness_snapshots (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), state text NOT NULL CHECK(state IN ('evidence_building','not_ready','borderline','safe','ready_to_book','stale_contradicted')),
   written jsonb NOT NULL CHECK(written ? 'status'), oral jsonb NOT NULL CHECK(oral ? 'status'), source_cut bigint NOT NULL,
-  rules_release text NOT NULL, generation_id uuid NOT NULL REFERENCES app.projection_generations(id), created_at timestamptz NOT NULL DEFAULT transaction_timestamp()
+  rules_release text NOT NULL, generation_id uuid NOT NULL, created_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(learner_scope_id,id), FOREIGN KEY(learner_scope_id,generation_id) REFERENCES app.projection_generations(learner_scope_id,id)
 );
 CREATE TABLE app.booking_gate_results (
   readiness_snapshot_id uuid NOT NULL REFERENCES app.readiness_snapshots(id), gate text NOT NULL CHECK(gate IN ('A','B','C','D','E','F')),

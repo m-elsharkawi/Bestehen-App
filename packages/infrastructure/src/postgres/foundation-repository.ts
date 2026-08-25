@@ -47,6 +47,21 @@ function sessionRow(row: Record<string, unknown>): AppSessionRecord {
   };
 }
 
+function semanticJobFromRow(row: Record<string, unknown>): SemanticJob {
+  return {
+    id: appId<"job">(String(row.id)),
+    learnerScopeId: appId<"learner_scope">(String(row.learner_scope_id)),
+    kind: row.kind as SemanticJob["kind"],
+    semanticIdentity: String(row.semantic_identity),
+    state: row.state as SemanticJob["state"],
+    revision: Number(row.revision),
+    payloadDigest: String(row.payload_digest),
+    attempt: Number(row.attempt),
+    maximumAttempts: Number(row.maximum_attempts),
+    deadline: new Date(String(row.deadline)),
+  };
+}
+
 async function inTransaction<T>(
   pool: Pool,
   operation: (client: PoolClient) => Promise<T>,
@@ -219,6 +234,18 @@ export class PostgresFoundationRepository
       return { ok: false as const, error: "not_available" as const };
     try {
       return await inTransaction(this.pool, async (client) => {
+        const lineage = await client.query(
+          `SELECT 1 FROM app.attempts a
+           JOIN app.independent_occasions o ON o.id=$3 AND o.learner_scope_id=a.learner_scope_id
+           WHERE a.id=$2 AND a.learner_scope_id=$1 AND a.direct_lane=$4`,
+          [
+            scope.learnerScopeId,
+            observation.compatibility.attemptId,
+            observation.compatibility.occasionId,
+            observation.compatibility.directLane ?? "foundation",
+          ],
+        );
+        if (!lineage.rows[0]) return { ok: false as const, error: "not_available" as const };
         const learner = await client.query(
           "SELECT next_sequence FROM app.learner_scopes WHERE id=$1 AND state='active' FOR UPDATE",
           [scope.learnerScopeId],
@@ -397,11 +424,17 @@ export class PostgresFoundationRepository
       return { ok: false as const, error: "not_available" as const };
     return inTransaction(this.pool, async (client) => {
       const generation = await client.query(
-        "SELECT checksum,source_cut FROM app.projection_generations WHERE id=$1 AND learner_scope_id=$2 FOR UPDATE",
-        [candidate.generationId, scope.learnerScopeId],
+        `SELECT checksum,source_cut FROM app.projection_generations
+         WHERE id=$1 AND learner_scope_id=$2 AND kind=$3 AND source_cut=$4 AND checksum=$5 FOR UPDATE`,
+        [
+          candidate.generationId,
+          scope.learnerScopeId,
+          candidate.kind,
+          candidate.sourceCut,
+          candidate.checksum,
+        ],
       );
-      if (!generation.rows[0] || generation.rows[0].checksum !== candidate.checksum)
-        return { ok: false as const, error: "checksum_mismatch" as const };
+      if (!generation.rows[0]) return { ok: false as const, error: "checksum_mismatch" as const };
       const updated = await client.query(
         `INSERT INTO app.current_projection_pointers(learner_scope_id,kind,generation_id,resource_version) VALUES($1,$2,$3,1)
          ON CONFLICT(learner_scope_id,kind) DO UPDATE SET generation_id=EXCLUDED.generation_id,resource_version=app.current_projection_pointers.resource_version+1
@@ -487,19 +520,78 @@ export class PostgresFoundationRepository
     });
   }
 
-  public async recordEffect(id: JobId, effectIdentity: string, effectDigest: string) {
-    const inserted = await this.pool.query(
-      "INSERT INTO app.job_effect_receipts(job_id,effect_identity,effect_digest) VALUES($1,$2,$3) ON CONFLICT DO NOTHING RETURNING effect_digest",
-      [id, effectIdentity, effectDigest],
-    );
-    if (inserted.rows[0]) return { ok: true as const, value: "created" as const };
-    const existing = await this.pool.query(
-      "SELECT effect_digest FROM app.job_effect_receipts WHERE job_id=$1 AND effect_identity=$2",
-      [id, effectIdentity],
-    );
-    return existing.rows[0]?.effect_digest === effectDigest
-      ? { ok: true as const, value: "replayed" as const }
-      : { ok: false as const, error: "effect_conflict" as const };
+  public async commitFoundationEffect(
+    job: SemanticJob,
+    effectIdentity: string,
+    effectDigest: string,
+  ) {
+    return inTransaction(this.pool, async (client) => {
+      const current = await client.query("SELECT * FROM app.job_resources WHERE id=$1 FOR UPDATE", [
+        job.id,
+      ]);
+      const row = current.rows[0];
+      if (
+        !row ||
+        row.kind !== job.kind ||
+        row.semantic_identity !== job.semanticIdentity ||
+        row.learner_scope_id !== job.learnerScopeId ||
+        row.payload_digest !== job.payloadDigest
+      ) {
+        return { ok: false as const, error: "conflict" as const };
+      }
+      const existing = await client.query(
+        "SELECT effect_digest FROM app.job_effect_receipts WHERE job_id=$1 AND effect_identity=$2",
+        [job.id, effectIdentity],
+      );
+      if (existing.rows[0]) {
+        if (existing.rows[0].effect_digest !== effectDigest) {
+          return { ok: false as const, error: "effect_conflict" as const };
+        }
+        if (row.state !== "published") {
+          return { ok: false as const, error: "conflict" as const };
+        }
+        return {
+          ok: true as const,
+          value: {
+            disposition: "replayed" as const,
+            job: semanticJobFromRow(row),
+          },
+        };
+      }
+      if (Number(row.revision) !== job.revision) {
+        return { ok: false as const, error: "conflict" as const };
+      }
+      if (
+        !canTransitionSemanticJob(row.state, "succeeded_candidate") ||
+        !canTransitionSemanticJob("succeeded_candidate", "published")
+      ) {
+        return { ok: false as const, error: "illegal_transition" as const };
+      }
+      const candidateRevision = job.revision + 1;
+      const publishedRevision = job.revision + 2;
+      await client.query(
+        "INSERT INTO app.job_effect_receipts(job_id,effect_identity,effect_digest) VALUES($1,$2,$3)",
+        [job.id, effectIdentity, effectDigest],
+      );
+      await client.query(
+        `INSERT INTO app.job_transitions(job_id,revision,from_state,to_state,reason_code)
+         VALUES($1,$2,$3,'succeeded_candidate',NULL),($1,$4,'succeeded_candidate','published',NULL)`,
+        [job.id, candidateRevision, row.state, publishedRevision],
+      );
+      const updated = await client.query(
+        `UPDATE app.job_resources SET state='published',revision=$3,updated_at=transaction_timestamp()
+         WHERE id=$1 AND revision=$2 RETURNING *`,
+        [job.id, job.revision, publishedRevision],
+      );
+      if (!updated.rows[0]) return { ok: false as const, error: "conflict" as const };
+      return {
+        ok: true as const,
+        value: {
+          disposition: "created" as const,
+          job: semanticJobFromRow(updated.rows[0]),
+        },
+      };
+    });
   }
 
   public async append(event: SecurityAuditEvent): Promise<void> {

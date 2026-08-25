@@ -33,7 +33,10 @@ that external record avoids putting a self-referential commit in this file.
   idempotent only for the same pre-bound issuer+subject.
 - Added closed pg-boss queue names, bounded policies, explicit semantic job states,
   coalescing/effect receipts, cancellation/tombstone checks, and non-migrating worker
-  startup/shutdown.
+  startup/shutdown. The Stage 03 receipt is the only authoritative foundation effect:
+  receipt plus `running` → `succeeded_candidate` → `published` transitions commit in
+  one PostgreSQL transaction. There is no callback after receipt creation; later
+  external delivery remains an explicit at-least-once outbox concern.
 - Added exact-pinned `openid-client@6.8.7` for the real Auth0/OIDC protocol boundary.
   Authorization uses `connection=email`, Authorization Code + PKCE S256, keyed state
   and nonce digests, a recoverable AES-GCM-sealed verifier, single-use database
@@ -55,6 +58,11 @@ that external record avoids putting a self-referential commit in this file.
   staging/production, with different database principals required. Local/test keep
   the existing single-URL fallback. Only the migrator and one-shot bootstrap select
   the migrator URL; runtime processes select their own roles.
+- Enforced learner scope in both repository predicates and composite database foreign
+  keys across plan/session/activity/episode/attempt/occasion/Evidence/assertion/
+  correction/projection lineage. Projection publication matches generation ID,
+  learner scope, kind, source cut, and checksum; the current pointer has the same
+  scoped kind/generation identity.
 - Preserved the dedicated `Dockerfile.migrator` and accepted OCI pins. Compose now
   uses that image and the exact Stage 03 schema range. Release evidence contains all
   twelve `P03-*` IDs, fake/closed flags, the exact foundation revision, and Stage 03
@@ -111,7 +119,10 @@ daemon was unavailable; no local PostgreSQL/OCI claim is made.
   owner conflict, unknown binding denial, keyed session storage/revocation,
   single-use sealed OIDC transaction consumption, operation receipt replay/hash
   conflict, scoped Evidence append/assert/correct/supersede history, neutral attacker
-  reads/writes, and structurally minimized audit records.
+  reads/writes, random-ID attempt/occasion lineage swaps, wrong-kind/source-cut
+  projection publication, and structurally minimized audit records. A trigger fault
+  after effect-receipt insertion but before publication proves the whole job
+  transaction rolls back; retry commits one receipt and replay cannot duplicate it.
 - Worker/process and OCI gates verify migration-first readiness, non-root/read-only
   web/worker containers, health and signal handling, and exact OCI identity. Browser
   tests verify anonymous owner denial, fake identity/no network, visible Email OTP

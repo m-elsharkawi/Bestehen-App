@@ -37,7 +37,6 @@ export async function executeSemanticEffect(
   checks: JobExecutionChecks,
   effectIdentity: string,
   effectDigest: string,
-  effect: () => Promise<void>,
 ): Promise<Result<"published" | "replayed" | "cancelled" | "quarantined", "conflict">> {
   if (
     !checks.contractCompatible ||
@@ -61,14 +60,12 @@ export async function executeSemanticEffect(
     const transition = await store.transition(job.id, job.revision, "expired");
     return transition.ok ? { ok: true, value: "quarantined" } : { ok: false, error: "conflict" };
   }
-  const receipt = await store.recordEffect(job.id, effectIdentity, effectDigest);
-  if (!receipt.ok) return { ok: false, error: "conflict" };
-  if (receipt.value === "replayed") return { ok: true, value: "replayed" };
-  await effect();
-  const candidate = await store.transition(job.id, job.revision, "succeeded_candidate");
-  if (!candidate.ok) return { ok: false, error: "conflict" };
-  const published = await store.transition(job.id, candidate.value.revision, "published");
-  return published.ok ? { ok: true, value: "published" } : { ok: false, error: "conflict" };
+  const committed = await store.commitFoundationEffect(job, effectIdentity, effectDigest);
+  if (!committed.ok) return { ok: false, error: "conflict" };
+  return {
+    ok: true,
+    value: committed.value.disposition === "replayed" ? "replayed" : "published",
+  };
 }
 
 export class PgBossTransport {

@@ -363,6 +363,23 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
       await expect(
         repository.appendObservation(ownerScope, observation, firstAssertion),
       ).resolves.toMatchObject({ ok: true, value: { learnerSequence: 2 } });
+      const swappedObservationId = appId<"evidence_observation">(randomUUID());
+      await expect(
+        repository.appendObservation(
+          attackerScope,
+          {
+            ...observation,
+            id: swappedObservationId,
+            learnerScopeId: attacker.learnerScopeId,
+            operationId: appId<"operation">(randomUUID()),
+          },
+          {
+            ...firstAssertion,
+            id: appId<"validity_assertion">(randomUUID()),
+            observationId: swappedObservationId,
+          },
+        ),
+      ).resolves.toEqual({ ok: false, error: "not_available" });
       const secondAssertionId = appId<"validity_assertion">(randomUUID());
       const secondAssertion = {
         ...firstAssertion,
@@ -419,6 +436,42 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
       );
       expect(immutableEvidence.rows[0]?.current_assertion_id).toBe(secondAssertionId);
 
+      const projectionGenerationId = appId<"projection_generation">(randomUUID());
+      await pool.query(
+        `INSERT INTO app.projection_generations(id,learner_scope_id,owner,kind,availability,source_cut,selector_digest,correction_digest,rules_release,calibration_release,payload,checksum)
+         VALUES($1,$2,'Evidence & Capability','capability','recomputing',2,$3,$4,'projection-rules/foundation-v1','calibration/foundation-v1','{}',$5)`,
+        [
+          projectionGenerationId,
+          owner.learnerScopeId,
+          "7".repeat(64),
+          "8".repeat(64),
+          "9".repeat(64),
+        ],
+      );
+      const capabilityCandidate = {
+        generationId: projectionGenerationId,
+        learnerScopeId: owner.learnerScopeId,
+        kind: "capability" as const,
+        sourceCut: 2,
+        checksum: "9".repeat(64),
+      };
+      await expect(
+        repository.publish(ownerScope, { ...capabilityCandidate, kind: "readiness" }, 0),
+      ).resolves.toEqual({ ok: false, error: "checksum_mismatch" });
+      await expect(
+        repository.publish(ownerScope, { ...capabilityCandidate, sourceCut: 3 }, 0),
+      ).resolves.toEqual({ ok: false, error: "checksum_mismatch" });
+      await expect(repository.publish(ownerScope, capabilityCandidate, 0)).resolves.toMatchObject({
+        ok: true,
+      });
+      const pointer = await pool.query(
+        "SELECT kind,generation_id,resource_version FROM app.current_projection_pointers WHERE learner_scope_id=$1",
+        [owner.learnerScopeId],
+      );
+      expect(pointer.rows).toEqual([
+        { kind: "capability", generation_id: projectionGenerationId, resource_version: "1" },
+      ]);
+
       const receipt = {
         learnerScopeId: owner.learnerScopeId,
         operationId: appId<"operation">(randomUUID()),
@@ -444,6 +497,53 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
         [attacker.learnerScopeId],
       );
       expect(attackerRows.rowCount).toBe(0);
+
+      const semanticJob = {
+        id: appId<"job">(randomUUID()),
+        learnerScopeId: owner.learnerScopeId,
+        kind: "projection_rebuild_v1" as const,
+        semanticIdentity: `projection:${owner.learnerScopeId}:2`,
+        state: "running" as const,
+        revision: 2,
+        payloadDigest: "a".repeat(64),
+        attempt: 1,
+        maximumAttempts: 3,
+        deadline: new Date("2026-08-25T13:00:00.000Z"),
+      };
+      await expect(repository.accept(semanticJob)).resolves.toMatchObject({ ok: true });
+      await pool.query(`CREATE FUNCTION app.test_reject_job_publication() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN IF NEW.state='published' THEN RAISE EXCEPTION 'synthetic_publish_failure'; END IF; RETURN NEW; END $$`);
+      await pool.query(`CREATE TRIGGER test_reject_job_publication BEFORE UPDATE ON app.job_resources
+        FOR EACH ROW EXECUTE FUNCTION app.test_reject_job_publication()`);
+      await expect(
+        repository.commitFoundationEffect(semanticJob, "projection:2", "b".repeat(64)),
+      ).rejects.toThrow("synthetic_publish_failure");
+      const rolledBackEffect = await pool.query(
+        "SELECT count(*)::int AS count FROM app.job_effect_receipts WHERE job_id=$1",
+        [semanticJob.id],
+      );
+      expect(rolledBackEffect.rows[0]?.count).toBe(0);
+      await pool.query("DROP TRIGGER test_reject_job_publication ON app.job_resources");
+      await pool.query("DROP FUNCTION app.test_reject_job_publication()");
+      await expect(
+        repository.commitFoundationEffect(semanticJob, "projection:2", "b".repeat(64)),
+      ).resolves.toMatchObject({
+        ok: true,
+        value: { disposition: "created", job: { state: "published", revision: 4 } },
+      });
+      await expect(
+        repository.commitFoundationEffect(semanticJob, "projection:2", "b".repeat(64)),
+      ).resolves.toMatchObject({ ok: true, value: { disposition: "replayed" } });
+      await expect(
+        repository.commitFoundationEffect(semanticJob, "projection:2", "c".repeat(64)),
+      ).resolves.toEqual({ ok: false, error: "effect_conflict" });
+      const committedEffect = await pool.query(
+        `SELECT j.state,j.revision,count(r.*)::int AS receipts
+         FROM app.job_resources j LEFT JOIN app.job_effect_receipts r ON r.job_id=j.id
+         WHERE j.id=$1 GROUP BY j.id`,
+        [semanticJob.id],
+      );
+      expect(committedEffect.rows).toEqual([{ state: "published", revision: "4", receipts: 1 }]);
 
       await repository.append({
         actorScope: owner.learnerScopeId,

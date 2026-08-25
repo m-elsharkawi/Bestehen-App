@@ -304,11 +304,16 @@ export interface SemanticJobStore {
     state: SemanticJobState,
     reasonCode?: string,
   ): Promise<Result<SemanticJob, "conflict" | "illegal_transition">>;
-  recordEffect(
-    id: JobId,
+  commitFoundationEffect(
+    job: SemanticJob,
     effectIdentity: string,
     effectDigest: string,
-  ): Promise<Result<"created" | "replayed", "effect_conflict">>;
+  ): Promise<
+    Result<
+      { readonly disposition: "created" | "replayed"; readonly job: SemanticJob },
+      "effect_conflict" | "conflict" | "illegal_transition"
+    >
+  >;
 }
 
 export interface SecurityAuditEvent {
