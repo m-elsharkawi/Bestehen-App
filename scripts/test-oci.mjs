@@ -12,9 +12,9 @@ const worker = `bestehen-worker-${suffix}`;
 const webImage = `bestehen-web:${commit.slice(0, 12)}-${suffix}`;
 const workerImage = `bestehen-worker:${commit.slice(0, 12)}-${suffix}`;
 const postgresImage =
-  "postgres:18.6-bookworm@sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108";
-const nodeManifest = "sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03";
-const postgresManifest = "sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108";
+  "postgres:18.6-bookworm@sha256:1c59e2c3c818eaa0f0628f695b36e7c9e362d6b219b36a54a32df645cbd7e1af";
+const nodeManifest = "sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df";
+const postgresManifest = "sha256:1c59e2c3c818eaa0f0628f695b36e7c9e362d6b219b36a54a32df645cbd7e1af";
 const created = process.env.SOURCE_DATE_EPOCH
   ? new Date(Number(process.env.SOURCE_DATE_EPOCH) * 1000).toISOString()
   : new Date().toISOString();
