@@ -120,13 +120,15 @@ CREATE TABLE app.sessions (
 CREATE INDEX sessions_scope_state_idx ON app.sessions(learner_scope_id,state);
 CREATE TABLE app.activity_occurrences (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), session_id uuid NOT NULL,
-  operation_id uuid NOT NULL, state text NOT NULL, resource_version bigint NOT NULL DEFAULT 1, meaningful_boundary_at timestamptz, terminal_at timestamptz,
+  operation_id uuid NOT NULL, state text NOT NULL CHECK(state IN ('assembling','offered','active','updating','paused','partially_completed','completed','replanned','blocked','unavailable','failed','deleted')),
+  resource_version bigint NOT NULL DEFAULT 1, meaningful_boundary_at timestamptz, terminal_at timestamptz,
   UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id),
   FOREIGN KEY(learner_scope_id,session_id) REFERENCES app.sessions(learner_scope_id,id)
 );
 CREATE TABLE app.coaching_episodes (
   id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), activity_occurrence_id uuid NOT NULL,
-  state text NOT NULL, resource_version bigint NOT NULL DEFAULT 1, terminal_at timestamptz,
+  state text NOT NULL CHECK(state IN ('assembling','offered','active','updating','paused','partially_completed','completed','replanned','blocked','unavailable','failed','deleted')),
+  resource_version bigint NOT NULL DEFAULT 1, terminal_at timestamptz,
   UNIQUE(learner_scope_id,id), FOREIGN KEY(learner_scope_id,activity_occurrence_id) REFERENCES app.activity_occurrences(learner_scope_id,id)
 );
 CREATE TABLE app.attempts (
@@ -321,7 +323,7 @@ CREATE TABLE app.deletion_operations (
   state text NOT NULL CHECK(state IN ('requested','access_revoked','live_purging','provider_pending','live_erased_backup_residual','fully_expired','failed_retrying')),
   inventory_version text NOT NULL, inventory_digest text NOT NULL CHECK(length(inventory_digest)=64), requested_at timestamptz NOT NULL,
   access_revoked_at timestamptz, live_erased_at timestamptz, backup_expires_at timestamptz, policy_release text NOT NULL,
-  UNIQUE(learner_scope_id,operation_id)
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id)
 );
 CREATE UNIQUE INDEX deletion_one_active_scope_uidx ON app.deletion_operations(learner_scope_id) WHERE state NOT IN ('fully_expired');
 CREATE TABLE app.deletion_steps (
@@ -331,9 +333,10 @@ CREATE TABLE app.deletion_steps (
   PRIMARY KEY(deletion_operation_id,step)
 );
 CREATE TABLE app.learner_tombstones (
-  learner_scope_id uuid PRIMARY KEY REFERENCES app.learner_scopes(id), scope_digest text NOT NULL UNIQUE CHECK(length(scope_digest)=64), deletion_operation_id uuid NOT NULL REFERENCES app.deletion_operations(id),
+  learner_scope_id uuid PRIMARY KEY REFERENCES app.learner_scopes(id), scope_digest text NOT NULL UNIQUE CHECK(length(scope_digest)=64), deletion_operation_id uuid NOT NULL,
   cutoff timestamptz NOT NULL, created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), expires_at timestamptz NOT NULL,
-  state text NOT NULL CHECK(state IN ('active','expired')), CHECK(expires_at <= created_at + interval '91 days')
+  state text NOT NULL CHECK(state IN ('active','expired')), CHECK(expires_at <= created_at + interval '91 days'),
+  FOREIGN KEY(learner_scope_id,deletion_operation_id) REFERENCES app.deletion_operations(learner_scope_id,id)
 );
 CREATE TABLE app.restore_suppression_journal (
   learner_scope_id uuid NOT NULL REFERENCES app.learner_tombstones(learner_scope_id), backup_generation text NOT NULL, cutoff timestamptz NOT NULL,

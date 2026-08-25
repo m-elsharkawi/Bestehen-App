@@ -335,6 +335,20 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
          VALUES($1,$2,$3,'completed',1)`,
         [episodeId, owner.learnerScopeId, occurrenceId],
       );
+      await expect(
+        pool.query(
+          `INSERT INTO app.activity_occurrences(id,learner_scope_id,session_id,operation_id,state,resource_version)
+           VALUES($1,$2,$3,$4,'unknown_state',1)`,
+          [randomUUID(), owner.learnerScopeId, productSessionId, randomUUID()],
+        ),
+      ).rejects.toMatchObject({ code: "23514" });
+      await expect(
+        pool.query(
+          `INSERT INTO app.coaching_episodes(id,learner_scope_id,activity_occurrence_id,state,resource_version)
+           VALUES($1,$2,$3,'unknown_state',1)`,
+          [randomUUID(), owner.learnerScopeId, occurrenceId],
+        ),
+      ).rejects.toMatchObject({ code: "23514" });
       await pool.query(
         `INSERT INTO app.attempts(id,learner_scope_id,session_id,activity_occurrence_id,episode_id,content_revision_id,modality,direct_lane,state,operation_id)
          VALUES($1,$2,$3,$4,$5,$6,'writing','written','completed',$7)`,
@@ -503,16 +517,17 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
         kind: "synthetic-foundation",
         canonicalizationVersion: "canonical-json/v1" as const,
         payloadDigest: "c".repeat(64),
-        status: "completed" as const,
-        resourceId: randomUUID(),
+        status: "accepted" as const,
       };
       await expect(repository.claim(receipt)).resolves.toMatchObject({
         ok: true,
         value: { disposition: "created" },
       });
-      await expect(repository.claim(receipt)).resolves.toMatchObject({
+      await expect(
+        repository.claim({ ...receipt, status: "completed", resourceId: randomUUID() }),
+      ).resolves.toEqual({
         ok: true,
-        value: { disposition: "replayed" },
+        value: { disposition: "replayed", receipt },
       });
       await expect(
         repository.claim({ ...receipt, payloadDigest: "d".repeat(64) }),
@@ -712,6 +727,25 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
       await pool.query("UPDATE app.learner_scopes SET state='active' WHERE id=$1", [
         owner.learnerScopeId,
       ]);
+      const attackerDeletionOperationId = randomUUID();
+      await pool.query(
+        `INSERT INTO app.deletion_operations(id,learner_scope_id,operation_id,state,inventory_version,inventory_digest,requested_at,access_revoked_at,backup_expires_at,policy_release)
+         VALUES($1,$2,$3,'access_revoked','inventory/foundation-v1',$4,$5,$5,transaction_timestamp()+interval '90 days','deletion-policy/v1')`,
+        [
+          attackerDeletionOperationId,
+          attacker.learnerScopeId,
+          randomUUID(),
+          "f".repeat(64),
+          sessionTime,
+        ],
+      );
+      await expect(
+        pool.query(
+          `INSERT INTO app.learner_tombstones(learner_scope_id,scope_digest,deletion_operation_id,cutoff,expires_at,state)
+           VALUES($1,$2,$3,$4,transaction_timestamp()+interval '90 days','active')`,
+          [owner.learnerScopeId, "e".repeat(64), attackerDeletionOperationId, sessionTime],
+        ),
+      ).rejects.toMatchObject({ code: "23503" });
       const deletionOperationId = randomUUID();
       await pool.query(
         `INSERT INTO app.deletion_operations(id,learner_scope_id,operation_id,state,inventory_version,inventory_digest,requested_at,access_revoked_at,backup_expires_at,policy_release)

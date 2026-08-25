@@ -73,6 +73,11 @@ that external record avoids putting a self-referential commit in this file.
   same-scope replay hydrates the complete authoritative stored row rather than
   retaining caller-supplied revision/deadline fields, while two scopes may safely use
   the same semantic identity.
+- Operation-receipt replay hydrates every returned field from its authoritative row;
+  caller-supplied status or resource fields cannot promote an accepted receipt.
+  Tombstones reference deletion operations through the same learner-scope composite
+  key, and activity occurrences/coaching episodes enforce the accepted closed
+  plan/client state vocabulary rather than storing open text states.
 - Preserved the dedicated `Dockerfile.migrator` and accepted OCI pins. Compose now
   uses that image and the exact Stage 03 schema range. Release evidence contains all
   twelve `P03-*` IDs, fake/closed flags, the exact foundation revision, and Stage 03
@@ -133,12 +138,14 @@ daemon was unavailable; no local PostgreSQL/OCI claim is made.
   conflict, scoped Evidence append/assert/correct/supersede history, neutral attacker
   reads/writes, random-ID attempt/occasion lineage swaps, wrong-kind/source-cut
   projection publication, scope-qualified same-identity jobs with authoritative
-  replay hydration, principal/credential revocation of existing App sessions, and
-  structurally minimized audit records. It also denies every Stage 03 learner write,
-  job mutation, and callback/session insertion after both deletion state and an
-  active tombstone. A trigger fault after effect-receipt insertion but before
-  publication proves the whole job transaction rolls back; retry commits one receipt
-  and replay cannot duplicate it.
+  replay hydration, authoritative receipt replay despite changed caller
+  status/resource fields, principal/credential revocation of existing App sessions,
+  closed activity/episode state checks, cross-scope tombstone/deletion-operation FK
+  rejection, and structurally minimized audit records. It also denies every Stage 03
+  learner write, job mutation, and callback/session insertion after both deletion
+  state and an active tombstone. A trigger fault after effect-receipt insertion but
+  before publication proves the whole job transaction rolls back; retry commits one
+  receipt and replay cannot duplicate it.
 - Worker/process and OCI gates verify migration-first readiness, non-root/read-only
   web/worker containers, health and signal handling, and exact OCI identity. Browser
   tests verify anonymous owner denial, fake identity/no network, visible Email OTP

@@ -62,6 +62,18 @@ function semanticJobFromRow(row: Record<string, unknown>): SemanticJob {
   };
 }
 
+function operationReceiptFromRow(row: Record<string, unknown>): OperationReceipt {
+  return {
+    learnerScopeId: appId<"learner_scope">(String(row.learner_scope_id)),
+    operationId: appId<"operation">(String(row.operation_id)),
+    kind: String(row.kind),
+    canonicalizationVersion: row.canonicalization_version as "canonical-json/v1",
+    payloadDigest: String(row.payload_digest),
+    status: row.status as OperationReceipt["status"],
+    ...(row.resource_ref ? { resourceId: String(row.resource_ref) } : {}),
+  };
+}
+
 async function inTransaction<T>(
   pool: Pool,
   operation: (client: PoolClient) => Promise<T>,
@@ -260,8 +272,15 @@ export class PostgresFoundationRepository
           receipt.resourceId ?? null,
         ],
       );
-      if (inserted.rows[0])
-        return { ok: true as const, value: { disposition: "created" as const, receipt } };
+      if (inserted.rows[0]) {
+        return {
+          ok: true as const,
+          value: {
+            disposition: "created" as const,
+            receipt: operationReceiptFromRow(inserted.rows[0]),
+          },
+        };
+      }
       const existing = await client.query(
         "SELECT * FROM app.operation_receipts WHERE learner_scope_id=$1 AND operation_id=$2 AND kind=$3 FOR UPDATE",
         [receipt.learnerScopeId, receipt.operationId, receipt.kind],
@@ -273,7 +292,7 @@ export class PostgresFoundationRepository
         ok: true as const,
         value: {
           disposition: "replayed" as const,
-          receipt: { ...receipt, resourceId: row.resource_ref ?? undefined },
+          receipt: operationReceiptFromRow(row),
         },
       };
     });
