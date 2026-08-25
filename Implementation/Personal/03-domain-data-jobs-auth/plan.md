@@ -166,7 +166,7 @@ switches.
    enrollment and email is never authorization.
 9. Real Auth0 is a provider adapter. Successful callback produces an App principal
    and random opaque App session, then discards provider tokens. The browser receives
-   only `__Host-` Secure HttpOnly SameSite=Lax cookies.
+   only the Secure, HttpOnly, SameSite=Lax `__Host-bestehen_session` cookie.
 10. Every route, use case and repository query derives its `AuthorizedScope` from a
     validated App session or explicit worker/operator capability. An opaque resource
     ID never authorizes a read or write.
@@ -284,7 +284,7 @@ audit/outbox/job payloads.
 | `app.credential_bindings` | UUID PK; principal FK; kind/provider; normalized issuer and subject; keyed fingerprint; state; verified/retired; release | unique active `(issuer,subject)` and fingerprint; email is not a key |
 | `app.principal_scope_bindings` | principal/scope FKs; binding state; operation; created/retired | unique active launch binding; adoption can later append/retire without ID rewrite |
 | `app.app_sessions` | UUID PK; keyed token digest only; principal/scope; state; created/last-used/authenticated/idle/absolute/revoked; policy release; rotation predecessor | unique token digest; active expiry and principal/session-list indexes |
-| `app.oidc_transactions` | opaque digest; state/nonce/PKCE verifier encrypted or keyed; return-path allowlist token; created/expires/used | short TTL and single-use; no URL/token logging |
+| `app.oidc_transactions` | opaque transaction digest; keyed state/nonce digests; PKCE verifier sealed/encrypted server-side; return-path allowlist token; created/expires/used | bounded TTL and single-use; verifier remains recoverable only until code exchange; no URL/token logging |
 | `app.profile_facts` | fact ID; scope; fact kind; operation; sequence; versioned bounded payload; occurred/recorded/effective; supersedes | unique scope/operation/kind; `(scope,sequence)`; Stage 09 later supplies full commands |
 
 ### 7.2 Release, content and compatibility foundation
@@ -433,8 +433,9 @@ evidence.
 - Store a keyed digest of a cryptographically random session token, never the raw
   token or provider access/refresh/ID token. Rotate at sign-in, privilege/binding
   change and adoption; revoke old generation after safe commit.
-- Cookie is `__Host-`, Secure, HttpOnly, SameSite=Lax, path `/`, no Domain. Unsafe
-  commands additionally require allowed Origin/Fetch Metadata and CSRF proof.
+- Cookie is `__Host-bestehen_session`, Secure, HttpOnly, SameSite=Lax, path `/`, no
+  Domain. Unsafe commands additionally require allowed Origin/Fetch Metadata and CSRF
+  proof.
 - `session-policy/v1`: 24-hour inactivity and seven-day absolute expiry. `auth_time`
   establishes the recent OTP marker; sensitive future operations require no older
   than ten minutes. Refresh cannot manufacture recent auth.
@@ -588,9 +589,11 @@ staging:
 1. Follow `STAGE-01`; require clean exact commit and green deterministic CI. Recheck
    only current mutable Auth0/SDK facts required by the route. Do not rerun unrelated
    provider setup or request any private value in evidence.
-2. Use `OPS-03`–`OPS-05` and the preserved `Dockerfile.migrator`: backup checkpoint,
-   one explicit migration, inspect schema/role/readiness state, then fake-first web and
-   worker. PostgreSQL `5432` and worker `3001` remain private.
+2. Use `OPS-03`–`OPS-06` and the preserved `Dockerfile.migrator`: take the required
+   manual protected pre-migration recovery point, run one explicit migration, inspect
+   schema/role/readiness state, then start fake-first web and worker. Scheduled backup
+   wiring and restore proof remain deferred; PostgreSQL `5432` and worker `3001` remain
+   private.
 3. Reconfirm `AUTH-02`–`AUTH-03` and `AUTH-06`–`AUTH-08`; run the one-shot App owner
    binding with protected issuer/subject input. `AUTH-10` controls rotation/recovery.
    Evidence contains only result class, contract/policy version, commit and check ID.
