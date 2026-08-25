@@ -1,7 +1,9 @@
+import { randomUUID } from "node:crypto";
 import type {
   AppSessionRecord,
   AppSessionStore,
   BoundIdentity,
+  EvidenceCorrection,
   EvidenceLedger,
   EvidenceObservation,
   IdentityDirectory,
@@ -10,6 +12,8 @@ import type {
   OperationReceiptStore,
   ProjectionCandidate,
   ProjectionPublisher,
+  SecurityAuditEvent,
+  SecurityAuditSink,
   SemanticJob,
   SemanticJobStore,
   ValidityAssertion,
@@ -24,6 +28,7 @@ import {
   type LearnerScopeId,
   type PrincipalId,
   type Result,
+  validateValidityPartition,
 } from "@bestehen/domain";
 import type { Pool, PoolClient } from "pg";
 
@@ -67,7 +72,8 @@ export class PostgresFoundationRepository
     OperationReceiptStore,
     EvidenceLedger,
     ProjectionPublisher,
-    SemanticJobStore
+    SemanticJobStore,
+    SecurityAuditSink
 {
   public constructor(private readonly pool: Pool) {}
 
@@ -203,7 +209,12 @@ export class PostgresFoundationRepository
   ) {
     if (
       scope.learnerScopeId !== observation.learnerScopeId ||
-      initialAssertion.observationId !== observation.id
+      initialAssertion.observationId !== observation.id ||
+      !validateValidityPartition(
+        initialAssertion.state,
+        observation.supportedScope,
+        initialAssertion.partition,
+      ).ok
     )
       return { ok: false as const, error: "not_available" as const };
     try {
@@ -275,7 +286,7 @@ export class PostgresFoundationRepository
   public async appendAssertion(scope: AuthorizedScope, assertion: ValidityAssertion) {
     return inTransaction(this.pool, async (client) => {
       const current = await client.query(
-        `SELECT o.current_assertion_id,a.state FROM app.evidence_observations o
+        `SELECT o.current_assertion_id,o.supported_scope,a.state FROM app.evidence_observations o
          JOIN app.validity_assertions a ON a.id=o.current_assertion_id
          WHERE o.id=$1 AND o.learner_scope_id=$2 FOR UPDATE OF o`,
         [assertion.observationId, scope.learnerScopeId],
@@ -286,6 +297,8 @@ export class PostgresFoundationRepository
         return { ok: false as const, error: "conflict" as const };
       if (!canTransitionEvidenceValidity(row.state, assertion.state))
         return { ok: false as const, error: "illegal_transition" as const };
+      if (!validateValidityPartition(assertion.state, row.supported_scope, assertion.partition).ok)
+        return { ok: false as const, error: "illegal_transition" as const };
       await this.insertAssertion(client, scope.learnerScopeId, assertion);
       await client.query(
         "UPDATE app.evidence_observations SET current_assertion_id=$2 WHERE id=$1 AND learner_scope_id=$3",
@@ -293,6 +306,63 @@ export class PostgresFoundationRepository
       );
       return { ok: true as const, value: assertion };
     });
+  }
+
+  public async appendCorrection(scope: AuthorizedScope, correction: EvidenceCorrection) {
+    if (
+      correction.learnerScopeId !== scope.learnerScopeId ||
+      (!correction.targetObservationId && !correction.targetAssertionId)
+    ) {
+      return { ok: false as const, error: "not_available" as const };
+    }
+    try {
+      return await inTransaction(this.pool, async (client) => {
+        if (correction.targetObservationId) {
+          const observation = await client.query(
+            "SELECT 1 FROM app.evidence_observations WHERE id=$1 AND learner_scope_id=$2",
+            [correction.targetObservationId, scope.learnerScopeId],
+          );
+          if (!observation.rows[0]) return { ok: false as const, error: "not_available" as const };
+        }
+        if (correction.targetAssertionId) {
+          const assertion = await client.query(
+            "SELECT 1 FROM app.validity_assertions WHERE id=$1 AND learner_scope_id=$2",
+            [correction.targetAssertionId, scope.learnerScopeId],
+          );
+          if (!assertion.rows[0]) return { ok: false as const, error: "not_available" as const };
+        }
+        if (correction.supersedesId) {
+          const predecessor = await client.query(
+            "SELECT 1 FROM app.evidence_corrections WHERE id=$1 AND learner_scope_id=$2",
+            [correction.supersedesId, scope.learnerScopeId],
+          );
+          if (!predecessor.rows[0]) return { ok: false as const, error: "not_available" as const };
+        }
+        await client.query(
+          `INSERT INTO app.evidence_corrections(id,learner_scope_id,operation_id,target_observation_id,target_assertion_id,selector_digest,impact_digest,reason_registry_id,reason_code,asserted_owner,requested_projections,supersedes_id,recorded_at)
+           VALUES($1,$2,$3,$4,$5,$6,$7,'reason-registry/v1',$8,'Evidence & Capability',$9,$10,$11)`,
+          [
+            correction.id,
+            correction.learnerScopeId,
+            correction.operationId,
+            correction.targetObservationId ?? null,
+            correction.targetAssertionId ?? null,
+            correction.selectorDigest,
+            correction.impactDigest,
+            correction.reasonCode,
+            JSON.stringify(correction.requestedProjections),
+            correction.supersedesId ?? null,
+            correction.recordedAt,
+          ],
+        );
+        return { ok: true as const, value: correction };
+      });
+    } catch (error) {
+      if ((error as { code?: string }).code === "23505") {
+        return { ok: false as const, error: "conflict" as const };
+      }
+      throw error;
+    }
   }
 
   public async readChain(
@@ -431,6 +501,25 @@ export class PostgresFoundationRepository
       ? { ok: true as const, value: "replayed" as const }
       : { ok: false as const, error: "effect_conflict" as const };
   }
+
+  public async append(event: SecurityAuditEvent): Promise<void> {
+    await this.pool.query(
+      `INSERT INTO app.security_audit_events(id,actor_scope,action,target_class,target_digest,outcome,reason_code,request_id,trace_id,release,recorded_at,retention_class)
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'security-audit/v1',$10,'security_90d')`,
+      [
+        randomUUID(),
+        event.actorScope,
+        event.action,
+        event.targetClass,
+        event.targetDigest,
+        event.outcome,
+        event.reasonCode,
+        event.requestId,
+        event.traceId,
+        event.recordedAt,
+      ],
+    );
+  }
 }
 
 export interface OwnerBootstrapInput {
@@ -488,6 +577,10 @@ export async function bootstrapPersonalOwner(
         JSON.stringify({ allowlistReference: input.allowlistReference }),
         input.verifiedAt,
       ],
+    );
+    await client.query(
+      "UPDATE app.learner_scopes SET next_sequence=2,updated_at=transaction_timestamp() WHERE id=$1 AND next_sequence=1",
+      [input.learnerScopeId],
     );
     return "created";
   });

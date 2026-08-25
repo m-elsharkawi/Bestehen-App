@@ -274,6 +274,151 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
         transactionStore.consume(oidcState, new Date(sessionTime.getTime() + 2_000)),
       ).resolves.toEqual({ ok: false, error: "transaction_missing" });
 
+      const planRevisionId = randomUUID();
+      const productSessionId = randomUUID();
+      const occurrenceId = randomUUID();
+      const episodeId = randomUUID();
+      const contentFamilyId = randomUUID();
+      const contentRevisionId = randomUUID();
+      const attemptId = randomUUID();
+      const occasionId = randomUUID();
+      await pool.query(
+        "INSERT INTO app.content_families(id,family_key) VALUES($1,'synthetic-family')",
+        [contentFamilyId],
+      );
+      await pool.query(
+        `INSERT INTO app.content_revisions(id,family_id,revision,role,approval_state,rights_state,compatibility_state,digest)
+         VALUES($1,$2,'synthetic-v1','task','approved','eligible','compatible',$3)`,
+        [contentRevisionId, contentFamilyId, "1".repeat(64)],
+      );
+      await pool.query(
+        `INSERT INTO app.plan_revisions(id,learner_scope_id,source_cut,policy_release,reason_release,template_release,content_release,intents,reasons,checksum)
+         VALUES($1,$2,1,'policy/foundation','reason-registry/v1','template/foundation','content/synthetic','[]','[]',$3)`,
+        [planRevisionId, owner.learnerScopeId, "2".repeat(64)],
+      );
+      await pool.query(
+        "INSERT INTO app.sessions(id,learner_scope_id,plan_revision_id,state) VALUES($1,$2,$3,'active')",
+        [productSessionId, owner.learnerScopeId, planRevisionId],
+      );
+      await pool.query(
+        `INSERT INTO app.activity_occurrences(id,learner_scope_id,session_id,operation_id,state,resource_version)
+         VALUES($1,$2,$3,$4,'completed',1)`,
+        [occurrenceId, owner.learnerScopeId, productSessionId, randomUUID()],
+      );
+      await pool.query(
+        `INSERT INTO app.coaching_episodes(id,learner_scope_id,activity_occurrence_id,state,resource_version)
+         VALUES($1,$2,$3,'completed',1)`,
+        [episodeId, owner.learnerScopeId, occurrenceId],
+      );
+      await pool.query(
+        `INSERT INTO app.attempts(id,learner_scope_id,session_id,activity_occurrence_id,episode_id,content_revision_id,modality,direct_lane,state,operation_id)
+         VALUES($1,$2,$3,$4,$5,$6,'writing','written','completed',$7)`,
+        [
+          attemptId,
+          owner.learnerScopeId,
+          productSessionId,
+          occurrenceId,
+          episodeId,
+          contentRevisionId,
+          randomUUID(),
+        ],
+      );
+      await pool.query(
+        `INSERT INTO app.independent_occasions(id,learner_scope_id,episode_id,independence_class,family_relation,policy_release)
+         VALUES($1,$2,$3,'first_attempt','same-family','independence/foundation')`,
+        [occasionId, owner.learnerScopeId, episodeId],
+      );
+      const observationId = appId<"evidence_observation">(randomUUID());
+      const firstAssertionId = appId<"validity_assertion">(randomUUID());
+      const observation = {
+        id: observationId,
+        learnerScopeId: owner.learnerScopeId,
+        operationId: appId<"operation">(randomUUID()),
+        learnerSequence: 0,
+        supportedScope: ["written", "oral"],
+        recordedAt: sessionTime,
+        compatibility: { attemptId, occasionId, directLane: "written" },
+      };
+      const firstAssertion = {
+        id: firstAssertionId,
+        observationId,
+        state: "valid" as const,
+        partition: { affected: [] as string[], unaffected: ["written", "oral"] },
+        reasonCode: "VALIDITY.TECHNICAL_PREFLIGHT",
+        effectiveAt: sessionTime,
+        recordedAt: sessionTime,
+      };
+      const ownerScope = {
+        ...owner,
+        actorKind: "owner" as const,
+        capabilities: [] as const,
+        authenticatedAt: sessionTime,
+      };
+      const attackerScope = {
+        ...attacker,
+        actorKind: "owner" as const,
+        capabilities: [] as const,
+        authenticatedAt: sessionTime,
+      };
+      await expect(
+        repository.appendObservation(ownerScope, observation, firstAssertion),
+      ).resolves.toMatchObject({ ok: true, value: { learnerSequence: 2 } });
+      const secondAssertionId = appId<"validity_assertion">(randomUUID());
+      const secondAssertion = {
+        ...firstAssertion,
+        id: secondAssertionId,
+        priorAssertionId: firstAssertionId,
+        state: "partially_valid" as const,
+        partition: { affected: ["oral"], unaffected: ["written"] },
+        reasonCode: "VALIDITY.ACCESS_EQUIVALENCE",
+      };
+      await expect(repository.appendAssertion(ownerScope, secondAssertion)).resolves.toMatchObject({
+        ok: true,
+      });
+      await expect(repository.appendAssertion(attackerScope, secondAssertion)).resolves.toEqual({
+        ok: false,
+        error: "not_available",
+      });
+      await expect(repository.readChain(ownerScope, observationId)).resolves.toHaveLength(2);
+      await expect(repository.readChain(attackerScope, observationId)).resolves.toEqual([]);
+
+      const firstCorrection = {
+        id: appId<"correction">(randomUUID()),
+        learnerScopeId: owner.learnerScopeId,
+        operationId: appId<"operation">(randomUUID()),
+        targetObservationId: observationId,
+        selectorDigest: "3".repeat(64),
+        impactDigest: "4".repeat(64),
+        reasonCode: "VALIDITY.ACCESS_EQUIVALENCE",
+        requestedProjections: ["capability" as const],
+        recordedAt: sessionTime,
+      };
+      await expect(repository.appendCorrection(ownerScope, firstCorrection)).resolves.toMatchObject(
+        { ok: true },
+      );
+      const { targetObservationId: _targetObservationId, ...correctionBase } = firstCorrection;
+      void _targetObservationId;
+      const supersedingCorrection = {
+        ...correctionBase,
+        id: appId<"correction">(randomUUID()),
+        operationId: appId<"operation">(randomUUID()),
+        targetAssertionId: secondAssertionId,
+        impactDigest: "5".repeat(64),
+        supersedesId: firstCorrection.id,
+      };
+      await expect(
+        repository.appendCorrection(ownerScope, supersedingCorrection),
+      ).resolves.toMatchObject({ ok: true });
+      await expect(repository.appendCorrection(attackerScope, firstCorrection)).resolves.toEqual({
+        ok: false,
+        error: "not_available",
+      });
+      const immutableEvidence = await pool.query(
+        "SELECT current_assertion_id FROM app.evidence_observations WHERE id=$1",
+        [observationId],
+      );
+      expect(immutableEvidence.rows[0]?.current_assertion_id).toBe(secondAssertionId);
+
       const receipt = {
         learnerScopeId: owner.learnerScopeId,
         operationId: appId<"operation">(randomUUID()),
@@ -299,6 +444,47 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
         [attacker.learnerScopeId],
       );
       expect(attackerRows.rowCount).toBe(0);
+
+      await repository.append({
+        actorScope: owner.learnerScopeId,
+        action: "evidence.correct",
+        targetClass: "evidence_observation",
+        targetDigest: "6".repeat(64),
+        outcome: "allowed",
+        reasonCode: "VALIDITY.ACCESS_EQUIVALENCE",
+        requestId: randomUUID(),
+        traceId: randomUUID(),
+        recordedAt: sessionTime,
+      });
+      const auditColumns = await pool.query<{ column_name: string }>(
+        "SELECT column_name FROM information_schema.columns WHERE table_schema='app' AND table_name='security_audit_events' ORDER BY column_name",
+      );
+      expect(auditColumns.rows.map((row) => row.column_name)).not.toEqual(
+        expect.arrayContaining([
+          "email",
+          "subject",
+          "token",
+          "cookie",
+          "body",
+          "response",
+          "audio",
+          "provider_payload",
+        ]),
+      );
+      const audit = await pool.query(
+        "SELECT action,target_class,target_digest,outcome,reason_code,release,retention_class FROM app.security_audit_events",
+      );
+      expect(audit.rows).toEqual([
+        {
+          action: "evidence.correct",
+          target_class: "evidence_observation",
+          target_digest: "6".repeat(64),
+          outcome: "allowed",
+          reason_code: "VALIDITY.ACCESS_EQUIVALENCE",
+          release: "security-audit/v1",
+          retention_class: "security_90d",
+        },
+      ]);
       await pool.end();
     });
   });

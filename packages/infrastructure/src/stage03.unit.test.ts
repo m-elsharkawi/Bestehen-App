@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { AesGcmSealer, HmacDigest, randomOpaqueToken } from "./crypto.js";
 import { appSessionCookie, FakeEmailOtpIdentityAdapter } from "./identity/index.js";
 import { executeSemanticEffect } from "./jobs/index.js";
+import { deterministicProjectionChecksum } from "./projection-checksum.js";
 
 describe("Stage 03 cryptographic storage boundaries", () => {
   const secret = "synthetic-test-secret-at-least-thirty-two-bytes";
@@ -171,5 +172,43 @@ describe("deterministic semantic job effects", () => {
       ),
     ).resolves.toEqual({ ok: true, value: "replayed" });
     expect(calls).toBe(1);
+  });
+});
+
+describe("deterministic projection cut", () => {
+  it("is reorder-stable and changes only when semantic source disposition changes", () => {
+    const scope = appId<"learner_scope">("scope_owner_0000001");
+    const sourceOne = {
+      observationId: appId<"evidence_observation">("observation_owner_0001"),
+      assertionId: appId<"validity_assertion">("assertion_owner_000001"),
+      disposition: "included" as const,
+    };
+    const sourceTwo = {
+      observationId: appId<"evidence_observation">("observation_owner_0002"),
+      assertionId: appId<"validity_assertion">("assertion_owner_000002"),
+      disposition: "excluded" as const,
+      reasonCode: "VALIDITY.TECHNICAL_PREFLIGHT",
+    };
+    const sources = [sourceOne, sourceTwo];
+    const base = {
+      learnerScopeId: scope,
+      kind: "capability" as const,
+      sourceCut: 2,
+      rulesRelease: "projection-rules/foundation-v1",
+      sources,
+    };
+    expect(deterministicProjectionChecksum(base)).toBe(
+      deterministicProjectionChecksum({ ...base, sources: [...sources].reverse() }),
+    );
+    expect(deterministicProjectionChecksum(base)).not.toBe(
+      deterministicProjectionChecksum({
+        ...base,
+        sources: [{ ...sourceOne, disposition: "excluded" }, sourceTwo],
+      }),
+    );
+    expect(sourceTwo).toMatchObject({
+      observationId: "observation_owner_0002",
+      disposition: "excluded",
+    });
   });
 });

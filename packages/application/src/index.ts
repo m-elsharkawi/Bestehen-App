@@ -232,6 +232,20 @@ export interface ValidityAssertion {
   readonly recordedAt: Date;
 }
 
+export interface EvidenceCorrection {
+  readonly id: AppId<"correction">;
+  readonly learnerScopeId: LearnerScopeId;
+  readonly operationId: OperationId;
+  readonly targetObservationId?: EvidenceObservationId;
+  readonly targetAssertionId?: ValidityAssertionId;
+  readonly selectorDigest: string;
+  readonly impactDigest: string;
+  readonly reasonCode: string;
+  readonly requestedProjections: readonly ProjectionCandidate["kind"][];
+  readonly supersedesId?: AppId<"correction">;
+  readonly recordedAt: Date;
+}
+
 export interface EvidenceLedger {
   appendObservation(
     scope: AuthorizedScope,
@@ -242,6 +256,10 @@ export interface EvidenceLedger {
     scope: AuthorizedScope,
     assertion: ValidityAssertion,
   ): Promise<Result<ValidityAssertion, "conflict" | "illegal_transition" | "not_available">>;
+  appendCorrection(
+    scope: AuthorizedScope,
+    correction: EvidenceCorrection,
+  ): Promise<Result<EvidenceCorrection, "conflict" | "not_available">>;
   readChain(
     scope: AuthorizedScope,
     observationId: EvidenceObservationId,
