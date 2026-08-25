@@ -115,3 +115,14 @@ magic link or password. App routes and server authorization are Stage 03 work.
 - **Evidence:** credential class/version, overlap/revoke result, migration manifest digest, and date.
 - **Rollback:** reactivate only a still-valid verified predecessor during overlap; otherwise keep sign-in closed and use the documented recovery limit.
 - **NEVER PASTE HERE:** recovery code, email, issuer/subject, export body, client/Action/session secret, signing material, token, or App principal ID.
+
+### `AUTH-11` — Bind the protected owner identity to App-owned IDs after accepted `03E`
+
+- **Owner:** operations owner, only after independent acceptance of the exact Stage 03 commit and the protected pre-migration recovery point in `OPS-03`–`OPS-06`.
+- **Action:** Deploy the exact accepted commit with every adapter fake and every provider/product flag false. Run the dedicated `Dockerfile.migrator` once. In a one-shot protected shell, make the already verified Auth0 subject available only as `BESTEHEN_AUTH0_OWNER_SUBJECT`, keep the issuer, allowlist reference, and 32-byte-or-longer App session secret in Coolify secrets, and run `pnpm identity:bootstrap-owner`. Remove the one-shot subject variable from the service immediately afterward. Do not pass any identity value as an argument, PR field, prompt, or log.
+- **Expected result:** the command prints only `Owner bootstrap result: created` or the idempotent `already_bound`; it never prints issuer, subject, email, App IDs, or a fingerprint. A different identity returns `conflict` and the identity adapter stays fake/disabled.
+- **How to verify:** repeat the exact binding once and require `already_bound`; attempt an unknown synthetic binding through the deterministic suite and require denial. Only after this gate may the owner enable the Auth0 identity adapter plus the external-call gate for the bounded OTP smoke. Keep object storage, product email, AI/STT/TTS, paid, public-object, guest, account-optional, and experimental behavior fake/false.
+- **Evidence:** exact accepted commit, `AUTH-11`, schema revision `20260825_040_p03_foundation`, result class, `identity-contract/v1`, and `session-policy/v1`—no private value.
+- **Rollback:** select the fake identity adapter first; revoke the affected App session/binding through protected operations and roll forward. Never delete or rewrite learner facts to change identity providers.
+- **Verification status:** repository contract only; **not live-verified** during candidate implementation. The prepared Auth0/SES state, backup wiring, R2 verification, readiness receipt, and recovery smokes remain deferred. The age private key is protected in 1Password but is not genuinely offline.
+- **NEVER PASTE HERE:** subject, issuer/tenant domain, owner email, allowlist, fingerprint, session secret, database URL, App IDs, token, OTP, cookie, or command environment.

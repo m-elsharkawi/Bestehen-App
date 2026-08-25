@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import { appId } from "@bestehen/domain";
 import { withIsolatedDatabase } from "@bestehen/test-support";
 import { describe, expect, it } from "vitest";
+import { AesGcmSealer, HmacDigest } from "../crypto.js";
+import { PostgresOidcTransactionStore } from "../identity/index.js";
 import { bootstrapPersonalOwner, PostgresFoundationRepository } from "./foundation-repository.js";
 import {
   checkDatabaseReadiness,
@@ -190,6 +192,87 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
         ok: false,
         error: "unknown_binding",
       });
+
+      const sessionSecret = "synthetic-session-secret-at-least-thirty-two-bytes";
+      const sessionDigest = new HmacDigest(sessionSecret);
+      const ownerToken = "synthetic-owner-opaque-token";
+      const attackerToken = "synthetic-attacker-opaque-token";
+      const sessionTime = new Date("2026-08-25T12:05:00.000Z");
+      const sessionExpiry = new Date("2026-08-26T12:05:00.000Z");
+      const absoluteExpiry = new Date("2026-09-01T12:05:00.000Z");
+      const ownerSession = {
+        id: appId<"app_session">(randomUUID()),
+        tokenDigest: sessionDigest.digest("app-session", ownerToken),
+        ...owner,
+        state: "active" as const,
+        createdAt: sessionTime,
+        lastUsedAt: sessionTime,
+        authenticatedAt: sessionTime,
+        idleExpiresAt: sessionExpiry,
+        absoluteExpiresAt: absoluteExpiry,
+      };
+      const attackerSession = {
+        ...ownerSession,
+        id: appId<"app_session">(randomUUID()),
+        tokenDigest: sessionDigest.digest("app-session", attackerToken),
+        ...attacker,
+      };
+      await repository.insert(ownerSession);
+      await repository.insert(attackerSession);
+      await expect(repository.findByTokenDigest(ownerSession.tokenDigest)).resolves.toMatchObject({
+        id: ownerSession.id,
+        learnerScopeId: owner.learnerScopeId,
+      });
+      await expect(
+        repository.findByTokenDigest(attackerSession.tokenDigest),
+      ).resolves.toMatchObject({
+        id: attackerSession.id,
+        learnerScopeId: attacker.learnerScopeId,
+      });
+      await expect(
+        repository.findByTokenDigest(sessionDigest.digest("app-session", "swapped")),
+      ).resolves.toBeUndefined();
+      const storedSession = await pool.query<{ token_digest: string }>(
+        "SELECT token_digest FROM app.app_sessions WHERE id=$1",
+        [ownerSession.id],
+      );
+      expect(storedSession.rows[0]?.token_digest).toBe(ownerSession.tokenDigest);
+      expect(storedSession.rows[0]?.token_digest).not.toContain(ownerToken);
+      await expect(repository.revoke(ownerSession.id, sessionTime)).resolves.toBe(true);
+      await expect(repository.findByTokenDigest(ownerSession.tokenDigest)).resolves.toMatchObject({
+        state: "revoked",
+      });
+
+      const transactionStore = new PostgresOidcTransactionStore(
+        pool,
+        sessionDigest,
+        new AesGcmSealer(sessionSecret),
+      );
+      const oidcState = "synthetic-state";
+      const oidcNonce = "synthetic-nonce";
+      const pkceVerifier = "synthetic-recoverable-pkce-verifier";
+      const sealer = new AesGcmSealer(sessionSecret);
+      await transactionStore.insert({
+        transactionDigest: sessionDigest.digest("oidc-transaction", oidcState),
+        stateDigest: sessionDigest.digest("oidc-state", oidcState),
+        nonceDigest: sessionDigest.digest("oidc-nonce", oidcNonce),
+        verifierAndNonceSealed: sealer.seal(
+          "oidc-pkce",
+          JSON.stringify({ nonce: oidcNonce, pkceVerifier }),
+        ),
+        returnPath: "/synthetic-draft?preserved=1",
+        createdAt: sessionTime,
+        expiresAt: new Date(sessionTime.getTime() + 10 * 60 * 1000),
+      });
+      await expect(
+        transactionStore.consume(oidcState, new Date(sessionTime.getTime() + 1_000)),
+      ).resolves.toMatchObject({
+        ok: true,
+        value: { nonce: oidcNonce, pkceVerifier, returnPath: "/synthetic-draft?preserved=1" },
+      });
+      await expect(
+        transactionStore.consume(oidcState, new Date(sessionTime.getTime() + 2_000)),
+      ).resolves.toEqual({ ok: false, error: "transaction_missing" });
 
       const receipt = {
         learnerScopeId: owner.learnerScopeId,

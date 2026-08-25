@@ -62,6 +62,7 @@ export function createFakeAdapterRegistry(
 }
 
 export * from "./crypto.js";
+export * from "./identity/index.js";
 export * from "./jobs/index.js";
 export * from "./postgres/foundation-repository.js";
 export * from "./postgres/index.js";

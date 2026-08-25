@@ -12,7 +12,7 @@ pnpm db:migrate
 pnpm dev
 ```
 
-The explicit migrator is the only schema owner. Web and worker never migrate at startup. The baseline migration creates only Kysely's migration metadata and revision `baseline`; there is no product table or queue.
+The explicit migrator is the only schema owner. Web and worker never migrate at startup. It applies the ordered Stage 03 App migrations, verifies their checksums, installs pg-boss's owned schema, and records revision `20260825_040_p03_foundation`. All adapters and provider-call flags remain fake/false locally.
 
 Useful checks:
 
@@ -28,4 +28,4 @@ pnpm test:oci
 
 If readiness is `503`, confirm configuration, PostgreSQL health, and that `pnpm db:migrate` completed. Liveness deliberately remains independent of PostgreSQL. If Docker is unavailable, local PostgreSQL/OCI claims remain unresolved and clean Linux CI must supply them.
 
-For safe cleanup, first inspect `docker compose ps` and the exact project name. `docker compose down` removes baseline containers and network but preserves `bestehen-postgres-18`. Only when the synthetic local database is intentionally disposable, inspect the exact volume and run `docker compose down --volumes`. Do not target broad Docker resources or a production host.
+For safe cleanup, first inspect `docker compose ps` and the exact project name. `docker compose down` removes local containers and network but preserves `bestehen-postgres-18`. Only when the synthetic local database is intentionally disposable, inspect the exact volume and run `docker compose down --volumes`. Do not target broad Docker resources or a production host.

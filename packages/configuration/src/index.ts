@@ -107,8 +107,8 @@ const serverEnvironmentSchema = z
     BESTEHEN_APP_ENV: z.enum(["local", "test", "preview", "staging", "production"]),
     BESTEHEN_RELEASE_COMMIT: z.string().min(1).max(64),
     BESTEHEN_RELEASE_DIRTY: strictBoolean,
-    BESTEHEN_SCHEMA_MIN_REVISION: z.string().min(1).max(128).default("baseline"),
-    BESTEHEN_SCHEMA_MAX_REVISION: z.string().min(1).max(128).default("baseline"),
+    BESTEHEN_SCHEMA_MIN_REVISION: z.string().min(1).max(128).default("20260825_040_p03_foundation"),
+    BESTEHEN_SCHEMA_MAX_REVISION: z.string().min(1).max(128).default("20260825_040_p03_foundation"),
     BESTEHEN_WEB_PORT: positivePort.default(3000),
     BESTEHEN_WORKER_PORT: positivePort.default(3001),
     BESTEHEN_SHUTDOWN_GRACE_MS: z.coerce.number().int().min(100).max(60_000).default(5000),
@@ -132,7 +132,7 @@ const serverEnvironmentSchema = z
     BESTEHEN_AUTH0_ISSUER_BASE_URL: auth0EuIssuer.optional(),
     BESTEHEN_AUTH0_CLIENT_ID: z.string().min(1).optional(),
     BESTEHEN_AUTH0_CLIENT_SECRET: z.string().min(16).optional(),
-    BESTEHEN_AUTH0_SESSION_SECRET: z.string().min(16).optional(),
+    BESTEHEN_AUTH0_SESSION_SECRET: z.string().min(32).optional(),
     BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE: z.string().min(1).optional(),
     BESTEHEN_APPLICATION_BASE_URL: httpsOrigin.optional(),
     BESTEHEN_AUTH0_CONNECTION: z.literal("email").optional(),
@@ -245,6 +245,17 @@ const serverEnvironmentSchema = z
         code: "custom",
         path: ["BESTEHEN_FLAG_PUBLIC_OBJECT_ACCESS"],
         message: "public object access is forbidden for the personal profile",
+      });
+    }
+
+    if (
+      ["preview", "staging", "production"].includes(environment.BESTEHEN_APP_ENV) &&
+      !environment.BESTEHEN_AUTH0_SESSION_SECRET
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["BESTEHEN_AUTH0_SESSION_SECRET"],
+        message: "a protected App session/transaction secret is required",
       });
     }
   });
@@ -384,11 +395,19 @@ export function releaseMetadata(environment: ServerEnvironment): ReleaseMetadata
       maximum: environment.BESTEHEN_SCHEMA_MAX_REVISION,
     },
     flags: featureFlags(environment),
-    application: "stage-01-baseline",
+    application: "stage-03-foundation",
     content: "not-produced",
     evaluation: "not-produced",
     model: "not-produced",
   };
+}
+
+export function appSecuritySecret(environment: ServerEnvironment): string {
+  if (environment.BESTEHEN_AUTH0_SESSION_SECRET) return environment.BESTEHEN_AUTH0_SESSION_SECRET;
+  if (environment.BESTEHEN_APP_ENV === "local" || environment.BESTEHEN_APP_ENV === "test") {
+    return "synthetic-local-only-session-secret-not-for-deployment";
+  }
+  throw new Error("Protected App session/transaction secret is unavailable");
 }
 
 const secretKeyPattern =

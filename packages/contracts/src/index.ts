@@ -7,17 +7,21 @@ import {
 } from "@bestehen/domain";
 import { z } from "zod";
 
-export const contractVersionSchema = z.object({
-  major: z.number().int().positive(),
-  minor: z.number().int().nonnegative(),
-});
+export const contractVersionSchema = z
+  .object({
+    major: z.number().int().positive(),
+    minor: z.number().int().nonnegative(),
+  })
+  .strict();
 
-export const healthPayloadSchema = z.object({
-  version: z.literal(1),
-  status: z.enum(["live", "ready", "not_ready", "stopping"]),
-  service: z.enum(["web", "worker"]),
-  releaseCommit: z.string().min(1).max(64),
-});
+export const healthPayloadSchema = z
+  .object({
+    version: z.literal(1),
+    status: z.enum(["live", "ready", "not_ready", "stopping"]),
+    service: z.enum(["web", "worker"]),
+    releaseCommit: z.string().min(1).max(64),
+  })
+  .strict();
 
 export type HealthPayload = z.infer<typeof healthPayloadSchema>;
 
@@ -34,12 +38,12 @@ export const opaqueAppIdSchema = z
 export const operationIdSchema = opaqueAppIdSchema;
 
 export const domainResultSchema = z.discriminatedUnion("status", [
-  z.object({ status: z.literal("completed"), resourceId: opaqueAppIdSchema.optional() }),
-  z.object({ status: z.literal("accepted_pending"), jobId: opaqueAppIdSchema }),
-  z.object({ status: z.literal("partial"), reasonCode: z.string().min(3) }),
-  z.object({ status: z.literal("conflict"), reasonCode: z.string().min(3) }),
-  z.object({ status: z.literal("unavailable"), reasonCode: z.string().min(3) }),
-  z.object({ status: z.literal("deleted"), reasonCode: z.string().min(3) }),
+  z.object({ status: z.literal("completed"), resourceId: opaqueAppIdSchema.optional() }).strict(),
+  z.object({ status: z.literal("accepted_pending"), jobId: opaqueAppIdSchema }).strict(),
+  z.object({ status: z.literal("partial"), reasonCode: z.string().min(3) }).strict(),
+  z.object({ status: z.literal("conflict"), reasonCode: z.string().min(3) }).strict(),
+  z.object({ status: z.literal("unavailable"), reasonCode: z.string().min(3) }).strict(),
+  z.object({ status: z.literal("deleted"), reasonCode: z.string().min(3) }).strict(),
 ]);
 
 export const problemSchema = z
@@ -66,7 +70,7 @@ export const problemSchema = z
 
 export const commandEnvelopeSchema = z
   .object({
-    contract: z.object({ major: z.literal(1), minor: z.number().int().min(0).max(99) }),
+    contract: z.object({ major: z.literal(1), minor: z.number().int().min(0).max(99) }).strict(),
     operationId: operationIdSchema,
     expectedVersion: z.number().int().nonnegative(),
     payload: z.record(z.string(), z.unknown()),
@@ -75,7 +79,9 @@ export const commandEnvelopeSchema = z
 
 export const jobEnvelopeSchema = z
   .object({
-    contract: z.object({ kind: z.literal("foundation"), major: z.literal(1), minor: z.literal(0) }),
+    contract: z
+      .object({ kind: z.literal("foundation"), major: z.literal(1), minor: z.literal(0) })
+      .strict(),
     jobId: opaqueAppIdSchema,
     kind: z.enum(["projection_rebuild_v1", "outbox_dispatch_v1", "rights_reconcile_v1"]),
     semanticIdentity: z.string().min(8).max(256),
@@ -152,14 +158,14 @@ export const projectionSchema = z
     readiness: z.enum(readinessStates).optional(),
     written: z
       .union([
-        z.object({ status: z.literal("absent") }),
-        z.object({ status: z.literal("value"), band: z.string() }),
+        z.object({ status: z.literal("absent") }).strict(),
+        z.object({ status: z.literal("value"), band: z.string() }).strict(),
       ])
       .optional(),
     oral: z
       .union([
-        z.object({ status: z.literal("absent") }),
-        z.object({ status: z.literal("value"), band: z.string() }),
+        z.object({ status: z.literal("absent") }).strict(),
+        z.object({ status: z.literal("value"), band: z.string() }).strict(),
       ])
       .optional(),
   })

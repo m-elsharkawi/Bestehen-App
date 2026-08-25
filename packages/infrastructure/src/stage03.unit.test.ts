@@ -1,6 +1,7 @@
 import { appId, canTransitionSemanticJob, type JobId } from "@bestehen/domain";
 import { describe, expect, it } from "vitest";
 import { AesGcmSealer, HmacDigest, randomOpaqueToken } from "./crypto.js";
+import { appSessionCookie, FakeEmailOtpIdentityAdapter } from "./identity/index.js";
 import { executeSemanticEffect } from "./jobs/index.js";
 
 describe("Stage 03 cryptographic storage boundaries", () => {
@@ -29,6 +30,70 @@ describe("Stage 03 cryptographic storage boundaries", () => {
 
   it("creates high-entropy opaque session material", () => {
     expect(randomOpaqueToken()).toMatch(/^[A-Za-z0-9_-]{40,}$/);
+  });
+
+  it("uses the exact host-only opaque App session cookie", () => {
+    expect(appSessionCookie).toEqual({
+      name: "__Host-bestehen_session",
+      options: { secure: true, httpOnly: true, sameSite: "lax", path: "/" },
+    });
+    expect("domain" in appSessionCookie.options).toBe(false);
+  });
+});
+
+describe("deterministic fake Email OTP identity", () => {
+  const now = new Date("2026-08-25T12:00:00.000Z");
+  const adapter = new FakeEmailOtpIdentityAdapter(
+    { issuer: "https://synthetic.eu.auth0.com/", audience: "synthetic-client" },
+    now,
+  );
+  const claims = {
+    iss: "https://synthetic.eu.auth0.com/",
+    aud: "synthetic-client",
+    sub: "auth0|synthetic-owner",
+    email_verified: true,
+    auth_time: now.getTime() / 1000 - 30,
+    iat: now.getTime() / 1000 - 30,
+    exp: now.getTime() / 1000 + 300,
+  };
+
+  it("accepts the exact issuer/audience/time/subject/verified-email claim set", () => {
+    expect(adapter.verify(claims)).toMatchObject({
+      ok: true,
+      value: { authenticationMethod: "email_otp", emailVerified: true },
+    });
+  });
+
+  it.each([
+    [{ ...claims, iss: "https://wrong.example/" }, "issuer_invalid"],
+    [{ ...claims, aud: "wrong-client" }, "audience_invalid"],
+    [{ ...claims, sub: "" }, "subject_missing"],
+    [{ ...claims, email_verified: false }, "email_unverified"],
+    [{ ...claims, auth_time: undefined }, "authentication_time_invalid"],
+    [{ ...claims, iat: now.getTime() / 1000 + 600 }, "issued_at_invalid"],
+    [{ ...claims, exp: now.getTime() / 1000 - 1 }, "expired"],
+    [{ ...claims, nbf: now.getTime() / 1000 + 600 }, "not_yet_valid"],
+  ])("rejects malformed claims closed", (fixture, reason) => {
+    expect(adapter.verify(fixture as never)).toEqual({ ok: false, error: reason });
+  });
+
+  it.each([
+    [{ state: "wrong" }, "state_invalid"],
+    [{ nonce: "wrong" }, "nonce_invalid"],
+    [{ pkceVerifier: "wrong" }, "pkce_invalid"],
+  ])("rejects callback transaction mismatch", (override, reason) => {
+    expect(
+      adapter.verifyCallback({
+        claims,
+        state: "state-ok",
+        expectedState: "state-ok",
+        nonce: "nonce-ok",
+        expectedNonce: "nonce-ok",
+        pkceVerifier: "pkce-ok",
+        expectedPkceVerifier: "pkce-ok",
+        ...override,
+      }),
+    ).toEqual({ ok: false, error: reason });
   });
 });
 

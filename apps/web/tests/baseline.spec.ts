@@ -40,3 +40,18 @@ test("health payloads are minimal and liveness is dependency-free", async ({ req
   const payload = await ready.json();
   expect(Object.keys(payload).sort()).toEqual(["releaseCommit", "service", "status", "version"]);
 });
+
+test("personal owner routes deny anonymously and fake identity makes no provider call", async ({
+  page,
+  request,
+}) => {
+  const owner = await request.get("/api/v1/owner/status");
+  expect(owner.status()).toBe(404);
+  expect(await owner.json()).toEqual({ status: "not_available" });
+
+  await page.goto("/auth/login");
+  await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured$/);
+  await expect(page.getByRole("heading", { name: "Sign-in unavailable" })).toBeVisible();
+  await expect(page.getByText(/email otp/i)).toBeVisible();
+  await expect(page.getByText(/password/i)).toHaveCount(0);
+});

@@ -30,7 +30,7 @@ describe("healthPayloadSchema", () => {
         releaseCommit: "synthetic-commit",
         databaseUrl: "not-allowed",
       }),
-    ).not.toThrow();
+    ).toThrow();
   });
 });
 
@@ -90,6 +90,28 @@ describe("Stage 03 v1 contracts", () => {
         effectiveAt: "2026-08-25T12:00:00.000Z",
         recordedAt: "2026-08-25T12:00:00.000Z",
         release: "evidence-contract/v1",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects undocumented carriers at outer and nested contract boundaries", () => {
+    expect(
+      commandEnvelopeSchema.safeParse({
+        contract: { major: 1, minor: 0, compatibility: "latest" },
+        operationId: id,
+        expectedVersion: 0,
+        payload: {},
+      }).success,
+    ).toBe(false);
+    expect(
+      projectionSchema.safeParse({
+        generationId: id,
+        kind: "readiness",
+        availability: "current",
+        sourceCut: 4,
+        computedAt: "2026-08-25T12:00:00.000Z",
+        checksum: "b".repeat(64),
+        written: { status: "absent", hiddenScore: 0.91 },
       }).success,
     ).toBe(false);
   });
