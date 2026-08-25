@@ -1,27 +1,27 @@
-import { PgBoss } from "pg-boss";
+import { PgBossTransport } from "./jobs/index.js";
 
-export type SupervisorState = "stopped" | "idle_no_product_queues" | "stopping";
+export type SupervisorState = "stopped" | "ready_foundation_queues" | "stopping";
 
 /**
- * Stage 01 intentionally has no product queue or pg-boss schema. This supervisor proves the
- * configured pg-boss implementation is constructible while keeping schema creation under the
- * future explicit migrator owner.
+ * The worker opens only the pre-installed pg-boss schema. DDL and queue registration remain owned
+ * by the dedicated migrator. Stage 03 registers no product/provider handler.
  */
 export class PgBossSupervisor {
   private state: SupervisorState = "stopped";
-  private readonly boss: PgBoss;
+  private readonly transport: PgBossTransport;
 
   public constructor(databaseUrl: string) {
-    this.boss = new PgBoss({ connectionString: databaseUrl, migrate: false });
+    this.transport = new PgBossTransport(databaseUrl);
   }
 
   public async start(): Promise<void> {
-    void this.boss;
-    this.state = "idle_no_product_queues";
+    await this.transport.start();
+    this.state = "ready_foundation_queues";
   }
 
   public async stop(): Promise<void> {
     this.state = "stopping";
+    await this.transport.stop();
     this.state = "stopped";
   }
 
@@ -30,6 +30,6 @@ export class PgBossSupervisor {
   }
 
   public isReady(): boolean {
-    return this.state === "idle_no_product_queues";
+    return this.state === "ready_foundation_queues";
   }
 }

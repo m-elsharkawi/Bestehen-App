@@ -61,5 +61,8 @@ export function createFakeAdapterRegistry(
   );
 }
 
+export * from "./crypto.js";
+export * from "./jobs/index.js";
+export * from "./postgres/foundation-repository.js";
 export * from "./postgres/index.js";
 export * from "./supervisor.js";

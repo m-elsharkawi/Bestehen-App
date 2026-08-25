@@ -1,6 +1,9 @@
 import { Kysely, PostgresDialect } from "kysely";
-import { Migrator, type Migration, type MigrationProvider } from "kysely/migration";
+import { type Migration, type MigrationProvider, Migrator } from "kysely/migration";
 import { Pool, type PoolConfig } from "pg";
+import { PgBoss } from "pg-boss";
+import { foundationJobPolicy, foundationQueues } from "../jobs/index.js";
+import { foundationMigrations, foundationRevision, migrationChecksums } from "./migrations.js";
 
 interface EmptyDatabase {
   readonly _stage01NoProductTables: never;
@@ -8,9 +11,9 @@ interface EmptyDatabase {
 
 const migrationLockId = 420_101;
 
-class EmptyMigrationProvider implements MigrationProvider {
+class FoundationMigrationProvider implements MigrationProvider {
   public async getMigrations(): Promise<Record<string, Migration>> {
-    return {};
+    return { ...foundationMigrations };
   }
 }
 
@@ -56,6 +59,49 @@ async function observedRevision(pool: Pool): Promise<string> {
   return latest.rows[0]?.name ?? "baseline";
 }
 
+async function verifyMigrationChecksums(pool: Pool): Promise<void> {
+  const relation = await pool.query<{ relation: string | null }>(
+    "SELECT to_regclass('app.schema_revisions')::text AS relation",
+  );
+  if (!relation.rows[0]?.relation) return;
+  const observed = await pool.query<{ revision: string; checksum: string }>(
+    "SELECT revision, checksum FROM app.schema_revisions ORDER BY revision",
+  );
+  const expected = Object.entries(migrationChecksums);
+  if (
+    observed.rows.length !== expected.length ||
+    expected.some(
+      ([revision, checksum]) =>
+        observed.rows.find((entry) => entry.revision === revision)?.checksum !== checksum,
+    )
+  ) {
+    throw new Error("Schema migration checksum drift detected");
+  }
+}
+
+async function migratePgBoss(databaseUrl: string): Promise<void> {
+  const boss = new PgBoss({
+    connectionString: databaseUrl,
+    schema: "pgboss",
+    migrate: true,
+    createSchema: true,
+    supervise: false,
+    schedule: false,
+  });
+  boss.on("error", () => undefined);
+  await boss.start();
+  for (const queue of foundationQueues) {
+    await boss.createQueue(queue, {
+      expireInSeconds: foundationJobPolicy.leaseSeconds,
+      retryLimit: foundationJobPolicy.retryLimit,
+      retryDelay: foundationJobPolicy.retryDelaySeconds,
+      retryBackoff: foundationJobPolicy.retryBackoff,
+      retentionSeconds: foundationJobPolicy.retentionDays * 86_400,
+    });
+  }
+  await boss.stop({ graceful: true, timeout: 5_000 });
+}
+
 export async function migrateDatabase(databaseUrl: string): Promise<MigrationResult> {
   const pool = createPostgresPool(databaseUrl, { max: 3 });
   const lockClient = await pool.connect();
@@ -63,9 +109,11 @@ export async function migrateDatabase(databaseUrl: string): Promise<MigrationRes
   try {
     await lockClient.query("SELECT pg_advisory_lock($1)", [migrationLockId]);
     const fromRevision = await observedRevision(pool);
-    const migrator = new Migrator({ db: database, provider: new EmptyMigrationProvider() });
+    const migrator = new Migrator({ db: database, provider: new FoundationMigrationProvider() });
     const result = await migrator.migrateToLatest();
     if (result.error) throw result.error;
+    await verifyMigrationChecksums(pool);
+    await migratePgBoss(databaseUrl);
     const toRevision = await observedRevision(pool);
     return {
       fromRevision,
@@ -89,14 +137,36 @@ export async function checkSchemaCompatibility(
   maximumRevision: string,
 ): Promise<SchemaCompatibility> {
   const revision = await observedRevision(pool);
+  if (revision === foundationRevision) {
+    try {
+      await verifyMigrationChecksums(pool);
+    } catch {
+      return {
+        compatible: false,
+        observedRevision: "drifted",
+        minimumRevision,
+        maximumRevision,
+      };
+    }
+  }
+  const revisions = ["baseline", ...Object.keys(foundationMigrations)];
+  const observedIndex = revisions.indexOf(revision);
+  const minimumIndex = revisions.indexOf(minimumRevision);
+  const maximumIndex = revisions.indexOf(maximumRevision);
   return {
     compatible:
-      revision === "baseline" && minimumRevision === "baseline" && maximumRevision === "baseline",
+      observedIndex >= 0 &&
+      minimumIndex >= 0 &&
+      maximumIndex >= minimumIndex &&
+      observedIndex >= minimumIndex &&
+      observedIndex <= maximumIndex,
     observedRevision: revision,
     minimumRevision,
     maximumRevision,
   };
 }
+
+export { foundationRevision, migrationChecksums } from "./migrations.js";
 
 export async function checkDatabaseReadiness(
   pool: Pool,
