@@ -8,13 +8,18 @@ Accepted semantic input: Personal Stage 02 merge
 `3c2ae433c10db0dde876405d50a50210b27b647e`, with green post-merge CI
 [32667024749](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32667024749).
 
-Effective Stage 03 baseline: `cb2e9a7a88fc384d9cad155647e4a6acccf6b5c3`, the
-matching clean Stage 03 branch,
+Original effective Stage 03 planning baseline:
+`cb2e9a7a88fc384d9cad155647e4a6acccf6b5c3`, the matching clean Stage 03 branch,
 `origin/implementation/personal-03-domain-data-jobs-auth`, and `origin/main` when
-planning resumed. The only changes after the accepted Stage 02 merge are
-owner-authored PRs #4 and #5: the temporary one-shot compose wrapper was replaced by
-the dedicated `Dockerfile.migrator`. Stage 03 will preserve and use that image; it
-will not create a second migration runner.
+planning resumed. Owner-authored PRs #4 and #5 replaced the temporary one-shot
+compose wrapper with the dedicated `Dockerfile.migrator`. Stage 03 will preserve and
+use that image; it will not create a second migration runner.
+
+Later accepted maintenance input:
+`1a41eea7fc2ed3c8cbd45415c121ed41fdfb3dac` (PR #7) refreshes only the pinned OCI
+image digests after registry tag drift. It is incorporated into this branch by merge
+`71315abd3972f9f7d6a9ff894617be1ef52e052b`; it changes neither the accepted Stage 02
+semantics nor Stage 03 scope, provider state, or deferred owner gates.
 
 Branch: `implementation/personal-03-domain-data-jobs-auth`; PR base/head will be
 `main` and this branch. Stage boundary: this document plans `03E`. This Planning
