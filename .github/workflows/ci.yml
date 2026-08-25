@@ -93,7 +93,7 @@ jobs:
     timeout-minutes: 20
     services:
       postgres:
-        image: postgres:18.6-bookworm@sha256:7d2695c3aa88e792e8b3b233e7e4adb296a20412c6c0ca361e3edaaacfada108
+        image: postgres:18.6-bookworm@sha256:1c59e2c3c818eaa0f0628f695b36e7c9e362d6b219b36a54a32df645cbd7e1af
         env:
           POSTGRES_DB: bestehen_ci
           POSTGRES_PASSWORD: bestehen_ci
