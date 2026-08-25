@@ -52,6 +52,11 @@ test("personal owner routes deny anonymously and fake identity makes no provider
   await page.goto("/auth/login");
   await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured$/);
   await expect(page.getByRole("heading", { name: "Sign-in unavailable" })).toBeVisible();
-  await expect(page.getByText(/email otp/i)).toBeVisible();
+  await expect(
+    page.getByText(
+      "Email OTP sign-in could not be completed. Try again without changing your saved work.",
+      { exact: true },
+    ),
+  ).toBeVisible();
   await expect(page.getByText(/password/i)).toHaveCount(0);
 });
