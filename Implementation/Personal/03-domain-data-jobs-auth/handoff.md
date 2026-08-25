@@ -1,17 +1,25 @@
-# Personal Stage 03 execution candidate handoff
+# Personal Stage 03 execution handoff
 
 Date: 2026-08-25 (Europe/Berlin)
 
-Status: `03E` repository execution candidate is in progress and awaiting independent
-review. It is not accepted, merged, deployed, or live-verified.
+Status: `03E` repository execution accepted independently; not merged, deployed, or
+live-verified.
 
 Draft PR: [#6](https://github.com/m-elsharkawi/Bestehen-App/pull/6)
 
 Accepted Planning input: `f9ecffbcab50d3bfb56bad5ac5e77c92433ee36c`;
 execution started from the clean Planning acceptance record
-`f466e29ee07b06da19130d60e2887be1e088c68b`. The exact containing candidate SHA and
-its final CI run are recorded in the PR evidence comment after this handoff commit;
-that external record avoids putting a self-referential commit in this file.
+`f466e29ee07b06da19130d60e2887be1e088c68b`.
+
+Accepted reviewed candidate: `94143635cf0cb43f78cccbe591254ea8c34eb938`.
+
+Passing exact-candidate CI:
+[PR run 32894038906](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32894038906).
+
+Independent acceptance:
+[PR comment 5416194745](https://github.com/m-elsharkawi/Bestehen-App/pull/6#issuecomment-5416194745).
+The checklist now records `03E` as `[x]`. Merge and the separately authorized private
+staging contract remain separate owner gates.
 
 ## Delivered boundary
 
@@ -217,5 +225,5 @@ deferred. The age private key is protected in 1Password but is **not genuinely
 offline**. These facts block any readiness/backup claim, not this deterministic
 repository candidate.
 
-Stop after independent `03E` review and the separately authorized bounded Stage 03
-private-staging contract. Do not mark `03E` accepted here and do not start Stage 04.
+`03E` repository execution is accepted. Stop before the separately authorized bounded
+Stage 03 private-staging contract, and do not start Stage 04.
