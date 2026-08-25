@@ -21,6 +21,7 @@
     "check:secrets": "node scripts/check-secrets.mjs",
     "check:scope": "node scripts/check-scope.mjs",
     "db:migrate": "node scripts/run-with-local-env.mjs pnpm --filter @bestehen/infrastructure db:migrate",
+    "identity:bootstrap-owner": "pnpm --filter @bestehen/infrastructure identity:bootstrap-owner",
     "dev": "node scripts/run-with-local-env.mjs pnpm --parallel --filter @bestehen/web --filter @bestehen/worker dev",
     "dev:web": "node scripts/run-with-local-env.mjs pnpm --filter @bestehen/web dev",
     "dev:worker": "node scripts/run-with-local-env.mjs pnpm --filter @bestehen/worker dev",

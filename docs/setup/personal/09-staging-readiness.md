@@ -27,7 +27,7 @@ DNS, resources, credentials, and bounded paid calls only with the named owner au
 ### `STAGE-03` — Deploy fake-first and run bounded resource smokes
 
 - **Owner:** orchestrator/operations owner after owner configuration.
-- **Action:** Deploy the exact accepted commit with fake adapters and all external/paid flags false. Verify health/fake contracts. Only then set staging protected configuration for one named resource smoke at a time. Any executable live smoke requires `BESTEHEN_LIVE_SMOKE=1`, `BESTEHEN_APP_ENV=staging`, exact provider/capability, clean 40-character commit, provider and App envelope verification, and the documented maximum one call/create + one verification read + one cleanup. Normal CI never sets this opt-in.
+- **Action:** Deploy the exact accepted commit with fake adapters and all external/paid flags false. Provision distinct protected migrator, web, and worker PostgreSQL role URLs; grant DDL only to the migrator and verify web/worker DDL denial without exposing role names or connection values. Verify health/fake contracts. Only then set staging protected configuration for one named resource smoke at a time. Any executable live smoke requires `BESTEHEN_LIVE_SMOKE=1`, `BESTEHEN_APP_ENV=staging`, exact provider/capability, clean 40-character commit, provider and App envelope verification, and the documented maximum one call/create + one verification read + one cleanup. Normal CI never sets this opt-in.
 - **Expected result:** fake-first service is healthy; each admitted resource smoke is synthetic, bounded, cleaned, redacted, and returns flags to false.
 - **How to verify:** run `pnpm check:providers`, then use the named guide step's exact preflight and bounded resource check. Stage 02 supplies no provider adapter or general live-smoke runner.
 - **Evidence:** provider/capability, commit, result class, region/model, bounded usage/latency, cleanup, step ID, and digest—never content or identifiers.
@@ -43,6 +43,17 @@ DNS, resources, credentials, and bounded paid calls only with the named owner au
 - **Evidence:** exact commit, gate/check IDs, receipt digest/reference, status counts, cleanup/rollback and named later blockers.
 - **Rollback:** leave affected provider fake/disabled and block only its later live-dependent stage; unrelated deterministic work may continue.
 - **NEVER PASTE HERE:** receipt body/path if sensitive, backup/sentinel/object locator, database details, secrets, identities, provider responses, or logs.
+
+### `STAGE-05` — Run the bounded `03E` identity and authorization contract after acceptance
+
+- **Owner:** orchestrator/operations owner, only after independent `03E` acceptance; the execution candidate never performs this step.
+- **Action:** Deploy the exact accepted commit to private Coolify with every provider adapter fake and every external/paid/public/product flag false. Run only the dedicated migrator and verify revision `20260825_040_p03_foundation`, then complete `AUTH-11`. After recording the fake-first health and denial results, enable only the Auth0 identity adapter and external-call flag for one bounded allowed-owner Email OTP flow. Verify callback/session creation, anonymous denial, an unknown synthetic binding denial, server-side random-ID/cross-scope denial using synthetic database fixtures, logout, and revoked-session denial. Disable the external-call flag and return the identity adapter to fake immediately afterward. Do not create a real second Auth0 user.
+- **Expected result:** only the pre-bound issuer+subject obtains an opaque App session; all denials are enumeration-safe, logout revokes before clearing the exact host-only cookie, and unrelated drafts/facts remain intact.
+- **How to verify:** compare the deployed release commit and schema revision to the independently accepted candidate; run the Stage 03 deterministic CI matrix first, then record only bounded result classes for the owner flow and denials.
+- **Evidence:** exact commit, CI/run/check IDs, `AUTH-11`, schema and identity/session policy revisions, result classes, rollback result, and timestamp—no identifier, URL, token, cookie, OTP, subject, email, or database value.
+- **Rollback:** disable external calls/select fake identity first, revoke the App session/binding as appropriate, preserve learner facts, and roll forward code/schema if correction is required.
+- **Verification status:** **deferred and not live-verified**. Prepared staging/provider state is not a readiness receipt. Backup wiring, R2 verification, restore/recovery smokes, and the protected readiness receipt remain deferred; the age private key is held in 1Password but is not genuinely offline.
+- **NEVER PASTE HERE:** protected environment, secret, issuer/subject/email, allowlist, App/database ID, callback/private URL, token, OTP, cookie, provider response, SQL result, or log body.
 
 ## Later exact-commit recurrence
 

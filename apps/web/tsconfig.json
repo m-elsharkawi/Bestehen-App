@@ -11,6 +11,7 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
+      "@bestehen/application": ["packages/application/dist/index.js"],
       "@bestehen/configuration": ["packages/configuration/dist/index.js"],
       "@bestehen/contracts": ["packages/contracts/dist/index.js"],
       "@bestehen/design-system": ["packages/design-system/dist/index.js"],

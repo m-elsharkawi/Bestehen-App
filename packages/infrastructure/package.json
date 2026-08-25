@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "db:migrate": "tsx src/postgres/migrate-cli.ts"
+    "db:migrate": "tsx src/postgres/migrate-cli.ts",
+    "identity:bootstrap-owner": "tsx src/identity/bootstrap-owner-cli.ts"
   },
   "dependencies": {
     "@bestehen/application": "workspace:*",
@@ -26,6 +27,7 @@
     "@bestehen/contracts": "workspace:*",
     "@bestehen/domain": "workspace:*",
     "kysely": "0.29.5",
+    "openid-client": "6.8.7",
     "pg": "8.23.0",
     "pg-boss": "12.27.0"
   },

@@ -26,8 +26,8 @@ This is the live, authoritative progress ledger for the personal program. Worker
 
 ## 03 — Domain, data, jobs, identity, and authorization foundation
 
-- [ ] 03P Planning accepted — evidence: pending
-- [ ] 03E Execution accepted — evidence: pending
+- [x] 03P Planning accepted independently — evidence: `Implementation/Personal/03-domain-data-jobs-auth/plan.md`; [acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/6#issuecomment-5415174964); [draft PR #6](https://github.com/m-elsharkawi/Bestehen-App/pull/6); accepted candidate `f9ecffbcab50d3bfb56bad5ac5e77c92433ee36c`; [PR CI 32885875771](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32885875771); `P03-PLAN`
+- [x] 03E Execution accepted independently — evidence: `Implementation/Personal/03-domain-data-jobs-auth/handoff.md`; [acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/6#issuecomment-5416194745); [draft PR #6](https://github.com/m-elsharkawi/Bestehen-App/pull/6); accepted candidate `94143635cf0cb43f78cccbe591254ea8c34eb938`; [PR CI 32894038906](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32894038906); `P03-DOMAIN-001`, `P03-SCHEMA-001`, `P03-IDEMPOTENCY-001`, `P03-JOB-001`, `P03-EVIDENCE-001`, `P03-IDENTITY-001`, `P03-SESSION-001`, `P03-AUTHZ-001`, `P03-CONTRACT-001`, `P03-AUDIT-001`, `P03-COMPAT-001`, `P03-SCOPE-001`
 - [ ] Canonical states/reasons, PostgreSQL migrations, pg-boss jobs, evidence ledger, audit, and release registry pass invariant tests.
 - [ ] Auth0 owner boundary and server authorization fail closed under malformed and cross-user tests.
 

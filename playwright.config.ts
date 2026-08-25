@@ -35,8 +35,8 @@ export default defineConfig({
       BESTEHEN_OBJECT_STORAGE_ADAPTER: "fake",
       BESTEHEN_RELEASE_COMMIT: "playwright-synthetic",
       BESTEHEN_RELEASE_DIRTY: "false",
-      BESTEHEN_SCHEMA_MAX_REVISION: "baseline",
-      BESTEHEN_SCHEMA_MIN_REVISION: "baseline",
+      BESTEHEN_SCHEMA_MAX_REVISION: "20260825_040_p03_foundation",
+      BESTEHEN_SCHEMA_MIN_REVISION: "20260825_040_p03_foundation",
       BESTEHEN_STT_ADAPTER: "fake",
       BESTEHEN_TTS_ADAPTER: "fake",
       DATABASE_URL:

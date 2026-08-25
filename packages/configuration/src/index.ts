@@ -107,8 +107,8 @@ const serverEnvironmentSchema = z
     BESTEHEN_APP_ENV: z.enum(["local", "test", "preview", "staging", "production"]),
     BESTEHEN_RELEASE_COMMIT: z.string().min(1).max(64),
     BESTEHEN_RELEASE_DIRTY: strictBoolean,
-    BESTEHEN_SCHEMA_MIN_REVISION: z.string().min(1).max(128).default("baseline"),
-    BESTEHEN_SCHEMA_MAX_REVISION: z.string().min(1).max(128).default("baseline"),
+    BESTEHEN_SCHEMA_MIN_REVISION: z.string().min(1).max(128).default("20260825_040_p03_foundation"),
+    BESTEHEN_SCHEMA_MAX_REVISION: z.string().min(1).max(128).default("20260825_040_p03_foundation"),
     BESTEHEN_WEB_PORT: positivePort.default(3000),
     BESTEHEN_WORKER_PORT: positivePort.default(3001),
     BESTEHEN_SHUTDOWN_GRACE_MS: z.coerce.number().int().min(100).max(60_000).default(5000),
@@ -117,6 +117,9 @@ const serverEnvironmentSchema = z
       .default("info"),
     BESTEHEN_LOG_FORMAT: z.literal("json").default("json"),
     DATABASE_URL: z.string().url().startsWith("postgresql://"),
+    BESTEHEN_MIGRATOR_DATABASE_URL: z.string().url().startsWith("postgresql://").optional(),
+    BESTEHEN_WEB_DATABASE_URL: z.string().url().startsWith("postgresql://").optional(),
+    BESTEHEN_WORKER_DATABASE_URL: z.string().url().startsWith("postgresql://").optional(),
     BESTEHEN_AUTH_ADAPTER: z.enum(["fake", "auth0"]).default("fake"),
     BESTEHEN_OBJECT_STORAGE_ADAPTER: z.enum(["fake", "r2"]).default("fake"),
     BESTEHEN_EMAIL_ADAPTER: z.enum(["fake", "ses"]).default("fake"),
@@ -132,7 +135,7 @@ const serverEnvironmentSchema = z
     BESTEHEN_AUTH0_ISSUER_BASE_URL: auth0EuIssuer.optional(),
     BESTEHEN_AUTH0_CLIENT_ID: z.string().min(1).optional(),
     BESTEHEN_AUTH0_CLIENT_SECRET: z.string().min(16).optional(),
-    BESTEHEN_AUTH0_SESSION_SECRET: z.string().min(16).optional(),
+    BESTEHEN_AUTH0_SESSION_SECRET: z.string().min(32).optional(),
     BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE: z.string().min(1).optional(),
     BESTEHEN_APPLICATION_BASE_URL: httpsOrigin.optional(),
     BESTEHEN_AUTH0_CONNECTION: z.literal("email").optional(),
@@ -247,6 +250,47 @@ const serverEnvironmentSchema = z
         message: "public object access is forbidden for the personal profile",
       });
     }
+
+    if (
+      ["preview", "staging", "production"].includes(environment.BESTEHEN_APP_ENV) &&
+      !environment.BESTEHEN_AUTH0_SESSION_SECRET
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["BESTEHEN_AUTH0_SESSION_SECRET"],
+        message: "a protected App session/transaction secret is required",
+      });
+    }
+
+    if (["staging", "production"].includes(environment.BESTEHEN_APP_ENV)) {
+      for (const field of [
+        "BESTEHEN_MIGRATOR_DATABASE_URL",
+        "BESTEHEN_WEB_DATABASE_URL",
+        "BESTEHEN_WORKER_DATABASE_URL",
+      ] as const) {
+        if (!environment[field]) {
+          context.addIssue({
+            code: "custom",
+            path: [field],
+            message: "a protected role-specific database URL is required",
+          });
+        }
+      }
+      const roleUsers = [
+        environment.BESTEHEN_MIGRATOR_DATABASE_URL,
+        environment.BESTEHEN_WEB_DATABASE_URL,
+        environment.BESTEHEN_WORKER_DATABASE_URL,
+      ]
+        .filter((value): value is string => Boolean(value))
+        .map((value) => new URL(value).username);
+      if (roleUsers.length === 3 && new Set(roleUsers).size !== 3) {
+        context.addIssue({
+          code: "custom",
+          path: ["BESTEHEN_WEB_DATABASE_URL"],
+          message: "database roles must use distinct principals",
+        });
+      }
+    }
   });
 
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
@@ -263,6 +307,9 @@ const explicitServerKeys = [
   "BESTEHEN_LOG_LEVEL",
   "BESTEHEN_LOG_FORMAT",
   "DATABASE_URL",
+  "BESTEHEN_MIGRATOR_DATABASE_URL",
+  "BESTEHEN_WEB_DATABASE_URL",
+  "BESTEHEN_WORKER_DATABASE_URL",
   "BESTEHEN_AUTH_ADAPTER",
   "BESTEHEN_OBJECT_STORAGE_ADAPTER",
   "BESTEHEN_EMAIL_ADAPTER",
@@ -384,11 +431,31 @@ export function releaseMetadata(environment: ServerEnvironment): ReleaseMetadata
       maximum: environment.BESTEHEN_SCHEMA_MAX_REVISION,
     },
     flags: featureFlags(environment),
-    application: "stage-01-baseline",
+    application: "stage-03-foundation",
     content: "not-produced",
     evaluation: "not-produced",
     model: "not-produced",
   };
+}
+
+export function appSecuritySecret(environment: ServerEnvironment): string {
+  if (environment.BESTEHEN_AUTH0_SESSION_SECRET) return environment.BESTEHEN_AUTH0_SESSION_SECRET;
+  if (environment.BESTEHEN_APP_ENV === "local" || environment.BESTEHEN_APP_ENV === "test") {
+    return "synthetic-local-only-session-secret-not-for-deployment";
+  }
+  throw new Error("Protected App session/transaction secret is unavailable");
+}
+
+export function databaseUrlFor(
+  environment: ServerEnvironment,
+  role: "migrator" | "web" | "worker",
+): string {
+  const configured = {
+    migrator: environment.BESTEHEN_MIGRATOR_DATABASE_URL,
+    web: environment.BESTEHEN_WEB_DATABASE_URL,
+    worker: environment.BESTEHEN_WORKER_DATABASE_URL,
+  }[role];
+  return configured ?? environment.DATABASE_URL;
 }
 
 const secretKeyPattern =

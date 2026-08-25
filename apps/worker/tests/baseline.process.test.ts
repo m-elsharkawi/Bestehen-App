@@ -1,7 +1,7 @@
-import { spawn, type ChildProcess } from "node:child_process";
+import { type ChildProcess, spawn } from "node:child_process";
 import { once } from "node:events";
+import { foundationRevision, migrateDatabase } from "@bestehen/infrastructure";
 import { withIsolatedDatabase, withSyntheticDatabaseUnavailable } from "@bestehen/test-support";
-import { migrateDatabase } from "@bestehen/infrastructure";
 import { afterEach, describe, expect, it } from "vitest";
 
 const children = new Set<ChildProcess>();
@@ -19,8 +19,8 @@ function environment(databaseUrl: string, port: number): NodeJS.ProcessEnv {
     BESTEHEN_OBJECT_STORAGE_ADAPTER: "fake",
     BESTEHEN_RELEASE_COMMIT: "process-synthetic",
     BESTEHEN_RELEASE_DIRTY: "false",
-    BESTEHEN_SCHEMA_MAX_REVISION: "baseline",
-    BESTEHEN_SCHEMA_MIN_REVISION: "baseline",
+    BESTEHEN_SCHEMA_MAX_REVISION: foundationRevision,
+    BESTEHEN_SCHEMA_MIN_REVISION: foundationRevision,
     BESTEHEN_SHUTDOWN_GRACE_MS: "5000",
     BESTEHEN_STT_ADAPTER: "fake",
     BESTEHEN_TTS_ADAPTER: "fake",
@@ -55,7 +55,7 @@ afterEach(async () => {
 });
 
 describe.skipIf(!testDatabaseUrl)("worker process", () => {
-  it("starts ready without product queues and drains on SIGTERM", async () => {
+  it("starts ready with foundation queues and drains on SIGTERM", async () => {
     await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
       await migrateDatabase(databaseUrl);
       const port = 34_001;

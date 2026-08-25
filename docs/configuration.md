@@ -2,17 +2,18 @@
 
 `packages/configuration` parses only `DATABASE_URL` and `BESTEHEN_*` server fields. Unknown, malformed, or incomplete fields fail startup. Server configuration is never serialized to the browser; the only public build field is `NEXT_PUBLIC_APP_NAME`, fixed to `Bestehen`.
 
-## Baseline runtime
+## Foundation runtime
 
 - `BESTEHEN_APP_ENV`: `local`, `test`, `preview`, `staging`, or `production`; required, server-only.
 - `BESTEHEN_RELEASE_COMMIT`: immutable release identity; required, server-only.
 - `BESTEHEN_RELEASE_DIRTY`: strict boolean; defaults false and releases refuse true.
-- `BESTEHEN_SCHEMA_MIN_REVISION`, `BESTEHEN_SCHEMA_MAX_REVISION`: compatibility range; both default `baseline`.
+- `BESTEHEN_SCHEMA_MIN_REVISION`, `BESTEHEN_SCHEMA_MAX_REVISION`: compatibility range; both default to `20260825_040_p03_foundation`.
 - `BESTEHEN_WEB_PORT`, `BESTEHEN_WORKER_PORT`: internal listeners; default `3000` and `3001`.
 - `BESTEHEN_SHUTDOWN_GRACE_MS`: bounded shutdown; default `5000`.
 - `BESTEHEN_LOG_LEVEL`: structured log level; default `info`.
 - `BESTEHEN_LOG_FORMAT`: fixed to `json`.
-- `DATABASE_URL`: PostgreSQL URL; required secret configuration. Rotate and inject through the future runtime secret owner; never expose it to the browser or evidence.
+- `DATABASE_URL`: PostgreSQL URL used only as the local/test fallback; required secret configuration.
+- `BESTEHEN_MIGRATOR_DATABASE_URL`, `BESTEHEN_WEB_DATABASE_URL`, `BESTEHEN_WORKER_DATABASE_URL`: protected role-specific PostgreSQL URLs. Staging/production require all three with distinct database principals. Only the migrator/one-shot bootstrap role may perform DDL; web and worker roles are runtime-only. Rotate and inject all URLs through the runtime secret owner; never expose them to the browser or evidence.
 
 ## Adapters and closed flags
 
@@ -22,7 +23,7 @@
 
 ## Configured-adapter fields
 
-- Auth0: `BESTEHEN_AUTH0_ISSUER_BASE_URL` must be an HTTPS EU Auth0 issuer; `BESTEHEN_APPLICATION_BASE_URL` is one HTTPS origin without path or wildcard. `BESTEHEN_AUTH0_CLIENT_ID`, `BESTEHEN_AUTH0_CLIENT_SECRET`, `BESTEHEN_AUTH0_SESSION_SECRET`, and `BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE` are server-only. `BESTEHEN_AUTH0_CONNECTION` is exactly `email`, `BESTEHEN_AUTH0_CALLBACK_PATH` is exactly `/auth/callback`, and `BESTEHEN_AUTH0_SESSION_POLICY_REVISION` is exactly `session-policy/v1`. The GA Passwordless Email OTP connection has disabled signups; the later App authorizes issuer+subject, never email alone.
+- Auth0: `BESTEHEN_AUTH0_ISSUER_BASE_URL` must be an HTTPS EU Auth0 issuer; `BESTEHEN_APPLICATION_BASE_URL` is one HTTPS origin without path or wildcard. `BESTEHEN_AUTH0_CLIENT_ID`, `BESTEHEN_AUTH0_CLIENT_SECRET`, `BESTEHEN_AUTH0_SESSION_SECRET` (at least 32 bytes), and `BESTEHEN_AUTH0_OWNER_ALLOWLIST_REFERENCE` are server-only. The session secret is purpose-separated for keyed session/state/nonce digests and recoverable sealed PKCE storage. `BESTEHEN_AUTH0_CONNECTION` is exactly `email`, `BESTEHEN_AUTH0_CALLBACK_PATH` is exactly `/auth/callback`, and `BESTEHEN_AUTH0_SESSION_POLICY_REVISION` is exactly `session-policy/v1`. Selecting Auth0 does not make a provider call while the external-provider flag remains false. Email OTP sign-in resolves only a pre-bound issuer+subject; email is never authorization.
 - R2: `BESTEHEN_S3_ENDPOINT` must use the EU jurisdiction endpoint, `BESTEHEN_S3_REGION` is exactly `auto`, and `BESTEHEN_S3_ALLOWED_PREFIXES` is exactly `media/approved/,audio/raw/,exports/,tmp/`. `BESTEHEN_S3_BUCKET`, `BESTEHEN_S3_ACCESS_KEY_ID`, and `BESTEHEN_S3_SECRET_ACCESS_KEY` remain private server fields. The bucket stays private.
 - SES: `BESTEHEN_SES_REGION` is exactly `eu-central-1`; `BESTEHEN_SES_FROM_REFERENCE`, `BESTEHEN_SES_CONFIGURATION_SET`, `BESTEHEN_SES_ACCESS_KEY_ID`, and `BESTEHEN_SES_SECRET_ACCESS_KEY` belong only to the App email consumer. Auth0's distinct SMTP credential stays in Auth0.
 - AI/audio: `BESTEHEN_GEMINI_MODEL` is exactly `gemini-3.6-flash`, `BESTEHEN_OPENAI_STT_MODEL` is exactly `gpt-4o-mini-transcribe-2025-12-15`, and `BESTEHEN_OPENAI_TTS_MODEL` is exactly `gpt-4o-mini-tts-2025-12-15`. Credentials are separate `BESTEHEN_GEMINI_API_KEY`, `BESTEHEN_OPENAI_STT_API_KEY`, and `BESTEHEN_OPENAI_TTS_API_KEY` values.

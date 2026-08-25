@@ -9,6 +9,7 @@
     "start": "next start --hostname 0.0.0.0 --port 3000"
   },
   "dependencies": {
+    "@bestehen/application": "workspace:*",
     "@bestehen/configuration": "workspace:*",
     "@bestehen/contracts": "workspace:*",
     "@bestehen/design-system": "workspace:*",
