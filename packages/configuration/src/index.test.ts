@@ -5,6 +5,7 @@ import {
   databaseUrlFor,
   featureFlags,
   parseServerEnvironment,
+  parseServerEnvironmentForService,
   sanitizeLogPayload,
 } from "./index.js";
 
@@ -90,6 +91,38 @@ describe("server configuration", () => {
     expect(environment.BESTEHEN_GEMINI_MODEL).toBe("gemini-3.6-flash");
     expect(environment.BESTEHEN_FLAG_EXTERNAL_PROVIDER_CALLS).toBe(false);
     expect(databaseUrlFor(environment, "web")).toBe(environment.BESTEHEN_WEB_DATABASE_URL);
+  });
+
+  it.each([
+    ["web", "BESTEHEN_WEB_DATABASE_URL", true],
+    ["worker", "BESTEHEN_WORKER_DATABASE_URL", false],
+    ["migrator", "BESTEHEN_MIGRATOR_DATABASE_URL", false],
+  ] as const)(
+    "loads a least-privilege staging %s configuration without unrelated role secrets",
+    (scope, databaseField, needsSessionSecret) => {
+      const environment = parseServerEnvironmentForService(
+        {
+          ...validEnvironment(),
+          BESTEHEN_APP_ENV: "staging",
+          [databaseField]: `postgresql://synthetic_${scope}:synthetic@database.invalid:5432/synthetic`,
+          ...(needsSessionSecret
+            ? { BESTEHEN_AUTH0_SESSION_SECRET: "synthetic-session-secret-at-least-32-bytes" }
+            : {}),
+        },
+        scope,
+      );
+      expect(databaseUrlFor(environment, scope)).toBe(environment[databaseField]);
+    },
+  );
+
+  it("requires only the worker database URL in the staging worker scope", () => {
+    const input = { ...validEnvironment(), BESTEHEN_APP_ENV: "staging" };
+    expect(() => parseServerEnvironmentForService(input, "worker")).toThrow(
+      "BESTEHEN_WORKER_DATABASE_URL",
+    );
+    expect(() => parseServerEnvironmentForService(input, "worker")).not.toThrow(
+      "BESTEHEN_MIGRATOR_DATABASE_URL",
+    );
   });
 
   it.each([

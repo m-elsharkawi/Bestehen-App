@@ -250,47 +250,6 @@ const serverEnvironmentSchema = z
         message: "public object access is forbidden for the personal profile",
       });
     }
-
-    if (
-      ["preview", "staging", "production"].includes(environment.BESTEHEN_APP_ENV) &&
-      !environment.BESTEHEN_AUTH0_SESSION_SECRET
-    ) {
-      context.addIssue({
-        code: "custom",
-        path: ["BESTEHEN_AUTH0_SESSION_SECRET"],
-        message: "a protected App session/transaction secret is required",
-      });
-    }
-
-    if (["staging", "production"].includes(environment.BESTEHEN_APP_ENV)) {
-      for (const field of [
-        "BESTEHEN_MIGRATOR_DATABASE_URL",
-        "BESTEHEN_WEB_DATABASE_URL",
-        "BESTEHEN_WORKER_DATABASE_URL",
-      ] as const) {
-        if (!environment[field]) {
-          context.addIssue({
-            code: "custom",
-            path: [field],
-            message: "a protected role-specific database URL is required",
-          });
-        }
-      }
-      const roleUsers = [
-        environment.BESTEHEN_MIGRATOR_DATABASE_URL,
-        environment.BESTEHEN_WEB_DATABASE_URL,
-        environment.BESTEHEN_WORKER_DATABASE_URL,
-      ]
-        .filter((value): value is string => Boolean(value))
-        .map((value) => new URL(value).username);
-      if (roleUsers.length === 3 && new Set(roleUsers).size !== 3) {
-        context.addIssue({
-          code: "custom",
-          path: ["BESTEHEN_WEB_DATABASE_URL"],
-          message: "database roles must use distinct principals",
-        });
-      }
-    }
   });
 
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
@@ -354,9 +313,14 @@ const explicitServerKeys = [
   "BESTEHEN_PAID_ENVELOPE_VERIFIED_AT",
 ] as const;
 
-export function parseServerEnvironment(
-  input: Record<string, string | undefined>,
-): ServerEnvironment {
+export type ServerConfigurationScope =
+  | "complete"
+  | "web"
+  | "worker"
+  | "migrator"
+  | "owner-bootstrap";
+
+function parseServerEnvironmentInput(input: Record<string, string | undefined>): ServerEnvironment {
   const relevantEntries = Object.entries(input).filter(
     ([key, value]) =>
       value !== undefined && (key === "DATABASE_URL" || key.startsWith("BESTEHEN_")),
@@ -376,6 +340,74 @@ export function parseServerEnvironment(
     throw new Error(`Invalid server configuration field(s): ${[...new Set(fields)].join(", ")}`);
   }
   return result.data;
+}
+
+function assertScopedDeploymentConfiguration(
+  environment: ServerEnvironment,
+  scope: ServerConfigurationScope,
+): void {
+  const fields: string[] = [];
+  if (
+    ["preview", "staging", "production"].includes(environment.BESTEHEN_APP_ENV) &&
+    ["complete", "web", "owner-bootstrap"].includes(scope) &&
+    !environment.BESTEHEN_AUTH0_SESSION_SECRET
+  ) {
+    fields.push("BESTEHEN_AUTH0_SESSION_SECRET");
+  }
+
+  if (["staging", "production"].includes(environment.BESTEHEN_APP_ENV)) {
+    const databaseFieldByScope = {
+      web: "BESTEHEN_WEB_DATABASE_URL",
+      worker: "BESTEHEN_WORKER_DATABASE_URL",
+      migrator: "BESTEHEN_MIGRATOR_DATABASE_URL",
+      "owner-bootstrap": "BESTEHEN_MIGRATOR_DATABASE_URL",
+    } as const;
+    const requiredDatabaseFields =
+      scope === "complete"
+        ? ([
+            "BESTEHEN_MIGRATOR_DATABASE_URL",
+            "BESTEHEN_WEB_DATABASE_URL",
+            "BESTEHEN_WORKER_DATABASE_URL",
+          ] as const)
+        : ([databaseFieldByScope[scope]] as const);
+    for (const field of requiredDatabaseFields) {
+      if (field && !environment[field]) fields.push(field);
+    }
+
+    if (scope === "complete") {
+      const roleUsers = [
+        environment.BESTEHEN_MIGRATOR_DATABASE_URL,
+        environment.BESTEHEN_WEB_DATABASE_URL,
+        environment.BESTEHEN_WORKER_DATABASE_URL,
+      ]
+        .filter((value): value is string => Boolean(value))
+        .map((value) => new URL(value).username);
+      if (roleUsers.length === 3 && new Set(roleUsers).size !== 3) {
+        fields.push("BESTEHEN_WEB_DATABASE_URL");
+      }
+    }
+  }
+
+  if (fields.length > 0) {
+    throw new Error(`Invalid server configuration field(s): ${[...new Set(fields)].join(", ")}`);
+  }
+}
+
+export function parseServerEnvironment(
+  input: Record<string, string | undefined>,
+): ServerEnvironment {
+  const environment = parseServerEnvironmentInput(input);
+  assertScopedDeploymentConfiguration(environment, "complete");
+  return environment;
+}
+
+export function parseServerEnvironmentForService(
+  input: Record<string, string | undefined>,
+  scope: Exclude<ServerConfigurationScope, "complete">,
+): ServerEnvironment {
+  const environment = parseServerEnvironmentInput(input);
+  assertScopedDeploymentConfiguration(environment, scope);
+  return environment;
 }
 
 export const buildEnvironmentSchema = z

@@ -2,7 +2,7 @@ import { createServer, type Server } from "node:http";
 import {
   createLogger,
   databaseUrlFor,
-  parseServerEnvironment,
+  parseServerEnvironmentForService,
   type ServerEnvironment,
 } from "@bestehen/configuration";
 import {
@@ -21,7 +21,7 @@ export class WorkerRuntime {
   private stopping = false;
 
   public constructor(input: Record<string, string | undefined>) {
-    this.environment = parseServerEnvironment(input);
+    this.environment = parseServerEnvironmentForService(input, "worker");
     const databaseUrl = databaseUrlFor(this.environment, "worker");
     this.pool = createPostgresPool(databaseUrl);
     this.supervisor = new PgBossSupervisor(databaseUrl);
