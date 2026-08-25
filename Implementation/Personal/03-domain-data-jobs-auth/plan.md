@@ -9,11 +9,12 @@ Accepted semantic input: Personal Stage 02 merge
 [32667024749](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32667024749).
 
 Effective Stage 03 baseline: `cb2e9a7a88fc384d9cad155647e4a6acccf6b5c3`, the
-matching clean local branch, `origin/implementation/personal-03-domain-data-jobs-auth`,
-local `main`, and `origin/main` when planning resumed. The only changes after the
-accepted Stage 02 merge are owner-authored PRs #4 and #5: the temporary one-shot
-compose wrapper was replaced by the dedicated `Dockerfile.migrator`. Stage 03 will
-preserve and use that image; it will not create a second migration runner.
+matching clean Stage 03 branch,
+`origin/implementation/personal-03-domain-data-jobs-auth`, and `origin/main` when
+planning resumed. The only changes after the accepted Stage 02 merge are
+owner-authored PRs #4 and #5: the temporary one-shot compose wrapper was replaced by
+the dedicated `Dockerfile.migrator`. Stage 03 will preserve and use that image; it
+will not create a second migration runner.
 
 Branch: `implementation/personal-03-domain-data-jobs-auth`; PR base/head will be
 `main` and this branch. Stage boundary: this document plans `03E`. This Planning
