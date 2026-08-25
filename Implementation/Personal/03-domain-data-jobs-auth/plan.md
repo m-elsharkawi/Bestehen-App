@@ -1,6 +1,10 @@
 # Personal Stage 03 — domain, data, jobs, identity, and authorization plan
 
-Status: `03P` planning in progress; not independently accepted and not execution.
+Status: `03P` planning accepted independently on 2026-08-25 at candidate
+`f9ecffbcab50d3bfb56bad5ac5e77c92433ee36c`, with green [CI run
+32885875771](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/32885875771)
+and [acceptance comment](https://github.com/m-elsharkawi/Bestehen-App/pull/6#issuecomment-5415174964).
+This acceptance records Planning only; `03E` has not started.
 
 Planning date: 2026-08-25 (Europe/Berlin).
 
