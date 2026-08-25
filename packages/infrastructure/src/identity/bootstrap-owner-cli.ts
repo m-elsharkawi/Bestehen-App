@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { appSecuritySecret, parseServerEnvironment } from "@bestehen/configuration";
+import { appSecuritySecret, databaseUrlFor, parseServerEnvironment } from "@bestehen/configuration";
 import { appId } from "@bestehen/domain";
 import { HmacDigest } from "../crypto.js";
 import { bootstrapPersonalOwner } from "../postgres/foundation-repository.js";
@@ -21,7 +21,7 @@ async function main(): Promise<void> {
   ) {
     throw new Error("Owner bootstrap requires protected Auth0 binding configuration");
   }
-  const pool = createPostgresPool(environment.DATABASE_URL, { max: 1 });
+  const pool = createPostgresPool(databaseUrlFor(environment, "migrator"), { max: 1 });
   try {
     const digest = new HmacDigest(appSecuritySecret(environment));
     const result = await bootstrapPersonalOwner(pool, {

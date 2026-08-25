@@ -1,6 +1,12 @@
 import { Writable } from "node:stream";
 import { describe, expect, it } from "vitest";
-import { createLogger, featureFlags, parseServerEnvironment, sanitizeLogPayload } from "./index.js";
+import {
+  createLogger,
+  databaseUrlFor,
+  featureFlags,
+  parseServerEnvironment,
+  sanitizeLogPayload,
+} from "./index.js";
 
 function validEnvironment(): Record<string, string> {
   return {
@@ -23,6 +29,12 @@ function configuredStagingEnvironment(): Record<string, string> {
   return {
     ...validEnvironment(),
     BESTEHEN_APP_ENV: "staging",
+    BESTEHEN_MIGRATOR_DATABASE_URL:
+      "postgresql://synthetic_migrator:synthetic@database.invalid:5432/synthetic",
+    BESTEHEN_WEB_DATABASE_URL:
+      "postgresql://synthetic_web:synthetic@database.invalid:5432/synthetic",
+    BESTEHEN_WORKER_DATABASE_URL:
+      "postgresql://synthetic_worker:synthetic@database.invalid:5432/synthetic",
     BESTEHEN_AUTH_ADAPTER: "auth0",
     BESTEHEN_AUTH0_ISSUER_BASE_URL: "https://synthetic.eu.auth0.com",
     BESTEHEN_AUTH0_CLIENT_ID: "synthetic-client",
@@ -77,6 +89,7 @@ describe("server configuration", () => {
     expect(environment.BESTEHEN_S3_REGION).toBe("auto");
     expect(environment.BESTEHEN_GEMINI_MODEL).toBe("gemini-3.6-flash");
     expect(environment.BESTEHEN_FLAG_EXTERNAL_PROVIDER_CALLS).toBe(false);
+    expect(databaseUrlFor(environment, "web")).toBe(environment.BESTEHEN_WEB_DATABASE_URL);
   });
 
   it.each([
@@ -109,6 +122,18 @@ describe("server configuration", () => {
     [
       { ...configuredStagingEnvironment(), BESTEHEN_GEMINI_MODEL: "gemini-latest" },
       "BESTEHEN_GEMINI_MODEL",
+    ],
+    [
+      { ...configuredStagingEnvironment(), BESTEHEN_WORKER_DATABASE_URL: undefined },
+      "BESTEHEN_WORKER_DATABASE_URL",
+    ],
+    [
+      {
+        ...configuredStagingEnvironment(),
+        BESTEHEN_WORKER_DATABASE_URL:
+          "postgresql://synthetic_web:synthetic@database.invalid:5432/synthetic",
+      },
+      "BESTEHEN_WEB_DATABASE_URL",
     ],
     [
       {

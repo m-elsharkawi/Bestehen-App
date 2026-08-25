@@ -1,4 +1,4 @@
-import { createLogger, parseServerEnvironment } from "@bestehen/configuration";
+import { createLogger, databaseUrlFor, parseServerEnvironment } from "@bestehen/configuration";
 import { migrateDatabase } from "./index.js";
 
 async function main(): Promise<void> {
@@ -9,7 +9,7 @@ async function main(): Promise<void> {
     releaseCommit: environment.BESTEHEN_RELEASE_COMMIT,
     level: environment.BESTEHEN_LOG_LEVEL,
   });
-  const result = await migrateDatabase(environment.DATABASE_URL);
+  const result = await migrateDatabase(databaseUrlFor(environment, "migrator"));
   logger.info({
     eventName: "migration_completed",
     fromRevision: result.fromRevision,

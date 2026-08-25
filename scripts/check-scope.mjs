@@ -51,8 +51,8 @@ const stage02Allowed = [
 const stage03Allowed = [
   /^\.env\.example$/,
   /^\.github\/workflows\/(?:ci|release-candidate)\.yml$/,
-  /^apps\/web\/(?:package\.json|tsconfig\.json|src\/app\/(?:api\/v1\/owner\/status|auth\/[^/]+)\/[^/]+|src\/server\/identity\.ts|tests\/baseline\.spec\.ts)$/,
-  /^apps\/worker\/tests\/baseline\.process\.test\.ts$/,
+  /^apps\/web\/(?:package\.json|tsconfig\.json|src\/app\/(?:api\/v1\/owner\/status|auth\/[^/]+)\/[^/]+|src\/server\/(?:identity|runtime)\.ts|tests\/baseline\.spec\.ts)$/,
+  /^apps\/worker\/(?:src\/index\.ts|tests\/baseline\.process\.test\.ts)$/,
   /^compose\.yaml$/,
   /^docs\/(?:configuration|local-development)\.md$/,
   /^docs\/setup\/personal\/(?:05-auth0-eu-email-otp|09-staging-readiness)\.md$/,
@@ -64,7 +64,7 @@ const stage03Allowed = [
   /^pnpm-lock\.yaml$/,
   /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
   /^schemas\/release-manifest\.schema\.json$/,
-  /^scripts\/(?:check-scope|release-manifest|test-oci|test-release-manifest|test-scope)\.mjs$/,
+  /^scripts\/(?:check-docs|check-scope|release-manifest|test-oci|test-release-manifest|test-scope)\.mjs$/,
 ];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {

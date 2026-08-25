@@ -1,4 +1,4 @@
-import { appSecuritySecret, parseServerEnvironment } from "@bestehen/configuration";
+import { appSecuritySecret, databaseUrlFor, parseServerEnvironment } from "@bestehen/configuration";
 import { AppIdentityService, createPostgresPool } from "@bestehen/infrastructure";
 
 let identityService: AppIdentityService | undefined;
@@ -7,7 +7,7 @@ export function getIdentityService(): AppIdentityService {
   if (identityService) return identityService;
   const environment = parseServerEnvironment(process.env);
   identityService = new AppIdentityService(
-    createPostgresPool(environment.DATABASE_URL),
+    createPostgresPool(databaseUrlFor(environment, "web")),
     environment,
     appSecuritySecret(environment),
   );

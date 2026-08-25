@@ -12,7 +12,8 @@
 - `BESTEHEN_SHUTDOWN_GRACE_MS`: bounded shutdown; default `5000`.
 - `BESTEHEN_LOG_LEVEL`: structured log level; default `info`.
 - `BESTEHEN_LOG_FORMAT`: fixed to `json`.
-- `DATABASE_URL`: PostgreSQL URL; required secret configuration. Rotate and inject through the future runtime secret owner; never expose it to the browser or evidence.
+- `DATABASE_URL`: PostgreSQL URL used only as the local/test fallback; required secret configuration.
+- `BESTEHEN_MIGRATOR_DATABASE_URL`, `BESTEHEN_WEB_DATABASE_URL`, `BESTEHEN_WORKER_DATABASE_URL`: protected role-specific PostgreSQL URLs. Staging/production require all three with distinct database principals. Only the migrator/one-shot bootstrap role may perform DDL; web and worker roles are runtime-only. Rotate and inject all URLs through the runtime secret owner; never expose them to the browser or evidence.
 
 ## Adapters and closed flags
 
