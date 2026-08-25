@@ -1,4 +1,4 @@
-import { databaseUrlFor, parseServerEnvironment } from "@bestehen/configuration";
+import { databaseUrlFor, parseServerEnvironmentForService } from "@bestehen/configuration";
 import { checkDatabaseReadiness, createPostgresPool } from "@bestehen/infrastructure";
 import type { Pool } from "pg";
 
@@ -25,7 +25,7 @@ export async function readinessPayload(): Promise<{
   };
 }> {
   try {
-    const environment = parseServerEnvironment(process.env);
+    const environment = parseServerEnvironmentForService(process.env, "web");
     pool ??= createPostgresPool(databaseUrlFor(environment, "web"));
     const readiness = await checkDatabaseReadiness(
       pool,

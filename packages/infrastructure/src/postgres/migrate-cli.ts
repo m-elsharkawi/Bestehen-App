@@ -1,8 +1,12 @@
-import { createLogger, databaseUrlFor, parseServerEnvironment } from "@bestehen/configuration";
+import {
+  createLogger,
+  databaseUrlFor,
+  parseServerEnvironmentForService,
+} from "@bestehen/configuration";
 import { migrateDatabase } from "./index.js";
 
 async function main(): Promise<void> {
-  const environment = parseServerEnvironment(process.env);
+  const environment = parseServerEnvironmentForService(process.env, "migrator");
   const logger = createLogger({
     service: "migrator",
     environment: environment.BESTEHEN_APP_ENV,

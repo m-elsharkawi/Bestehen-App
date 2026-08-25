@@ -1,5 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { appSecuritySecret, databaseUrlFor, parseServerEnvironment } from "@bestehen/configuration";
+import {
+  appSecuritySecret,
+  databaseUrlFor,
+  parseServerEnvironmentForService,
+} from "@bestehen/configuration";
 import { appId } from "@bestehen/domain";
 import { HmacDigest } from "../crypto.js";
 import { bootstrapPersonalOwner } from "../postgres/foundation-repository.js";
@@ -7,7 +11,7 @@ import { createPostgresPool, foundationRevision } from "../postgres/index.js";
 
 async function main(): Promise<void> {
   const { BESTEHEN_AUTH0_OWNER_SUBJECT: ownerSubject, ...serverInput } = process.env;
-  const environment = parseServerEnvironment(serverInput);
+  const environment = parseServerEnvironmentForService(serverInput, "owner-bootstrap");
   if (!ownerSubject || ownerSubject.length > 512) {
     throw new Error("Protected owner subject is unavailable or malformed");
   }
