@@ -55,7 +55,9 @@ that external record avoids putting a self-referential commit in this file.
   HttpOnly, SameSite=Lax, path `/`, and no Domain. The policy is 24-hour idle,
   seven-day absolute, and ten-minute recent OTP. Logout checks Origin, Fetch
   Metadata and CSRF proof, revokes before clearing the cookie, and preserves learner
-  facts/drafts.
+  facts/drafts. A concurrent optimistic touch miss re-reads through the same
+  revocation/tombstone-aware lookup and accepts only a still-active, unexpired
+  authoritative session.
 - Added `/auth/login`, `/auth/callback`, `/auth/logout`, `/auth/failure`, and the
   enumeration-safe `/api/v1/owner/status` route. All authorization is derived from a
   validated server session; anonymous/cross-scope results are neutral and client
@@ -123,12 +125,13 @@ daemon was unavailable; no local PostgreSQL/OCI claim is made.
 - TypeScript, Biome format/lint, package-boundary, build, generated-file, scope,
   documentation, provider-readiness, secret, whitespace, release-schema, exact-lock
   critical advisory, and four Chromium accessibility/browser checks passed locally.
-- The current deterministic unit suite has 111 passing tests across 11 files. It
+- The current deterministic unit suite has 113 passing tests across 11 files. It
   covers every closed domain union, legal/illegal transition properties, strict
   contract negatives, missing-as-absence/Written/Oral/no-probability, idempotent
   receipts/effects, session expiry/recent auth, origin/fetch/CSRF, cookie flags,
   HMAC purpose separation, sealed PKCE, all required fake claim/state/nonce/PKCE/time
-  failures, deterministic jobs/projection checksums, redaction, and provider fakes.
+  failures, concurrent session-touch CAS recovery/closed revocation fallback,
+  deterministic jobs/projection checksums, redaction, and provider fakes.
 - Real PostgreSQL 18.6 CI migrates concurrently from the accepted baseline, verifies
   all exact tables/revisions/checksums/pg-boss ownership, reruns at latest, rejects
   compatibility and checksum drift, and recovers through a fresh pool. Its

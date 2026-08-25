@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import {
+  type AppSessionRecord,
+  type AppSessionStore,
   type IdentityProof,
   type KeyedDigest,
   resolveSessionState,
@@ -289,6 +291,34 @@ export const appSessionCookie = {
   },
 } as const;
 
+export async function resolveAndTouchAppSession(
+  repository: AppSessionStore,
+  tokenDigest: string,
+  now: Date,
+): Promise<AppSessionRecord | undefined> {
+  const session = await repository.findByTokenDigest(tokenDigest);
+  const resolved = resolveSessionState(session, now);
+  if (!resolved.ok) {
+    if (session?.state === "active") await repository.revoke(session.id, now);
+    return undefined;
+  }
+  const touched = await repository.touch(
+    resolved.value.id,
+    resolved.value.lastUsedAt,
+    now,
+    new Date(now.getTime() + sessionPolicyV1.idleMilliseconds),
+  );
+  if (touched) return resolved.value;
+
+  const authoritative = await repository.findByTokenDigest(tokenDigest);
+  const reResolved = resolveSessionState(authoritative, now);
+  if (!reResolved.ok) {
+    if (authoritative?.state === "active") await repository.revoke(authoritative.id, now);
+    return undefined;
+  }
+  return reResolved.value;
+}
+
 export class AppIdentityService {
   private readonly digest: HmacDigest;
   private readonly repository: PostgresFoundationRepository;
@@ -368,27 +398,18 @@ export class AppIdentityService {
     now = new Date(),
   ): Promise<AuthorizedScope | undefined> {
     if (!rawToken) return undefined;
-    const session = await this.repository.findByTokenDigest(
+    const session = await resolveAndTouchAppSession(
+      this.repository,
       this.digest.digest("app-session", rawToken),
-    );
-    const resolved = resolveSessionState(session, now);
-    if (!resolved.ok) {
-      if (session?.state === "active") await this.repository.revoke(session.id, now);
-      return undefined;
-    }
-    const touched = await this.repository.touch(
-      resolved.value.id,
-      resolved.value.lastUsedAt,
       now,
-      new Date(now.getTime() + sessionPolicyV1.idleMilliseconds),
     );
-    if (!touched) return undefined;
+    if (!session) return undefined;
     return {
-      principalId: resolved.value.principalId,
-      learnerScopeId: resolved.value.learnerScopeId,
+      principalId: session.principalId,
+      learnerScopeId: session.learnerScopeId,
       actorKind: "owner",
       capabilities: [],
-      authenticatedAt: resolved.value.authenticatedAt,
+      authenticatedAt: session.authenticatedAt,
     };
   }
 

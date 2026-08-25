@@ -1,8 +1,17 @@
-import type { SemanticJob, SemanticJobStore } from "@bestehen/application";
+import type {
+  AppSessionRecord,
+  AppSessionStore,
+  SemanticJob,
+  SemanticJobStore,
+} from "@bestehen/application";
 import { appId } from "@bestehen/domain";
 import { describe, expect, it } from "vitest";
 import { AesGcmSealer, HmacDigest, randomOpaqueToken } from "./crypto.js";
-import { appSessionCookie, FakeEmailOtpIdentityAdapter } from "./identity/index.js";
+import {
+  appSessionCookie,
+  FakeEmailOtpIdentityAdapter,
+  resolveAndTouchAppSession,
+} from "./identity/index.js";
 import { executeSemanticEffect } from "./jobs/index.js";
 import { deterministicProjectionChecksum } from "./projection-checksum.js";
 
@@ -40,6 +49,88 @@ describe("Stage 03 cryptographic storage boundaries", () => {
       options: { secure: true, httpOnly: true, sameSite: "lax", path: "/" },
     });
     expect("domain" in appSessionCookie.options).toBe(false);
+  });
+});
+
+describe("App session optimistic touch", () => {
+  it("re-reads and accepts the authoritative active session after a concurrent touch wins", async () => {
+    const now = new Date("2026-08-25T12:05:00.000Z");
+    const initial: AppSessionRecord = {
+      id: appId<"app_session">("session_owner_000001"),
+      tokenDigest: "a".repeat(64),
+      principalId: appId<"principal">("principal_owner_0001"),
+      learnerScopeId: appId<"learner_scope">("scope_owner_0000001"),
+      state: "active",
+      createdAt: new Date("2026-08-25T12:00:00.000Z"),
+      lastUsedAt: new Date("2026-08-25T12:00:00.000Z"),
+      authenticatedAt: new Date("2026-08-25T12:00:00.000Z"),
+      idleExpiresAt: new Date("2026-08-26T12:00:00.000Z"),
+      absoluteExpiresAt: new Date("2026-09-01T12:00:00.000Z"),
+    };
+    const winner = {
+      ...initial,
+      lastUsedAt: now,
+      idleExpiresAt: new Date("2026-08-26T12:05:00.000Z"),
+    };
+    let reads = 0;
+    const store: AppSessionStore = {
+      async insert() {},
+      async findByTokenDigest() {
+        reads += 1;
+        return reads === 1 ? initial : winner;
+      },
+      async touch() {
+        return false;
+      },
+      async revoke() {
+        return false;
+      },
+      async revokeForPrincipal() {
+        return 0;
+      },
+    };
+
+    await expect(resolveAndTouchAppSession(store, initial.tokenDigest, now)).resolves.toEqual(
+      winner,
+    );
+    expect(reads).toBe(2);
+  });
+
+  it("denies a CAS miss when the revocation-aware authoritative re-read is unavailable", async () => {
+    const now = new Date("2026-08-25T12:05:00.000Z");
+    const initial: AppSessionRecord = {
+      id: appId<"app_session">("session_owner_000001"),
+      tokenDigest: "a".repeat(64),
+      principalId: appId<"principal">("principal_owner_0001"),
+      learnerScopeId: appId<"learner_scope">("scope_owner_0000001"),
+      state: "active",
+      createdAt: new Date("2026-08-25T12:00:00.000Z"),
+      lastUsedAt: new Date("2026-08-25T12:00:00.000Z"),
+      authenticatedAt: new Date("2026-08-25T12:00:00.000Z"),
+      idleExpiresAt: new Date("2026-08-26T12:00:00.000Z"),
+      absoluteExpiresAt: new Date("2026-09-01T12:00:00.000Z"),
+    };
+    let reads = 0;
+    const store: AppSessionStore = {
+      async insert() {},
+      async findByTokenDigest() {
+        reads += 1;
+        return reads === 1 ? initial : undefined;
+      },
+      async touch() {
+        return false;
+      },
+      async revoke() {
+        return false;
+      },
+      async revokeForPrincipal() {
+        return 0;
+      },
+    };
+
+    await expect(
+      resolveAndTouchAppSession(store, initial.tokenDigest, now),
+    ).resolves.toBeUndefined();
   });
 });
 
