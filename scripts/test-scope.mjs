@@ -4,8 +4,11 @@ import {
   stage01ScopeApplies,
   stage02Branch,
   stage02ScopeApplies,
+  stage03Branch,
+  stage03ScopeApplies,
   unexpectedStage01Paths,
   unexpectedStage02Paths,
+  unexpectedStage03Paths,
 } from "./check-scope.mjs";
 
 const fixtures = [
@@ -60,6 +63,42 @@ assert.deepEqual(
   [],
   "Stage 02 accepts its bounded implementation paths",
 );
+
+for (const context of [
+  { localBranch: stage03Branch },
+  { githubHeadRef: stage03Branch, githubRefName: "6/merge" },
+]) {
+  assert.equal(stage03ScopeApplies(context), true, "Stage 03 branch enforces its allowlist");
+  assert.equal(stage02ScopeApplies(context), false, "Stage 02 scope stays branch-specific");
+}
+
+assert.deepEqual(
+  unexpectedStage03Paths([
+    "packages/domain/src/index.ts",
+    "packages/infrastructure/src/postgres/migrations.ts",
+    "apps/web/src/app/auth/login/route.ts",
+    "Implementation/Personal/03-domain-data-jobs-auth/handoff.md",
+    "prompts/implementation/personal/personal-implementation-checklist.md",
+    "scripts/test-oci.mjs",
+  ]),
+  [],
+  "Stage 03 accepts only its planned implementation surfaces",
+);
+assert.deepEqual(
+  unexpectedStage03Paths([
+    "Implementation/Personal/03-domain-data-jobs-auth/plan.md",
+    "Architecture/23-security-privacy-and-abuse-prevention.md",
+    "Design/components/identity.tsx",
+    "docs/setup/personal/08-secrets-recovery-offboarding.md",
+  ]),
+  [
+    "Implementation/Personal/03-domain-data-jobs-auth/plan.md",
+    "Architecture/23-security-privacy-and-abuse-prevention.md",
+    "Design/components/identity.tsx",
+    "docs/setup/personal/08-secrets-recovery-offboarding.md",
+  ],
+  "Stage 03 rejects accepted-plan/history, architecture/design, and unrelated guide drift",
+);
 assert.deepEqual(
   unexpectedStage02Paths([
     "Implementation/Personal/02-provider-service-setup/plan.md",
@@ -85,4 +124,6 @@ assert.deepEqual(
   "Stage 01 still accepts only its bounded implementation paths",
 );
 
-process.stdout.write("P02-SCOPE-001 passed alongside preserved Stage 01 scope fixtures.\n");
+process.stdout.write(
+  "P03-SCOPE-001 passed alongside preserved Stage 01 and Stage 02 scope fixtures.\n",
+);

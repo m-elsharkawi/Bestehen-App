@@ -23,7 +23,7 @@ services:
     profiles: ["images"]
     build:
       context: .
-      dockerfile: Dockerfile.worker
+      dockerfile: Dockerfile.migrator
       args:
         OCI_CREATED: local-build
         OCI_REVISION: local-development
@@ -41,8 +41,8 @@ services:
       BESTEHEN_OBJECT_STORAGE_ADAPTER: fake
       BESTEHEN_RELEASE_COMMIT: local-development
       BESTEHEN_RELEASE_DIRTY: "true"
-      BESTEHEN_SCHEMA_MAX_REVISION: baseline
-      BESTEHEN_SCHEMA_MIN_REVISION: baseline
+      BESTEHEN_SCHEMA_MAX_REVISION: 20260825_040_p03_foundation
+      BESTEHEN_SCHEMA_MIN_REVISION: 20260825_040_p03_foundation
       BESTEHEN_SHUTDOWN_GRACE_MS: "5000"
       BESTEHEN_STT_ADAPTER: fake
       BESTEHEN_TTS_ADAPTER: fake

@@ -1,11 +1,11 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
-import Ajv2020 from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
+import Ajv2020 from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
 
 const schema = JSON.parse(readFileSync("schemas/release-manifest.schema.json", "utf8"));
 export const requiredChecks = Object.freeze([...schema.properties.checks.required]);
@@ -81,8 +81,8 @@ export function createManifest(options) {
     images: { web: options.webDigest, worker: options.workerDigest },
     database: {
       postgres: "18.6",
-      minimumRevision: "baseline",
-      maximumRevision: "baseline",
+      minimumRevision: "20260825_040_p03_foundation",
+      maximumRevision: "20260825_040_p03_foundation",
       migrationOwner: "explicit-migrator",
     },
     runtime: { node: "24.19.0", pnpm: "11.23.0" },
@@ -106,7 +106,7 @@ export function createManifest(options) {
       postgres: "sha256:1c59e2c3c818eaa0f0628f695b36e7c9e362d6b219b36a54a32df645cbd7e1af",
     },
     releaseAxes: {
-      application: "stage-01-baseline",
+      application: "stage-03-foundation",
       content: "not-produced",
       evaluation: "not-produced",
       model: "not-produced",

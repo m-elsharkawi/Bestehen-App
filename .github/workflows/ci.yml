@@ -7,6 +7,7 @@ on:
       - main
       - implementation/personal-01-repository-delivery-baseline
       - implementation/personal-02-provider-service-setup
+      - implementation/personal-03-domain-data-jobs-auth
 
 permissions:
   contents: read
@@ -276,7 +277,7 @@ jobs:
           WEB_DIGEST=$(node -p "JSON.parse(require('fs').readFileSync('evidence/oci.json')).webDigest")
           WORKER_DIGEST=$(node -p "JSON.parse(require('fs').readFileSync('evidence/oci.json')).workerDigest")
           CHECK_ARGS=()
-          for CHECK_ID in P01-BASE-001 P01-SCOPE-001 P01-DEPS-001 P01-BOUNDARY-001 P01-TYPE-001 P01-STYLE-001 P01-UNIT-001 P01-CONFIG-001 P01-SECRET-001 P01-PG-001 P01-JOB-001 P01-HTTP-001 P01-A11Y-001 P01-OCI-WEB-001 P01-OCI-WORKER-001 P01-RELEASE-001 P01-DOC-001 P02-SCOPE-001 P02-DOC-001 P02-CONFIG-001 P02-FAKE-001 P02-SECRET-001 P02-READINESS-001 P02-DEPS-001 P02-COMPAT-001; do
+          for CHECK_ID in P01-BASE-001 P01-SCOPE-001 P01-DEPS-001 P01-BOUNDARY-001 P01-TYPE-001 P01-STYLE-001 P01-UNIT-001 P01-CONFIG-001 P01-SECRET-001 P01-PG-001 P01-JOB-001 P01-HTTP-001 P01-A11Y-001 P01-OCI-WEB-001 P01-OCI-WORKER-001 P01-RELEASE-001 P01-DOC-001 P02-SCOPE-001 P02-DOC-001 P02-CONFIG-001 P02-FAKE-001 P02-SECRET-001 P02-READINESS-001 P02-DEPS-001 P02-COMPAT-001 P03-DOMAIN-001 P03-SCHEMA-001 P03-IDEMPOTENCY-001 P03-JOB-001 P03-EVIDENCE-001 P03-IDENTITY-001 P03-SESSION-001 P03-AUTHZ-001 P03-CONTRACT-001 P03-AUDIT-001 P03-COMPAT-001 P03-SCOPE-001; do
             CHECK_ARGS+=(--check "$CHECK_ID=$CHECK_URL")
           done
           node scripts/release-manifest.mjs --dry-run --commit "$CANDIDATE_SHA" --web-digest "$WEB_DIGEST" --worker-digest "$WORKER_DIGEST" "${CHECK_ARGS[@]}" > evidence/release-manifest.json
