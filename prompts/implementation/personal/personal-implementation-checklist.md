@@ -26,7 +26,7 @@ This is the live, authoritative progress ledger for the personal program. Worker
 
 ## 03 — Domain, data, jobs, identity, and authorization foundation
 
-- [ ] 03P Planning accepted — evidence: pending
+- [~] 03P Planning in progress — evidence: `Implementation/Personal/03-domain-data-jobs-auth/plan.md`; Planning commit and draft PR evidence pending independent review; `P03-PLAN`
 - [ ] 03E Execution accepted — evidence: pending
 - [ ] Canonical states/reasons, PostgreSQL migrations, pg-boss jobs, evidence ledger, audit, and release registry pass invariant tests.
 - [ ] Auth0 owner boundary and server authorization fail closed under malformed and cross-user tests.
