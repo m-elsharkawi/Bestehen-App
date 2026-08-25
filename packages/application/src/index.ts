@@ -206,7 +206,7 @@ export interface OperationReceiptStore {
   ): Promise<
     Result<
       { readonly disposition: "created" | "replayed"; readonly receipt: OperationReceipt },
-      "idempotency_conflict"
+      "idempotency_conflict" | "not_available"
     >
   >;
 }
@@ -297,13 +297,15 @@ export interface SemanticJob {
 }
 
 export interface SemanticJobStore {
-  accept(job: SemanticJob): Promise<Result<SemanticJob, "semantic_identity_conflict">>;
+  accept(
+    job: SemanticJob,
+  ): Promise<Result<SemanticJob, "semantic_identity_conflict" | "not_available">>;
   transition(
     id: JobId,
     expectedRevision: number,
     state: SemanticJobState,
     reasonCode?: string,
-  ): Promise<Result<SemanticJob, "conflict" | "illegal_transition">>;
+  ): Promise<Result<SemanticJob, "conflict" | "illegal_transition" | "not_available">>;
   commitFoundationEffect(
     job: SemanticJob,
     effectIdentity: string,
@@ -311,7 +313,7 @@ export interface SemanticJobStore {
   ): Promise<
     Result<
       { readonly disposition: "created" | "replayed"; readonly job: SemanticJob },
-      "effect_conflict" | "conflict" | "illegal_transition"
+      "effect_conflict" | "conflict" | "illegal_transition" | "not_available"
     >
   >;
 }

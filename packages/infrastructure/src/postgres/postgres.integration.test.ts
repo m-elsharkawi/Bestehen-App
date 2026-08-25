@@ -172,9 +172,22 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
       await pool.query("INSERT INTO app.learner_scopes(id,state) VALUES($1,'active')", [
         attacker.learnerScopeId,
       ]);
-      await pool.query("INSERT INTO app.principals(id,kind,state) VALUES($1,'guest','active')", [
+      await pool.query("INSERT INTO app.principals(id,kind,state) VALUES($1,'account','active')", [
         attacker.principalId,
       ]);
+      const attackerCredentialId = randomUUID();
+      await pool.query(
+        `INSERT INTO app.credential_bindings(id,principal_id,kind,provider,issuer,subject,subject_fingerprint,state,verified_at,identity_release)
+         VALUES($1,$2,'oidc','auth0',$3,$4,$5,'active',$6,'identity-contract/v1')`,
+        [
+          attackerCredentialId,
+          attacker.principalId,
+          "https://synthetic-attacker.eu.auth0.com/",
+          "synthetic-attacker-subject",
+          "e".repeat(64),
+          ownerInput.verifiedAt,
+        ],
+      );
       await pool.query(
         "INSERT INTO app.principal_scope_bindings(principal_id,learner_scope_id,state,operation_id) VALUES($1,$2,'active',$3)",
         [attacker.principalId, attacker.learnerScopeId, randomUUID()],
@@ -238,6 +251,18 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
       );
       expect(storedSession.rows[0]?.token_digest).toBe(ownerSession.tokenDigest);
       expect(storedSession.rows[0]?.token_digest).not.toContain(ownerToken);
+      await pool.query("UPDATE app.credential_bindings SET state='revoked' WHERE id=$1", [
+        ownerInput.credentialBindingId,
+      ]);
+      await expect(repository.findByTokenDigest(ownerSession.tokenDigest)).resolves.toBeUndefined();
+      await pool.query("UPDATE app.credential_bindings SET state='active' WHERE id=$1", [
+        ownerInput.credentialBindingId,
+      ]);
+      await pool.query("UPDATE app.principals SET state='revoked' WHERE id=$1", [
+        owner.principalId,
+      ]);
+      await expect(repository.findByTokenDigest(ownerSession.tokenDigest)).resolves.toBeUndefined();
+      await pool.query("UPDATE app.principals SET state='active' WHERE id=$1", [owner.principalId]);
       await expect(repository.revoke(ownerSession.id, sessionTime)).resolves.toBe(true);
       await expect(repository.findByTokenDigest(ownerSession.tokenDigest)).resolves.toMatchObject({
         state: "revoked",
@@ -511,6 +536,31 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
         deadline: new Date("2026-08-25T13:00:00.000Z"),
       };
       await expect(repository.accept(semanticJob)).resolves.toMatchObject({ ok: true });
+      const authoritativeJobReplay = {
+        ...semanticJob,
+        id: appId<"job">(randomUUID()),
+        state: "accepted" as const,
+        revision: 1,
+        attempt: 2,
+        maximumAttempts: 9,
+        deadline: new Date("2026-08-25T14:00:00.000Z"),
+      };
+      await expect(repository.accept(authoritativeJobReplay)).resolves.toEqual({
+        ok: true,
+        value: semanticJob,
+      });
+      await expect(
+        repository.accept({ ...authoritativeJobReplay, payloadDigest: "f".repeat(64) }),
+      ).resolves.toEqual({ ok: false, error: "semantic_identity_conflict" });
+      const attackerJob = {
+        ...semanticJob,
+        id: appId<"job">(randomUUID()),
+        learnerScopeId: attacker.learnerScopeId,
+      };
+      await expect(repository.accept(attackerJob)).resolves.toEqual({
+        ok: true,
+        value: attackerJob,
+      });
       await pool.query(`CREATE FUNCTION app.test_reject_job_publication() RETURNS trigger LANGUAGE plpgsql AS $$
         BEGIN IF NEW.state='published' THEN RAISE EXCEPTION 'synthetic_publish_failure'; END IF; RETURN NEW; END $$`);
       await pool.query(`CREATE TRIGGER test_reject_job_publication BEFORE UPDATE ON app.job_resources
@@ -585,6 +635,95 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 03 foundation", () => {
           retention_class: "security_90d",
         },
       ]);
+
+      const expectPersonalWritesDenied = async () => {
+        const deniedObservationId = appId<"evidence_observation">(randomUUID());
+        await expect(
+          repository.appendObservation(
+            ownerScope,
+            {
+              ...observation,
+              id: deniedObservationId,
+              operationId: appId<"operation">(randomUUID()),
+            },
+            {
+              ...firstAssertion,
+              id: appId<"validity_assertion">(randomUUID()),
+              observationId: deniedObservationId,
+            },
+          ),
+        ).resolves.toEqual({ ok: false, error: "not_available" });
+        await expect(
+          repository.appendAssertion(ownerScope, {
+            ...secondAssertion,
+            id: appId<"validity_assertion">(randomUUID()),
+          }),
+        ).resolves.toEqual({ ok: false, error: "not_available" });
+        await expect(
+          repository.appendCorrection(ownerScope, {
+            ...firstCorrection,
+            id: appId<"correction">(randomUUID()),
+            operationId: appId<"operation">(randomUUID()),
+          }),
+        ).resolves.toEqual({ ok: false, error: "not_available" });
+        await expect(repository.publish(ownerScope, capabilityCandidate, 1)).resolves.toEqual({
+          ok: false,
+          error: "not_available",
+        });
+        await expect(
+          repository.claim({ ...receipt, operationId: appId<"operation">(randomUUID()) }),
+        ).resolves.toEqual({ ok: false, error: "not_available" });
+        const deniedJob = {
+          ...semanticJob,
+          id: appId<"job">(randomUUID()),
+          semanticIdentity: `projection:${owner.learnerScopeId}:${randomUUID()}`,
+        };
+        await expect(repository.accept(deniedJob)).resolves.toEqual({
+          ok: false,
+          error: "not_available",
+        });
+        await expect(repository.transition(semanticJob.id, 4, "superseded")).resolves.toEqual({
+          ok: false,
+          error: "not_available",
+        });
+        await expect(
+          repository.commitFoundationEffect(semanticJob, "projection:2", "b".repeat(64)),
+        ).resolves.toEqual({ ok: false, error: "not_available" });
+        await expect(
+          repository.findByTokenDigest(attackerSession.tokenDigest),
+        ).resolves.toBeDefined();
+        await expect(
+          repository.findByTokenDigest(ownerSession.tokenDigest),
+        ).resolves.toBeUndefined();
+        await expect(
+          repository.insert({
+            ...ownerSession,
+            id: appId<"app_session">(randomUUID()),
+            tokenDigest: sessionDigest.digest("app-session", randomUUID()),
+            state: "active",
+          }),
+        ).rejects.toThrow("not available");
+      };
+
+      await pool.query("UPDATE app.learner_scopes SET state='deletion_in_progress' WHERE id=$1", [
+        owner.learnerScopeId,
+      ]);
+      await expectPersonalWritesDenied();
+      await pool.query("UPDATE app.learner_scopes SET state='active' WHERE id=$1", [
+        owner.learnerScopeId,
+      ]);
+      const deletionOperationId = randomUUID();
+      await pool.query(
+        `INSERT INTO app.deletion_operations(id,learner_scope_id,operation_id,state,inventory_version,inventory_digest,requested_at,access_revoked_at,backup_expires_at,policy_release)
+         VALUES($1,$2,$3,'access_revoked','inventory/foundation-v1',$4,$5,$5,transaction_timestamp()+interval '90 days','deletion-policy/v1')`,
+        [deletionOperationId, owner.learnerScopeId, randomUUID(), "0".repeat(64), sessionTime],
+      );
+      await pool.query(
+        `INSERT INTO app.learner_tombstones(learner_scope_id,scope_digest,deletion_operation_id,cutoff,expires_at,state)
+         VALUES($1,$2,$3,$4,transaction_timestamp()+interval '90 days','active')`,
+        [owner.learnerScopeId, "1".repeat(64), deletionOperationId, sessionTime],
+      );
+      await expectPersonalWritesDenied();
       await pool.end();
     });
   });

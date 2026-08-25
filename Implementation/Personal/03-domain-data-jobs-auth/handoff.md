@@ -31,6 +31,12 @@ that external record avoids putting a self-referential commit in this file.
   atomic projection publication, semantic jobs/effect receipts, and minimized
   security audit events. Owner bootstrap advances the per-scope fact sequence and is
   idempotent only for the same pre-bound issuer+subject.
+- Every Stage 03 learner write boundary takes the same transactional lock and
+  requires an active scope with no active tombstone. This includes callbacks/session
+  insertion and touch, operation receipts, Evidence assertions/corrections,
+  projection publication, job acceptance/transitions, and authoritative job effect
+  commit. Session resolution additionally requires the principal, pre-bound
+  credential, scope binding, and learner scope all to remain active.
 - Added closed pg-boss queue names, bounded policies, explicit semantic job states,
   coalescing/effect receipts, cancellation/tombstone checks, and non-migrating worker
   startup/shutdown. The Stage 03 receipt is the only authoritative foundation effect:
@@ -63,6 +69,10 @@ that external record avoids putting a self-referential commit in this file.
   correction/projection lineage. Projection publication matches generation ID,
   learner scope, kind, source cut, and checksum; the current pointer has the same
   scoped kind/generation identity.
+- Qualified semantic-job uniqueness and predecessor lineage by learner scope. A
+  same-scope replay hydrates the complete authoritative stored row rather than
+  retaining caller-supplied revision/deadline fields, while two scopes may safely use
+  the same semantic identity.
 - Preserved the dedicated `Dockerfile.migrator` and accepted OCI pins. Compose now
   uses that image and the exact Stage 03 schema range. Release evidence contains all
   twelve `P03-*` IDs, fake/closed flags, the exact foundation revision, and Stage 03
@@ -92,6 +102,8 @@ migration framework was added.
   dedicated-migrator evidence.
 - `a79c0a4642e90cd198d414ce5c0eda71f9319f3e` — route migrator, web, and worker
   through explicit role-specific database configuration.
+- `c09a3c20b1d708f0c5d365d528fbaed50e858ccf` — make foundation job effects atomic
+  and enforce scoped Evidence/projection lineage.
 
 The final documentation/checklist commit containing this file is identified in the
 PR evidence comment and is the only candidate root should review/deploy.
@@ -120,9 +132,13 @@ daemon was unavailable; no local PostgreSQL/OCI claim is made.
   single-use sealed OIDC transaction consumption, operation receipt replay/hash
   conflict, scoped Evidence append/assert/correct/supersede history, neutral attacker
   reads/writes, random-ID attempt/occasion lineage swaps, wrong-kind/source-cut
-  projection publication, and structurally minimized audit records. A trigger fault
-  after effect-receipt insertion but before publication proves the whole job
-  transaction rolls back; retry commits one receipt and replay cannot duplicate it.
+  projection publication, scope-qualified same-identity jobs with authoritative
+  replay hydration, principal/credential revocation of existing App sessions, and
+  structurally minimized audit records. It also denies every Stage 03 learner write,
+  job mutation, and callback/session insertion after both deletion state and an
+  active tombstone. A trigger fault after effect-receipt insertion but before
+  publication proves the whole job transaction rolls back; retry commits one receipt
+  and replay cannot duplicate it.
 - Worker/process and OCI gates verify migration-first readiness, non-root/read-only
   web/worker containers, health and signal handling, and exact OCI identity. Browser
   tests verify anonymous owner denial, fake identity/no network, visible Email OTP

@@ -278,8 +278,9 @@ CREATE TABLE app.job_resources (
   payload_digest text NOT NULL CHECK(length(payload_digest)=64), contract_major integer NOT NULL CHECK(contract_major=1), release text NOT NULL,
   deadline timestamptz NOT NULL, attempt integer NOT NULL DEFAULT 0 CHECK(attempt>=0), maximum_attempts integer NOT NULL CHECK(maximum_attempts BETWEEN 1 AND 20),
   cancellation_requested_at timestamptz, dependent_scope jsonb NOT NULL, unaffected_scope jsonb NOT NULL,
-  result_digest text, failure_reason text, predecessor_id uuid REFERENCES app.job_resources(id), created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), updated_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
-  UNIQUE(kind,semantic_identity)
+  result_digest text, failure_reason text, predecessor_id uuid, created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), updated_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(learner_scope_id,kind,semantic_identity), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,predecessor_id) REFERENCES app.job_resources(learner_scope_id,id)
 );
 CREATE INDEX job_resources_state_deadline_idx ON app.job_resources(state,deadline);
 CREATE INDEX job_resources_scope_state_idx ON app.job_resources(learner_scope_id,state);
@@ -330,7 +331,7 @@ CREATE TABLE app.deletion_steps (
   PRIMARY KEY(deletion_operation_id,step)
 );
 CREATE TABLE app.learner_tombstones (
-  learner_scope_id uuid PRIMARY KEY, scope_digest text NOT NULL UNIQUE CHECK(length(scope_digest)=64), deletion_operation_id uuid NOT NULL REFERENCES app.deletion_operations(id),
+  learner_scope_id uuid PRIMARY KEY REFERENCES app.learner_scopes(id), scope_digest text NOT NULL UNIQUE CHECK(length(scope_digest)=64), deletion_operation_id uuid NOT NULL REFERENCES app.deletion_operations(id),
   cutoff timestamptz NOT NULL, created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), expires_at timestamptz NOT NULL,
   state text NOT NULL CHECK(state IN ('active','expired')), CHECK(expires_at <= created_at + interval '91 days')
 );

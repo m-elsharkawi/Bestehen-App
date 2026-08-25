@@ -376,12 +376,13 @@ export class AppIdentityService {
       if (session?.state === "active") await this.repository.revoke(session.id, now);
       return undefined;
     }
-    await this.repository.touch(
+    const touched = await this.repository.touch(
       resolved.value.id,
       resolved.value.lastUsedAt,
       now,
       new Date(now.getTime() + sessionPolicyV1.idleMilliseconds),
     );
+    if (!touched) return undefined;
     return {
       principalId: resolved.value.principalId,
       learnerScopeId: resolved.value.learnerScopeId,

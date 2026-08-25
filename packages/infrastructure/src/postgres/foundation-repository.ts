@@ -80,6 +80,23 @@ async function inTransaction<T>(
   }
 }
 
+async function lockActiveLearnerScope(
+  client: PoolClient,
+  learnerScopeId: LearnerScopeId,
+): Promise<{ readonly nextSequence: number } | undefined> {
+  const result = await client.query(
+    `SELECT ls.next_sequence FROM app.learner_scopes ls
+     WHERE ls.id=$1 AND ls.state='active'
+       AND NOT EXISTS (
+         SELECT 1 FROM app.learner_tombstones t
+         WHERE t.learner_scope_id=ls.id AND t.state='active'
+       )
+     FOR UPDATE OF ls`,
+    [learnerScopeId],
+  );
+  return result.rows[0] ? { nextSequence: Number(result.rows[0].next_sequence) } : undefined;
+}
+
 export class PostgresFoundationRepository
   implements
     IdentityDirectory,
@@ -103,7 +120,13 @@ export class PostgresFoundationRepository
        FROM app.credential_bindings cb
        JOIN app.principal_scope_bindings psb ON psb.principal_id=cb.principal_id
        JOIN app.learner_scopes ls ON ls.id=psb.learner_scope_id
-       WHERE cb.issuer=$1 AND cb.subject=$2 AND cb.state='active' AND psb.state='active' AND ls.state='active'`,
+       JOIN app.principals p ON p.id=cb.principal_id
+       WHERE cb.issuer=$1 AND cb.subject=$2 AND cb.state='active' AND psb.state='active'
+         AND p.state='active' AND p.kind='account' AND ls.state='active'
+         AND NOT EXISTS (
+           SELECT 1 FROM app.learner_tombstones t
+           WHERE t.learner_scope_id=ls.id AND t.state='active'
+         )`,
       [proof.issuer, proof.subject],
     );
     const row = result.rows[0];
@@ -120,22 +143,37 @@ export class PostgresFoundationRepository
   }
 
   public async insert(session: AppSessionRecord): Promise<void> {
-    await this.pool.query(
-      `INSERT INTO app.app_sessions(id,token_digest,principal_id,learner_scope_id,state,created_at,last_used_at,authenticated_at,idle_expires_at,absolute_expires_at,policy_release)
-       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'session-policy/v1')`,
-      [
-        session.id,
-        session.tokenDigest,
-        session.principalId,
-        session.learnerScopeId,
-        session.state,
-        session.createdAt,
-        session.lastUsedAt,
-        session.authenticatedAt,
-        session.idleExpiresAt,
-        session.absoluteExpiresAt,
-      ],
-    );
+    await inTransaction(this.pool, async (client) => {
+      if (!(await lockActiveLearnerScope(client, session.learnerScopeId))) {
+        throw new Error("Session scope is not available");
+      }
+      const identity = await client.query(
+        `SELECT 1 FROM app.principals p
+         JOIN app.credential_bindings cb ON cb.principal_id=p.id AND cb.state='active'
+         JOIN app.principal_scope_bindings b ON b.principal_id=p.id
+           AND b.learner_scope_id=$2 AND b.state='active'
+         WHERE p.id=$1 AND p.kind='account' AND p.state='active'
+         FOR SHARE OF p,cb,b`,
+        [session.principalId, session.learnerScopeId],
+      );
+      if (!identity.rows[0]) throw new Error("Session identity is not available");
+      await client.query(
+        `INSERT INTO app.app_sessions(id,token_digest,principal_id,learner_scope_id,state,created_at,last_used_at,authenticated_at,idle_expires_at,absolute_expires_at,policy_release)
+         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'session-policy/v1')`,
+        [
+          session.id,
+          session.tokenDigest,
+          session.principalId,
+          session.learnerScopeId,
+          session.state,
+          session.createdAt,
+          session.lastUsedAt,
+          session.authenticatedAt,
+          session.idleExpiresAt,
+          session.absoluteExpiresAt,
+        ],
+      );
+    });
   }
 
   public async findByTokenDigest(tokenDigest: string): Promise<AppSessionRecord | undefined> {
@@ -143,7 +181,16 @@ export class PostgresFoundationRepository
       `SELECT s.* FROM app.app_sessions s
        JOIN app.principal_scope_bindings b ON b.principal_id=s.principal_id AND b.learner_scope_id=s.learner_scope_id AND b.state='active'
        JOIN app.learner_scopes ls ON ls.id=s.learner_scope_id AND ls.state='active'
-       WHERE s.token_digest=$1`,
+       JOIN app.principals p ON p.id=s.principal_id AND p.kind='account' AND p.state='active'
+       WHERE s.token_digest=$1
+         AND EXISTS (
+           SELECT 1 FROM app.credential_bindings cb
+           WHERE cb.principal_id=s.principal_id AND cb.state='active'
+         )
+         AND NOT EXISTS (
+           SELECT 1 FROM app.learner_tombstones t
+           WHERE t.learner_scope_id=s.learner_scope_id AND t.state='active'
+         )`,
       [tokenDigest],
     );
     return result.rows[0] ? sessionRow(result.rows[0]) : undefined;
@@ -156,8 +203,20 @@ export class PostgresFoundationRepository
     nextIdleExpiry: Date,
   ): Promise<boolean> {
     const result = await this.pool.query(
-      `UPDATE app.app_sessions SET last_used_at=$3,idle_expires_at=LEAST($4,absolute_expires_at)
-       WHERE id=$1 AND last_used_at=$2 AND state='active'`,
+      `UPDATE app.app_sessions s SET last_used_at=$3,idle_expires_at=LEAST($4,absolute_expires_at)
+       WHERE s.id=$1 AND s.last_used_at=$2 AND s.state='active'
+         AND EXISTS (
+           SELECT 1 FROM app.principals p
+           JOIN app.credential_bindings cb ON cb.principal_id=p.id AND cb.state='active'
+           JOIN app.principal_scope_bindings b ON b.principal_id=p.id AND b.state='active'
+           JOIN app.learner_scopes ls ON ls.id=b.learner_scope_id AND ls.state='active'
+           WHERE p.id=s.principal_id AND p.kind='account' AND p.state='active'
+             AND b.learner_scope_id=s.learner_scope_id
+             AND NOT EXISTS (
+               SELECT 1 FROM app.learner_tombstones t
+               WHERE t.learner_scope_id=ls.id AND t.state='active'
+             )
+         )`,
       [id, expectedLastUsedAt, nextLastUsedAt, nextIdleExpiry],
     );
     return result.rowCount === 1;
@@ -185,6 +244,9 @@ export class PostgresFoundationRepository
 
   public async claim(receipt: OperationReceipt) {
     return inTransaction(this.pool, async (client) => {
+      if (!(await lockActiveLearnerScope(client, receipt.learnerScopeId))) {
+        return { ok: false as const, error: "not_available" as const };
+      }
       const inserted = await client.query(
         `INSERT INTO app.operation_receipts(learner_scope_id,operation_id,kind,canonicalization_version,payload_digest,status,resource_ref,expiry_class)
          VALUES($1,$2,$3,$4,$5,$6,$7,'semantic') ON CONFLICT DO NOTHING RETURNING *`,
@@ -234,6 +296,8 @@ export class PostgresFoundationRepository
       return { ok: false as const, error: "not_available" as const };
     try {
       return await inTransaction(this.pool, async (client) => {
+        const learner = await lockActiveLearnerScope(client, scope.learnerScopeId);
+        if (!learner) return { ok: false as const, error: "not_available" as const };
         const lineage = await client.query(
           `SELECT 1 FROM app.attempts a
            JOIN app.independent_occasions o ON o.id=$3 AND o.learner_scope_id=a.learner_scope_id
@@ -246,12 +310,7 @@ export class PostgresFoundationRepository
           ],
         );
         if (!lineage.rows[0]) return { ok: false as const, error: "not_available" as const };
-        const learner = await client.query(
-          "SELECT next_sequence FROM app.learner_scopes WHERE id=$1 AND state='active' FOR UPDATE",
-          [scope.learnerScopeId],
-        );
-        if (!learner.rows[0]) return { ok: false as const, error: "not_available" as const };
-        const sequence = Number(learner.rows[0].next_sequence);
+        const sequence = learner.nextSequence;
         await client.query(
           "UPDATE app.learner_scopes SET next_sequence=next_sequence+1,updated_at=transaction_timestamp() WHERE id=$1",
           [scope.learnerScopeId],
@@ -312,6 +371,9 @@ export class PostgresFoundationRepository
 
   public async appendAssertion(scope: AuthorizedScope, assertion: ValidityAssertion) {
     return inTransaction(this.pool, async (client) => {
+      if (!(await lockActiveLearnerScope(client, scope.learnerScopeId))) {
+        return { ok: false as const, error: "not_available" as const };
+      }
       const current = await client.query(
         `SELECT o.current_assertion_id,o.supported_scope,a.state FROM app.evidence_observations o
          JOIN app.validity_assertions a ON a.id=o.current_assertion_id
@@ -344,6 +406,9 @@ export class PostgresFoundationRepository
     }
     try {
       return await inTransaction(this.pool, async (client) => {
+        if (!(await lockActiveLearnerScope(client, scope.learnerScopeId))) {
+          return { ok: false as const, error: "not_available" as const };
+        }
         if (correction.targetObservationId) {
           const observation = await client.query(
             "SELECT 1 FROM app.evidence_observations WHERE id=$1 AND learner_scope_id=$2",
@@ -423,6 +488,9 @@ export class PostgresFoundationRepository
     if (candidate.learnerScopeId !== scope.learnerScopeId)
       return { ok: false as const, error: "not_available" as const };
     return inTransaction(this.pool, async (client) => {
+      if (!(await lockActiveLearnerScope(client, scope.learnerScopeId))) {
+        return { ok: false as const, error: "not_available" as const };
+      }
       const generation = await client.query(
         `SELECT checksum,source_cut FROM app.projection_generations
          WHERE id=$1 AND learner_scope_id=$2 AND kind=$3 AND source_cut=$4 AND checksum=$5 FOR UPDATE`,
@@ -451,31 +519,40 @@ export class PostgresFoundationRepository
   }
 
   public async accept(job: SemanticJob) {
-    const inserted = await this.pool.query(
-      `INSERT INTO app.job_resources(id,kind,semantic_identity,state,revision,owner,actor_scope,learner_scope_id,payload_digest,contract_major,release,deadline,attempt,maximum_attempts,dependent_scope,unaffected_scope)
-       VALUES($1,$2,$3,$4,$5,'foundation','worker',$6,$7,1,'job-policy/foundation-v1',$8,$9,$10,'[]','[]')
-       ON CONFLICT(kind,semantic_identity) DO NOTHING RETURNING *`,
-      [
-        job.id,
-        job.kind,
-        job.semanticIdentity,
-        job.state,
-        job.revision,
-        job.learnerScopeId,
-        job.payloadDigest,
-        job.deadline,
-        job.attempt,
-        job.maximumAttempts,
-      ],
-    );
-    if (inserted.rows[0]) return { ok: true as const, value: job };
-    const existing = await this.pool.query(
-      "SELECT id,payload_digest FROM app.job_resources WHERE kind=$1 AND semantic_identity=$2",
-      [job.kind, job.semanticIdentity],
-    );
-    if (existing.rows[0]?.payload_digest === job.payloadDigest)
-      return { ok: true as const, value: { ...job, id: appId<"job">(existing.rows[0].id) } };
-    return { ok: false as const, error: "semantic_identity_conflict" as const };
+    return inTransaction(this.pool, async (client) => {
+      if (!(await lockActiveLearnerScope(client, job.learnerScopeId))) {
+        return { ok: false as const, error: "not_available" as const };
+      }
+      const inserted = await client.query(
+        `INSERT INTO app.job_resources(id,kind,semantic_identity,state,revision,owner,actor_scope,learner_scope_id,payload_digest,contract_major,release,deadline,attempt,maximum_attempts,dependent_scope,unaffected_scope)
+         VALUES($1,$2,$3,$4,$5,'foundation','worker',$6,$7,1,'job-policy/foundation-v1',$8,$9,$10,'[]','[]')
+         ON CONFLICT(learner_scope_id,kind,semantic_identity) DO NOTHING RETURNING *`,
+        [
+          job.id,
+          job.kind,
+          job.semanticIdentity,
+          job.state,
+          job.revision,
+          job.learnerScopeId,
+          job.payloadDigest,
+          job.deadline,
+          job.attempt,
+          job.maximumAttempts,
+        ],
+      );
+      if (inserted.rows[0]) {
+        return { ok: true as const, value: semanticJobFromRow(inserted.rows[0]) };
+      }
+      const existing = await client.query(
+        `SELECT * FROM app.job_resources
+         WHERE learner_scope_id=$1 AND kind=$2 AND semantic_identity=$3 FOR UPDATE`,
+        [job.learnerScopeId, job.kind, job.semanticIdentity],
+      );
+      if (existing.rows[0]?.payload_digest === job.payloadDigest) {
+        return { ok: true as const, value: semanticJobFromRow(existing.rows[0]) };
+      }
+      return { ok: false as const, error: "semantic_identity_conflict" as const };
+    });
   }
 
   public async transition(
@@ -485,6 +562,19 @@ export class PostgresFoundationRepository
     reasonCode?: string,
   ) {
     return inTransaction(this.pool, async (client) => {
+      const owner = await client.query(
+        "SELECT learner_scope_id FROM app.job_resources WHERE id=$1",
+        [id],
+      );
+      if (!owner.rows[0]) return { ok: false as const, error: "conflict" as const };
+      if (
+        !(await lockActiveLearnerScope(
+          client,
+          appId<"learner_scope">(owner.rows[0].learner_scope_id),
+        ))
+      ) {
+        return { ok: false as const, error: "not_available" as const };
+      }
       const current = await client.query("SELECT * FROM app.job_resources WHERE id=$1 FOR UPDATE", [
         id,
       ]);
@@ -526,6 +616,9 @@ export class PostgresFoundationRepository
     effectDigest: string,
   ) {
     return inTransaction(this.pool, async (client) => {
+      if (!(await lockActiveLearnerScope(client, job.learnerScopeId))) {
+        return { ok: false as const, error: "not_available" as const };
+      }
       const current = await client.query("SELECT * FROM app.job_resources WHERE id=$1 FOR UPDATE", [
         job.id,
       ]);
