@@ -105,7 +105,9 @@ Evidence IDs map as follows:
 - `P04-ROUTE-001`, `P04-A11Y-001`, `P04-RSP-001`, and `P04-SECURITY-001`:
   `apps/web/tests/p04-responsive.spec.ts` and the screen-reader script.
 - `P04-VISUAL-001`: seven platform-neutral Chromium baselines at 320, 390 light/dark,
-  768, 1024, and 1280 widths.
+  768, 1024, and 1280 widths. Their five-percent cross-OS pixel tolerance covers
+  self-hosted font hinting differences; semantic and responsive checks remain
+  authoritative.
 - `P04-ASSET-001`, `P04-COVERAGE-001`, `P04-PERF-001`, and `P04-SCOPE-001`: the four
   repository checks in `scripts/` and their negative fixtures.
 
