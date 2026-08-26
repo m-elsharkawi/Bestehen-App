@@ -181,6 +181,54 @@ and any `derived`, `corrected`, or `obsolete` resolution. CI validates exact cou
 unique IDs, resolvable anchors and targets, no unaccounted source, and reciprocal test
 coverage. Screenshots may attach to entries but can never satisfy semantic coverage.
 
+### 5.0 Six-board anchor coverage
+
+Every board-level anchor gets one manifest row in addition to any frame, exemplar,
+component, or icon row below. `accepted` means implementation may follow the visual
+contract as written. `corrected` means section 4 or Architecture replaces named copy
+or state. `derived` means the board specifies a rule or composition rather than a
+separate page. An `obsolete` note identifies the exact part Execution must not copy.
+
+| Board anchor | Target implementation area | Required P04 checks | Status and resolution |
+|---|---|---|---|
+| Design 01 `s00` Principles | coverage manifest, review rules, prohibited-copy fixtures | `P04-COVERAGE-001`, `P04-SEMANTIC-001` | accepted authority order; Design cannot override Architecture |
+| Design 01 `s01` Foundations | tokens, type, brand, icons, theme and responsive scales | `P04-TOKEN-001`, `P04-ASSET-001`, `P04-RSP-001` | accepted, with only the registered 20-icon and exact-asset corrections in section 4 |
+| Design 01 `s02` Components | C01-C43 exports, state fixtures, primitive tests | `P04-COVERAGE-001`, `P04-COMPONENT-001`, `P04-A11Y-001` | corrected: the prose count of 41 is obsolete; named subparts map to 43 families below |
+| Design 01 `s03` Patterns | semantic fixtures, loop composition, failure ownership, live regions | `P04-SEMANTIC-001`, `P04-A11Y-001` | corrected to five validity values, six Readiness states, and Architecture reason codes |
+| Design 02 `a1` Arrival | bare/protected entry, goal/date form, foundation route, initial result | `P04-ROUTE-001`, `P04-SEMANTIC-001`, `P04-VISUAL-001` | corrected: account-optional and six-minute placement promises are obsolete |
+| Design 02 `a2` Daily loop | AppShell and shared attempt/result/repair composition | `P04-COMPONENT-001`, `P04-ROUTE-001`, `P04-VISUAL-001` | accepted as one reusable loop, not six page copies |
+| Design 02 `a3` Four more skills | Reading, Language Elements, Listening, Writing, Speaking region slots | `P04-COMPONENT-001`, `P04-A11Y-001`, `P04-RSP-001` | accepted as typed regions in the shared shell |
+| Design 02 `a4` Readiness and mocks | Readiness evidence, mock preflight/result, Ready to Book | `P04-SEMANTIC-001`, `P04-COMPONENT-001`, `P04-VISUAL-001` | corrected: four-row gate list and probability-like copy are obsolete; use Gates A-F |
+| Design 02 `a5` Edges and honesty | system recovery, interruption, stale return, data controls | `P04-SEMANTIC-001`, `P04-A11Y-001`, `P04-SECURITY-001` | corrected: Architecture owns validity, deletion, backup-residual, and expiry truth |
+| Design 03 `d1` Desktop shell | AppShell large navigation and Coach 7/5 composition | `P04-RSP-001`, `P04-VISUAL-001` | accepted exemplar `LG-D1` |
+| Design 03 `d2` Readiness desktop | 8/4 Readiness plus read-only evidence panel | `P04-RSP-001`, `P04-A11Y-001`, `P04-VISUAL-001` | accepted exemplar `LG-D2`; reasons stay server-owned |
+| Design 03 `d3` Writing desktop | Writing 4/8 prompt/editor split | `P04-RSP-001`, `P04-COMPONENT-001`, `P04-VISUAL-001` | accepted exemplar `LG-D3` |
+| Design 03 `d4` Mock desktop | focused 720 CSS px mock measure | `P04-RSP-001`, `P04-PERF-001`, `P04-VISUAL-001` | accepted exemplar `LG-D4` |
+| Design 03 `d5` Tablet | tablet rail and sheet/dialog equivalence | `P04-RSP-001`, `P04-A11Y-001`, `P04-VISUAL-001` | accepted exemplar `LG-D5` |
+| Design 03 `d6` Responsive rules | CSS layout contracts for all shells and regions | `P04-RSP-001`, `P04-A11Y-001` | derived rule board, not a ninth large exemplar |
+| Design 04 `f` Flows | representative route compositions and browser-history checks | `P04-ROUTE-001`, `P04-SEMANTIC-001` | derived flow coverage; Architecture-corrected states replace stale flow copy |
+| Design 04 `a` Accessibility | semantic, keyboard, focus, announcement, zoom and motion tests | `P04-A11Y-001`, `P04-RSP-001` | accepted baseline, extended by Design 05 `u7` and Architecture truth |
+| Design 04 `c` Coverage | source manifest, reciprocal target/test validation | `P04-COVERAGE-001`, `P04-VISUAL-001` | corrected to exact 41/8/43/20 inventory; older totals are obsolete |
+| Design 04 `h` Handoff | execution order, evidence ledger, acceptance handoff | `P04-SCOPE-001`, `P04-COMPAT-001` | derived delivery instructions, never a product route |
+| Design 05 `u0` Scope | Stage 04 source manifest and anti-fork library boundary | `P04-SCOPE-001`, `P04-COVERAGE-001` | accepted: two families added, three extended, one shell variant |
+| Design 05 `u1` Shell anatomy | `AppShell.bare`, shared banner/live-region slots | `P04-COMPONENT-001`, `P04-ROUTE-001`, `P04-RSP-001` | accepted; no second information architecture |
+| Design 05 `u2` SessionNotice | C42 and bare identity/session route compositions | `P04-COMPONENT-001`, `P04-A11Y-001`, `P04-SEMANTIC-001` | corrected: mid-attempt copy cannot promise that evidence still counts |
+| Design 05 `u3` Capability status | C28 state/reason fixtures and placement rules | `P04-COMPONENT-001`, `P04-SEMANTIC-001`, `P04-A11Y-001` | accepted six-state projection; no provider duration promise |
+| Design 05 `u4` Save and transfer | C40 autosave/checkpoint slot and C43 transfer lifecycle | `P04-COMPONENT-001`, `P04-A11Y-001`, `P04-SECURITY-001` | accepted; export/purge reuse state grammar without new families |
+| Design 05 `u5` Fault ownership | C29 ownership/consequence/scope/action order | `P04-SEMANTIC-001`, `P04-A11Y-001` | accepted; one scoped recovery action and no learner-blaming color |
+| Design 05 `u6` Responsive | bare shell, banner and transfer placement rules | `P04-RSP-001`, `P04-VISUAL-001` | accepted as additions to Design 03 `d6` |
+| Design 05 `u7` Accessibility | live-region policy, reduced motion, focus contracts | `P04-A11Y-001`, `P04-RSP-001` | accepted, including assertive timed sign-out; timer ticks stay silent |
+| Design 06 `v0` Scope and distinctions | manifest resolutions for later critical families | `P04-SCOPE-001`, `P04-COVERAGE-001` | accepted audit scope; no extra routes or component families |
+| Design 06 `v1` Identity | bare auth/session compositions and protected return path | `P04-ROUTE-001`, `P04-A11Y-001`, `P04-SECURITY-001` | corrected to closed Auth0 Email OTP, no password, no account-optional entry |
+| Design 06 `v2` Account and data | Account sessions, export, deletion and status compositions | `P04-SEMANTIC-001`, `P04-SECURITY-001`, `P04-COMPAT-001` | corrected to source-cut export and revoke-first deletion with honest residuals |
+| Design 06 `v3` Progress | Progress list/detail and weakness lifecycle | `P04-COMPONENT-001`, `P04-RSP-001`, `P04-VISUAL-001` | accepted exemplar `LG-V3`; absence never renders as zero |
+| Design 06 `v4` Language Elements | C38 cloze region and result composition | `P04-COMPONENT-001`, `P04-A11Y-001`, `P04-VISUAL-001` | accepted exemplar `LG-V4` |
+| Design 06 `v5` Capture and upload | C41 capture plus C43 transfer placement | `P04-COMPONENT-001`, `P04-A11Y-001`, `P04-SECURITY-001` | accepted; provider/storage internals remain absent |
+| Design 06 `v6` Capability placement | pending, partial, unavailable and fallback placements | `P04-SEMANTIC-001`, `P04-COMPONENT-001` | corrected to authoritative scope/reasons and no guessed outcomes |
+| Design 06 `v7` Gates A-F | C32 gate/evidence composition | `P04-SEMANTIC-001`, `P04-A11Y-001`, `P04-VISUAL-001` | corrected exemplar `LG-V7`; obsolete four-row gate list is forbidden |
+| Design 06 `v8` Foundation route | resumable five-skill route and partial result | `P04-ROUTE-001`, `P04-SEMANTIC-001`, `P04-RSP-001` | corrected to 18-22 minute estimate, hard 30-minute ceiling, no placement shortcut |
+| Design 06 `v9` Cross-family contracts | shared states, reasons, focus, responsive and security fixtures | `P04-COVERAGE-001`, `P04-SEMANTIC-001`, `P04-COMPAT-001` | derived rules; Architecture resolves every conflict named in section 4 |
+
 ### 5.1 Compact frames, exactly 41
 
 | IDs | Source anchors | Implementation destination |
@@ -220,17 +268,74 @@ manifest row.
 The register groups Design subparts as owned variants and slots. Every name in Design
 01 section 2.14 and the Design 05 delta must resolve to one of these IDs.
 
-| IDs | Families and owned variants |
+The input-kind column uses three explicit layers. `UiProjection<T>` is a serializable,
+exhaustive union in `packages/contracts/src/ui-projections.ts`; only the server facade
+may construct it from domain/application output. `DsContract<T>` is presentation-only
+configuration or a typed slot in `packages/design-system/src/contracts.ts`.
+`LocalState<T>` is ephemeral browser interaction and cannot create a score, validity,
+Readiness band, gate result, authorization result, or reason. In the boundary column,
+`server` means a server component renders authoritative projection data; `island`
+means the smallest client component owns only the named interaction; `CSS` means no
+JavaScript owns responsive behavior.
+
+| ID | Exported family and owned variants/slots | Authoritative input kind | Ownership boundary | Owned semantic and accessibility behavior |
+|---|---|---|---|---|
+| `C01` | `AppShell`: `protected`, `bare`; `utilityHeader`, `bottomNav`, `sideNav`, `pageTitle`, `backLink`, `sectionCard`, `panel`, `divider`, banner/live-region slots | `UiProjection<AppShellView>` plus `DsContract<ShellSlots>` | server composition; CSS chooses nav form; no shell island | landmark order, one `h1`, four destinations, current-page state, back semantics, bare-shell omissions, skip target |
+| `C02` | `AttemptShell`: conditions row, content/result/repair slots, `stickyActionBar` | `UiProjection<AttemptShellView>` plus region slots | server truth; child region/action may be an island; CSS owns stickiness | focus mode, fixed condition labels, one primary action, sticky action never covers content, restored focus target |
+| `C03` | `MockShell`: `mockTypeCard`, `mockSetupRules`, `preflight`, `measuredTimer`, `pauseWarning`, `interruptionRecovery`, `countdownBanner` | `UiProjection<MockShellView>` | server state; timer/pause island displays supplied deadlines only | measured-block label, silent ordinary ticks, assertive final-five warning once, pause/interruption ownership, 720 px measure |
+| `C04` | `Overlay`: `sheet`, `dialog`, destructive-confirm slot | `DsContract<OverlayView>` plus `LocalState<open>` | island owns open/close/focus only; server supplies content/actions; CSS switches sheet/dialog | labelled dialog, focus trap, inert background, Escape policy, trigger focus return, non-dismissible destructive state |
+| `C05` | `Sequence`: `stepper`, ordered-layout variant | `UiProjection<SequenceView>` | server; CSS only for layout | ordered-list semantics, current/completed text, no color-only progress, no invented completion percentage |
+| `C06` | `Button`: primary, secondary, quiet, destructive; eight observable states | `DsContract<ActionView>` | native server-rendered control; narrow pending island only when submission requires it | native activation, 44 px target, visible focus, busy/disabled reason, destructive name, no disabled-without-explanation state |
+| `C07` | `InlineAction`: `iconButton`, text `link` | `DsContract<ActionView>` | native link/button; no island unless action needs local state | correct link/button element, accessible name, decorative icon, external/new-context announcement where applicable |
+| `C08` | `ChoiceNav`: `segmented`, `tabs`, `chip` | `DsContract<ChoiceNavView>` plus URL or `LocalState<selection>` | server sets initial/URL state; island owns roving selection only | tab/list semantics by behavior, arrow-key model, selected text/state, chips never masquerade as buttons |
+| `C09` | `BinaryChoice`: `toggle`, `checkbox`, `radio` | `UiProjection<FieldView>` plus `LocalState<value>` | native form controls in a form island; server owns allowed values/errors | explicit group/field labels, checked state, help/error association, keyboard-native behavior, consequence text once |
+| `C10` | `Field`: `text`, `select`, `date`, `month`, `schedule` | `UiProjection<FieldView>` plus `LocalState<draft>` | server owns schema, value and errors; island owns draft/parsing, never policy validation | stable label, instructions, required/invalid state, described error, locale-safe date parts, no placeholder-only label |
+| `C11` | `AnswerChoice`: single/multiple, selected/correct/incorrect/revealed | `UiProjection<AnswerChoiceView>` plus `LocalState<selection>` | server owns reveal/correctness; island owns pre-submit selection | fieldset/legend, native choice semantics, keyboard reachability, correctness stated in text and announced after submit |
+| `C12` | `MatchingPair`: source list, target slots, select-then-place, reset | `UiProjection<MatchingView>` plus `LocalState<placements>` | server supplies items/result; island owns placement gestures | fully operable without drag, numbered instructions, move confirmation, deterministic focus after place/reset |
+| `C13` | `ClozeGap`: blank/input, options, result variant | `UiProjection<ClozeGapView>` plus `LocalState<answer>` | server owns accepted/result state; island owns answer entry | gap number and context in accessible name, text-entry fallback, ordered traversal, result not conveyed by color alone |
+| `C14` | `ReorderList`: move up/down, position, reset | `UiProjection<ReorderView>` plus `LocalState<order>` | server supplies items/result; island owns reordering | no drag-only operation, position announced after each move, stable keys/focus, result described in reading order |
+| `C15` | `FormFeedback`: `formError`, `errorSummary` | `UiProjection<FormErrorView>` | server owns errors; submission island moves focus once | field association, summary heading and links, focus first summary on failed submit, no duplicate live announcements |
+| `C16` | `Recommendation`: `recommendationCard`, `whyThisDisclosure` | `UiProjection<RecommendationView>` | server; native `details` or disclosure island owns open state only | one dominant recommendation, duration/consequence text, disclosed server reason, correct expanded relation |
+| `C17` | `SessionDurationPicker`: quick/standard/extended choices | `UiProjection<SessionDurationView>` plus `LocalState<selection>` | server owns allowed durations; island owns selection | radiogroup semantics, duration in every name, current choice stated, no compliance or completion framing |
+| `C18` | `CoachMessage`: plan, diagnosis, reminder variants | `UiProjection<CoachMessageView>` | server only | message heading/author context, logical reading order, one next action, no chat-role claim when content is static |
+| `C19` | `ResultCard`: outcome, `validityResult`, pending/partial slots | `UiProjection<ResultView>` | server only | outcome and validity named separately, no bare score, affected scope stated, heading announced after navigation |
+| `C20` | `DecisiveEvidence`: evidence excerpts and conditions | `UiProjection<DecisiveEvidenceView>` | server only | evidence source/condition/time labels, quote semantics only for actual excerpts, text alternative for marks |
+| `C21` | `RepairCard`: pattern, worked example, skip action | `UiProjection<RepairView>` | server content; optional answer island | one pattern, five-minute ceiling copy, skip stays neutral, example/result structure readable without styling |
+| `C22` | `HintDisclosure`: closed/open/used | `UiProjection<HintView>` plus `LocalState<open>` | server owns consequence; island owns disclosure | expanded relation, help consequence before reveal, usage state visible, no hidden readiness-policy change |
+| `C23` | `FreshCheckBanner`: available, unavailable/transfer-pending | `UiProjection<FreshCheckView>` | server only | labels fresh-content authority, no-help condition, neutral missing-content ownership, one next action |
+| `C24` | `WhatChangedSummary`: changed, unchanged, returns-due | `UiProjection<ChangeSummaryView>` | server only | before/after terms, no completion percentage, return date/reason in text, heading/list structure |
+| `C25` | `EvidenceLabel`: five validity values plus eligibility text | `UiProjection<EvidenceLabelView>` | server only | exact validity word and reason, icon/color redundant, practice-only stays separate, accessible name excludes decoration |
+| `C26` | `WeaknessCard`: due, improving, stale, contradicted, empty | `UiProjection<WeaknessView>` | server only | component/state/next review text, absence not zero, one detail link, no rank/level interpretation |
+| `C27` | `DueReviewGroup`: due/soon/later/empty groups | `UiProjection<DueReviewGroupView>` | server only | time-group headings and counts, list semantics, empty state names scope, dates use machine-readable values |
+| `C28` | `PendingBanner`: processing, slow, pending, partial, unavailable/fallback, retry-fresh | `UiProjection<CapabilityView>` | server transitions; static skeleton CSS; no polling island unless facade supplies state | 15/30-second policy without duration copy, one polite announcement per transition, affected scope, no provider names |
+| `C29` | `SystemFailureBanner`: identity, media, capability, transfer, storage faults | `UiProjection<SystemFailureView>` | server owns reason/scope/action; no local retry policy | ownership, consequence, still-working scope, exactly one recovery action, neutral system styling, assertive only for named exceptions |
+| `C30` | `ContradictionNotice`: new contradiction, under review, resolved | `UiProjection<ContradictionView>` | server only | names conflicting evidence and affected scope, does not average it away, exposes next action/review state |
+| `C31` | `StaleEvidenceNotice`: stale, recheck due, recheck scheduled | `UiProjection<StaleEvidenceView>` | server only | stale reason/date/component, never failure styling, recheck action and readiness consequence in text |
+| `C32` | `ReadinessEvidence`: `readinessBand`, `componentCard`, `passLineScale`, range, `confidenceMeter`, `sectionBreakdown`, `blockerCard`, `gapCard`, `readyToBookGate` | `UiProjection<ReadinessView>` | server only; CSS changes arrangement | six exact states, Written/Oral separation, 60 official line and labelled 65 margin, Gates A-F and server reasons, accessible text table |
+| `C33` | `ChangeTimeline`: event list and empty state | `UiProjection<ChangeTimelineView>` | server only | chronological list/time elements, cause and evidence links, no decorative chart-only history |
+| `C34` | `MilestoneRow`: achieved, current, upcoming, withdrawn | `UiProjection<MilestoneView>` | server only | status in text, date/source, withdrawn reason, no collectible level or badge semantics |
+| `C35` | `MockOutcome`: `mockResultCard`, `mockComparison`, `postMockPriorities` | `UiProjection<MockOutcomeView>` | server only; CSS owns comparison layout | raw points and validity separated, comparable conditions labelled, priorities ordered, no probability or merged Readiness claim |
+| `C36` | `TextAlternativeTable`: compact/expanded | `UiProjection<TextAlternativeView>` | server only | caption, row/column headers, same facts as graphic, responsive scroll/reflow without clipped focus |
+| `C37` | `ReadingRegion`: `readingTextPane`, `questionList` | `UiProjection<ReadingRegionView>` plus region answer state | server supplies text/questions; answer islands stay inside region | article/language structure, question navigation, text scaling/reflow, source and allowed-help labels |
+| `C38` | `LanguageElementsRegion`: `clozeTextPane`, gap/options/result slots | `UiProjection<LanguageElementsView>` plus C13 state | server truth; C13 islands own entries | document reading order, numbered gaps, keyboard traversal, no visual-position-only references |
+| `C39` | `ListeningRegion`: `audioPlayer`, `replayCounter`, `transcriptPane` | `UiProjection<ListeningRegionView>` plus media `LocalState` | server owns source/limits; media island owns playback only | named audio control, replay limit text, transcript availability, no autoplay, media failure routes to C29 |
+| `C40` | `WritingRegion`: `writingEditor`, `contentPointChecklist`, `autosaveStatus`, `correctionLayer`, `revisionDiff` | `UiProjection<WritingRegionView>` plus local draft/checkpoint state | server owns prompt/checkpoints/result; editor island owns text and local save | labelled editor, character/word status without noisy live updates, durable-save wording, accessible diff and conflict compare/select/merge |
+| `C41` | `SpeakingRegion`: `speakingPrompt`, `micPreflight`, `recordingIndicator`, `turnTaking`, `partnerTurn`, `transcriptEvaluation` | `UiProjection<SpeakingRegionView>` plus capture `LocalState` | server owns prompt/conditions/result; media island owns permission/capture; C43 owns transfer | explicit permission action, recording status and assertive failure, turn ownership, timer semantics, transcript/evaluation separation |
+| `C42` | `SessionNotice`: signed-out, callback-failed, expired-idle, expired-mid-attempt, access-denied | `UiProjection<SessionNoticeView>` | server page in `AppShell.bare`; no credential island | page not dialog, `h1` focus, safe-state/one-forward-action copy, timed expiry assertive once, no provider/credential details |
+| `C43` | `UploadStatus`: preparing, sending, queued-offline, retrying, not-sent, sent; export/purge noun variants | `UiProjection<TransferView>` | server owns durable state; transfer island displays supplied progress and retry action only | determinate value plus text, polite queue/completion, assertive live-recording failure, retained-local-artifact truth, no storage internals |
+
+The reciprocal Design 01 section 2.14 mapping is fixed below. Parenthesized text is
+the owning slot or variant, not another family.
+
+| Design 01 §2.14 group | Every named item mapped to one family |
 |---|---|
-| `C01` to `C05` | `AppShell` with utility header/nav/title/back/section surfaces; `AttemptShell` with conditions and sticky action; `MockShell` with measured timer/pause; overlay sheet/dialog; layout sequence/stepper |
-| `C06` to `C13` | Button; icon button/link; segmented/tabs/chip; toggle/checkbox/radio; text/select/date/month/schedule fields; answer choice; matching select-then-place; cloze gap |
-| `C14` to `C17` | reorder list; form error/error summary; recommendation/Why disclosure; session-duration picker |
-| `C18` to `C25` | CoachMessage; ResultCard; DecisiveEvidence; RepairCard; HintDisclosure; FreshCheckBanner; WhatChangedSummary; EvidenceLabel |
-| `C26` to `C31` | WeaknessCard; DueReviewGroup; PendingBanner; SystemFailureBanner; ContradictionNotice; StaleEvidenceNotice |
-| `C32` to `C36` | Readiness component/band/pass-line/range/confidence/breakdown/blocker/gap family; ChangeTimeline; MilestoneRow; MockResult/Comparison; TextAlternativeTable |
-| `C37` to `C41` | Reading region; Language Elements region; Listening region; Writing editor/checklist/autosave/correction/diff region; Speaking prompt/preflight/recording/turn/transcript-evaluation region |
-| `C42` | `SessionNotice`, five no-learner-state variants in `AppShell.bare` |
-| `C43` | `UploadStatus`, six transfer states reused with export/purge nouns |
+| Shell | `AppShell` -> C01; `UtilityHeader` -> C01 (`utilityHeader`); `BottomNav` -> C01 (`bottomNav`); `SideNav` -> C01 (`sideNav`); `PageTitle` -> C01 (`pageTitle`); `BackLink` -> C01 (`backLink`); `AttemptShell` -> C02; `MockShell` -> C03; `StickyActionBar` -> C02 (`stickyActionBar`); `SectionCard` -> C01 (`sectionCard`); `Panel` -> C01 (`panel`); `Divider` -> C01 (`divider`); `Stepper` -> C05 |
+| Action and input | `Button` -> C06; `IconButton` -> C07 (`iconButton`); `Link` -> C07 (`link`); `Segmented` -> C08 (`segmented`); `Tabs` -> C08 (`tabs`); `Chip` -> C08 (`chip`); `Toggle` -> C09 (`toggle`); `Checkbox` -> C09 (`checkbox`); `Radio` -> C09 (`radio`); `TextField` -> C10 (`text`); `Select` -> C10 (`select`); `DateField` -> C10 (`date`); `MonthField` -> C10 (`month`); `ScheduleField` -> C10 (`schedule`); `AnswerChoice` -> C11; `MatchingPair` -> C12; `ClozeGap` -> C13; `ReorderList` -> C14; `FormError` -> C15 (`formError`); `ErrorSummary` -> C15 (`errorSummary`) |
+| Coaching and evidence | `RecommendationCard` -> C16 (`recommendationCard`); `WhyThisDisclosure` -> C16 (`whyThisDisclosure`); `SessionDurationPicker` -> C17; `CoachMessage` -> C18; `ResultCard` -> C19; `DecisiveEvidence` -> C20; `RepairCard` -> C21; `HintDisclosure` -> C22; `FreshCheckBanner` -> C23; `WhatChangedSummary` -> C24; `EvidenceLabel` -> C25; `WeaknessCard` -> C26; `DueReviewGroup` -> C27; `PendingBanner` -> C28; `SystemFailureBanner` -> C29; `ContradictionNotice` -> C30; `StaleEvidenceNotice` -> C31 |
+| Readiness and data | `ReadinessBand` -> C32 (`readinessBand`); `ComponentCard` -> C32 (`componentCard`); `PassLineScale` -> C32 (`passLineScale`); `ConfidenceMeter` -> C32 (`confidenceMeter`); `SectionBreakdown` -> C32 (`sectionBreakdown`); `BlockerCard` -> C32 (`blockerCard`); `GapCard` -> C32 (`gapCard`); `ChangeTimeline` -> C33; `MilestoneRow` -> C34; `MockResultCard` -> C35 (`mockResultCard`); `MockComparison` -> C35 (`mockComparison`); `TextAlternativeTable` -> C36 |
+| Skill parts | `ReadingTextPane` -> C37 (`readingTextPane`); `QuestionList` -> C37 (`questionList`); `ClozeTextPane` -> C38 (`clozeTextPane`); `AudioPlayer` -> C39 (`audioPlayer`); `ReplayCounter` -> C39 (`replayCounter`); `TranscriptPane` -> C39 (`transcriptPane`); `WritingEditor` -> C40 (`writingEditor`); `ContentPointChecklist` -> C40 (`contentPointChecklist`); `AutosaveStatus` -> C40 (`autosaveStatus`); `CorrectionLayer` -> C40 (`correctionLayer`); `RevisionDiff` -> C40 (`revisionDiff`); `SpeakingPrompt` -> C41 (`speakingPrompt`); `MicPreflight` -> C41 (`micPreflight`); `RecordingIndicator` -> C41 (`recordingIndicator`); `TurnTaking` -> C41 (`turnTaking`); `PartnerTurn` -> C41 (`partnerTurn`); `TranscriptEvaluation` -> C41 (`transcriptEvaluation`) |
+| High-stakes | `MockTypeCard` -> C03 (`mockTypeCard`); `MockSetupRules` -> C03 (`mockSetupRules`); `Preflight` -> C03 (`preflight`); `MeasuredTimer` -> C03 (`measuredTimer`); `PauseWarning` -> C03 (`pauseWarning`); `InterruptionRecovery` -> C03 (`interruptionRecovery`); `ValidityResult` -> C19 (`validityResult`); `PostMockPriorities` -> C35 (`postMockPriorities`); `CountdownBanner` -> C03 (`countdownBanner`); `ReadyToBookGate` -> C32 (`readyToBookGate`) |
+| Design 05 delta | `SessionNotice` -> C42; `UploadStatus` -> C43; `AppShell.bare` -> C01 (`bare`); extended `PendingBanner` -> C28; extended `SystemFailureBanner` -> C29; extended `AutosaveStatus` -> C40 (`autosaveStatus`) |
 
 `ReadyToBookGate`, mock setup/preflight, validity-first result, countdown/final-five,
 and post-mock priorities compose the shell, readiness, result, banner, form, and timer
@@ -572,7 +677,13 @@ The bounded Stage 04 checkpoint is:
 1. Record the accepted SHA, matching image/release identity, clean deployment, green
    deterministic CI, and a protected pre-change recovery/rollback reference. Keep all
    external-call, paid, public-object, guest, account-optional, experimental, and
-   productive flags false. Keep unrelated providers fake/disabled.
+   productive flags false. Keep unrelated providers fake/disabled and every accepted
+   spend envelope in force. The orchestrator should use the authenticated Coolify
+   connection when it is available. If a dashboard-only action is unavoidable, cite
+   only the exact applicable guide step, `OPS-04` or `OPS-05` in
+   `docs/setup/personal/02-coolify-two-vm.md` and `AUTH-09` in
+   `docs/setup/personal/05-auth0-eu-email-otp.md`, and record only `verified`, `failed`,
+   or `rolled_back`. Never request, view, repeat, or validate a secret value.
 2. Through the private Pangolin public origin, run responsive checks at 320, 360, 390,
    479/480, 767/768, 1023/1024, 1279/1280, and a large desktop. Check 200% zoom,
    a 400% reflow spot, portrait/landscape/resize, sticky actions, real local fonts,
@@ -581,14 +692,16 @@ The bounded Stage 04 checkpoint is:
    SessionNotice, Readiness text-table, and draft-conflict scripts. Run the available
    branded current browsers and label any automation evidence honestly. Use only
    synthetic state fixtures and redact the private origin from stored evidence.
-4. Enable only the already accepted Auth0 adapter plus external-call flag for one
-   bounded allowed-owner Email OTP flow if current acceptance requires it. Verify the
-   public-origin redirect/callback/App session, held safe destination, anonymous
-   denial, logout, revoked-session denial, and no password UI. On Auth0-hosted OTP
-   pages, verify keyboard order, accessible names/instructions/errors, 320 CSS px
-   reflow, 200% zoom, contrast, and reduced-motion behavior. Do not record the owner
-   email, OTP, issuer, subject, URL parameters, cookie, token, or private origin in
-   screenshots/logs.
+4. Run one mandatory, bounded allowed-owner Auth0 Email OTP smoke because Stage 04
+   changes entry and session UI. Enable only the already accepted Auth0 adapter and
+   external-call flag for this check. Verify the public-origin redirect/callback/App
+   session, held safe destination, anonymous denial, logout, revoked-session denial,
+   and no password UI. On Auth0-hosted OTP pages, execute guide step `AUTH-09` and
+   verify keyboard order, accessible names/instructions/errors, 320 CSS px reflow,
+   200% zoom, representative 400% desktop reflow, contrast, reduced-motion behavior,
+   wrong/expired-code handling, and focus recovery. Use the synthetic/non-sensitive
+   evidence rules below. Do not record the owner email, OTP, issuer, subject, URL
+   parameters, cookie, token, or private origin in screenshots or logs.
 5. Restore Auth0 and external calls to fake/disabled immediately after the bounded
    smoke. Verify every external/product flag is false, unrelated adapters remain
    fake/disabled, no provider session/token was retained by the App, and rollback
