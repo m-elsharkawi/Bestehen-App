@@ -77,11 +77,13 @@ for (const context of [
 
 assert.deepEqual(
   unexpectedStage04Paths([
+    ".gitignore",
     "packages/contracts/src/ui-projections.ts",
     "packages/design-system/src/components.tsx",
     "apps/web/src/app/(protected)/coach/page.tsx",
     "apps/web/tests/p04-responsive.spec.ts",
     "Implementation/Personal/04-responsive-web-design-system/handoff.md",
+    "scripts/check-generated.mjs",
   ]),
   [],
   "Stage 04 accepts only its planned implementation surfaces",

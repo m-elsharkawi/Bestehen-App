@@ -69,6 +69,7 @@ const stage03Allowed = [
   /^scripts\/(?:check-docs|check-scope|release-manifest|test-oci|test-release-manifest|test-scope)\.mjs$/,
 ];
 const stage04Allowed = [
+  /^\.gitignore$/,
   /^\.github\/workflows\/ci\.yml$/,
   /^apps\/web\/(?:package\.json|src\/app\/|src\/server\/frontend-data(?:\.unit\.test)?\.ts|src\/ui\/|tests\/(?:baseline\.spec\.ts|p04-))/,
   /^Implementation\/Personal\/04-responsive-web-design-system\/handoff\.md$/,
@@ -78,7 +79,7 @@ const stage04Allowed = [
   /^packages\/design-system\//,
   /^playwright\.config\.ts$/,
   /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
-  /^scripts\/(?:check-assets|check-design-coverage|check-scope|check-web-budget|test-scope)\.mjs$/,
+  /^scripts\/(?:check-assets|check-design-coverage|check-generated|check-scope|check-web-budget|test-scope)\.mjs$/,
 ];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {
