@@ -70,6 +70,10 @@ processor, or Stage 05 work was added.
   by keeping the design-system projection seam presentation-only.
 - `228adf906d63c97a485dbd5d3fcc8cbc8ab984c4` permits only the three accepted tracked
   source-coverage manifest files while preserving the generated-output prohibition.
+- `a0e5bd63c6192f31ab137b9a34c5580217903d0c` adds the explicit 400% effective zoom
+  browser spot and records the first complete execution handoff/checklist candidate.
+- `068c9fac6e0566e4e343d39e1a58af2806eb490b` retains portable visual baselines with
+  a bounded tolerance for verified macOS/Linux self-hosted-font raster differences.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
