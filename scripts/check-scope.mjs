@@ -70,9 +70,10 @@ const stage03Allowed = [
 ];
 const stage04Allowed = [
   /^\.github\/workflows\/ci\.yml$/,
-  /^apps\/web\/(?:package\.json|src\/app\/|src\/server\/frontend-data\.ts|src\/ui\/|tests\/p04-)/,
+  /^apps\/web\/(?:package\.json|src\/app\/|src\/server\/frontend-data(?:\.unit\.test)?\.ts|src\/ui\/|tests\/(?:baseline\.spec\.ts|p04-))/,
   /^Implementation\/Personal\/04-responsive-web-design-system\/handoff\.md$/,
   /^package\.json$/,
+  /^pnpm-lock\.yaml$/,
   /^packages\/contracts\/src\/(?:index|ui-projections)(?:\.test)?\.ts$/,
   /^packages\/design-system\//,
   /^playwright\.config\.ts$/,

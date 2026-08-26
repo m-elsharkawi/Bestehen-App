@@ -1,0 +1,40 @@
+{
+  "version": "p04-source-anchors/v1",
+  "generatedFrom": "source-anchors.ts",
+  "inventory": {
+    "compactFrames": 41,
+    "largeExemplars": 8,
+    "componentFamilies": 43,
+    "icons": 20,
+    "boardAnchors": 37
+  },
+  "routes": [
+    "/",
+    "/coach",
+    "/readiness",
+    "/train",
+    "/progress",
+    "/settings",
+    "/settings/data",
+    "/session/synthetic",
+    "/attempt/synthetic-reading",
+    "/attempt/synthetic-reading/result",
+    "/mock/synthetic",
+    "/mock/synthetic/result"
+  ],
+  "automatedEvidence": [
+    "P04-SCOPE-001",
+    "P04-COVERAGE-001",
+    "P04-TOKEN-001",
+    "P04-ASSET-001",
+    "P04-COMPONENT-001",
+    "P04-SEMANTIC-001",
+    "P04-ROUTE-001",
+    "P04-RSP-001",
+    "P04-A11Y-001",
+    "P04-VISUAL-001",
+    "P04-PERF-001",
+    "P04-SECURITY-001",
+    "P04-COMPAT-001"
+  ]
+}

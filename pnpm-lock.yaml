@@ -162,6 +162,10 @@ importers:
         version: 4.4.3
 
   packages/design-system:
+    dependencies:
+      '@bestehen/contracts':
+        specifier: workspace:*
+        version: link:../contracts
     devDependencies:
       '@types/react':
         specifier: 19.2.18

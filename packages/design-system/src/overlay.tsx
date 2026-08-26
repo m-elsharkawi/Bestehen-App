@@ -1,0 +1,43 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { useRef } from "react";
+
+export function Overlay({
+  title = "Review details",
+  children,
+}: {
+  readonly title?: string;
+  readonly children?: ReactNode;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  function close() {
+    dialog.current?.close();
+    trigger.current?.focus();
+  }
+  return (
+    <>
+      <button
+        className="action action-secondary"
+        onClick={() => dialog.current?.showModal()}
+        ref={trigger}
+        type="button"
+      >
+        Open {title}
+      </button>
+      <dialog
+        aria-labelledby="overlay-title"
+        className="overlay"
+        onClose={() => trigger.current?.focus()}
+        ref={dialog}
+      >
+        <h2 id="overlay-title">{title}</h2>
+        {children ?? <p>Review the consequence before continuing.</p>}
+        <button className="action action-primary" onClick={close} type="button">
+          Close
+        </button>
+      </dialog>
+    </>
+  );
+}
