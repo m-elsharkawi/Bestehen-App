@@ -33,7 +33,7 @@ This is the live, authoritative progress ledger for the personal program. Worker
 
 ## 04 — Responsive web and Design system foundation
 
-- [~] 04P Planning awaiting independent acceptance — evidence: `Implementation/Personal/04-responsive-web-design-system/plan.md`; Planning commits recorded at [draft PR #10](https://github.com/m-elsharkawi/Bestehen-App/pull/10), exact head in its body; `P04-PLAN`, `git diff --check`, `pnpm format:check`, `pnpm check:scope`, `pnpm check:secrets`, `pnpm check:docs`
+- [x] 04P Planning accepted — evidence: `Implementation/Personal/04-responsive-web-design-system/plan.md`; Planning candidate `75b7eb7b9d1384636f6682288d75db154ecaaf77`; [independent acceptance](https://github.com/m-elsharkawi/Bestehen-App/pull/10#issuecomment-5430499424); exact-head CI run `33008044569`; `P04-PLAN`, 43 component-family rows, 37 board-anchor rows, `git diff --check`, `pnpm format:check`, `pnpm check:scope`, `pnpm check:secrets`, `pnpm check:docs`
 - [ ] 04E Execution accepted — evidence: pending
 - [ ] Source-anchor manifest covers 43 components, 20 icons, 41 compact frames, and eight large-screen exemplars.
 - [ ] Self-hosted asset provenance and responsive WCAG test evidence are accepted.
