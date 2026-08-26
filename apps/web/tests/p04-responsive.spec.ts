@@ -49,6 +49,25 @@ test("P04-RSP-001 representative views reflow at 320 and 200 percent text", asyn
   await expect(page.getByText("Gate F: not met")).toBeVisible();
 });
 
+test("P04-RSP-001 representative view reflows at a 400 percent effective zoom spot", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    deviceScaleFactor: 4,
+    viewport: { width: 320, height: 720 },
+  });
+  const page = await context.newPage();
+  await page.goto("/ui-fixtures/coach");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    ),
+  ).toBeLessThanOrEqual(1);
+  expect(await page.evaluate(() => window.devicePixelRatio)).toBe(4);
+  await expect(page.getByRole("heading", { name: "Your next useful session" })).toBeVisible();
+  await context.close();
+});
+
 test("P04-RSP-001 compact and large navigation use one information architecture", async ({
   page,
 }) => {
