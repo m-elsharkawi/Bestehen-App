@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getIdentityService } from "../../../server/identity";
+import { applicationRequestUrl } from "../../../server/runtime";
 
 export async function GET(request: Request): Promise<Response> {
-  const current = new URL(request.url);
+  const current = applicationRequestUrl(request.url);
   try {
     const destination = await getIdentityService().loginUrl(
       current.searchParams.get("returnTo") ?? "/",
