@@ -27,3 +27,13 @@ export interface SemanticCardContract {
   readonly status?: "neutral" | "positive" | "attention" | "risk" | "system";
   readonly headingLevel?: 2 | 3;
 }
+
+/** The presentation-only seam accepted from a versioned server UI projection. */
+export interface ProjectionCardContract {
+  readonly state: string;
+  readonly title: string;
+  readonly message: string;
+  readonly status: NonNullable<SemanticCardContract["status"]>;
+  readonly affectedScope: readonly string[];
+  readonly action?: { readonly label: string; readonly href: string };
+}

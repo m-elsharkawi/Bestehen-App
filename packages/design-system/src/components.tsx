@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
-import type { ConsequentialUiProjection } from "@bestehen/contracts";
+import type { ProjectionCardContract } from "./contracts.js";
 import { componentFamilies } from "./coverage/source-anchors.js";
 import { Icon } from "./icons.js";
 import { Overlay } from "./overlay.js";
@@ -175,7 +175,7 @@ export function CoachMessage() {
   );
 }
 
-export function ProjectionCard({ projection }: { readonly projection: ConsequentialUiProjection }) {
+export function ProjectionCard({ projection }: { readonly projection: ProjectionCardContract }) {
   return (
     <SemanticCard status={projection.status} title={projection.title}>
       <StatusWord status={projection.status === "neutral" ? "system" : projection.status}>

@@ -20,9 +20,6 @@
   "scripts": {
     "build": "tsc -b"
   },
-  "dependencies": {
-    "@bestehen/contracts": "workspace:*"
-  },
   "peerDependencies": {
     "react": "19.2.8"
   },
