@@ -53,13 +53,8 @@ export function SemanticCard({
 export function LiveRegions() {
   return (
     <>
-      <div aria-atomic="true" aria-live="polite" className="visually-hidden" id="polite-status" />
-      <div
-        aria-atomic="true"
-        aria-live="assertive"
-        className="visually-hidden"
-        id="assertive-status"
-      />
+      <div aria-atomic="true" aria-live="polite" className="visually-hidden" />
+      <div aria-atomic="true" aria-live="assertive" className="visually-hidden" />
     </>
   );
 }

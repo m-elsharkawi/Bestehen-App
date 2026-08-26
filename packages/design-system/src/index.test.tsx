@@ -4,18 +4,22 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   AppShell,
+  BinaryChoice,
   ComponentGallery,
+  componentFamilies,
+  componentFixtureRegistry,
   DraftConflict,
   EvidenceLabel,
+  Field,
   Icon,
+  iconNames,
   MatchingPair,
+  Overlay,
   ReadinessEvidence,
   ReorderList,
   SessionDurationPicker,
   SessionNotice,
   UploadStatus,
-  componentFamilies,
-  iconNames,
 } from "./index.js";
 
 afterEach(cleanup);
@@ -27,10 +31,9 @@ describe("P04-COMPONENT-001 design system", () => {
         Content
       </AppShell>,
     );
-    expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveAttribute(
-      "href",
-      "#main-content",
-    );
+    const skipTarget = screen.getByRole("link", { name: "Skip to main content" });
+    const main = screen.getByRole("main");
+    expect(skipTarget).toHaveAttribute("href", `#${main.id}`);
     expect(screen.getByRole("main")).toHaveAttribute("tabindex", "-1");
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(
@@ -45,6 +48,39 @@ describe("P04-COMPONENT-001 design system", () => {
     const { container } = render(<ComponentGallery />);
     expect(container.querySelectorAll("[data-component-family]")).toHaveLength(43);
     expect(componentFamilies).toHaveLength(43);
+    expect(container).not.toHaveTextContent("Deterministic state fixture");
+  });
+
+  it("renders every closed family contract through its real export", () => {
+    expect(componentFixtureRegistry).toHaveLength(43);
+    for (const fixture of componentFixtureRegistry) {
+      const { container, unmount } = render(<div>{fixture.render()}</div>);
+      expect(container.querySelector(fixture.selector), fixture.id).not.toBeNull();
+      expect(container, fixture.id).toHaveTextContent(fixture.expectedText);
+      expect(fixture.variants.length, fixture.id).toBeGreaterThan(0);
+      unmount();
+    }
+  });
+
+  it("allocates collision-safe field, group, and overlay identifiers", () => {
+    const { container } = render(
+      <>
+        <Field label="First response" />
+        <Field label="Second response" />
+        <BinaryChoice legend="First choice" />
+        <BinaryChoice legend="Second choice" />
+        <SessionDurationPicker />
+        <SessionDurationPicker />
+        <Overlay title="First overlay" />
+        <Overlay title="Second overlay" />
+      </>,
+    );
+    const ids = [...container.querySelectorAll("[id]")].map((node) => node.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    const radioNames = [...container.querySelectorAll("input[type='radio']")].map((node) =>
+      node.getAttribute("name"),
+    );
+    expect(new Set(radioNames).size).toBe(4);
   });
 
   it("renders the exact closed 20-icon registry as decorative geometry", () => {

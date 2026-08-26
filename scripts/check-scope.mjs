@@ -71,7 +71,7 @@ const stage03Allowed = [
 const stage04Allowed = [
   /^\.gitignore$/,
   /^\.github\/workflows\/ci\.yml$/,
-  /^apps\/web\/(?:package\.json|src\/app\/|src\/server\/frontend-data(?:\.unit\.test)?\.ts|src\/ui\/|tests\/(?:baseline\.spec\.ts|p04-))/,
+  /^apps\/web\/(?:package\.json|public\/theme-init\.js|src\/app\/|src\/server\/frontend-data(?:\.unit\.test)?\.ts|src\/ui\/|tests\/(?:baseline\.spec\.ts|p04-))/,
   /^Implementation\/Personal\/04-responsive-web-design-system\/handoff\.md$/,
   /^package\.json$/,
   /^pnpm-lock\.yaml$/,
@@ -79,7 +79,7 @@ const stage04Allowed = [
   /^packages\/design-system\//,
   /^playwright\.config\.ts$/,
   /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
-  /^scripts\/(?:check-assets|check-design-coverage|check-generated|check-scope|check-web-budget|test-scope)\.mjs$/,
+  /^scripts\/(?:check-assets|check-design-coverage|check-generated|check-scope|check-web-budget|generate-design-coverage|test-scope)\.mjs$/,
 ];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {

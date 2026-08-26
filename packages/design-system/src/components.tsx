@@ -1,25 +1,13 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
+import { useId } from "react";
 import type { ProjectionCardContract } from "./contracts.js";
 import { componentFamilies } from "./coverage/source-anchors.js";
 import { Icon } from "./icons.js";
 import { Overlay } from "./overlay.js";
 import { Action, SemanticCard, StatusWord } from "./primitives.js";
+import { AppShell, AttemptShell, MockShell } from "./shells.js";
 
 export { Overlay } from "./overlay.js";
-
-export interface FamilyProps {
-  readonly title?: string;
-  readonly children?: ReactNode;
-}
-function family(name: string): ComponentType<FamilyProps> {
-  return function Family({ title = name, children }: FamilyProps) {
-    return (
-      <SemanticCard headingLevel={3} title={title}>
-        <p>{children ?? `${name} follows the shared semantic and focus contract.`}</p>
-      </SemanticCard>
-    );
-  };
-}
 
 export function Sequence({
   steps,
@@ -52,14 +40,15 @@ export function ChoiceNav() {
   );
 }
 export function BinaryChoice({ legend = "Choose an option" }: { readonly legend?: string }) {
+  const name = useId();
   return (
     <fieldset>
       <legend>{legend}</legend>
       <label>
-        <input name="choice" type="radio" /> Yes
+        <input name={name} type="radio" /> Yes
       </label>
       <label>
-        <input name="choice" type="radio" /> No
+        <input name={name} type="radio" /> No
       </label>
     </fieldset>
   );
@@ -71,7 +60,7 @@ export function Field({
   readonly label?: string;
   readonly error?: string;
 }) {
-  const id = "field-example";
+  const id = useId();
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
@@ -126,9 +115,10 @@ export function ReorderList() {
   );
 }
 export function FormFeedback({ errors }: { readonly errors: readonly string[] }) {
+  const headingId = useId();
   return (
-    <section aria-labelledby="error-summary" className="error-summary" tabIndex={-1}>
-      <h2 id="error-summary">Check your answers</h2>
+    <section aria-labelledby={headingId} className="error-summary" tabIndex={-1}>
+      <h2 id={headingId}>Check your answers</h2>
       <ul>
         {errors.map((error) => (
           <li key={error}>{error}</li>
@@ -149,6 +139,7 @@ export function Recommendation() {
   );
 }
 export function SessionDurationPicker() {
+  const groupName = useId();
   return (
     <fieldset>
       <legend>Session duration</legend>
@@ -156,19 +147,20 @@ export function SessionDurationPicker() {
         ["Quick", "10 minutes"],
         ["Standard", "20 minutes"],
         ["Extended", "30 minutes"],
-      ].map(([name, duration]) => (
-        <label key={name}>
-          <input name="duration" type="radio" />
-          {name}, {duration}
+      ].map(([label, duration]) => (
+        <label key={label}>
+          <input name={groupName} type="radio" />
+          {label}, {duration}
         </label>
       ))}
     </fieldset>
   );
 }
 export function CoachMessage() {
+  const headingId = useId();
   return (
-    <section aria-labelledby="coach-message">
-      <h2 id="coach-message">Plan note</h2>
+    <section aria-labelledby={headingId}>
+      <h2 id={headingId}>Plan note</h2>
       <p>Complete one focused repair, then use a fresh check.</p>
       <Action href="#coach-action" label="Start repair" />
     </section>
@@ -333,9 +325,10 @@ export interface ReadinessEvidenceProps {
   }[];
 }
 export function ReadinessEvidence({ state, written, oral, gates }: ReadinessEvidenceProps) {
+  const headingId = useId();
   return (
-    <section aria-labelledby="readiness-heading" className="readiness-evidence">
-      <h2 id="readiness-heading">Readiness evidence</h2>
+    <section aria-labelledby={headingId} className="readiness-evidence">
+      <h2 id={headingId}>Readiness evidence</h2>
       <p>
         <StatusWord
           status={
@@ -496,6 +489,7 @@ export function ListeningRegion() {
   );
 }
 export function WritingRegion() {
+  const draftId = useId();
   return (
     <section className="writing-region">
       <div lang="de">
@@ -503,8 +497,8 @@ export function WritingRegion() {
         <p>Antworten Sie auf die Einladung und behandeln Sie alle Punkte.</p>
       </div>
       <div className="field">
-        <label htmlFor="writing-draft">Your draft</label>
-        <textarea id="writing-draft" rows={12} />
+        <label htmlFor={draftId}>Your draft</label>
+        <textarea id={draftId} rows={12} />
         <p>Saved locally on this device. The server has not accepted this draft as evidence.</p>
       </div>
     </section>
@@ -525,9 +519,11 @@ export function SpeakingRegion() {
 }
 
 export function DraftConflict() {
+  const headingId = useId();
+  const name = useId();
   return (
-    <section aria-labelledby="draft-conflict">
-      <h2 id="draft-conflict">Two saved drafts need your choice</h2>
+    <section aria-labelledby={headingId}>
+      <h2 id={headingId}>Two saved drafts need your choice</h2>
       <p>Both branches are preserved. Compare them before selecting or merging.</p>
       <div className="draft-compare">
         <article>
@@ -542,15 +538,15 @@ export function DraftConflict() {
       <fieldset>
         <legend>Resolve the draft</legend>
         <label>
-          <input name="draft-choice" type="radio" />
+          <input name={name} type="radio" />
           Keep this device
         </label>
         <label>
-          <input name="draft-choice" type="radio" />
+          <input name={name} type="radio" />
           Keep server checkpoint
         </label>
         <label>
-          <input name="draft-choice" type="radio" />
+          <input name={name} type="radio" />
           Merge into a new draft
         </label>
       </fieldset>
@@ -588,9 +584,10 @@ export function UploadStatus({
   readonly state: "preparing" | "sending" | "queued_offline" | "retrying" | "not_sent" | "sent";
   readonly progress?: number;
 }) {
+  const headingId = useId();
   return (
-    <section aria-labelledby="transfer-title" className="transfer">
-      <h2 id="transfer-title">Transfer status</h2>
+    <section aria-labelledby={headingId} className="transfer">
+      <h2 id={headingId}>Transfer status</h2>
       <p>
         <strong>{state.replaceAll("_", " ")}</strong>
       </p>
@@ -642,56 +639,360 @@ export function DataRightsStatus() {
   );
 }
 
-const genericFamilies = new Map<string, ComponentType<FamilyProps>>([
-  ["C04", Overlay],
-  ["C05", family("Sequence")],
-  ["C06", family("Button")],
-  ["C07", family("Inline action")],
-  ["C08", ChoiceNav],
-  ["C09", family("Binary choice")],
-  ["C10", family("Field")],
-  ["C11", family("Answer choice")],
-  ["C12", MatchingPair],
-  ["C13", family("Cloze gap")],
-  ["C14", ReorderList],
-  ["C15", family("Form feedback")],
-  ["C16", Recommendation],
-  ["C17", SessionDurationPicker],
-  ["C18", CoachMessage],
-  ["C20", DecisiveEvidence],
-  ["C21", RepairCard],
-  ["C22", family("Hint disclosure")],
-  ["C23", FreshCheckBanner],
-  ["C24", WhatChangedSummary],
-  ["C25", family("Evidence label")],
-  ["C26", WeaknessCard],
-  ["C27", DueReviewGroup],
-  ["C30", ContradictionNotice],
-  ["C31", StaleEvidenceNotice],
-  ["C33", ChangeTimeline],
-  ["C34", MilestoneRow],
-  ["C35", MockOutcome],
-  ["C36", family("Text alternative table")],
-]);
+const projection = {
+  state: "pending",
+  title: "Pending evidence",
+  message: "Only Writing is affected.",
+  status: "attention",
+  affectedScope: ["Writing"],
+} as const;
+
+export interface ComponentFixtureContract {
+  readonly id: (typeof componentFamilies)[number][0];
+  readonly variants: readonly string[];
+  readonly selector: string;
+  readonly expectedText: string;
+  readonly render: () => ReactNode;
+}
+
+export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
+  {
+    id: "C01",
+    variants: ["protected", "bare", "focused"],
+    selector: "main",
+    expectedText: "Fixture shell",
+    render: () => <AppShell title="Fixture shell">Content</AppShell>,
+  },
+  {
+    id: "C02",
+    variants: ["conditions", "stickyActionBar"],
+    selector: ".sticky-action",
+    expectedText: "Continue",
+    render: () => (
+      <AttemptShell action={<Action label="Continue" />} conditions={["Timed"]} title="Attempt">
+        Task
+      </AttemptShell>
+    ),
+  },
+  {
+    id: "C03",
+    variants: ["measuredTimer", "interruptionRecovery"],
+    selector: "time",
+    expectedText: "12:00",
+    render: () => <MockShell remaining="12:00">Mock task</MockShell>,
+  },
+  {
+    id: "C04",
+    variants: ["sheet", "dialog", "destructive-confirm"],
+    selector: "dialog",
+    expectedText: "Review details",
+    render: () => <Overlay />,
+  },
+  {
+    id: "C05",
+    variants: ["stepper", "ordered"],
+    selector: "ol",
+    expectedText: "Current",
+    render: () => <Sequence current={0} steps={["Start", "Finish"]} />,
+  },
+  {
+    id: "C06",
+    variants: ["primary", "secondary", "quiet", "destructive", "disabled"],
+    selector: "button",
+    expectedText: "Unavailable",
+    render: () => <Button disabledReason="Evidence is still processing" label="Unavailable" />,
+  },
+  {
+    id: "C07",
+    variants: ["link", "iconButton"],
+    selector: "a",
+    expectedText: "Open details",
+    render: () => <InlineAction href="#details" label="Open details" />,
+  },
+  {
+    id: "C08",
+    variants: ["segmented", "tabs", "chip"],
+    selector: "nav",
+    expectedText: "Current",
+    render: () => <ChoiceNav />,
+  },
+  {
+    id: "C09",
+    variants: ["toggle", "checkbox", "radio"],
+    selector: "fieldset",
+    expectedText: "Choose an option",
+    render: () => <BinaryChoice />,
+  },
+  {
+    id: "C10",
+    variants: ["text", "select", "date", "month", "schedule", "invalid"],
+    selector: "input[aria-invalid='true']",
+    expectedText: "Required",
+    render: () => <Field error="Required" />,
+  },
+  {
+    id: "C11",
+    variants: ["single", "multiple", "revealed"],
+    selector: "fieldset",
+    expectedText: "Choose the answer",
+    render: () => <AnswerChoice />,
+  },
+  {
+    id: "C12",
+    variants: ["select-place", "reset"],
+    selector: "fieldset",
+    expectedText: "Match each item",
+    render: () => <MatchingPair />,
+  },
+  {
+    id: "C13",
+    variants: ["input", "options", "result"],
+    selector: "input",
+    expectedText: "Gap 1",
+    render: () => <ClozeGap />,
+  },
+  {
+    id: "C14",
+    variants: ["move", "position", "reset"],
+    selector: "ol",
+    expectedText: "Move down",
+    render: () => <ReorderList />,
+  },
+  {
+    id: "C15",
+    variants: ["formError", "errorSummary"],
+    selector: ".error-summary",
+    expectedText: "Check your answers",
+    render: () => <FormFeedback errors={["Answer is required"]} />,
+  },
+  {
+    id: "C16",
+    variants: ["recommendationCard", "whyThisDisclosure"],
+    selector: "details",
+    expectedText: "Why this",
+    render: () => <Recommendation />,
+  },
+  {
+    id: "C17",
+    variants: ["quick", "standard", "extended"],
+    selector: "fieldset",
+    expectedText: "20 minutes",
+    render: () => <SessionDurationPicker />,
+  },
+  {
+    id: "C18",
+    variants: ["plan", "diagnosis", "reminder"],
+    selector: "section",
+    expectedText: "Plan note",
+    render: () => <CoachMessage />,
+  },
+  {
+    id: "C19",
+    variants: ["outcome", "validity", "partial"],
+    selector: "[data-status='attention']",
+    expectedText: "Pending evidence",
+    render: () => <ResultCard projection={projection} />,
+  },
+  {
+    id: "C20",
+    variants: ["excerpt", "conditions"],
+    selector: "blockquote",
+    expectedText: "Vielen Dank",
+    render: () => <DecisiveEvidence />,
+  },
+  {
+    id: "C21",
+    variants: ["pattern", "example", "skip"],
+    selector: ".card",
+    expectedText: "Repair one pattern",
+    render: () => <RepairCard />,
+  },
+  {
+    id: "C22",
+    variants: ["closed", "open", "used"],
+    selector: "details",
+    expectedText: "Show hint",
+    render: () => <HintDisclosure />,
+  },
+  {
+    id: "C23",
+    variants: ["available", "unavailable"],
+    selector: ".card",
+    expectedText: "Fresh check available",
+    render: () => <FreshCheckBanner />,
+  },
+  {
+    id: "C24",
+    variants: ["changed", "unchanged", "returns-due"],
+    selector: "section",
+    expectedText: "What changed",
+    render: () => <WhatChangedSummary />,
+  },
+  {
+    id: "C25",
+    variants: ["five-validity-values", "practice-only"],
+    selector: ".evidence-label",
+    expectedText: "interrupted",
+    render: () => (
+      <EvidenceLabel eligibility="practice-only" reason="Timer stopped" validity="interrupted" />
+    ),
+  },
+  {
+    id: "C26",
+    variants: ["due", "improving", "stale", "contradicted", "empty"],
+    selector: ".card",
+    expectedText: "Content-point coverage",
+    render: () => <WeaknessCard />,
+  },
+  {
+    id: "C27",
+    variants: ["due", "soon", "later", "empty"],
+    selector: "section",
+    expectedText: "Due now",
+    render: () => <DueReviewGroup />,
+  },
+  {
+    id: "C28",
+    variants: ["processing", "slow", "pending", "partial", "unavailable", "retry-fresh"],
+    selector: "[data-status='attention']",
+    expectedText: "pending",
+    render: () => <PendingBanner projection={projection} />,
+  },
+  {
+    id: "C29",
+    variants: ["identity", "media", "capability", "transfer", "storage"],
+    selector: "[data-status='attention']",
+    expectedText: "Writing",
+    render: () => <SystemFailureBanner projection={projection} />,
+  },
+  {
+    id: "C30",
+    variants: ["new", "under-review", "resolved"],
+    selector: "section",
+    expectedText: "Evidence needs review",
+    render: () => <ContradictionNotice />,
+  },
+  {
+    id: "C31",
+    variants: ["stale", "due", "scheduled"],
+    selector: "section",
+    expectedText: "Fresh evidence due",
+    render: () => <StaleEvidenceNotice />,
+  },
+  {
+    id: "C32",
+    variants: ["six-readiness-states", "gates-a-f", "written-oral"],
+    selector: "table",
+    expectedText: "Readiness evidence",
+    render: () => (
+      <ReadinessEvidence
+        gates={["A", "B", "C", "D", "E", "F"].map((id) => ({
+          id: id as "A" | "B" | "C" | "D" | "E" | "F",
+          met: false,
+          reason: "Evidence required",
+        }))}
+        state="evidence_building"
+      />
+    ),
+  },
+  {
+    id: "C33",
+    variants: ["events", "empty"],
+    selector: "ol",
+    expectedText: "Evidence changes",
+    render: () => <ChangeTimeline />,
+  },
+  {
+    id: "C34",
+    variants: ["achieved", "current", "upcoming", "withdrawn"],
+    selector: "p",
+    expectedText: "Current:",
+    render: () => <MilestoneRow />,
+  },
+  {
+    id: "C35",
+    variants: ["result", "comparison", "priorities"],
+    selector: "section",
+    expectedText: "Mock outcome",
+    render: () => <MockOutcome />,
+  },
+  {
+    id: "C36",
+    variants: ["compact", "expanded"],
+    selector: "table",
+    expectedText: "Evidence shown in the graphic",
+    render: () => <TextAlternativeTable />,
+  },
+  {
+    id: "C37",
+    variants: ["readingTextPane", "questionList"],
+    selector: "article[lang='de']",
+    expectedText: "Lesen",
+    render: () => <ReadingRegion />,
+  },
+  {
+    id: "C38",
+    variants: ["clozeTextPane", "gap", "result"],
+    selector: "article[lang='de']",
+    expectedText: "Sprachbausteine",
+    render: () => <LanguageElementsRegion />,
+  },
+  {
+    id: "C39",
+    variants: ["audioPlayer", "replayCounter", "transcriptPane"],
+    selector: "audio",
+    expectedText: "Replay limit",
+    render: () => <ListeningRegion />,
+  },
+  {
+    id: "C40",
+    variants: ["editor", "autosave", "revisionDiff", "conflict"],
+    selector: "textarea",
+    expectedText: "Your draft",
+    render: () => <WritingRegion />,
+  },
+  {
+    id: "C41",
+    variants: ["preflight", "recording", "turn-taking", "transcript"],
+    selector: "button",
+    expectedText: "Start recording",
+    render: () => <SpeakingRegion />,
+  },
+  {
+    id: "C42",
+    variants: [
+      "signed-out",
+      "callback-failed",
+      "expired-idle",
+      "expired-mid-attempt",
+      "access-denied",
+    ],
+    selector: ".card",
+    expectedText: "server will decide",
+    render: () => <SessionNotice state="expired_mid_attempt" />,
+  },
+  {
+    id: "C43",
+    variants: ["preparing", "sending", "queued-offline", "retrying", "not-sent", "sent"],
+    selector: "progress",
+    expectedText: "50% transferred",
+    render: () => <UploadStatus progress={50} state="sending" />,
+  },
+] as const;
 
 export function ComponentGallery() {
   return (
     <div className="component-gallery">
       {componentFamilies.map(([id, name]) => {
-        const Specific = genericFamilies.get(id);
+        const fixture = componentFixtureRegistry.find((entry) => entry.id === id);
+        if (!fixture) throw new Error(`Missing component fixture ${id}`);
         return (
           <section className="gallery-item" data-component-family={id} id={`family-${id}`} key={id}>
             <h2 className="visually-hidden">
               {id} {name}
             </h2>
             <p className="eyebrow">{id}</p>
-            {Specific ? (
-              <Specific title={name} />
-            ) : (
-              <SemanticCard headingLevel={3} title={name}>
-                <p>Deterministic state fixture for {name}.</p>
-              </SemanticCard>
-            )}
+            <div data-fixture-variants={fixture.variants.join(" ")}>{fixture.render()}</div>
           </section>
         );
       })}

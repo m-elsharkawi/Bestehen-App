@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import { Brand } from "./brand.js";
 import type { NavigationDestination, ShellSlots } from "./contracts.js";
 import { Icon, type IconName } from "./icons.js";
@@ -38,11 +38,12 @@ export function AppShell({
   aside,
   backHref,
 }: ShellSlots) {
+  const mainId = useId();
   const focused = kind === "focused";
   const bare = kind === "bare";
   return (
     <div className={`app-shell shell-${kind}`}>
-      <a className="skip-link" href="#main-content">
+      <a className="skip-link" href={`#${mainId}`}>
         Skip to main content
       </a>
       <header className="app-header">
@@ -57,7 +58,7 @@ export function AppShell({
         ) : null}
       </header>
       {!bare && !focused ? <PrimaryNavigation active={activeDestination} /> : null}
-      <main id="main-content" tabIndex={-1}>
+      <main id={mainId} tabIndex={-1}>
         {backHref ? (
           <a className="back-link" href={backHref}>
             Back
