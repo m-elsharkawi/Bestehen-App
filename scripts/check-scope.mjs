@@ -5,9 +5,11 @@ import { pathToFileURL } from "node:url";
 export const stage01Branch = "implementation/personal-01-repository-delivery-baseline";
 export const stage02Branch = "implementation/personal-02-provider-service-setup";
 export const stage03Branch = "implementation/personal-03-domain-data-jobs-auth";
+export const stage04Branch = "implementation/personal-04-responsive-web-design-system";
 const stage01Baseline = "5c7e8b1ebdd2370b519b2d984b0ff732851b89ae";
 const stage02Baseline = "e6491b8628c723614e38e56ffa25cfebb74d229b";
 const stage03Baseline = "f466e29ee07b06da19130d60e2887be1e088c68b";
+const stage04Baseline = "c39ec9c1ecb3a3dd2220ea28f7f71ecf88322cf8";
 const stage01Allowed = [
   /^\.dockerignore$/,
   /^\.env\.example$/,
@@ -66,6 +68,17 @@ const stage03Allowed = [
   /^schemas\/release-manifest\.schema\.json$/,
   /^scripts\/(?:check-docs|check-scope|release-manifest|test-oci|test-release-manifest|test-scope)\.mjs$/,
 ];
+const stage04Allowed = [
+  /^\.github\/workflows\/ci\.yml$/,
+  /^apps\/web\/(?:package\.json|src\/app\/|src\/server\/frontend-data\.ts|src\/ui\/|tests\/p04-)/,
+  /^Implementation\/Personal\/04-responsive-web-design-system\/handoff\.md$/,
+  /^package\.json$/,
+  /^packages\/contracts\/src\/(?:index|ui-projections)(?:\.test)?\.ts$/,
+  /^packages\/design-system\//,
+  /^playwright\.config\.ts$/,
+  /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
+  /^scripts\/(?:check-assets|check-design-coverage|check-scope|check-web-budget|test-scope)\.mjs$/,
+];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {
   return githubHeadRef || githubRefName || localBranch;
@@ -83,6 +96,10 @@ export function stage03ScopeApplies(context) {
   return scopeRef(context) === stage03Branch;
 }
 
+export function stage04ScopeApplies(context) {
+  return scopeRef(context) === stage04Branch;
+}
+
 export function unexpectedStage01Paths(changed) {
   return changed.filter((file) => !stage01Allowed.some((pattern) => pattern.test(file)));
 }
@@ -93,6 +110,10 @@ export function unexpectedStage02Paths(changed) {
 
 export function unexpectedStage03Paths(changed) {
   return changed.filter((file) => !stage03Allowed.some((pattern) => pattern.test(file)));
+}
+
+export function unexpectedStage04Paths(changed) {
+  return changed.filter((file) => !stage04Allowed.some((pattern) => pattern.test(file)));
 }
 
 function main() {
@@ -109,7 +130,13 @@ function main() {
       ? { baseline: stage02Baseline, label: "P02-SCOPE-001", unexpected: unexpectedStage02Paths }
       : stage03ScopeApplies(context)
         ? { baseline: stage03Baseline, label: "P03-SCOPE-001", unexpected: unexpectedStage03Paths }
-        : undefined;
+        : stage04ScopeApplies(context)
+          ? {
+              baseline: stage04Baseline,
+              label: "P04-SCOPE-001",
+              unexpected: unexpectedStage04Paths,
+            }
+          : undefined;
   if (!stage) {
     process.stdout.write(
       `Stage 01 scope is not applicable on ${scopeRef(context) || "detached HEAD"}.\n`,
