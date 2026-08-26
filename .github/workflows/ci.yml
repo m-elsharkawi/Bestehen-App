@@ -8,6 +8,7 @@ on:
       - implementation/personal-01-repository-delivery-baseline
       - implementation/personal-02-provider-service-setup
       - implementation/personal-03-domain-data-jobs-auth
+      - implementation/personal-04-responsive-web-design-system
 
 permissions:
   contents: read
@@ -157,9 +158,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - name: Install pinned Chromium runtime
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Keyboard, focus, reflow, reduced-motion, and axe smoke
+      - name: Install pinned browser runtimes
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Stage 04 browser, keyboard, reflow, motion, and axe checks
         run: pnpm test:e2e
       - name: Upload synthetic browser evidence
         if: always()

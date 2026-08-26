@@ -54,11 +54,11 @@
     "files": [
       {
         "path": "brand/bestehen-symbol-primary.svg",
-        "sha256": "032e7a461c8e7c8ac2447a520bd12615dd1ce79b2a9f4a7801ab80853d743dd8"
+        "sha256": "668a56e434c2e1215df0b0d9c7249bb6dc8bf37cd053d3369aa3b821b7582eec"
       },
       {
         "path": "brand/bestehen-symbol-micro.svg",
-        "sha256": "e48e30e6c5e6a3edb10b62ffd4aaa1e8d367b52ccd3f2f18a4f4560bfbde708f"
+        "sha256": "1107b04f4573863fc13b85a12a44d37a8e81ff3025fb027534968ac628d71bf5"
       }
     ]
   }

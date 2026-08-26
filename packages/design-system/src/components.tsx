@@ -489,6 +489,7 @@ export function ListeningRegion() {
   return (
     <section>
       <h2>Hören</h2>
+      {/* biome-ignore lint/a11y/useMediaCaption: timed text is intentionally unavailable during this exam task */}
       <audio aria-label="Listening task audio" controls preload="none" />
       <p>Replay limit: two. No transcript is available during this task.</p>
     </section>

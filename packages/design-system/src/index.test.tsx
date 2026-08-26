@@ -48,13 +48,7 @@ describe("P04-COMPONENT-001 design system", () => {
   });
 
   it("renders the exact closed 20-icon registry as decorative geometry", () => {
-    const { container } = render(
-      <>
-        {iconNames.map((name) => (
-          <Icon key={name} name={name} />
-        ))}
-      </>,
-    );
+    const { container } = render(iconNames.map((name) => <Icon key={name} name={name} />));
     expect(iconNames).toHaveLength(20);
     expect(container.querySelectorAll("svg[aria-hidden='true']")).toHaveLength(20);
     expect(container.querySelectorAll("svg[stroke-width='1.75']")).toHaveLength(20);
