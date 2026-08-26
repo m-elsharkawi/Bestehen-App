@@ -3,9 +3,10 @@ import { appSessionCookie } from "@bestehen/infrastructure";
 import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { getIdentityService } from "../../../server/identity";
+import { applicationRequestUrl } from "../../../server/runtime";
 
 export async function POST(request: Request): Promise<Response> {
-  const current = new URL(request.url);
+  const current = applicationRequestUrl(request.url);
   const requestHeaders = await headers();
   const allowed = validateUnsafeRequest(
     {

@@ -4,6 +4,20 @@ import type { Pool } from "pg";
 
 let pool: Pool | undefined;
 
+export function canonicalApplicationRequestUrl(
+  requestUrl: string,
+  applicationBaseUrl: string | undefined,
+): URL {
+  const incoming = new URL(requestUrl);
+  if (!applicationBaseUrl) return incoming;
+  return new URL(`${incoming.pathname}${incoming.search}`, applicationBaseUrl);
+}
+
+export function applicationRequestUrl(requestUrl: string): URL {
+  const environment = parseServerEnvironmentForService(process.env, "web");
+  return canonicalApplicationRequestUrl(requestUrl, environment.BESTEHEN_APPLICATION_BASE_URL);
+}
+
 export function livenessPayload(
   releaseCommit = process.env.BESTEHEN_RELEASE_COMMIT ?? "unconfigured",
 ) {
