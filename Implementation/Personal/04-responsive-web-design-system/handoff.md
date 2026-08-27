@@ -109,6 +109,9 @@ processor, or Stage 05 work was added.
 - `cf5b1f3c7b6972b5ef5d75eb9a9b1746d7eec5c1` gives sheet and destructive-confirm dialogs their distinct responsive and
   keyboard contracts, and closes every consequential state behind provider-neutral
   presentation labels with exhaustive negative-copy coverage.
+- `e7dc34d24f63a84b3ff0591b40444754fbd7132f` makes the writing visual anchor request
+  the typed, locally saved draft state explicitly and asserts its user-facing state
+  before the unchanged two-percent screenshot comparison.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
@@ -137,6 +140,10 @@ external provider calls stayed disabled.
   126 distinct renders with 143 explicit variant/subpart assertions, responsive
   sheet positioning, destructive-confirm Escape prevention with explicit Cancel/Confirm,
   and native modal focus containment/Escape/focus-return proof.
+- The `writing-768` visual route explicitly selects the existing `autosave` fixture
+  variant through its test-only query contract. This avoids platform-dependent default
+  state selection; the test asserts the saved-draft notice before comparing the same
+  checked-in screenshot at the unchanged two-percent limit.
 - The exact-head Linux browser run `33103277759` initially failed only its
   `coach-390-light` visual comparison: the image inspection showed that a repaired
   fixed theme control covered the Account link, rather than a font-raster-only
