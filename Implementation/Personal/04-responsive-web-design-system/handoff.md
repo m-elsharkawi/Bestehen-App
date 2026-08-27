@@ -25,9 +25,11 @@ record `19a16e5ff781949879457e36eb1f912e075656ee` is an ancestor. The accepted p
   byte counts, and SHA-256 digests are recorded in
   `packages/design-system/assets/manifest.json` and `THIRD_PARTY_NOTICES.md`.
 - Implemented the accepted APIs for all 43 component families and five typed skill
-  regions. Consequential presentation uses versioned server projection unions;
-  browser-local state is limited to the dialog and theme preference. The component
-  gallery has one deterministic row for every family.
+  regions. Consequential presentation consumes the complete versioned projection
+  contract, fails closed for unknown majors/states, and keeps source lineage
+  provider-neutral. Browser-local state is limited to the dialog and theme preference.
+  The component gallery has one deterministic row for every family and 140 concrete
+  variant/state cases driven through public typed props or owned slots.
 - Added App Router bare, protected, App, attempt, result, session, and mock shells;
   root loading, error, not-found, sign-in, and failure states; and the four protected
   destinations plus Account/data routes. Server session resolution remains the only
@@ -86,6 +88,16 @@ processor, or Stage 05 work was added.
 - `a6b89fc78f3bd7f1cb3a330e243f976c9c3a41ee` restores the non-overlapping compact
   theme-control position after inspecting the failed Linux 390px visual artifact;
   this keeps the Account link visible at the unchanged two-percent visual limit.
+- `d865245a1a697e6fa45af0b6fdc70df99dc192f9` normalizes the two added OFL license
+  files so the baseline-range whitespace gate is clean.
+- `42289bebbef3a9233b6c3e17f1b31b4b7a204b06` strengthens reciprocal manifest
+  resolution, the complete consequential-projection seam, the pre-paint/no-script
+  proof, and the immutable release evidence map.
+- `3e8deafc2c32b04b0cbed1936d3d575f75c808e6` adds typed, meaningful gallery states
+  for the remaining owned families, including C29 fault categories and all six C32
+  readiness states with Gates A–F/Written/Oral assertions.
+- `f62246f1a5407f08d63a9f3d26c4fa24beba7aa0` scopes the gallery dialog proof to its
+  concrete C04 dialog case and asserts all 140 rendered gallery cases.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
@@ -97,18 +109,21 @@ Local deterministic checks used the repository-pinned Node `24.19.0`, pnpm
 `11.23.0`, Playwright `1.62.1`, and macOS arm64. Provider adapters stayed fake and
 external provider calls stayed disabled.
 
-- `pnpm check` passed at `b73660c326f1e4232e6522bcb0e0689f29ee9b6c` with repository-pinned
-  Node `24.19.0` and pnpm `11.23.0`: `P04-SCOPE-001` for 80 accepted paths, preserved scope
-  fixtures, `P04-COVERAGE-001`, `P04-ASSET-001`, exact-lock/runtime policy, secret
-  scan, fake-provider readiness, format, lint, typecheck, package boundaries, 135
-  unit tests across 15 files, release-manifest tests, production build,
-  `P04-PERF-001`, and generated-file policy.
-- `pnpm test:e2e` passed 49 tests with two expected skips. Firefox and WebKit skip
+- `pnpm check` passed at the current code candidate with repository-pinned Node
+  `24.19.0` and pnpm `11.23.0`: `P04-SCOPE-001` for 80 accepted paths, preserved
+  scope fixtures and baseline-range `git diff --check`, `P04-COVERAGE-001`,
+  `P04-ASSET-001`, exact-lock/runtime policy, secret scan, fake-provider readiness,
+  format, lint, typecheck, package boundaries, 182 unit tests across 16 files,
+  release-manifest tests, production build, `P04-PERF-001`, and generated-file
+  policy. The current product-owned client result is 23,319 bytes gzip and CSS is
+  3,662 bytes gzip.
+- `pnpm test:e2e` passed 52 tests with two expected skips. Firefox and WebKit skip
   only the duplicate raster comparison; Chromium owns seven portable supplemental
   baselines at a maximum two-percent pixel difference. All three engines pass every
   accepted breakpoint edge, representative 200% text reflow, 400% text reflow spot,
   portrait/landscape resize with draft/theme retention, history return, pre-paint theme
-  hydration check, and native modal focus containment/Escape/focus return proof.
+  hydration check, JavaScript-disabled server-content proof, all 43 gallery families
+  and 140 concrete cases, and native modal focus containment/Escape/focus return proof.
 - The exact-head Linux browser run `33103277759` initially failed only its
   `coach-390-light` visual comparison: the image inspection showed that a repaired
   fixed theme control covered the Account link, rather than a font-raster-only
@@ -132,6 +147,8 @@ external provider calls stayed disabled.
   no test database was configured. CI remains authoritative for real PostgreSQL.
 - `pnpm check:advisories` reported no known vulnerabilities at the mandatory critical
   threshold. `pnpm check:docs` passed.
+- `git diff --check c39ec9c1ecb3a3dd2220ea28f7f71ecf88322cf8..HEAD` passed for the
+  baseline range, including the normalized OFL files.
 - Local `pnpm test:oci` correctly failed closed with `Docker daemon is required for
   the non-waivable OCI gate.` CI remains authoritative for OCI.
 
