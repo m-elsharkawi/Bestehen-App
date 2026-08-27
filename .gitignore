@@ -7,6 +7,8 @@ node_modules/
 dist/
 .next/
 coverage/
+!packages/design-system/src/coverage/
+!packages/design-system/src/coverage/**
 playwright-report/
 test-results/
 *.tsbuildinfo

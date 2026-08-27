@@ -55,6 +55,9 @@ expectSchemaInvalid((manifest) => {
 expectSchemaInvalid((manifest) => {
   delete manifest.checks["P03-AUTHZ-001"];
 });
+expectSchemaInvalid((manifest) => {
+  delete manifest.checks["P04-COMPONENT-001"];
+});
 
 run(
   ["--dry-run", "--commit", commit, "--web-digest", digest, "--worker-digest", digest, ...checks],

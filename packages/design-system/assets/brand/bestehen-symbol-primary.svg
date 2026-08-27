@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <title>Bestehen symbol</title>
+  <g stroke="#14213D" stroke-width="11">
+    <path d="M25 20V80"/><path d="M25 20H44a15 15 0 0 1 0 30H25"/><path d="M25 50H46a15 15 0 0 1 0 30H25"/>
+  </g>
+  <path d="M6 50H94" stroke="#2A9D6F" stroke-width="11"/>
+</svg>

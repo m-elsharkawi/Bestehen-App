@@ -176,7 +176,20 @@
         "P03-CONTRACT-001",
         "P03-AUDIT-001",
         "P03-COMPAT-001",
-        "P03-SCOPE-001"
+        "P03-SCOPE-001",
+        "P04-TOKEN-001",
+        "P04-ASSET-001",
+        "P04-COVERAGE-001",
+        "P04-COMPONENT-001",
+        "P04-SEMANTIC-001",
+        "P04-ROUTE-001",
+        "P04-A11Y-001",
+        "P04-RSP-001",
+        "P04-VISUAL-001",
+        "P04-SECURITY-001",
+        "P04-PERF-001",
+        "P04-COMPAT-001",
+        "P04-SCOPE-001"
       ],
       "properties": {
         "P01-BASE-001": { "type": "string", "minLength": 1 },
@@ -215,7 +228,20 @@
         "P03-CONTRACT-001": { "type": "string", "minLength": 1 },
         "P03-AUDIT-001": { "type": "string", "minLength": 1 },
         "P03-COMPAT-001": { "type": "string", "minLength": 1 },
-        "P03-SCOPE-001": { "type": "string", "minLength": 1 }
+        "P03-SCOPE-001": { "type": "string", "minLength": 1 },
+        "P04-TOKEN-001": { "type": "string", "minLength": 1 },
+        "P04-ASSET-001": { "type": "string", "minLength": 1 },
+        "P04-COVERAGE-001": { "type": "string", "minLength": 1 },
+        "P04-COMPONENT-001": { "type": "string", "minLength": 1 },
+        "P04-SEMANTIC-001": { "type": "string", "minLength": 1 },
+        "P04-ROUTE-001": { "type": "string", "minLength": 1 },
+        "P04-A11Y-001": { "type": "string", "minLength": 1 },
+        "P04-RSP-001": { "type": "string", "minLength": 1 },
+        "P04-VISUAL-001": { "type": "string", "minLength": 1 },
+        "P04-SECURITY-001": { "type": "string", "minLength": 1 },
+        "P04-PERF-001": { "type": "string", "minLength": 1 },
+        "P04-COMPAT-001": { "type": "string", "minLength": 1 },
+        "P04-SCOPE-001": { "type": "string", "minLength": 1 }
       }
     }
   }

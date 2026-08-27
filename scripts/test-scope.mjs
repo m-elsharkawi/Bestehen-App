@@ -6,9 +6,12 @@ import {
   stage02ScopeApplies,
   stage03Branch,
   stage03ScopeApplies,
+  stage04Branch,
+  stage04ScopeApplies,
   unexpectedStage01Paths,
   unexpectedStage02Paths,
   unexpectedStage03Paths,
+  unexpectedStage04Paths,
 } from "./check-scope.mjs";
 
 const fixtures = [
@@ -62,6 +65,43 @@ assert.deepEqual(
   ]),
   [],
   "Stage 02 accepts its bounded implementation paths",
+);
+
+for (const context of [
+  { localBranch: stage04Branch },
+  { githubHeadRef: stage04Branch, githubRefName: "11/merge" },
+]) {
+  assert.equal(stage04ScopeApplies(context), true, "Stage 04 branch enforces its allowlist");
+  assert.equal(stage03ScopeApplies(context), false, "Stage 03 scope stays branch-specific");
+}
+
+assert.deepEqual(
+  unexpectedStage04Paths([
+    ".gitignore",
+    "packages/contracts/src/ui-projections.ts",
+    "packages/design-system/src/components.tsx",
+    "apps/web/src/app/(protected)/coach/page.tsx",
+    "apps/web/tests/p04-responsive.spec.ts",
+    "Implementation/Personal/04-responsive-web-design-system/handoff.md",
+    "scripts/check-generated.mjs",
+  ]),
+  [],
+  "Stage 04 accepts only its planned implementation surfaces",
+);
+assert.deepEqual(
+  unexpectedStage04Paths([
+    "Implementation/Personal/04-responsive-web-design-system/plan.md",
+    "Architecture/13-frontend-application-and-design-system-architecture.md",
+    "Design/Bestehen-01-Design-System.dc.html",
+    "packages/infrastructure/src/postgres/migrations.ts",
+  ]),
+  [
+    "Implementation/Personal/04-responsive-web-design-system/plan.md",
+    "Architecture/13-frontend-application-and-design-system-architecture.md",
+    "Design/Bestehen-01-Design-System.dc.html",
+    "packages/infrastructure/src/postgres/migrations.ts",
+  ],
+  "Stage 04 rejects plan, architecture, Design, and migration drift",
 );
 
 for (const context of [
@@ -125,5 +165,5 @@ assert.deepEqual(
 );
 
 process.stdout.write(
-  "P03-SCOPE-001 passed alongside preserved Stage 01 and Stage 02 scope fixtures.\n",
+  "P04-SCOPE-001 passed alongside preserved Stage 01 through Stage 03 scope fixtures.\n",
 );

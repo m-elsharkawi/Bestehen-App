@@ -1,0 +1,65 @@
+{
+  "version": "p04-assets/v1",
+  "generatedBy": "fonttools subset, WOFF2, German and Latin U+0000-024F/U+1E00-1EFF/U+20AC",
+  "assets": [
+    {
+      "id": "font.bricolage-grotesque",
+      "source": "https://github.com/google/fonts",
+      "revision": "6a003b5eb672dc8bf5bff5937cf5863f8b175445",
+      "sourceFile": "ofl/bricolagegrotesque/BricolageGrotesque[opsz,wdth,wght].ttf",
+      "license": "OFL-1.1",
+      "notice": "licenses/bricolage-grotesque-OFL-1.1.txt",
+      "originalSha256": "413e7357809ddd12fd80a96a8a396de0e401638d4acd3cb3e37532f0472ac682",
+      "emittedFile": "fonts/bricolage-grotesque-latin.woff2",
+      "emittedSha256": "1563fdb0e38e8667fbc8eb48a8198adfe679cd5e1132117795d95e9336448cd9",
+      "bytes": 163928
+    },
+    {
+      "id": "font.ibm-plex-sans",
+      "source": "https://github.com/google/fonts",
+      "revision": "6a003b5eb672dc8bf5bff5937cf5863f8b175445",
+      "sourceFile": "ofl/ibmplexsans/IBMPlexSans[wdth,wght].ttf",
+      "license": "OFL-1.1",
+      "notice": "licenses/ibm-plex-OFL-1.1.txt",
+      "originalSha256": "3b031aa4216174205bd8471f88a49b91f093169e9e87bd5262242bc5967fe2e3",
+      "emittedFile": "fonts/ibm-plex-sans-latin.woff2",
+      "emittedSha256": "cdcf38b5e1452dfa326c2efab28775fc8b4798a16457d63a4c95184f74bd103a",
+      "bytes": 85196
+    },
+    {
+      "id": "font.ibm-plex-mono",
+      "source": "https://github.com/google/fonts",
+      "revision": "6a003b5eb672dc8bf5bff5937cf5863f8b175445",
+      "sourceFile": "ofl/ibmplexmono/IBMPlexMono-Regular.ttf",
+      "license": "OFL-1.1",
+      "notice": "licenses/ibm-plex-OFL-1.1.txt",
+      "originalSha256": "6a3412f058c7d8dfd9170c41e85ade48e5156ecb89356110ca57a0a27734af46",
+      "emittedFile": "fonts/ibm-plex-mono-latin.woff2",
+      "emittedSha256": "f901f35426641f8c83da7edf6818a0011d7a7166b8bad7aa9f60af0e517300f9",
+      "bytes": 13020
+    }
+  ],
+  "compiledIcons": {
+    "source": "https://github.com/lucide-icons/lucide",
+    "revision": "23f9abc4ed0146cffededd3d7f94c1018bfdf693",
+    "license": "ISC",
+    "notice": "licenses/lucide-ISC.txt",
+    "emittedFile": "../src/icons.tsx",
+    "emittedSha256": "19115206b41462e05024dc00b5bfd8f648749486740f520b82267df1a001f66c",
+    "count": 20,
+    "stroke": 1.75
+  },
+  "brand": {
+    "source": "Design/Bestehen-01-Design-System.dc.html#1.13",
+    "files": [
+      {
+        "path": "brand/bestehen-symbol-primary.svg",
+        "sha256": "668a56e434c2e1215df0b0d9c7249bb6dc8bf37cd053d3369aa3b821b7582eec"
+      },
+      {
+        "path": "brand/bestehen-symbol-micro.svg",
+        "sha256": "1107b04f4573863fc13b85a12a44d37a8e81ff3025fb027534968ac628d71bf5"
+      }
+    ]
+  }
+}

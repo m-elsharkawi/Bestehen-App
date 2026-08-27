@@ -7,6 +7,8 @@ import {
 } from "@bestehen/domain";
 import { z } from "zod";
 
+export * from "./ui-projections.js";
+
 export const contractVersionSchema = z
   .object({
     major: z.number().int().positive(),
