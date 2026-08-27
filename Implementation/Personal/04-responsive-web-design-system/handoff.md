@@ -2,8 +2,9 @@
 
 Date: 2026-08-27 (Europe/Berlin)
 
-Status: `04E` repository execution candidate for independent review. It is not
-accepted, merged, deployed, staged, or live-verified.
+Status: `04E` accepted at code candidate
+`8b955c077546513dfc21bacc5b379c97b54b297c`. Exact-head CI and the bounded
+private-staging checkpoint passed. This acceptance record is pending merge.
 
 Draft PR: [#11](https://github.com/m-elsharkawi/Bestehen-App/pull/11)
 
@@ -112,6 +113,8 @@ processor, or Stage 05 work was added.
 - `e7dc34d24f63a84b3ff0591b40444754fbd7132f` makes the writing visual anchor request
   the typed, locally saved draft state explicitly and asserts its user-facing state
   before the unchanged two-percent screenshot comparison.
+- `8b955c077546513dfc21bacc5b379c97b54b297c` records the stable saved-writing
+  visual evidence after the repaired fixture passed locally and on exact-head Linux.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
@@ -155,12 +158,13 @@ external provider calls stayed disabled.
   anchor, with all 48 semantic checks passing. The test now applies deterministic
   font smoothing and geometric text rendering before its screenshots; the
   two-percent cap is unchanged and no semantic or visual case was removed.
-- Exact-head runs [`33104632972`](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/33104632972)
-  and [`33104633740`](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/33104633740)
-  for implementation candidate `99d0f80695bb33b6dd3729567287409a707d54e7` passed every
-  job: browser/accessibility, static/unit/build/release, OCI, PostgreSQL/process,
-  frozen policy, advisory audit, and evidence/release-manifest. This handoff-only
-  successor remains an unaccepted candidate and receives its own exact-head CI.
+- Exact-head runs [`33109916283`](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/33109916283)
+  and [`33109918908`](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/33109918908)
+  for accepted implementation candidate `8b955c077546513dfc21bacc5b379c97b54b297c`
+  passed every job: browser/accessibility, static/unit/build/release, OCI,
+  PostgreSQL/process, frozen policy, critical advisory audit, and
+  evidence/release-manifest. The independent acceptance record is
+  [attached to PR #11](https://github.com/m-elsharkawi/Bestehen-App/pull/11#issuecomment-5444442768).
 - `pnpm test:process` passed the web shutdown test. Two worker cases skipped because
   the local run had no integration database.
 - `pnpm test:integration` selected the three PostgreSQL cases and skipped them because
@@ -211,16 +215,35 @@ assistive-technology runs remain manual staging gates; no such run is claimed he
   `c39ec9c1ecb3a3dd2220ea28f7f71ecf88322cf8`, rebuilds web, and runs the existing
   health/browser checks. It does not rewrite data or Stage 03 identity/session state.
 
-## Deferred gates and Stage 05 inputs
+## Private-staging acceptance and named limitations
 
-No Coolify, Pangolin, Auth0, DNS, database, provider, backup, or production action
-occurred. After independent 04E acceptance, the orchestrator owns the mandatory
-exact-accepted-commit private staging checkpoint. It must deploy that SHA with every
-provider adapter fake and every external call flag false, verify protected and bare
-shells plus compact/large reflow, perform the documented branded-browser and manual
-keyboard/screen-reader script, record only redacted evidence, and restore all fake and
-disabled flags before and after the checkpoint. A failed checkpoint blocks staging
-acceptance and does not justify weakening deterministic tests.
+The orchestrator deployed exact code candidate
+`8b955c077546513dfc21bacc5b379c97b54b297c` to the private Coolify staging web,
+worker, and migrator resources. The migrator deployment completed successfully at
+that source revision; the exited-container log view did not retain a fresh receipt
+body, so no receipt payload is claimed. The worker reached its foundation-ready
+supervisor state with the exact release marker. The web resource reported healthy
+after both the fake-first deployment and final cleanup deployment.
+
+The bounded branded-Chrome smoke verified the private signed-out shell, protected
+fail-closed behavior while identity was fake/disabled, skip-link focus transfer,
+theme cycling, semantic navigation order, first-party self-hosted font loading, and
+the absence of App-owned third-party page assets. A temporary Auth0-only window then
+verified the hosted email-OTP identifier flow and successful protected callback. No
+identity, OTP, cookie, secret, private origin, provider response, or session value was
+captured. The window was closed by restoring `BESTEHEN_AUTH_ADAPTER=fake` and
+`BESTEHEN_FLAG_EXTERNAL_PROVIDER_CALLS=false`; both values were visibly re-verified
+in Coolify before an exact-commit redeployment completed successfully.
+
+The Chrome connector could not independently resize the browser viewport or change
+browser zoom, and host Computer Use permission was unavailable for a real VoiceOver
+run. Therefore no live 320-pixel, 200/400-percent zoom, or branded assistive-technology
+result is claimed. The mandatory deterministic Chromium/Firefox/WebKit reflow,
+keyboard, axe, reduced-motion, forced-color, and visual coverage remains passing in
+exact-head CI. These named live-device limitations are deferred honestly and do not
+weaken or replace that CI coverage.
+
+## Stage 05 inputs
 
 Stage 05 should reuse the versioned UI projection seam, App/Attempt/Mock shells,
 five skill-region slots, semantic status grammar, route guard, and deterministic
@@ -228,4 +251,4 @@ fixture approach. Stage 05 replaces only the relevant synthetic content/attempt
 fixtures with its own server-owned runtime. It must not fork the navigation, tokens,
 component families, validity/Readiness vocabulary, or source manifest.
 
-Stop after 04E review. Do not begin Stage 05 from this handoff.
+Stop after merging accepted 04E. Do not begin Stage 05 from this handoff.
