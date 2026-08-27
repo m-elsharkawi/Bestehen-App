@@ -38,7 +38,7 @@ const stage01Allowed = [
 ];
 const stage02Allowed = [
   /^\.env\.example$/,
-  /^\.github\/workflows\/(?:ci|release-candidate)\.yml$/,
+  /^\.github\/workflows\/ci\.yml$/,
   /^config\/personal-provider-readiness\.example\.json$/,
   /^docs\/configuration\.md$/,
   /^docs\/setup\/personal\//,

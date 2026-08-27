@@ -46,11 +46,11 @@ function projectionFor(state: ProjectionCardContract["state"]): ProjectionCardCo
     announcement: "polite",
     contract: { major: 1, minor: 0 },
     focusTarget: "heading",
-    message: `Fixture message for ${state}`,
+    message: "Fixture presentation message.",
     source: { release: "fixture-release", sourceCut: 4 },
     state,
     status: statusForState(state),
-    title: `Fixture ${state}`,
+    title: "Fixture presentation",
   };
 }
 
@@ -62,7 +62,12 @@ describe("P04-SEMANTIC-001 consequential projection fixtures", () => {
       const { container } = render(<ProjectionCard projection={projectionFor(state)} />);
 
       expect(container.querySelector(".card")).toHaveAttribute("data-status", status);
-      expect(container.querySelector(".status-word")).toHaveTextContent(state.replaceAll("_", " "));
+      expect(container.querySelector(".status-word")).not.toHaveTextContent(
+        state.replaceAll("_", " "),
+      );
+      for (const forbidden of ["provider", "queue", "storage", "callback"]) {
+        expect(container).not.toHaveTextContent(forbidden);
+      }
       expect(container).toHaveTextContent("Affected: Writing");
       expect(container.querySelector("[role='status']")).toHaveAttribute("aria-live", "polite");
       expect(container.querySelector("[data-source-cut='4']")).toHaveAttribute(

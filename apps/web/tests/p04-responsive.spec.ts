@@ -222,6 +222,34 @@ test("P04-COMPONENT-001 deterministic gallery exposes all component families", a
   expect((await new AxeBuilder({ page }).include("#family-C04").analyze()).violations).toEqual([]);
 });
 
+test("P04-A11Y-001 sheet and destructive confirmation use their distinct modal contracts", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 720 });
+  await page.goto("/ui-fixtures/gallery");
+  const sheet = page.locator("[data-fixture-variant='sheet']");
+  await sheet.getByRole("button", { name: "Open Overlay" }).click();
+  const sheetDialog = page.locator("dialog[data-overlay-kind='sheet']");
+  await expect(sheetDialog).toBeVisible();
+  expect(await sheetDialog.evaluate((node) => getComputedStyle(node).bottom)).toBe("0px");
+  await page.keyboard.press("Escape");
+  await expect(sheetDialog).toBeHidden();
+
+  const destructive = page.locator("[data-fixture-variant='destructive-confirm']");
+  const destructiveTrigger = destructive.getByRole("button", { name: "Open Overlay" });
+  await destructiveTrigger.click();
+  const destructiveDialog = page.locator("dialog[data-overlay-kind='destructive-confirm']");
+  await expect(destructiveDialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(destructiveDialog).toBeVisible();
+  await destructiveDialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(destructiveDialog).toBeHidden();
+  await expect(destructiveTrigger).toBeFocused();
+  await destructiveTrigger.click();
+  await destructiveDialog.getByRole("button", { name: "Confirm" }).click();
+  await expect(destructiveDialog).toBeHidden();
+});
+
 test("P04-A11Y-001 targets, errors, modal focus, and live priorities are observable", async ({
   page,
 }) => {

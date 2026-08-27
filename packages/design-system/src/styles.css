@@ -406,6 +406,18 @@ input[type="checkbox"] {
   max-width: min(var(--measure-bare), calc(100% - 32px));
   padding: var(--space-6);
 }
+.overlay[data-overlay-kind="sheet"] {
+  border-radius: var(--radius-large) var(--radius-large) 0 0;
+  bottom: 0;
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+.overlay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
 .overlay::backdrop {
   background: color-mix(in srgb, var(--surface-ink) 72%, transparent);
 }
@@ -563,6 +575,13 @@ input[type="checkbox"] {
 }
 
 @media (min-width: 768px) {
+  .overlay[data-overlay-kind="sheet"] {
+    border-radius: var(--radius-large);
+    bottom: auto;
+    margin: auto;
+    max-width: min(var(--measure-bare), calc(100% - 32px));
+    width: auto;
+  }
   .app-shell {
     grid-template-areas: "header header" "nav nav" "main main" "footer footer";
   }

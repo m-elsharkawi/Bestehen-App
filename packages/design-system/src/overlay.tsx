@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ReactNode, SyntheticEvent } from "react";
 import { useId, useRef } from "react";
 
 export function Overlay({
@@ -30,6 +30,9 @@ export function Overlay({
     dialog.current?.close();
     trigger.current?.focus();
   }
+  function cancel(event: SyntheticEvent<HTMLDialogElement>) {
+    if (kind === "destructive-confirm") event.preventDefault();
+  }
   return (
     <>
       <button className="action action-secondary" onClick={open} ref={trigger} type="button">
@@ -39,6 +42,7 @@ export function Overlay({
         aria-labelledby={titleId}
         className="overlay"
         data-overlay-kind={kind}
+        onCancel={cancel}
         onClose={() => trigger.current?.focus()}
         ref={dialog}
       >
@@ -52,13 +56,20 @@ export function Overlay({
                 : "Review the consequence before continuing."}
           </p>
         )}
-        <button
-          className={`action action-${kind === "destructive-confirm" ? "destructive" : "primary"}`}
-          onClick={close}
-          type="button"
-        >
-          {kind === "destructive-confirm" ? "Confirm" : "Close"}
-        </button>
+        {kind === "destructive-confirm" ? (
+          <div className="overlay-actions">
+            <button className="action action-secondary" onClick={close} type="button">
+              Cancel
+            </button>
+            <button className="action action-destructive" onClick={close} type="button">
+              Confirm
+            </button>
+          </div>
+        ) : (
+          <button className="action action-primary" onClick={close} type="button">
+            Close
+          </button>
+        )}
       </dialog>
     </>
   );

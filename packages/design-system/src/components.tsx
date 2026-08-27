@@ -298,6 +298,51 @@ export function CoachMessage({ variant = "plan" }: { readonly variant?: CoachMes
   );
 }
 
+const consequentialStateLabels: Record<ProjectionCardContract["state"], string> = {
+  valid: "Valid evidence",
+  partially_valid: "Partly valid evidence",
+  interrupted: "Interrupted",
+  not_counted: "Not counted",
+  evidence_building: "Evidence building",
+  not_ready: "Not ready",
+  borderline: "Borderline",
+  safe: "Ready with margin",
+  ready_to_book: "Ready to book",
+  stale_contradicted: "Needs fresh evidence",
+  processing: "Working on it",
+  slow: "Taking longer than expected",
+  pending: "Waiting for an update",
+  partial: "Partly available",
+  unavailable: "Unavailable right now",
+  retry_fresh: "A fresh try is available",
+  signed_out: "Sign in required",
+  callback_failed: "Sign-in needs another try",
+  expired_idle: "Sign-in timed out",
+  expired_mid_attempt: "Sign-in needed to continue",
+  access_denied: "This area is unavailable",
+  preparing: "Preparing",
+  sending: "Sending",
+  queued_offline: "Saved for later on this device",
+  retrying: "Trying again",
+  not_sent: "Not sent",
+  sent: "Sent",
+  requested: "Requested",
+  building: "Preparing your file",
+  ready: "Ready",
+  expired: "No longer available",
+  failed: "Could not finish",
+  recent_auth_required: "Confirm your sign-in",
+  confirmation_required: "Confirmation required",
+  revoking: "Removing access",
+  purge_running: "Cleaning up",
+  provider_pending: "Cleanup is taking longer",
+  live_purge_complete: "Cleanup complete",
+  completed: "Complete",
+  compare: "Compare drafts",
+  select: "Choose a draft",
+  merge: "Combine drafts",
+};
+
 export function ProjectionCard({ projection }: { readonly projection: ProjectionCardContract }) {
   if (!isSupportedProjectionCard(projection)) {
     throw new Error("Unsupported consequential UI projection");
@@ -315,7 +360,7 @@ export function ProjectionCard({ projection }: { readonly projection: Projection
     >
       <SemanticCard status={projection.status} title={projection.title}>
         <StatusWord status={projection.status === "neutral" ? "system" : projection.status}>
-          {projection.state.replaceAll("_", " ")}
+          {consequentialStateLabels[projection.state]}
         </StatusWord>
         <p>{projection.message}</p>
         {projection.affectedScope.length > 0 ? (
@@ -838,16 +883,20 @@ export function DraftConflict() {
   );
 }
 
-export function SessionNotice({
-  state,
-}: {
-  readonly state:
-    | "signed_out"
-    | "callback_failed"
-    | "expired_idle"
-    | "expired_mid_attempt"
-    | "access_denied";
-}) {
+export type SessionNoticeState =
+  | "signed_out"
+  | "callback_failed"
+  | "expired_idle"
+  | "expired_mid_attempt"
+  | "access_denied";
+export function SessionNotice({ state }: { readonly state: SessionNoticeState }) {
+  const title: Record<SessionNoticeState, string> = {
+    signed_out: "Sign in required",
+    callback_failed: "Sign-in needs another try",
+    expired_idle: "Sign-in timed out",
+    expired_mid_attempt: "Sign-in needed to continue",
+    access_denied: "This area is unavailable",
+  };
   const copy =
     state === "expired_mid_attempt"
       ? "Your draft, elapsed time, and attempt conditions are preserved. The server will decide the final validity after you sign in."
@@ -855,7 +904,7 @@ export function SessionNotice({
         ? "This account cannot open that personal area."
         : "Sign in with the owner's email code to continue.";
   return (
-    <SemanticCard status="system" title={state.replaceAll("_", " ")}>
+    <SemanticCard status="system" title={title[state]}>
       <p>{copy}</p>
       <Action href="/auth/login" label="Continue to sign in" />
     </SemanticCard>
