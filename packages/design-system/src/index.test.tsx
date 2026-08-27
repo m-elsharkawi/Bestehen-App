@@ -6,6 +6,7 @@ import {
   AppShell,
   BinaryChoice,
   ComponentGallery,
+  componentGalleryFixtureCases,
   componentFixtureCases,
   componentFixtureRegistry,
   componentFamilies,
@@ -49,11 +50,12 @@ describe("P04-COMPONENT-001 design system", () => {
     const { container } = render(<ComponentGallery />);
     expect(container.querySelectorAll("[data-component-family]")).toHaveLength(43);
     expect(componentFamilies).toHaveLength(43);
+    expect(componentGalleryFixtureCases).toHaveLength(126);
     expect(container).not.toHaveTextContent("Deterministic state fixture");
   });
 
   it("renders every closed family contract through its real export", () => {
-    expect(componentFixtureCases.length).toBeGreaterThan(43);
+    expect(componentFixtureCases).toHaveLength(143);
     for (const fixture of componentFixtureRegistry) {
       expect(
         componentFixtureCases
@@ -69,6 +71,15 @@ describe("P04-COMPONENT-001 design system", () => {
       expect(fixture.variants, fixture.id).toContain(fixture.variant);
       unmount();
     }
+  });
+
+  it("renders shared subparts once while retaining a targeted assertion for each one", () => {
+    expect(
+      componentFixtureCases.filter((fixture) => fixture.caseKind === "shared-subpart"),
+    ).toHaveLength(29);
+    expect(
+      componentGalleryFixtureCases.filter((fixture) => fixture.caseKind === "shared-subpart"),
+    ).toHaveLength(12);
   });
 
   it("drives C29 fault categories and C32 readiness states through their public APIs", () => {

@@ -109,15 +109,20 @@ export function AttemptShell({
 export function MockShell({
   children,
   remaining,
+  interrupted = false,
 }: {
   readonly children: ReactNode;
   readonly remaining: string;
+  readonly interrupted?: boolean;
 }) {
   return (
     <AppShell eyebrow="Measured mock" kind="focused" title="Written mock">
       <p className="timer">
         <Icon name="measured-time" /> <span>Time remaining</span> <time>{remaining}</time>
       </p>
+      {interrupted ? (
+        <p role="status">This measured block was interrupted. Its final validity is not assumed.</p>
+      ) : null}
       <div className="mock-measure">{children}</div>
     </AppShell>
   );

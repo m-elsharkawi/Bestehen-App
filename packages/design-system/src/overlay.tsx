@@ -6,9 +6,11 @@ import { useId, useRef } from "react";
 export function Overlay({
   title = "Review details",
   children,
+  kind = "dialog",
 }: {
   readonly title?: string;
   readonly children?: ReactNode;
+  readonly kind?: "sheet" | "dialog" | "destructive-confirm";
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -36,13 +38,26 @@ export function Overlay({
       <dialog
         aria-labelledby={titleId}
         className="overlay"
+        data-overlay-kind={kind}
         onClose={() => trigger.current?.focus()}
         ref={dialog}
       >
         <h2 id={titleId}>{title}</h2>
-        {children ?? <p>Review the consequence before continuing.</p>}
-        <button className="action action-primary" onClick={close} type="button">
-          Close
+        {children ?? (
+          <p>
+            {kind === "destructive-confirm"
+              ? "This action cannot be undone until you confirm it."
+              : kind === "sheet"
+                ? "Review these details without leaving the current task."
+                : "Review the consequence before continuing."}
+          </p>
+        )}
+        <button
+          className={`action action-${kind === "destructive-confirm" ? "destructive" : "primary"}`}
+          onClick={close}
+          type="button"
+        >
+          {kind === "destructive-confirm" ? "Confirm" : "Close"}
         </button>
       </dialog>
     </>

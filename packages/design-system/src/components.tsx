@@ -28,7 +28,30 @@ export function Sequence({
   );
 }
 export const Button = Action;
-export const InlineAction = Action;
+export type InlineActionKind = "link" | "iconButton";
+export function InlineAction({
+  kind = "link",
+  label,
+  href,
+}: {
+  readonly kind?: InlineActionKind;
+  readonly label: string;
+  readonly href?: string;
+}) {
+  if (kind === "iconButton") {
+    return (
+      <button aria-label={label} className="action action-quiet" type="button">
+        <Icon name="evidence" />
+        <span className="visually-hidden">{label}</span>
+      </button>
+    );
+  }
+  return href ? (
+    <Action href={href} label={label} variant="quiet" />
+  ) : (
+    <Action label={label} variant="quiet" />
+  );
+}
 export type ChoiceNavVariant = "segmented" | "tabs" | "chip";
 export function ChoiceNav({ variant = "segmented" }: { readonly variant?: ChoiceNavVariant }) {
   if (variant === "tabs") {
@@ -47,12 +70,12 @@ export function ChoiceNav({ variant = "segmented" }: { readonly variant?: Choice
     return (
       <fieldset>
         <legend>Example choices</legend>
-        <button aria-pressed="true" type="button">
-          Current
-        </button>
-        <button aria-pressed="false" type="button">
-          Other
-        </button>
+        <label>
+          <input defaultChecked type="checkbox" /> Current
+        </label>
+        <label>
+          <input type="checkbox" /> Other
+        </label>
       </fieldset>
     );
   }
@@ -159,12 +182,38 @@ export function MatchingPair() {
     </fieldset>
   );
 }
-export function ClozeGap({ number = 1 }: { readonly number?: number }) {
+export type ClozeGapState = "input" | "options" | "result";
+export function ClozeGap({
+  number = 1,
+  state = "input",
+}: {
+  readonly number?: number;
+  readonly state?: ClozeGapState;
+}) {
+  if (state === "options") {
+    return (
+      <fieldset className="cloze-gap">
+        <legend>Gap {number}</legend>
+        <label>
+          <input name={`gap-${number}`} type="radio" /> weil
+        </label>
+        <label>
+          <input name={`gap-${number}`} type="radio" /> dass
+        </label>
+      </fieldset>
+    );
+  }
   return (
-    <label className="cloze-gap">
-      Gap {number}
-      <input aria-label={`Answer for gap ${number}`} />
-    </label>
+    <span className="cloze-gap">
+      {state === "result" ? (
+        <>Gap {number}: because</>
+      ) : (
+        <label>
+          Gap {number}
+          <input aria-label={`Answer for gap ${number}`} />
+        </label>
+      )}
+    </span>
   );
 }
 export function ReorderList() {
@@ -173,12 +222,14 @@ export function ReorderList() {
       <h2>Put the steps in order</h2>
       <ol>
         <li>
-          First item <button type="button">Move down</button>
+          First item <button type="button">Move down</button>{" "}
+          <button type="button">Set position 1</button>
         </li>
         <li>
           Second item <button type="button">Move up</button>
         </li>
       </ol>
+      <button type="button">Reset order</button>
     </section>
   );
 }
@@ -192,7 +243,7 @@ export function FormFeedback({ errors }: { readonly errors: readonly FormError[]
         {errors.map((error) => {
           const message = typeof error === "string" ? error : error.message;
           return (
-            <li key={message}>
+            <li className="form-error" key={message}>
               {typeof error === "string" ? message : <a href={error.href}>{message}</a>}
             </li>
           );
@@ -230,13 +281,19 @@ export function SessionDurationPicker() {
     </fieldset>
   );
 }
-export function CoachMessage() {
+export type CoachMessageVariant = "plan" | "diagnosis" | "reminder";
+export function CoachMessage({ variant = "plan" }: { readonly variant?: CoachMessageVariant }) {
   const headingId = useId();
+  const copy: Record<CoachMessageVariant, readonly [string, string, string]> = {
+    plan: ["Plan note", "Complete one focused repair, then use a fresh check.", "Start repair"],
+    diagnosis: ["Diagnosis", "One content-point pattern needs a fresh sample.", "Review pattern"],
+    reminder: ["Reminder", "Bring the current evidence to your next fresh check.", "View evidence"],
+  };
   return (
     <section aria-labelledby={headingId}>
-      <h2 id={headingId}>Plan note</h2>
-      <p>Complete one focused repair, then use a fresh check.</p>
-      <Action href="#coach-action" label="Start repair" />
+      <h2 id={headingId}>{copy[variant][0]}</h2>
+      <p>{copy[variant][1]}</p>
+      <Action href="#coach-action" label={copy[variant][2]} />
     </section>
   );
 }
@@ -301,14 +358,17 @@ export function RepairCard() {
         <strong>Example:</strong> Ich komme gern und bringe einen Salat mit.
       </p>
       <Action label="Try a fresh prompt" />
+      <Action label="Skip this repair" variant="quiet" />
     </SemanticCard>
   );
 }
-export function HintDisclosure() {
+export type HintDisclosureState = "closed" | "open" | "used";
+export function HintDisclosure({ state = "closed" }: { readonly state?: HintDisclosureState }) {
   return (
-    <details>
+    <details open={state === "open" || state === "used"}>
       <summary>Show hint and consequence</summary>
       <p>Using this hint changes the attempt condition label, not the answer.</p>
+      {state === "used" ? <p>Hint used; the condition label is retained.</p> : null}
     </details>
   );
 }
@@ -624,7 +684,12 @@ export function MockOutcome() {
     </section>
   );
 }
-export function TextAlternativeTable() {
+export type TextAlternativeVariant = "compact" | "expanded";
+export function TextAlternativeTable({
+  variant = "compact",
+}: {
+  readonly variant?: TextAlternativeVariant;
+}) {
   return (
     <table>
       <caption>Evidence shown in the graphic</caption>
@@ -639,6 +704,12 @@ export function TextAlternativeTable() {
           <th scope="row">Written</th>
           <td>Evidence building</td>
         </tr>
+        {variant === "expanded" ? (
+          <tr>
+            <th scope="row">Oral</th>
+            <td>Not enough evidence</td>
+          </tr>
+        ) : null}
       </tbody>
     </table>
   );
@@ -653,12 +724,18 @@ export function ReadingRegion() {
     </article>
   );
 }
-export function LanguageElementsRegion() {
+export type LanguageElementsVariant = "input" | "result";
+export function LanguageElementsRegion({
+  variant = "input",
+}: {
+  readonly variant?: LanguageElementsVariant;
+}) {
   return (
     <article lang="de">
       <h2>Sprachbausteine</h2>
       <p>
-        Ich freue mich <ClozeGap number={1} /> Ihre Antwort.
+        Ich freue mich <ClozeGap number={1} state={variant === "result" ? "result" : "input"} />
+        Ihre Antwort.
       </p>
     </article>
   );
@@ -673,8 +750,10 @@ export function ListeningRegion() {
     </section>
   );
 }
-export function WritingRegion() {
+export type WritingRegionVariant = "editor" | "autosave" | "revisionDiff" | "conflict";
+export function WritingRegion({ variant = "editor" }: { readonly variant?: WritingRegionVariant }) {
   const draftId = useId();
+  if (variant === "conflict") return <DraftConflict />;
   return (
     <section className="writing-region">
       <div lang="de">
@@ -684,21 +763,41 @@ export function WritingRegion() {
       <div className="field">
         <label htmlFor={draftId}>Your draft</label>
         <textarea id={draftId} rows={12} />
-        <p>Saved locally on this device. The server has not accepted this draft as evidence.</p>
+        <p>
+          {variant === "autosave"
+            ? "Saved on this device. The server has not accepted this draft as evidence."
+            : variant === "revisionDiff"
+              ? "The latest revision differs from the saved checkpoint; both versions remain available."
+              : "Your draft remains on this device until you send it."}
+        </p>
       </div>
     </section>
   );
 }
-export function SpeakingRegion() {
+export type SpeakingRegionVariant = "preflight" | "recording" | "turn-taking" | "transcript";
+export function SpeakingRegion({
+  variant = "preflight",
+}: {
+  readonly variant?: SpeakingRegionVariant;
+}) {
+  const copy: Record<SpeakingRegionVariant, readonly [string, string]> = {
+    preflight: [
+      "Start recording",
+      "Microphone access begins only after you choose Start recording.",
+    ],
+    recording: ["Stop recording", "Recording is in progress."],
+    "turn-taking": ["Continue", "Wait for the prompt before your next turn."],
+    transcript: ["View transcript", "The transcript is available after recording ends."],
+  };
   return (
     <section>
       <h2>Speaking</h2>
-      <p>Microphone access begins only after you choose Start recording.</p>
+      <p>{copy[variant][1]}</p>
       <button className="action action-primary" type="button">
         <Icon name="speaking" />
-        Start recording
+        {copy[variant][0]}
       </button>
-      <p role="status">Not recording</p>
+      <p role="status">{variant === "recording" ? "Recording" : "Not recording"}</p>
     </section>
   );
 }
@@ -762,19 +861,34 @@ export function SessionNotice({
     </SemanticCard>
   );
 }
+export type UploadState =
+  | "preparing"
+  | "sending"
+  | "queued_offline"
+  | "retrying"
+  | "not_sent"
+  | "sent";
 export function UploadStatus({
   state,
   progress,
 }: {
-  readonly state: "preparing" | "sending" | "queued_offline" | "retrying" | "not_sent" | "sent";
+  readonly state: UploadState;
   readonly progress?: number;
 }) {
   const headingId = useId();
+  const label: Record<UploadState, string> = {
+    preparing: "Preparing",
+    sending: "Sending",
+    queued_offline: "Saved for later on this device",
+    retrying: "Trying again",
+    not_sent: "Not sent",
+    sent: "Sent",
+  };
   return (
     <section aria-labelledby={headingId} className="transfer">
       <h2 id={headingId}>Transfer status</h2>
       <p>
-        <strong>{state.replaceAll("_", " ")}</strong>
+        <strong>{label[state]}</strong>
       </p>
       {progress === undefined ? null : (
         <>
@@ -817,8 +931,8 @@ export function DataRightsStatus() {
       <h2>Export and deletion</h2>
       <p>Exports are source-cut ZIP files. Ready files expire after 24 hours.</p>
       <p>
-        Deletion revokes access first. Provider cleanup may remain pending, and inaccessible
-        encrypted backup residuals can remain for the bounded retention window.
+        Deletion revokes access first. Some cleanup can take longer, and inaccessible encrypted
+        backup residuals can remain for the bounded retention window.
       </p>
     </section>
   );
@@ -847,6 +961,7 @@ export interface ComponentFixtureContract {
 /** Each gallery case is one concrete owned variant rendered through the public family API. */
 export interface ComponentFixtureCase extends ComponentFixtureContract {
   readonly variant: string;
+  readonly caseKind: "variant" | "shared-subpart";
 }
 
 export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
@@ -1024,7 +1139,14 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   },
   {
     id: "C25",
-    variants: ["five-validity-values", "practice-only"],
+    variants: [
+      "valid",
+      "partially-valid",
+      "pending",
+      "interrupted",
+      "not-counted",
+      "practice-only",
+    ],
     selector: ".evidence-label",
     expectedText: "interrupted",
     render: () => (
@@ -1133,7 +1255,7 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   },
   {
     id: "C38",
-    variants: ["clozeTextPane", "gap", "result"],
+    variants: ["input", "result"],
     selector: "article[lang='de']",
     expectedText: "Sprachbausteine",
     render: () => <LanguageElementsRegion />,
@@ -1203,6 +1325,38 @@ const fixtureGates: ReadinessEvidenceProps["gates"] = ["A", "B", "C", "D", "E", 
 
 function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string): ReactNode {
   switch (fixture.id) {
+    case "C01":
+      return (
+        <AppShell kind={variant as "protected" | "bare" | "focused"} title="Fixture shell">
+          Content
+        </AppShell>
+      );
+    case "C03":
+      return (
+        <MockShell interrupted={variant === "interruptionRecovery"} remaining="12:00">
+          Mock task
+        </MockShell>
+      );
+    case "C04":
+      return (
+        <Overlay kind={variant as "sheet" | "dialog" | "destructive-confirm"} title="Overlay" />
+      );
+    case "C06":
+      return (
+        <Button
+          {...(variant === "disabled" ? { disabledReason: "Evidence is still processing" } : {})}
+          label={variant === "disabled" ? "Unavailable" : `${variant} action`}
+          variant={
+            variant === "disabled"
+              ? "primary"
+              : (variant as "primary" | "secondary" | "quiet" | "destructive")
+          }
+        />
+      );
+    case "C07":
+      return (
+        <InlineAction href="#details" kind={variant as InlineActionKind} label="Open details" />
+      );
     case "C08":
       return <ChoiceNav variant={variant as ChoiceNavVariant} />;
     case "C09":
@@ -1220,6 +1374,23 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
       );
     case "C11":
       return <AnswerChoice variant={variant as AnswerChoiceVariant} />;
+    case "C02":
+    case "C05":
+    case "C12":
+    case "C14":
+    case "C15":
+    case "C16":
+    case "C17":
+    case "C20":
+    case "C21":
+    case "C35":
+    case "C37":
+    case "C39":
+      return fixture.render();
+    case "C13":
+      return <ClozeGap state={variant as ClozeGapState} />;
+    case "C18":
+      return <CoachMessage variant={variant as CoachMessageVariant} />;
     case "C19": {
       const state =
         variant === "outcome" ? "valid" : variant === "validity" ? "partially_valid" : "partial";
@@ -1230,9 +1401,15 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
         <EvidenceLabel
           {...(variant === "practice-only" ? { eligibility: "practice-only" } : {})}
           reason="Fixture reason"
-          validity="interrupted"
+          validity={
+            (variant === "practice-only"
+              ? "interrupted"
+              : variant.replaceAll("-", "_")) as Parameters<typeof EvidenceLabel>[0]["validity"]
+          }
         />
       );
+    case "C22":
+      return <HintDisclosure state={variant as HintDisclosureState} />;
     case "C23":
       return <FreshCheckBanner state={variant as FreshCheckState} />;
     case "C24":
@@ -1273,6 +1450,14 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
       return <ChangeTimeline state={variant as ChangeTimelineState} />;
     case "C34":
       return <MilestoneRow state={variant as MilestoneState} />;
+    case "C36":
+      return <TextAlternativeTable variant={variant as TextAlternativeVariant} />;
+    case "C38":
+      return <LanguageElementsRegion variant={variant as LanguageElementsVariant} />;
+    case "C40":
+      return <WritingRegion variant={variant as WritingRegionVariant} />;
+    case "C41":
+      return <SpeakingRegion variant={variant as SpeakingRegionVariant} />;
     case "C42":
       return (
         <SessionNotice
@@ -1287,11 +1472,48 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
         />
       );
     default:
-      return fixture.render();
+      throw new Error(`Missing concrete gallery renderer for ${fixture.id} ${variant}`);
   }
 }
 
+const sharedSubpartFamilies = new Set([
+  "C02",
+  "C05",
+  "C12",
+  "C14",
+  "C15",
+  "C16",
+  "C17",
+  "C20",
+  "C21",
+  "C35",
+  "C37",
+  "C39",
+]);
+
 function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: string) {
+  if (fixture.id === "C01") return { expectedText: "Fixture shell", selector: `.shell-${variant}` };
+  if (fixture.id === "C03") {
+    return {
+      expectedText: variant === "interruptionRecovery" ? "was interrupted" : "12:00",
+      selector: variant === "interruptionRecovery" ? "[role='status']" : "time",
+    };
+  }
+  if (fixture.id === "C04") {
+    return { expectedText: "Overlay", selector: `[data-overlay-kind='${variant}']` };
+  }
+  if (fixture.id === "C06") {
+    return {
+      expectedText: variant === "disabled" ? "Evidence is still processing" : `${variant} action`,
+      selector: ".action",
+    };
+  }
+  if (fixture.id === "C07") {
+    return {
+      expectedText: "Open details",
+      selector: variant === "link" ? "a" : "button[aria-label='Open details']",
+    };
+  }
   if (fixture.id === "C08") {
     return {
       expectedText: "Current",
@@ -1309,6 +1531,84 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
     return {
       expectedText: variant === "invalid" ? "Required" : "Response",
       selector: variant === "select" ? "select" : "input",
+    };
+  }
+  if (fixture.id === "C02") {
+    return {
+      expectedText: variant === "conditions" ? "Timed" : "Continue",
+      selector: variant === "conditions" ? ".conditions-row" : ".sticky-action",
+    };
+  }
+  if (fixture.id === "C05") {
+    return {
+      expectedText: "Current",
+      selector: variant === "stepper" ? "li[aria-current='step']" : "ol",
+    };
+  }
+  if (fixture.id === "C12") {
+    return {
+      expectedText: variant === "select-place" ? "Select item A" : "Reset matches",
+      selector: "fieldset",
+    };
+  }
+  if (fixture.id === "C13") {
+    return {
+      expectedText: variant === "result" ? "because" : "Gap 1",
+      selector: variant === "options" ? "fieldset" : ".cloze-gap",
+    };
+  }
+  if (fixture.id === "C14") {
+    return {
+      expectedText:
+        variant === "move" ? "Move down" : variant === "position" ? "Set position" : "Reset order",
+      selector: "section",
+    };
+  }
+  if (fixture.id === "C15") {
+    return {
+      expectedText: variant === "formError" ? "Answer is required" : "Check your answers",
+      selector: variant === "formError" ? ".form-error" : ".error-summary",
+    };
+  }
+  if (fixture.id === "C16") {
+    return {
+      expectedText: variant === "recommendationCard" ? "Recommended next" : "Why this",
+      selector: variant === "recommendationCard" ? ".card" : "details",
+    };
+  }
+  if (fixture.id === "C17") {
+    const text: Record<string, string> = {
+      quick: "10 minutes",
+      standard: "20 minutes",
+      extended: "30 minutes",
+    };
+    return { expectedText: text[variant] ?? "", selector: "fieldset" };
+  }
+  if (fixture.id === "C18") {
+    return {
+      expectedText:
+        variant === "plan" ? "Plan note" : `${variant.charAt(0).toUpperCase()}${variant.slice(1)}`,
+      selector: "section",
+    };
+  }
+  if (fixture.id === "C22") {
+    return { expectedText: variant === "used" ? "Hint used" : "Show hint", selector: "details" };
+  }
+  if (fixture.id === "C20") {
+    return {
+      expectedText: variant === "excerpt" ? "Vielen Dank" : "No answer-bearing help",
+      selector: variant === "excerpt" ? "blockquote" : "dl",
+    };
+  }
+  if (fixture.id === "C21") {
+    return {
+      expectedText:
+        variant === "pattern"
+          ? "Repair one pattern"
+          : variant === "example"
+            ? "Ich komme gern"
+            : "Skip this repair",
+      selector: ".card",
     };
   }
   if (fixture.id === "C23") {
@@ -1347,6 +1647,12 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
   }
   if (fixture.id === "C28") {
     return { expectedText: variant.replaceAll("-", " "), selector: "[data-status]" };
+  }
+  if (fixture.id === "C25") {
+    return {
+      expectedText: variant === "practice-only" ? "practice-only" : variant.replaceAll("-", " "),
+      selector: ".evidence-label",
+    };
   }
   if (fixture.id === "C19") {
     const state =
@@ -1394,6 +1700,66 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
       selector: "p",
     };
   }
+  if (fixture.id === "C35") {
+    return {
+      expectedText:
+        variant === "result"
+          ? "Mock outcome"
+          : variant === "comparison"
+            ? "Comparable raw points"
+            : "Priorities",
+      selector: variant === "comparison" ? "table" : "section",
+    };
+  }
+  if (fixture.id === "C36") {
+    return {
+      expectedText: variant === "expanded" ? "Not enough evidence" : "Evidence building",
+      selector: "table",
+    };
+  }
+  if (fixture.id === "C38") {
+    return {
+      expectedText: variant === "result" ? "because" : "Gap 1",
+      selector: "article[lang='de']",
+    };
+  }
+  if (fixture.id === "C37") {
+    return {
+      expectedText: variant === "readingTextPane" ? "wählen Sie die passende" : "Choose the answer",
+      selector: variant === "readingTextPane" ? "article" : "fieldset",
+    };
+  }
+  if (fixture.id === "C39") {
+    return {
+      expectedText:
+        variant === "audioPlayer"
+          ? "Replay limit"
+          : variant === "replayCounter"
+            ? "Replay limit"
+            : "No transcript",
+      selector: variant === "audioPlayer" ? "audio" : "section",
+    };
+  }
+  if (fixture.id === "C40") {
+    return {
+      expectedText:
+        variant === "conflict"
+          ? "Two saved drafts"
+          : variant === "revisionDiff"
+            ? "differs"
+            : "Your draft",
+      selector: variant === "conflict" ? ".draft-compare" : ".writing-region",
+    };
+  }
+  if (fixture.id === "C41") {
+    const text: Record<SpeakingRegionVariant, string> = {
+      preflight: "Start recording",
+      recording: "Recording is in progress",
+      "turn-taking": "Wait for the prompt",
+      transcript: "transcript is available",
+    };
+    return { expectedText: text[variant as SpeakingRegionVariant], selector: "section" };
+  }
   if (fixture.id === "C42") {
     return {
       expectedText: variant === "access-denied" ? "cannot open" : "sign in",
@@ -1409,16 +1775,23 @@ export const componentFixtureCases: readonly ComponentFixtureCase[] =
     fixture.variants.map((variant) => ({
       ...fixture,
       ...fixtureCaseAssertions(fixture, variant),
+      caseKind: sharedSubpartFamilies.has(fixture.id) ? "shared-subpart" : "variant",
       variant,
       render: () => renderFixtureVariant(fixture, variant),
     })),
   );
 
+export const componentGalleryFixtureCases = componentFixtureCases.filter(
+  (fixture, index, all) =>
+    fixture.caseKind === "variant" ||
+    !all.slice(0, index).some((candidate) => candidate.id === fixture.id),
+);
+
 export function ComponentGallery() {
   return (
     <div className="component-gallery">
       {componentFamilies.map(([id, name]) => {
-        const fixtures = componentFixtureCases.filter((entry) => entry.id === id);
+        const fixtures = componentGalleryFixtureCases.filter((entry) => entry.id === id);
         if (fixtures.length === 0) throw new Error(`Missing component fixture ${id}`);
         return (
           <section className="gallery-item" data-component-family={id} id={`family-${id}`} key={id}>
