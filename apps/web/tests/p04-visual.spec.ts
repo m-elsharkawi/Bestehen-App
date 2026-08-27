@@ -9,7 +9,7 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     ["coach-390-light", "/ui-fixtures/coach", 390, 844, "light"],
     ["coach-390-dark", "/ui-fixtures/coach", 390, 844, "dark"],
     ["readiness-320", "/ui-fixtures/readiness", 320, 900, "light"],
-    ["writing-768", "/ui-fixtures/writing", 768, 900, "light"],
+    ["writing-768", "/ui-fixtures/writing?draft=autosave", 768, 900, "light"],
     ["coach-1024", "/ui-fixtures/coach", 1024, 900, "light"],
     ["readiness-1280", "/ui-fixtures/readiness", 1280, 900, "light"],
     ["progress-1280", "/ui-fixtures/progress", 1280, 900, "light"],
@@ -28,6 +28,11 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     await page.evaluate((selected) => {
       document.documentElement.dataset.theme = selected;
     }, theme);
+    if (name === "writing-768") {
+      await expect(
+        page.getByText("Saved on this device. The server has not accepted this draft as evidence."),
+      ).toBeVisible();
+    }
     await expect(page).toHaveScreenshot(`${name}.png`, {
       animations: "disabled",
       fullPage: true,

@@ -18,6 +18,7 @@ import {
   UploadStatus,
   WritingRegion,
 } from "@bestehen/design-system";
+import type { WritingRegionVariant } from "@bestehen/design-system";
 
 const gates = (["A", "B", "C", "D", "E", "F"] as const).map((id, index) => ({
   id,
@@ -138,14 +139,16 @@ export function SessionView() {
 }
 export function AttemptView({
   kind = "reading",
+  writingVariant = "editor",
 }: {
   readonly kind?: "reading" | "language" | "writing";
+  readonly writingVariant?: WritingRegionVariant;
 }) {
   const region: ReactNode =
     kind === "language" ? (
       <LanguageElementsRegion />
     ) : kind === "writing" ? (
-      <WritingRegion />
+      <WritingRegion variant={writingVariant} />
     ) : (
       <ReadingRegion />
     );

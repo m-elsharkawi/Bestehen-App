@@ -37,8 +37,10 @@ type View = (typeof views)[number];
 
 export default async function UiFixturePage({
   params,
+  searchParams,
 }: {
   readonly params: Promise<{ readonly view: string }>;
+  readonly searchParams: Promise<{ readonly draft?: string | readonly string[] }>;
 }) {
   if (
     process.env.BESTEHEN_APP_ENV !== "test" ||
@@ -46,6 +48,7 @@ export default async function UiFixturePage({
   )
     notFound();
   const view = (await params).view;
+  const draft = (await searchParams).draft;
   if (!(views as readonly string[]).includes(view)) notFound();
   switch (view as View) {
     case "coach":
@@ -67,7 +70,9 @@ export default async function UiFixturePage({
     case "language":
       return <AttemptView kind="language" />;
     case "writing":
-      return <AttemptView kind="writing" />;
+      return (
+        <AttemptView kind="writing" writingVariant={draft === "autosave" ? "autosave" : "editor"} />
+      );
     case "result":
       return <ResultView />;
     case "mock":
