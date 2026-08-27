@@ -74,6 +74,15 @@ processor, or Stage 05 work was added.
   browser spot and records the first complete execution handoff/checklist candidate.
 - `068c9fac6e0566e4e343d39e1a58af2806eb490b` retains portable visual baselines with
   a bounded tolerance for verified macOS/Linux self-hosted-font raster differences.
+- `8241a7fe5bddc531aea042c8458cb409aade7fe2` repairs the reciprocal manifest with
+  real C01-C43 rows, compact IDs, collision-safe controls, and consequential
+  projections.
+- `21d6a5bc05202aab7d89ca3fa14768ecaa6db39b` adds the first-party pre-paint theme
+  script, hydration proof, 320 through breakpoint-edge and 200/400 percent reflow
+  coverage, accessibility interaction fixture, real gallery Overlay state, two-percent
+  visual threshold, and source/target/executable-test manifest validation.
+- `3e7d0838a8dc2f33f55696948783b1bbcb06fa36` completes the responsive large-text
+  reflow repair and cross-browser native-modal containment proof.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
@@ -85,14 +94,18 @@ Local deterministic checks used the repository-pinned Node `24.19.0`, pnpm
 `11.23.0`, Playwright `1.62.1`, and macOS arm64. Provider adapters stayed fake and
 external provider calls stayed disabled.
 
-- `pnpm check` passed: `P04-SCOPE-001` for 74 accepted paths, preserved scope
+- `pnpm check` passed at `3e7d0838a8dc2f33f55696948783b1bbcb06fa36` with repository-pinned
+  Node `24.19.0` and pnpm `11.23.0`: `P04-SCOPE-001` for 80 accepted paths, preserved scope
   fixtures, `P04-COVERAGE-001`, `P04-ASSET-001`, exact-lock/runtime policy, secret
   scan, fake-provider readiness, format, lint, typecheck, package boundaries, 135
   unit tests across 15 files, release-manifest tests, production build,
   `P04-PERF-001`, and generated-file policy.
-- `pnpm test:e2e` passed 34 tests with two expected skips. Firefox and WebKit skip
+- `pnpm test:e2e` passed 49 tests with two expected skips. Firefox and WebKit skip
   only the duplicate raster comparison; Chromium owns seven portable supplemental
-  baselines. All three engines pass the 400% effective zoom spot.
+  baselines at a maximum two-percent pixel difference. All three engines pass every
+  accepted breakpoint edge, representative 200% text reflow, 400% text reflow spot,
+  portrait/landscape resize with draft/theme retention, history return, pre-paint theme
+  hydration check, and native modal focus containment/Escape/focus return proof.
 - `pnpm test:process` passed the web shutdown test. Two worker cases skipped because
   the local run had no integration database.
 - `pnpm test:integration` selected the three PostgreSQL cases and skipped them because
@@ -109,7 +122,7 @@ Evidence IDs map as follows:
 - `P04-ROUTE-001`, `P04-A11Y-001`, `P04-RSP-001`, and `P04-SECURITY-001`:
   `apps/web/tests/p04-responsive.spec.ts` and the screen-reader script.
 - `P04-VISUAL-001`: seven platform-neutral Chromium baselines at 320, 390 light/dark,
-  768, 1024, and 1280 widths. Their five-percent cross-OS pixel tolerance covers
+  768, 1024, and 1280 widths. Their two-percent cross-OS pixel tolerance covers
   self-hosted font hinting differences; semantic and responsive checks remain
   authoritative.
 - `P04-ASSET-001`, `P04-COVERAGE-001`, `P04-PERF-001`, and `P04-SCOPE-001`: the four
