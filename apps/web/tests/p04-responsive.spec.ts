@@ -209,8 +209,10 @@ test("P04-SECURITY-001 fixtures make no third-party UI request and avoid forbidd
 test("P04-COMPONENT-001 deterministic gallery exposes all component families", async ({ page }) => {
   await page.goto("/ui-fixtures/gallery");
   await expect(page.locator("[data-component-family]")).toHaveCount(43);
-  await expect(page.locator("[data-fixture-state]")).toHaveCount(43);
-  const overlayTrigger = page.getByRole("button", { name: "Open Overlay" });
+  await expect(page.locator("[data-fixture-variant]")).toHaveCount(140);
+  const overlayTrigger = page
+    .locator("[data-component-family='C04'] [data-fixture-variant='dialog']")
+    .getByRole("button", { name: "Open Overlay" });
   await overlayTrigger.click();
   await expect(page.getByRole("dialog", { name: "Overlay" })).toBeVisible();
   await page.keyboard.press("Escape");
