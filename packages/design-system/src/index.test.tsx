@@ -71,6 +71,40 @@ describe("P04-COMPONENT-001 design system", () => {
     }
   });
 
+  it("drives C29 fault categories and C32 readiness states through their public APIs", () => {
+    const failures = componentFixtureCases.filter((fixture) => fixture.id === "C29");
+    expect(failures.map((fixture) => fixture.variant)).toEqual([
+      "identity",
+      "media",
+      "capability",
+      "transfer",
+      "storage",
+    ]);
+    for (const failure of failures) {
+      const { container, unmount } = render(failure.render());
+      expect(container.querySelector(`[data-failure-kind='${failure.variant}']`)).not.toBeNull();
+      expect(container).toHaveTextContent(failure.expectedText);
+      unmount();
+    }
+
+    const readiness = componentFixtureCases.filter((fixture) => fixture.id === "C32");
+    expect(readiness.map((fixture) => fixture.variant)).toEqual([
+      "evidence-building",
+      "not-ready",
+      "borderline",
+      "safe",
+      "ready-to-book",
+      "stale-contradicted",
+    ]);
+    const firstReadinessCase = readiness[0];
+    if (!firstReadinessCase) throw new Error("C32 needs an evidence-building fixture case");
+    const { container } = render(firstReadinessCase.render());
+    expect(container).toHaveTextContent("Written");
+    expect(container).toHaveTextContent("Oral");
+    expect(container.querySelectorAll(".gate-list > li")).toHaveLength(6);
+    expect(container).toHaveTextContent("Gate F: not met");
+  });
+
   it("allocates collision-safe field, group, and overlay identifiers", () => {
     const { container } = render(
       <>

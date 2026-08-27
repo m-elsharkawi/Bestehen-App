@@ -312,7 +312,15 @@ export function HintDisclosure() {
     </details>
   );
 }
-export function FreshCheckBanner() {
+export type FreshCheckState = "available" | "unavailable";
+export function FreshCheckBanner({ state = "available" }: { readonly state?: FreshCheckState }) {
+  if (state === "unavailable") {
+    return (
+      <SemanticCard status="system" title="Fresh check unavailable">
+        <p>A fresh check cannot be prepared right now. Your current evidence is unchanged.</p>
+      </SemanticCard>
+    );
+  }
   return (
     <SemanticCard status="positive" title="Fresh check available">
       <p>Use a new prompt without answer-bearing help.</p>
@@ -320,17 +328,36 @@ export function FreshCheckBanner() {
     </SemanticCard>
   );
 }
-export function WhatChangedSummary() {
+export type WhatChangedState = "changed" | "unchanged" | "returns_due";
+export function WhatChangedSummary({ state = "changed" }: { readonly state?: WhatChangedState }) {
+  const summary =
+    state === "changed"
+      ? [
+          "Two content points missing",
+          "All requested points present",
+          "Return tomorrow for one fresh check.",
+        ]
+      : state === "unchanged"
+        ? [
+            "Two content points missing",
+            "Two content points still need evidence",
+            "Keep the current repair plan.",
+          ]
+        : [
+            "A fresh check was recorded",
+            "A return review is due",
+            "Return today for one fresh check.",
+          ];
   return (
     <section>
       <h2>What changed</h2>
       <dl>
         <dt>Before</dt>
-        <dd>Two content points missing</dd>
+        <dd>{summary[0]}</dd>
         <dt>Now</dt>
-        <dd>All requested points present</dd>
+        <dd>{summary[1]}</dd>
       </dl>
-      <p>Return tomorrow for one fresh check.</p>
+      <p>{summary[2]}</p>
     </section>
   );
 }
@@ -350,50 +377,102 @@ export function EvidenceLabel({
     </p>
   );
 }
-export function WeaknessCard() {
+export type WeaknessState = "due" | "improving" | "stale" | "contradicted" | "empty";
+export function WeaknessCard({ state = "improving" }: { readonly state?: WeaknessState }) {
+  const detail: Record<WeaknessState, readonly [string, string]> = {
+    due: ["Due", "Review this content point today."],
+    improving: ["Improving", "Next review tomorrow."],
+    stale: ["Stale", "Fresh evidence is due before this claim is used."],
+    contradicted: ["Contradicted", "Two samples disagree; both remain visible."],
+    empty: ["No evidence yet", "Absence is not a score or rank."],
+  };
   return (
     <article className="card">
       <h2>Content-point coverage</h2>
       <p>
-        <strong>Improving</strong>
+        <strong>{detail[state][0]}</strong>
       </p>
-      <p>Next review tomorrow. No level or rank is assigned.</p>
+      <p>{detail[state][1]} No level or rank is assigned.</p>
       <a href="#weakness-detail">Open detail</a>
     </article>
   );
 }
-export function DueReviewGroup() {
+export type DueReviewState = "due" | "soon" | "later" | "empty";
+export function DueReviewGroup({ state = "due" }: { readonly state?: DueReviewState }) {
+  const group: Record<DueReviewState, readonly [string, string, string] | null> = {
+    due: ["Due now, 1", "today", "2026-08-26"],
+    soon: ["Due soon, 1", "tomorrow", "2026-08-27"],
+    later: ["Due later, 1", "next week", "2026-09-02"],
+    empty: null,
+  };
+  if (!group[state]) {
+    return (
+      <section>
+        <h2>No reviews due</h2>
+        <p>No review is due in this group.</p>
+      </section>
+    );
+  }
   return (
     <section>
-      <h2>Due now, 1</h2>
+      <h2>{group[state][0]}</h2>
       <ul>
         <li>
           <a href="#review-content-points">Content-point coverage</a>{" "}
-          <time dateTime="2026-08-26">today</time>
+          <time dateTime={group[state][2]}>{group[state][1]}</time>
         </li>
       </ul>
     </section>
   );
 }
 export const PendingBanner = ProjectionCard;
-export const SystemFailureBanner = ProjectionCard;
-export function ContradictionNotice() {
+export type SystemFailureKind = "identity" | "media" | "capability" | "transfer" | "storage";
+const systemFailureCopy: Record<SystemFailureKind, string> = {
+  identity: "Sign-in confirmation is unavailable.",
+  media: "A recording or file cannot be read.",
+  capability: "This device cannot complete the requested step.",
+  transfer: "Transfer status cannot be confirmed.",
+  storage: "Saved evidence cannot be opened.",
+};
+export function SystemFailureBanner({
+  kind,
+  projection,
+}: {
+  readonly kind: SystemFailureKind;
+  readonly projection: ProjectionCardContract;
+}) {
+  return (
+    <div data-failure-kind={kind}>
+      <ProjectionCard projection={projection} />
+      <p>{systemFailureCopy[kind]}</p>
+    </div>
+  );
+}
+export type ContradictionState = "new" | "under_review" | "resolved";
+export function ContradictionNotice({ state = "new" }: { readonly state?: ContradictionState }) {
+  const copy: Record<ContradictionState, string> = {
+    new: "A recent fresh check conflicts with an earlier sample. Both remain visible while the affected Writing claim is reviewed.",
+    under_review:
+      "The conflicting samples remain visible while the affected Writing claim is under review.",
+    resolved: "The review is resolved; the retained evidence and decision remain visible.",
+  };
   return (
     <SemanticCard status="attention" title="Evidence needs review">
-      <p>
-        A recent fresh check conflicts with an earlier sample. Both remain visible while the
-        affected Writing claim is reviewed.
-      </p>
+      <p>{copy[state]}</p>
     </SemanticCard>
   );
 }
-export function StaleEvidenceNotice() {
+export type StaleEvidenceState = "stale" | "due" | "scheduled";
+export function StaleEvidenceNotice({ state = "stale" }: { readonly state?: StaleEvidenceState }) {
+  const copy: Record<StaleEvidenceState, string> = {
+    stale:
+      "The current sample is older than the accepted window. Recheck Writing before using this claim.",
+    due: "Fresh evidence is due before this Writing claim can support readiness.",
+    scheduled: "A fresh Writing check is scheduled; the current claim remains stale until then.",
+  };
   return (
     <SemanticCard status="system" title="Fresh evidence due">
-      <p>
-        The current sample is older than the accepted window. Recheck Writing before using this
-        claim.
-      </p>
+      <p>{copy[state]}</p>
       <Action label="Schedule recheck" />
     </SemanticCard>
   );
@@ -472,7 +551,16 @@ export function ReadinessEvidence({ state, written, oral, gates }: ReadinessEvid
     </section>
   );
 }
-export function ChangeTimeline() {
+export type ChangeTimelineState = "events" | "empty";
+export function ChangeTimeline({ state = "events" }: { readonly state?: ChangeTimelineState }) {
+  if (state === "empty") {
+    return (
+      <section>
+        <h2>Evidence changes</h2>
+        <p>No evidence changes have been recorded.</p>
+      </section>
+    );
+  }
   return (
     <section>
       <h2>Evidence changes</h2>
@@ -488,11 +576,17 @@ export function ChangeTimeline() {
     </section>
   );
 }
-export function MilestoneRow() {
+export type MilestoneState = "achieved" | "current" | "upcoming" | "withdrawn";
+export function MilestoneRow({ state = "current" }: { readonly state?: MilestoneState }) {
+  const copy: Record<MilestoneState, string> = {
+    achieved: "Achieved: Direct B1 Writing sample retained",
+    current: "Current: Direct B1 Writing sample recorded",
+    upcoming: "Upcoming: Direct B1 Writing sample planned",
+    withdrawn: "Withdrawn: Direct B1 Writing sample is no longer used",
+  };
   return (
     <p>
-      <strong>Current:</strong> Direct B1 Writing sample recorded{" "}
-      <time dateTime="2026-08-26">26 August</time>.
+      <strong>{copy[state]}</strong> <time dateTime="2026-08-26">26 August</time>.
     </p>
   );
 }
@@ -963,7 +1057,7 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     variants: ["identity", "media", "capability", "transfer", "storage"],
     selector: "[data-status='attention']",
     expectedText: "Writing",
-    render: () => <SystemFailureBanner projection={projection} />,
+    render: () => <SystemFailureBanner kind="identity" projection={projection} />,
   },
   {
     id: "C30",
@@ -981,7 +1075,14 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   },
   {
     id: "C32",
-    variants: ["six-readiness-states", "gates-a-f", "written-oral"],
+    variants: [
+      "evidence-building",
+      "not-ready",
+      "borderline",
+      "safe",
+      "ready-to-book",
+      "stale-contradicted",
+    ],
     selector: "table",
     expectedText: "Readiness evidence",
     render: () => (
@@ -1094,6 +1195,12 @@ function fixtureProjection(state: ProjectionCardContract["state"]): ProjectionCa
   };
 }
 
+const fixtureGates: ReadinessEvidenceProps["gates"] = ["A", "B", "C", "D", "E", "F"].map((id) => ({
+  id: id as "A" | "B" | "C" | "D" | "E" | "F",
+  met: id === "A",
+  reason: id === "A" ? "Fixture evidence is current." : "Fixture evidence is required.",
+}));
+
 function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string): ReactNode {
   switch (fixture.id) {
     case "C08":
@@ -1126,6 +1233,14 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
           validity="interrupted"
         />
       );
+    case "C23":
+      return <FreshCheckBanner state={variant as FreshCheckState} />;
+    case "C24":
+      return <WhatChangedSummary state={variant.replaceAll("-", "_") as WhatChangedState} />;
+    case "C26":
+      return <WeaknessCard state={variant as WeaknessState} />;
+    case "C27":
+      return <DueReviewGroup state={variant as DueReviewState} />;
     case "C28":
       return (
         <PendingBanner
@@ -1135,14 +1250,29 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
         />
       );
     case "C29":
-      return <SystemFailureBanner projection={fixtureProjection("unavailable")} />;
+      return (
+        <SystemFailureBanner
+          kind={variant as SystemFailureKind}
+          projection={fixtureProjection("unavailable")}
+        />
+      );
+    case "C30":
+      return <ContradictionNotice state={variant.replaceAll("-", "_") as ContradictionState} />;
+    case "C31":
+      return <StaleEvidenceNotice state={variant as StaleEvidenceState} />;
     case "C32":
       return (
         <ReadinessEvidence
-          gates={[]}
-          state={variant === "six-readiness-states" ? "evidence_building" : "not_ready"}
+          gates={fixtureGates}
+          oral={64}
+          state={variant.replaceAll("-", "_") as ReadinessEvidenceProps["state"]}
+          written={65}
         />
       );
+    case "C33":
+      return <ChangeTimeline state={variant as ChangeTimelineState} />;
+    case "C34":
+      return <MilestoneRow state={variant as MilestoneState} />;
     case "C42":
       return (
         <SessionNotice
@@ -1181,6 +1311,40 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
       selector: variant === "select" ? "select" : "input",
     };
   }
+  if (fixture.id === "C23") {
+    return {
+      expectedText: variant === "available" ? "Fresh check available" : "Fresh check unavailable",
+      selector: ".card",
+    };
+  }
+  if (fixture.id === "C24") {
+    return {
+      expectedText:
+        variant === "changed"
+          ? "All requested points present"
+          : variant === "unchanged"
+            ? "still need evidence"
+            : "return review is due",
+      selector: "section",
+    };
+  }
+  if (fixture.id === "C26") {
+    const text: Record<WeaknessState, string> = {
+      due: "Due",
+      improving: "Improving",
+      stale: "Stale",
+      contradicted: "Contradicted",
+      empty: "No evidence yet",
+    };
+    return { expectedText: text[variant as WeaknessState], selector: ".card" };
+  }
+  if (fixture.id === "C27") {
+    return {
+      expectedText:
+        variant === "empty" ? "No reviews due" : variant === "due" ? "Due now" : `Due ${variant}`,
+      selector: "section",
+    };
+  }
   if (fixture.id === "C28") {
     return { expectedText: variant.replaceAll("-", " "), selector: "[data-status]" };
   }
@@ -1189,8 +1353,47 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
       variant === "outcome" ? "valid" : variant === "validity" ? "partially valid" : "partial";
     return { expectedText: `Fixture ${state}`, selector: "[data-source-release]" };
   }
-  if (fixture.id === "C29")
-    return { expectedText: "Fixture unavailable", selector: "[data-source-release]" };
+  if (fixture.id === "C29") {
+    const text: Record<SystemFailureKind, string> = {
+      identity: "Sign-in confirmation",
+      media: "recording or file",
+      capability: "device cannot",
+      transfer: "Transfer status",
+      storage: "Saved evidence",
+    };
+    return {
+      expectedText: text[variant as SystemFailureKind],
+      selector: `[data-failure-kind='${variant}']`,
+    };
+  }
+  if (fixture.id === "C30") {
+    return {
+      expectedText:
+        variant === "new" ? "recent fresh check conflicts" : variant.replaceAll("-", " "),
+      selector: ".card",
+    };
+  }
+  if (fixture.id === "C31") {
+    return {
+      expectedText: variant === "stale" ? "older than" : variant === "due" ? "is due" : "scheduled",
+      selector: ".card",
+    };
+  }
+  if (fixture.id === "C32") {
+    return { expectedText: variant.replaceAll("-", " "), selector: ".readiness-evidence" };
+  }
+  if (fixture.id === "C33") {
+    return {
+      expectedText: variant === "events" ? "Fresh Writing sample" : "No evidence changes",
+      selector: "section",
+    };
+  }
+  if (fixture.id === "C34") {
+    return {
+      expectedText: `${variant.charAt(0).toUpperCase()}${variant.slice(1)}:`,
+      selector: "p",
+    };
+  }
   if (fixture.id === "C42") {
     return {
       expectedText: variant === "access-denied" ? "cannot open" : "sign in",

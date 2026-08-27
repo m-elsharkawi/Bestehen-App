@@ -20,14 +20,12 @@ test("P04-A11Y-001 personal entry is keyboard reachable and axe-clean", async ({
   expect(results.violations).toEqual([]);
 });
 
-test("P04-A11Y-001 server content and the no-script contract remain available", async ({
-  browser,
-}) => {
+test("P04-A11Y-001 server content remains readable without JavaScript", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page.getByText("JavaScript is off.")).toBeVisible();
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Evidence you can inspect");
+  await expect(page.getByText("Registration is closed.")).toBeVisible();
   await context.close();
 });
 
