@@ -17,18 +17,21 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
   for (const [name, path, width, height, theme] of anchors) {
     await page.setViewportSize({ width, height });
     await page.goto(path);
+    await page.addStyleTag({
+      content: `
+        *, *::before, *::after {
+          -webkit-font-smoothing: antialiased;
+          text-rendering: geometricPrecision;
+        }
+      `,
+    });
     await page.evaluate((selected) => {
       document.documentElement.dataset.theme = selected;
     }, theme);
-    const snapshotName =
-      process.platform === "linux" && name === "coach-390-light"
-        ? "coach-390-light-linux.png"
-        : `${name}.png`;
-    await expect(page).toHaveScreenshot(snapshotName, {
+    await expect(page).toHaveScreenshot(`${name}.png`, {
       animations: "disabled",
       fullPage: true,
-      // The exact Linux Chromium raster is tracked separately for this compact anchor.
-      // Semantic and responsive checks remain authoritative across platforms.
+      // Self-hosted font hinting differs across macOS and Linux; semantic tests remain authoritative.
       maxDiffPixelRatio: 0.02,
     });
   }
