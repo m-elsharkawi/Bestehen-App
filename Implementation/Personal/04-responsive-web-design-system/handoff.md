@@ -1,6 +1,6 @@
 # Personal Stage 04 execution handoff
 
-Date: 2026-08-26 (Europe/Berlin)
+Date: 2026-08-27 (Europe/Berlin)
 
 Status: `04E` repository execution candidate for independent review. It is not
 accepted, merged, deployed, staged, or live-verified.
@@ -83,6 +83,9 @@ processor, or Stage 05 work was added.
   visual threshold, and source/target/executable-test manifest validation.
 - `3e7d0838a8dc2f33f55696948783b1bbcb06fa36` completes the responsive large-text
   reflow repair and cross-browser native-modal containment proof.
+- `a6b89fc78f3bd7f1cb3a330e243f976c9c3a41ee` restores the non-overlapping compact
+  theme-control position after inspecting the failed Linux 390px visual artifact;
+  this keeps the Account link visible at the unchanged two-percent visual limit.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
@@ -94,7 +97,7 @@ Local deterministic checks used the repository-pinned Node `24.19.0`, pnpm
 `11.23.0`, Playwright `1.62.1`, and macOS arm64. Provider adapters stayed fake and
 external provider calls stayed disabled.
 
-- `pnpm check` passed at `3e7d0838a8dc2f33f55696948783b1bbcb06fa36` with repository-pinned
+- `pnpm check` passed at `b73660c326f1e4232e6522bcb0e0689f29ee9b6c` with repository-pinned
   Node `24.19.0` and pnpm `11.23.0`: `P04-SCOPE-001` for 80 accepted paths, preserved scope
   fixtures, `P04-COVERAGE-001`, `P04-ASSET-001`, exact-lock/runtime policy, secret
   scan, fake-provider readiness, format, lint, typecheck, package boundaries, 135
@@ -106,6 +109,13 @@ external provider calls stayed disabled.
   accepted breakpoint edge, representative 200% text reflow, 400% text reflow spot,
   portrait/landscape resize with draft/theme retention, history return, pre-paint theme
   hydration check, and native modal focus containment/Escape/focus return proof.
+- The exact-head Linux browser run `33103277759` initially failed only its
+  `coach-390-light` visual comparison: the image inspection showed that a repaired
+  fixed theme control covered the Account link, rather than a font-raster-only
+  difference. The one-line correction in `a6b89fc78f3bd7f1cb3a330e243f976c9c3a41ee`
+  restored the non-overlapping position; the local Chromium visual suite then passed
+  all seven anchors at the unchanged two-percent threshold. Fresh exact-head CI is
+  pending for this handoff candidate.
 - `pnpm test:process` passed the web shutdown test. Two worker cases skipped because
   the local run had no integration database.
 - `pnpm test:integration` selected the three PostgreSQL cases and skipped them because
@@ -121,10 +131,9 @@ Evidence IDs map as follows:
   design-system, token, UI projection, source-manifest, facade, and component tests.
 - `P04-ROUTE-001`, `P04-A11Y-001`, `P04-RSP-001`, and `P04-SECURITY-001`:
   `apps/web/tests/p04-responsive.spec.ts` and the screen-reader script.
-- `P04-VISUAL-001`: seven platform-neutral Chromium baselines at 320, 390 light/dark,
-  768, 1024, and 1280 widths. Their two-percent cross-OS pixel tolerance covers
-  self-hosted font hinting differences; semantic and responsive checks remain
-  authoritative.
+- `P04-VISUAL-001`: seven Chromium baselines at 320, 390 light/dark, 768, 1024, and
+  1280 widths, with a maximum two-percent pixel difference. Semantic and responsive
+  checks remain authoritative; no tolerance was raised or visual case removed.
 - `P04-ASSET-001`, `P04-COVERAGE-001`, `P04-PERF-001`, and `P04-SCOPE-001`: the four
   repository checks in `scripts/` and their negative fixtures.
 
