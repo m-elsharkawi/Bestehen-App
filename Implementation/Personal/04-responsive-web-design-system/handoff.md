@@ -114,12 +114,18 @@ external provider calls stayed disabled.
   fixed theme control covered the Account link, rather than a font-raster-only
   difference. The one-line correction in `a6b89fc78f3bd7f1cb3a330e243f976c9c3a41ee`
   restored the non-overlapping position; the local Chromium visual suite then passed
-  all seven anchors at the unchanged two-percent threshold. Fresh exact-head CI is
-  pending for this handoff candidate. A subsequent exact-head Linux run `33103928671`
+  all seven anchors at the unchanged two-percent threshold. A subsequent exact-head
+  Linux run `33103928671`
   still measured a three-percent platform glyph-raster difference for that sole
   anchor, with all 48 semantic checks passing. The test now applies deterministic
   font smoothing and geometric text rendering before its screenshots; the
   two-percent cap is unchanged and no semantic or visual case was removed.
+- Exact-head runs [`33104632972`](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/33104632972)
+  and [`33104633740`](https://github.com/m-elsharkawi/Bestehen-App/actions/runs/33104633740)
+  for implementation candidate `99d0f80695bb33b6dd3729567287409a707d54e7` passed every
+  job: browser/accessibility, static/unit/build/release, OCI, PostgreSQL/process,
+  frozen policy, advisory audit, and evidence/release-manifest. This handoff-only
+  successor remains an unaccepted candidate and receives its own exact-head CI.
 - `pnpm test:process` passed the web shutdown test. Two worker cases skipped because
   the local run had no integration database.
 - `pnpm test:integration` selected the three PostgreSQL cases and skipped them because
