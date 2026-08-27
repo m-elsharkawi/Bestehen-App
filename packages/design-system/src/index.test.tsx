@@ -6,8 +6,8 @@ import {
   AppShell,
   BinaryChoice,
   ComponentGallery,
+  componentFixtureCases,
   componentFamilies,
-  componentFixtureRegistry,
   DraftConflict,
   EvidenceLabel,
   Field,
@@ -52,12 +52,12 @@ describe("P04-COMPONENT-001 design system", () => {
   });
 
   it("renders every closed family contract through its real export", () => {
-    expect(componentFixtureRegistry).toHaveLength(43);
-    for (const fixture of componentFixtureRegistry) {
+    expect(componentFixtureCases).toHaveLength(43);
+    for (const fixture of componentFixtureCases) {
       const { container, unmount } = render(<div>{fixture.render()}</div>);
       expect(container.querySelector(fixture.selector), fixture.id).not.toBeNull();
       expect(container, fixture.id).toHaveTextContent(fixture.expectedText);
-      expect(fixture.variants.length, fixture.id).toBeGreaterThan(0);
+      expect(fixture.variants, fixture.id).toContain(fixture.state);
       unmount();
     }
   });

@@ -13,3 +13,10 @@ describe("P04-ROUTE-001 held destination", () => {
     expect(safeHeldDestination(["coach"])).toBe("/coach");
   });
 });
+
+describe("P04-COMPAT-001 Stage 03-safe presentation seam", () => {
+  it("keeps the closed held-destination mapper independent of route identifiers", () => {
+    expect(safeHeldDestination("coach")).toBe("/coach");
+    expect(safeHeldDestination("/attempt/opaque-stage-03-id")).toBe("/coach");
+  });
+});

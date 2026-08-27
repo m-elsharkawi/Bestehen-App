@@ -89,6 +89,8 @@ export interface CoverageRow {
   readonly source: string;
   readonly anchor: string;
   readonly target: string;
+  /** A concrete symbol, selector, or test declaration in the implementation target. */
+  readonly targetAnchor: string;
   readonly tests: readonly (typeof p04CheckIds)[number][];
   readonly status: CoverageStatus;
   readonly resolution: string;
@@ -108,6 +110,7 @@ const originalCompactFrames: CoverageRow[] = originalGroups.flatMap(
       source: "Design/Bestehen-02-Mobile-Screens.dc.html",
       anchor: `${group}.${index + 1}`,
       target: "apps/web/src/ui/archetypes.tsx",
+      targetAnchor: "StateView",
       tests: ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       status,
       resolution,
@@ -119,6 +122,7 @@ const deltaCompactFrames: CoverageRow[] = Array.from({ length: 15 }, (_, index) 
   source: "Design/Bestehen-06-Critical-View-Deltas.dc.html",
   anchor: `6.${index + 1}`,
   target: "apps/web/src/ui/archetypes.tsx",
+  targetAnchor: "StateView",
   tests: ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
   status: index < 2 || index === 3 || index > 9 ? "corrected" : "accepted",
   resolution: "Architecture-owned critical state rendered through the shared shell and components",
@@ -142,6 +146,7 @@ export const largeExemplars: readonly CoverageRow[] = [
     : "Design/Bestehen-06-Critical-View-Deltas.dc.html",
   anchor,
   target: "apps/web/src/ui/archetypes.tsx",
+  targetAnchor: "StateView",
   tests: ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
   status: anchor === "V7" ? "corrected" : "accepted",
   resolution:
@@ -204,7 +209,10 @@ const correctedBoards = new Set([
   "06-v8",
 ]);
 const derivedBoards = new Set(["03-d6", "04-f", "04-h", "05-u0", "06-v0", "06-v9"]);
-const boardChecks: Record<(typeof boardAnchorIds)[number], readonly (typeof p04CheckIds)[number][]> = {
+const boardChecks: Record<
+  (typeof boardAnchorIds)[number],
+  readonly (typeof p04CheckIds)[number][]
+> = {
   "01-s00": ["P04-COVERAGE-001", "P04-SEMANTIC-001"],
   "01-s01": ["P04-TOKEN-001", "P04-ASSET-001", "P04-RSP-001"],
   "01-s02": ["P04-COVERAGE-001", "P04-COMPONENT-001", "P04-A11Y-001"],
@@ -255,6 +263,14 @@ export const boardAnchors: readonly CoverageRow[] = boardAnchorIds.map((id) => (
         : id.startsWith("04")
           ? "apps/web/tests/p04-responsive.spec.ts"
           : "apps/web/src/ui/archetypes.tsx",
+  targetAnchor:
+    id === "01-s01"
+      ? ":root"
+      : id === "04-c" || id === "05-u0"
+        ? "sourceAnchorManifest"
+        : id.startsWith("04")
+          ? "test("
+          : "StateView",
   tests: boardChecks[id],
   status: correctedBoards.has(id) ? "corrected" : derivedBoards.has(id) ? "derived" : "accepted",
   resolution: correctedBoards.has(id)
@@ -267,13 +283,14 @@ export const boardAnchors: readonly CoverageRow[] = boardAnchorIds.map((id) => (
 export const componentRows: readonly CoverageRow[] = componentFamilies.map(([id, name]) => ({
   id,
   source: "Implementation/Personal/04-responsive-web-design-system/plan.md",
-  anchor: `component-${id}`,
+  anchor: id,
   target:
     id <= "C03"
       ? "packages/design-system/src/shells.tsx"
       : id === "C04"
         ? "packages/design-system/src/overlay.tsx"
         : "packages/design-system/src/components.tsx",
+  targetAnchor: name,
   tests: ["P04-COMPONENT-001", "P04-A11Y-001"],
   status: "accepted",
   resolution: `${name} closed fixture registry entry`,
@@ -281,9 +298,10 @@ export const componentRows: readonly CoverageRow[] = componentFamilies.map(([id,
 
 export const iconRows: readonly CoverageRow[] = iconRegistry.map(([id, name]) => ({
   id,
-  source: "Design/Bestehen-01-Design-System.dc.html",
-  anchor: name,
+  source: "Implementation/Personal/04-responsive-web-design-system/plan.md",
+  anchor: id,
   target: "packages/design-system/src/icons.tsx",
+  targetAnchor: name,
   tests: ["P04-ASSET-001", "P04-COMPONENT-001"],
   status: "accepted",
   resolution: "Closed local Lucide geometry registry",

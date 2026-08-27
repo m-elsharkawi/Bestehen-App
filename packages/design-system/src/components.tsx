@@ -56,11 +56,14 @@ export function BinaryChoice({ legend = "Choose an option" }: { readonly legend?
 export function Field({
   label = "Response",
   error,
+  id: explicitId,
 }: {
   readonly label?: string;
   readonly error?: string;
+  readonly id?: string;
 }) {
-  const id = useId();
+  const generatedId = useId();
+  const id = explicitId ?? generatedId;
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
@@ -114,15 +117,21 @@ export function ReorderList() {
     </section>
   );
 }
-export function FormFeedback({ errors }: { readonly errors: readonly string[] }) {
+export type FormError = string | { readonly message: string; readonly href: `#${string}` };
+export function FormFeedback({ errors }: { readonly errors: readonly FormError[] }) {
   const headingId = useId();
   return (
     <section aria-labelledby={headingId} className="error-summary" tabIndex={-1}>
       <h2 id={headingId}>Check your answers</h2>
       <ul>
-        {errors.map((error) => (
-          <li key={error}>{error}</li>
-        ))}
+        {errors.map((error) => {
+          const message = typeof error === "string" ? error : error.message;
+          return (
+            <li key={message}>
+              {typeof error === "string" ? message : <a href={error.href}>{message}</a>}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -655,6 +664,11 @@ export interface ComponentFixtureContract {
   readonly render: () => ReactNode;
 }
 
+/** A gallery case names the concrete state rendered through the family's public API. */
+export interface ComponentFixtureCase extends ComponentFixtureContract {
+  readonly state: string;
+}
+
 export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   {
     id: "C01",
@@ -685,8 +699,8 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     id: "C04",
     variants: ["sheet", "dialog", "destructive-confirm"],
     selector: "dialog",
-    expectedText: "Review details",
-    render: () => <Overlay />,
+    expectedText: "Overlay",
+    render: () => <Overlay title="Overlay" />,
   },
   {
     id: "C05",
@@ -980,11 +994,61 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   },
 ] as const;
 
+const renderedStateByFamily: Record<(typeof componentFamilies)[number][0], string> = {
+  C01: "protected",
+  C02: "stickyActionBar",
+  C03: "measuredTimer",
+  C04: "dialog",
+  C05: "stepper",
+  C06: "disabled",
+  C07: "link",
+  C08: "segmented",
+  C09: "radio",
+  C10: "invalid",
+  C11: "single",
+  C12: "select-place",
+  C13: "input",
+  C14: "move",
+  C15: "errorSummary",
+  C16: "whyThisDisclosure",
+  C17: "standard",
+  C18: "plan",
+  C19: "partial",
+  C20: "excerpt",
+  C21: "pattern",
+  C22: "closed",
+  C23: "available",
+  C24: "changed",
+  C25: "practice-only",
+  C26: "due",
+  C27: "due",
+  C28: "pending",
+  C29: "capability",
+  C30: "under-review",
+  C31: "due",
+  C32: "gates-a-f",
+  C33: "events",
+  C34: "current",
+  C35: "comparison",
+  C36: "expanded",
+  C37: "questionList",
+  C38: "gap",
+  C39: "audioPlayer",
+  C40: "editor",
+  C41: "preflight",
+  C42: "expired-mid-attempt",
+  C43: "sending",
+};
+
+export const componentFixtureCases: readonly ComponentFixtureCase[] = componentFixtureRegistry.map(
+  (fixture) => ({ ...fixture, state: renderedStateByFamily[fixture.id] }),
+);
+
 export function ComponentGallery() {
   return (
     <div className="component-gallery">
       {componentFamilies.map(([id, name]) => {
-        const fixture = componentFixtureRegistry.find((entry) => entry.id === id);
+        const fixture = componentFixtureCases.find((entry) => entry.id === id);
         if (!fixture) throw new Error(`Missing component fixture ${id}`);
         return (
           <section className="gallery-item" data-component-family={id} id={`family-${id}`} key={id}>
@@ -992,7 +1056,12 @@ export function ComponentGallery() {
               {id} {name}
             </h2>
             <p className="eyebrow">{id}</p>
-            <div data-fixture-variants={fixture.variants.join(" ")}>{fixture.render()}</div>
+            <div
+              data-fixture-state={fixture.state}
+              data-fixture-variants={fixture.variants.join(" ")}
+            >
+              {fixture.render()}
+            </div>
           </section>
         );
       })}

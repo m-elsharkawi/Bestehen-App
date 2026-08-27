@@ -1,5 +1,6 @@
 import "@bestehen/design-system/styles.css";
 import type { Metadata } from "next";
+import Script from "next/script";
 import type { ReactNode } from "react";
 import { ThemeController } from "../ui/theme-controller";
 
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
         {children}
         <ThemeController />
       </body>

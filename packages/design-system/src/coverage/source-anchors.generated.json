@@ -13,10 +13,8 @@
       "source": "Design/Bestehen-01-Design-System.dc.html",
       "anchor": "s00",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COVERAGE-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COVERAGE-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -25,11 +23,8 @@
       "source": "Design/Bestehen-01-Design-System.dc.html",
       "anchor": "s01",
       "target": "packages/design-system/src/tokens.css",
-      "tests": [
-        "P04-TOKEN-001",
-        "P04-ASSET-001",
-        "P04-RSP-001"
-      ],
+      "targetAnchor": ":root",
+      "tests": ["P04-TOKEN-001", "P04-ASSET-001", "P04-RSP-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -38,11 +33,8 @@
       "source": "Design/Bestehen-01-Design-System.dc.html",
       "anchor": "s02",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COVERAGE-001",
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COVERAGE-001", "P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -51,10 +43,8 @@
       "source": "Design/Bestehen-01-Design-System.dc.html",
       "anchor": "s03",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SEMANTIC-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SEMANTIC-001", "P04-A11Y-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -63,11 +53,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "a1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-SEMANTIC-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-SEMANTIC-001", "P04-VISUAL-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -76,11 +63,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "a2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-ROUTE-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-ROUTE-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -89,11 +73,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "a3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001",
-        "P04-RSP-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001", "P04-RSP-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -102,11 +83,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "a4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SEMANTIC-001",
-        "P04-COMPONENT-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SEMANTIC-001", "P04-COMPONENT-001", "P04-VISUAL-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -115,11 +93,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "a5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SEMANTIC-001",
-        "P04-A11Y-001",
-        "P04-SECURITY-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SEMANTIC-001", "P04-A11Y-001", "P04-SECURITY-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -128,10 +103,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "d1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -140,11 +113,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "d2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-A11Y-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-A11Y-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -153,11 +123,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "d3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-COMPONENT-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-COMPONENT-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -166,11 +133,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "d4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-PERF-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-PERF-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -179,11 +143,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "d5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-A11Y-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-A11Y-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -192,10 +153,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "d6",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-A11Y-001"],
       "status": "derived",
       "resolution": "Rule or composition maps to shared implementation rather than a separate route"
     },
@@ -204,10 +163,8 @@
       "source": "Design/Bestehen-04-Flows-Handoff.dc.html",
       "anchor": "f",
       "target": "apps/web/tests/p04-responsive.spec.ts",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "test(",
+      "tests": ["P04-ROUTE-001", "P04-SEMANTIC-001"],
       "status": "derived",
       "resolution": "Rule or composition maps to shared implementation rather than a separate route"
     },
@@ -216,10 +173,8 @@
       "source": "Design/Bestehen-04-Flows-Handoff.dc.html",
       "anchor": "a",
       "target": "apps/web/tests/p04-responsive.spec.ts",
-      "tests": [
-        "P04-A11Y-001",
-        "P04-RSP-001"
-      ],
+      "targetAnchor": "test(",
+      "tests": ["P04-A11Y-001", "P04-RSP-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -228,10 +183,8 @@
       "source": "Design/Bestehen-04-Flows-Handoff.dc.html",
       "anchor": "c",
       "target": "packages/design-system/src/coverage/source-anchors.ts",
-      "tests": [
-        "P04-COVERAGE-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "sourceAnchorManifest",
+      "tests": ["P04-COVERAGE-001", "P04-VISUAL-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -240,10 +193,8 @@
       "source": "Design/Bestehen-04-Flows-Handoff.dc.html",
       "anchor": "h",
       "target": "apps/web/tests/p04-responsive.spec.ts",
-      "tests": [
-        "P04-SCOPE-001",
-        "P04-COMPAT-001"
-      ],
+      "targetAnchor": "test(",
+      "tests": ["P04-SCOPE-001", "P04-COMPAT-001"],
       "status": "derived",
       "resolution": "Rule or composition maps to shared implementation rather than a separate route"
     },
@@ -252,10 +203,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u0",
       "target": "packages/design-system/src/coverage/source-anchors.ts",
-      "tests": [
-        "P04-SCOPE-001",
-        "P04-COVERAGE-001"
-      ],
+      "targetAnchor": "sourceAnchorManifest",
+      "tests": ["P04-SCOPE-001", "P04-COVERAGE-001"],
       "status": "derived",
       "resolution": "Rule or composition maps to shared implementation rather than a separate route"
     },
@@ -264,11 +213,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-ROUTE-001",
-        "P04-RSP-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-ROUTE-001", "P04-RSP-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -277,11 +223,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -290,11 +233,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-SEMANTIC-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-SEMANTIC-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -303,11 +243,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001",
-        "P04-SECURITY-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001", "P04-SECURITY-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -316,10 +253,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SEMANTIC-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SEMANTIC-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -328,10 +263,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u6",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -340,10 +273,8 @@
       "source": "Design/Bestehen-05-UI-Foundation-Delta.dc.html",
       "anchor": "u7",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-A11Y-001",
-        "P04-RSP-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-A11Y-001", "P04-RSP-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -352,10 +283,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v0",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SCOPE-001",
-        "P04-COVERAGE-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SCOPE-001", "P04-COVERAGE-001"],
       "status": "derived",
       "resolution": "Rule or composition maps to shared implementation rather than a separate route"
     },
@@ -364,11 +293,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-A11Y-001",
-        "P04-SECURITY-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-A11Y-001", "P04-SECURITY-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -377,11 +303,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SEMANTIC-001",
-        "P04-SECURITY-001",
-        "P04-COMPAT-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SEMANTIC-001", "P04-SECURITY-001", "P04-COMPAT-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -390,11 +313,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -403,11 +323,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001", "P04-VISUAL-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -416,11 +333,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001",
-        "P04-SECURITY-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001", "P04-SECURITY-001"],
       "status": "accepted",
       "resolution": "Accepted presentation contract"
     },
@@ -429,10 +343,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v6",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SEMANTIC-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SEMANTIC-001", "P04-COMPONENT-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -441,11 +353,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v7",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-SEMANTIC-001",
-        "P04-A11Y-001",
-        "P04-VISUAL-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-SEMANTIC-001", "P04-A11Y-001", "P04-VISUAL-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -454,11 +363,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v8",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-SEMANTIC-001",
-        "P04-RSP-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-SEMANTIC-001", "P04-RSP-001"],
       "status": "corrected",
       "resolution": "Architecture-owned state and copy replace the named stale Design contract"
     },
@@ -467,11 +373,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "v9",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COVERAGE-001",
-        "P04-SEMANTIC-001",
-        "P04-COMPAT-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COVERAGE-001", "P04-SEMANTIC-001", "P04-COMPAT-001"],
       "status": "derived",
       "resolution": "Rule or composition maps to shared implementation rather than a separate route"
     }
@@ -482,11 +385,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "1.1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "bare entry, goal, foundation route, and result"
     },
@@ -495,11 +395,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "1.2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "bare entry, goal, foundation route, and result"
     },
@@ -508,11 +405,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "1.3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "bare entry, goal, foundation route, and result"
     },
@@ -521,11 +415,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "1.4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "bare entry, goal, foundation route, and result"
     },
@@ -534,11 +425,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "2.1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "App shell and shared attempt, result, and repair flow"
     },
@@ -547,11 +435,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "2.2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "App shell and shared attempt, result, and repair flow"
     },
@@ -560,11 +445,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "2.3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "App shell and shared attempt, result, and repair flow"
     },
@@ -573,11 +455,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "2.4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "App shell and shared attempt, result, and repair flow"
     },
@@ -586,11 +465,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "2.5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "App shell and shared attempt, result, and repair flow"
     },
@@ -599,11 +475,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "2.6",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "App shell and shared attempt, result, and repair flow"
     },
@@ -612,11 +485,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "3.1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "five typed skill regions in the shared shell"
     },
@@ -625,11 +495,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "3.2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "five typed skill regions in the shared shell"
     },
@@ -638,11 +505,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "3.3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "five typed skill regions in the shared shell"
     },
@@ -651,11 +515,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "3.4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "five typed skill regions in the shared shell"
     },
@@ -664,11 +525,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "4.1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "protected destinations, mock shells, and Gates A through F"
     },
@@ -677,11 +535,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "4.2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "protected destinations, mock shells, and Gates A through F"
     },
@@ -690,11 +545,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "4.3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "protected destinations, mock shells, and Gates A through F"
     },
@@ -703,11 +555,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "4.4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "protected destinations, mock shells, and Gates A through F"
     },
@@ -716,11 +565,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "4.5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "protected destinations, mock shells, and Gates A through F"
     },
@@ -729,11 +575,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "4.6",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "protected destinations, mock shells, and Gates A through F"
     },
@@ -742,11 +585,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "5.1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "architecture-owned recovery, interruption, and data-rights states"
     },
@@ -755,11 +595,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "5.2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "architecture-owned recovery, interruption, and data-rights states"
     },
@@ -768,11 +605,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "5.3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "architecture-owned recovery, interruption, and data-rights states"
     },
@@ -781,11 +615,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "5.4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "architecture-owned recovery, interruption, and data-rights states"
     },
@@ -794,11 +625,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "5.5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "architecture-owned recovery, interruption, and data-rights states"
     },
@@ -807,11 +635,8 @@
       "source": "Design/Bestehen-02-Mobile-Screens.dc.html",
       "anchor": "5.6",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-ROUTE-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "architecture-owned recovery, interruption, and data-rights states"
     },
@@ -820,11 +645,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -833,11 +655,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -846,11 +665,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -859,11 +675,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -872,11 +685,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -885,11 +695,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.6",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -898,11 +705,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.7",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -911,11 +715,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.8",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -924,11 +725,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.9",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -937,11 +735,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.10",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "accepted",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -950,11 +745,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.11",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -963,11 +755,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.12",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -976,11 +765,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.13",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -989,11 +775,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.14",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     },
@@ -1002,11 +785,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "6.15",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-RSP-001",
-        "P04-SEMANTIC-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
       "status": "corrected",
       "resolution": "Architecture-owned critical state rendered through the shared shell and components"
     }
@@ -1017,11 +797,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "D1",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Shared responsive archetype"
     },
@@ -1030,11 +807,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "D2",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Shared responsive archetype"
     },
@@ -1043,11 +817,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "D3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Shared responsive archetype"
     },
@@ -1056,11 +827,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "D4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Shared responsive archetype"
     },
@@ -1069,11 +837,8 @@
       "source": "Design/Bestehen-03-Desktop-Responsive.dc.html",
       "anchor": "D5",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Shared responsive archetype"
     },
@@ -1082,11 +847,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "V3",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Shared responsive archetype"
     },
@@ -1095,11 +857,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "V4",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Shared responsive archetype"
     },
@@ -1108,11 +867,8 @@
       "source": "Design/Bestehen-06-Critical-View-Deltas.dc.html",
       "anchor": "V7",
       "target": "apps/web/src/ui/archetypes.tsx",
-      "tests": [
-        "P04-RSP-001",
-        "P04-VISUAL-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StateView",
+      "tests": ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
       "status": "corrected",
       "resolution": "Gates A through F replace the obsolete four-row gate list"
     }
@@ -1121,516 +877,430 @@
     {
       "id": "C01",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C01",
+      "anchor": "C01",
       "target": "packages/design-system/src/shells.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "AppShell",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "AppShell closed fixture registry entry"
     },
     {
       "id": "C02",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C02",
+      "anchor": "C02",
       "target": "packages/design-system/src/shells.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "AttemptShell",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "AttemptShell closed fixture registry entry"
     },
     {
       "id": "C03",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C03",
+      "anchor": "C03",
       "target": "packages/design-system/src/shells.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "MockShell",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "MockShell closed fixture registry entry"
     },
     {
       "id": "C04",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C04",
+      "anchor": "C04",
       "target": "packages/design-system/src/overlay.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "Overlay",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Overlay closed fixture registry entry"
     },
     {
       "id": "C05",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C05",
+      "anchor": "C05",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "Sequence",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Sequence closed fixture registry entry"
     },
     {
       "id": "C06",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C06",
+      "anchor": "C06",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "Button",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Button closed fixture registry entry"
     },
     {
       "id": "C07",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C07",
+      "anchor": "C07",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "InlineAction",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "InlineAction closed fixture registry entry"
     },
     {
       "id": "C08",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C08",
+      "anchor": "C08",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ChoiceNav",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ChoiceNav closed fixture registry entry"
     },
     {
       "id": "C09",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C09",
+      "anchor": "C09",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "BinaryChoice",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "BinaryChoice closed fixture registry entry"
     },
     {
       "id": "C10",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C10",
+      "anchor": "C10",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "Field",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Field closed fixture registry entry"
     },
     {
       "id": "C11",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C11",
+      "anchor": "C11",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "AnswerChoice",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "AnswerChoice closed fixture registry entry"
     },
     {
       "id": "C12",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C12",
+      "anchor": "C12",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "MatchingPair",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "MatchingPair closed fixture registry entry"
     },
     {
       "id": "C13",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C13",
+      "anchor": "C13",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ClozeGap",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ClozeGap closed fixture registry entry"
     },
     {
       "id": "C14",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C14",
+      "anchor": "C14",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ReorderList",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ReorderList closed fixture registry entry"
     },
     {
       "id": "C15",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C15",
+      "anchor": "C15",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "FormFeedback",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "FormFeedback closed fixture registry entry"
     },
     {
       "id": "C16",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C16",
+      "anchor": "C16",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "Recommendation",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "Recommendation closed fixture registry entry"
     },
     {
       "id": "C17",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C17",
+      "anchor": "C17",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "SessionDurationPicker",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "SessionDurationPicker closed fixture registry entry"
     },
     {
       "id": "C18",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C18",
+      "anchor": "C18",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "CoachMessage",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "CoachMessage closed fixture registry entry"
     },
     {
       "id": "C19",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C19",
+      "anchor": "C19",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ResultCard",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ResultCard closed fixture registry entry"
     },
     {
       "id": "C20",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C20",
+      "anchor": "C20",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "DecisiveEvidence",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "DecisiveEvidence closed fixture registry entry"
     },
     {
       "id": "C21",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C21",
+      "anchor": "C21",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "RepairCard",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "RepairCard closed fixture registry entry"
     },
     {
       "id": "C22",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C22",
+      "anchor": "C22",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "HintDisclosure",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "HintDisclosure closed fixture registry entry"
     },
     {
       "id": "C23",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C23",
+      "anchor": "C23",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "FreshCheckBanner",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "FreshCheckBanner closed fixture registry entry"
     },
     {
       "id": "C24",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C24",
+      "anchor": "C24",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "WhatChangedSummary",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "WhatChangedSummary closed fixture registry entry"
     },
     {
       "id": "C25",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C25",
+      "anchor": "C25",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "EvidenceLabel",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "EvidenceLabel closed fixture registry entry"
     },
     {
       "id": "C26",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C26",
+      "anchor": "C26",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "WeaknessCard",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "WeaknessCard closed fixture registry entry"
     },
     {
       "id": "C27",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C27",
+      "anchor": "C27",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "DueReviewGroup",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "DueReviewGroup closed fixture registry entry"
     },
     {
       "id": "C28",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C28",
+      "anchor": "C28",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "PendingBanner",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "PendingBanner closed fixture registry entry"
     },
     {
       "id": "C29",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C29",
+      "anchor": "C29",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "SystemFailureBanner",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "SystemFailureBanner closed fixture registry entry"
     },
     {
       "id": "C30",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C30",
+      "anchor": "C30",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ContradictionNotice",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ContradictionNotice closed fixture registry entry"
     },
     {
       "id": "C31",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C31",
+      "anchor": "C31",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "StaleEvidenceNotice",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "StaleEvidenceNotice closed fixture registry entry"
     },
     {
       "id": "C32",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C32",
+      "anchor": "C32",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ReadinessEvidence",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ReadinessEvidence closed fixture registry entry"
     },
     {
       "id": "C33",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C33",
+      "anchor": "C33",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ChangeTimeline",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ChangeTimeline closed fixture registry entry"
     },
     {
       "id": "C34",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C34",
+      "anchor": "C34",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "MilestoneRow",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "MilestoneRow closed fixture registry entry"
     },
     {
       "id": "C35",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C35",
+      "anchor": "C35",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "MockOutcome",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "MockOutcome closed fixture registry entry"
     },
     {
       "id": "C36",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C36",
+      "anchor": "C36",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "TextAlternativeTable",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "TextAlternativeTable closed fixture registry entry"
     },
     {
       "id": "C37",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C37",
+      "anchor": "C37",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ReadingRegion",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ReadingRegion closed fixture registry entry"
     },
     {
       "id": "C38",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C38",
+      "anchor": "C38",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "LanguageElementsRegion",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "LanguageElementsRegion closed fixture registry entry"
     },
     {
       "id": "C39",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C39",
+      "anchor": "C39",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "ListeningRegion",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "ListeningRegion closed fixture registry entry"
     },
     {
       "id": "C40",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C40",
+      "anchor": "C40",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "WritingRegion",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "WritingRegion closed fixture registry entry"
     },
     {
       "id": "C41",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C41",
+      "anchor": "C41",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "SpeakingRegion",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "SpeakingRegion closed fixture registry entry"
     },
     {
       "id": "C42",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C42",
+      "anchor": "C42",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "SessionNotice",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "SessionNotice closed fixture registry entry"
     },
     {
       "id": "C43",
       "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
-      "anchor": "component-C43",
+      "anchor": "C43",
       "target": "packages/design-system/src/components.tsx",
-      "tests": [
-        "P04-COMPONENT-001",
-        "P04-A11Y-001"
-      ],
+      "targetAnchor": "UploadStatus",
+      "tests": ["P04-COMPONENT-001", "P04-A11Y-001"],
       "status": "accepted",
       "resolution": "UploadStatus closed fixture registry entry"
     }
@@ -1638,241 +1308,201 @@
   "icons": [
     {
       "id": "I01",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "coach",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I01",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "coach",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I02",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "readiness",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I02",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "readiness",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I03",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "train",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I03",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "train",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I04",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "progress",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I04",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "progress",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I05",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "reading",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I05",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "reading",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I06",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "listening",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I06",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "listening",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I07",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "writing",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I07",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "writing",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I08",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "speaking",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I08",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "speaking",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I09",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "measured-time",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I09",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "measured-time",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I10",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "evidence",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I10",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "evidence",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I11",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "exam-date",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I11",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "exam-date",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I12",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "safe-correct",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I12",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "safe-correct",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I13",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "borderline",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I13",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "borderline",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I14",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "not-ready",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I14",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "not-ready",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I15",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "evidence-building",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I15",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "evidence-building",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I16",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "stale-recheck",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I16",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "stale-recheck",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I17",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "our-fault",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I17",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "our-fault",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I18",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "transcript",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I18",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "transcript",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I19",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "lock",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I19",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "lock",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     },
     {
       "id": "I20",
-      "source": "Design/Bestehen-01-Design-System.dc.html",
-      "anchor": "upload",
+      "source": "Implementation/Personal/04-responsive-web-design-system/plan.md",
+      "anchor": "I20",
       "target": "packages/design-system/src/icons.tsx",
-      "tests": [
-        "P04-ASSET-001",
-        "P04-COMPONENT-001"
-      ],
+      "targetAnchor": "upload",
+      "tests": ["P04-ASSET-001", "P04-COMPONENT-001"],
       "status": "accepted",
       "resolution": "Closed local Lucide geometry registry"
     }

@@ -45,6 +45,7 @@ describe("P04-COVERAGE-001 source anchor manifest", () => {
     expect(new Set(rows.map((row) => row.id)).size).toBe(rows.length);
     for (const row of rows) {
       expect(row.target).toMatch(/\.(?:ts|tsx|css)$/);
+      expect(row.targetAnchor).not.toBe("");
       expect(row.tests.length).toBeGreaterThan(0);
       expect(row.resolution).not.toBe("");
       expect(["accepted", "corrected", "derived", "obsolete"]).toContain(row.status);

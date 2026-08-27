@@ -13,23 +13,43 @@ export function Overlay({
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const titleId = useId();
+  function focusable() {
+    return [
+      ...(dialog.current?.querySelectorAll<HTMLElement>(
+        "button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
+      ) ?? []),
+    ];
+  }
+  function open() {
+    dialog.current?.showModal();
+    focusable()[0]?.focus();
+  }
   function close() {
     dialog.current?.close();
     trigger.current?.focus();
   }
   return (
     <>
-      <button
-        className="action action-secondary"
-        onClick={() => dialog.current?.showModal()}
-        ref={trigger}
-        type="button"
-      >
+      <button className="action action-secondary" onClick={open} ref={trigger} type="button">
         Open {title}
       </button>
       <dialog
         aria-labelledby={titleId}
         className="overlay"
+        onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const controls = focusable();
+          const first = controls[0];
+          const last = controls.at(-1);
+          if (!first || !last) return;
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }}
         onClose={() => trigger.current?.focus()}
         ref={dialog}
       >

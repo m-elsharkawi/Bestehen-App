@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
 
 const source = execFileSync(
   "node",
@@ -37,13 +38,43 @@ const rows = collections.flat();
 const ids = rows.map((row) => row.id);
 if (new Set(ids).size !== ids.length) throw new Error("Source-anchor IDs are not globally unique");
 if (manifest.boardAnchors.length !== 37) throw new Error("Expected 37 board anchors");
+
+function filesUnder(directory) {
+  return readdirSync(directory).flatMap((entry) => {
+    const path = join(directory, entry);
+    return statSync(path).isDirectory() ? filesUnder(path) : [path];
+  });
+}
+
+const evidenceFiles = ["apps", "packages", "scripts"]
+  .flatMap(filesUnder)
+  .filter(
+    (path) =>
+      /(?:\.(?:test|spec)\.(?:ts|tsx)|\.mjs)$/.test(path) &&
+      !path.endsWith("scripts/check-design-coverage.mjs"),
+  );
+const executableCheckIds = new Set(
+  evidenceFiles.flatMap((path) => {
+    const contents = readFileSync(path, "utf8");
+    return [...contents.matchAll(/P04-[A-Z0-9]+-001/g)].map(([id]) => id);
+  }),
+);
+
 for (const row of rows) {
   if (!existsSync(row.source))
     throw new Error(`Missing coverage source: ${row.id} -> ${row.source}`);
   if (!existsSync(row.target))
     throw new Error(`Missing coverage target: ${row.id} -> ${row.target}`);
+  if (!readFileSync(row.source, "utf8").includes(row.anchor))
+    throw new Error(`Unresolved coverage source anchor: ${row.id} -> ${row.source}#${row.anchor}`);
+  if (!readFileSync(row.target, "utf8").includes(row.targetAnchor))
+    throw new Error(
+      `Unresolved coverage target anchor: ${row.id} -> ${row.target}#${row.targetAnchor}`,
+    );
   if (!row.tests.length || row.tests.some((id) => !manifest.tests.includes(id)))
     throw new Error(`Invalid test mapping for ${row.id}`);
+  if (row.tests.some((id) => !executableCheckIds.has(id)))
+    throw new Error(`Non-executable test mapping for ${row.id}: ${row.tests.join(", ")}`);
   if (!row.status || !row.resolution)
     throw new Error(`Incomplete coverage resolution for ${row.id}`);
 }

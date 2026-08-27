@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { AccessibilityFixture } from "../../../../ui/a11y-fixture";
 import {
   AccountView,
   AttemptView,
@@ -30,6 +31,7 @@ const views = [
   "conflict",
   "transfer",
   "session-expiry",
+  "a11y",
 ] as const;
 type View = (typeof views)[number];
 
@@ -77,5 +79,7 @@ export default async function UiFixturePage({
     case "transfer":
     case "session-expiry":
       return <StateView name={view} />;
+    case "a11y":
+      return <AccessibilityFixture />;
   }
 }

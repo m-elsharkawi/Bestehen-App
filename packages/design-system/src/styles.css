@@ -59,12 +59,14 @@ li,
 dd {
   color: var(--text-body);
   line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 h1,
 h2,
 h3 {
   color: var(--text-primary);
   margin-block: 0 var(--space-4);
+  overflow-wrap: anywhere;
 }
 h1 {
   font-family: var(--font-display);
@@ -153,6 +155,7 @@ summary,
 .app-shell {
   display: grid;
   grid-template-areas: "header" "main" "nav" "footer";
+  grid-template-columns: minmax(0, 1fr);
   min-height: 100dvh;
 }
 .app-header {
@@ -198,6 +201,8 @@ summary,
   gap: var(--space-1);
   justify-content: center;
   min-height: 60px;
+  min-width: 0;
+  overflow-wrap: anywhere;
   text-decoration: none;
 }
 .primary-nav a[aria-current="page"] {
@@ -247,6 +252,7 @@ summary,
 .content-with-aside {
   display: grid;
   gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
 }
 .content-with-aside aside {
   background: var(--surface-sunken);
@@ -333,6 +339,11 @@ summary,
   display: inline-flex;
   flex-direction: column;
   gap: var(--space-1);
+}
+.fixture-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-block: var(--space-4);
 }
 .disabled-reason {
   color: var(--text-secondary);
@@ -520,9 +531,11 @@ input[type="checkbox"] {
   border-radius: 999px;
   color: var(--text-primary);
   min-height: var(--target-min);
+  max-width: calc(100vw - var(--space-5));
+  overflow-wrap: anywhere;
   padding-inline: var(--space-3);
   position: fixed;
-  right: 96px;
+  right: var(--space-3);
   top: 10px;
   z-index: 30;
 }
