@@ -22,7 +22,7 @@ export function Overlay({
   }
   function open() {
     dialog.current?.showModal();
-    focusable()[0]?.focus();
+    requestAnimationFrame(() => focusable()[0]?.focus());
   }
   function close() {
     dialog.current?.close();
@@ -36,20 +36,6 @@ export function Overlay({
       <dialog
         aria-labelledby={titleId}
         className="overlay"
-        onKeyDown={(event) => {
-          if (event.key !== "Tab") return;
-          const controls = focusable();
-          const first = controls[0];
-          const last = controls.at(-1);
-          if (!first || !last) return;
-          if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-          } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-          }
-        }}
         onClose={() => trigger.current?.focus()}
         ref={dialog}
       >

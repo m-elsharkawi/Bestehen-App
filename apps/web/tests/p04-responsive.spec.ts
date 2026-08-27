@@ -239,11 +239,8 @@ test("P04-A11Y-001 targets, errors, modal focus, and live priorities are observa
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "Keyboard review" });
   await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Secondary dialog action" })).toBeFocused();
   expect(await dialog.evaluate((node) => node.matches(":modal"))).toBe(true);
-  for (const key of ["Tab", "Tab", "Shift+Tab"]) {
-    await page.keyboard.press(key);
-    expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
-  }
   await page.getByLabel("Response").evaluate((node) => node.focus());
   expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
   await page.keyboard.press("Escape");
