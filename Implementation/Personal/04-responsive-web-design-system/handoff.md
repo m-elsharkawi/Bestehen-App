@@ -28,8 +28,9 @@ record `19a16e5ff781949879457e36eb1f912e075656ee` is an ancestor. The accepted p
   regions. Consequential presentation consumes the complete versioned projection
   contract, fails closed for unknown majors/states, and keeps source lineage
   provider-neutral. Browser-local state is limited to the dialog and theme preference.
-  The component gallery has one deterministic row for every family and 140 concrete
-  variant/state cases driven through public typed props or owned slots.
+  The component gallery has one deterministic row for every family and 126 distinct
+  rendered cases. Its 143 registry assertions either drive a public typed state/variant
+  or prove a co-present owned subpart through a targeted selector and assertion.
 - Added App Router bare, protected, App, attempt, result, session, and mock shells;
   root loading, error, not-found, sign-in, and failure states; and the four protected
   destinations plus Account/data routes. Server session resolution remains the only
@@ -98,6 +99,10 @@ processor, or Stage 05 work was added.
   readiness states with Gates A–F/Written/Oral assertions.
 - `f62246f1a5407f08d63a9f3d26c4fa24beba7aa0` scopes the gallery dialog proof to its
   concrete C04 dialog case and asserts all 140 rendered gallery cases.
+- `f5b2b9afca03f50829e69010ad37fb6793eec157` replaces the remaining gallery fallback
+  overclaim with typed APIs for actual states and one-case targeted proof for co-present
+  subparts, corrects ChoiceNav chip semantics, and removes provider/queue/storage jargon
+  from rendered product copy.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
@@ -113,17 +118,18 @@ external provider calls stayed disabled.
   `24.19.0` and pnpm `11.23.0`: `P04-SCOPE-001` for 80 accepted paths, preserved
   scope fixtures and baseline-range `git diff --check`, `P04-COVERAGE-001`,
   `P04-ASSET-001`, exact-lock/runtime policy, secret scan, fake-provider readiness,
-  format, lint, typecheck, package boundaries, 182 unit tests across 16 files,
+  format, lint, typecheck, package boundaries, 183 unit tests across 16 files,
   release-manifest tests, production build, `P04-PERF-001`, and generated-file
-  policy. The current product-owned client result is 23,319 bytes gzip and CSS is
+  policy. The current product-owned client result is 25,456 bytes gzip and CSS is
   3,662 bytes gzip.
 - `pnpm test:e2e` passed 52 tests with two expected skips. Firefox and WebKit skip
   only the duplicate raster comparison; Chromium owns seven portable supplemental
   baselines at a maximum two-percent pixel difference. All three engines pass every
   accepted breakpoint edge, representative 200% text reflow, 400% text reflow spot,
   portrait/landscape resize with draft/theme retention, history return, pre-paint theme
-  hydration check, JavaScript-disabled server-content proof, all 43 gallery families
-  and 140 concrete cases, and native modal focus containment/Escape/focus return proof.
+  hydration check, JavaScript-disabled server-content proof, all 43 gallery families,
+  126 distinct renders with 143 explicit variant/subpart assertions, and native modal
+  focus containment/Escape/focus return proof.
 - The exact-head Linux browser run `33103277759` initially failed only its
   `coach-390-light` visual comparison: the image inspection showed that a repaired
   fixed theme control covered the Account link, rather than a font-raster-only
