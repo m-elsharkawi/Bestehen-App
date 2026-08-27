@@ -14,6 +14,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en" suppressHydrationWarning>
       <body>
         <Script src="/theme-init.js" strategy="beforeInteractive" />
+        <noscript>
+          <p>
+            JavaScript is off. You can still read this server-rendered page, but interactive
+            controls need JavaScript.
+          </p>
+        </noscript>
         {children}
         <ThemeController />
       </body>

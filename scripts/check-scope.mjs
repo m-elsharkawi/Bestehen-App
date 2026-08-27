@@ -148,6 +148,7 @@ function main() {
 
   const baseline = process.env.STAGE_BASE_SHA ?? stage.baseline;
   execFileSync("git", ["merge-base", "--is-ancestor", baseline, "HEAD"]);
+  execFileSync("git", ["diff", "--check", `${baseline}..HEAD`], { stdio: "inherit" });
   const changed = execFileSync("git", ["diff", "--name-only", baseline], {
     encoding: "utf8",
   })

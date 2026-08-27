@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useId } from "react";
-import type { ProjectionCardContract } from "./contracts.js";
+import { isSupportedProjectionCard, type ProjectionCardContract } from "./contracts.js";
 import { componentFamilies } from "./coverage/source-anchors.js";
 import { Icon } from "./icons.js";
 import { Overlay } from "./overlay.js";
@@ -29,7 +29,33 @@ export function Sequence({
 }
 export const Button = Action;
 export const InlineAction = Action;
-export function ChoiceNav() {
+export type ChoiceNavVariant = "segmented" | "tabs" | "chip";
+export function ChoiceNav({ variant = "segmented" }: { readonly variant?: ChoiceNavVariant }) {
+  if (variant === "tabs") {
+    return (
+      <div aria-label="Example choices" role="tablist">
+        <button aria-selected="true" role="tab" type="button">
+          Current
+        </button>
+        <button aria-selected="false" role="tab" type="button">
+          Other
+        </button>
+      </div>
+    );
+  }
+  if (variant === "chip") {
+    return (
+      <fieldset>
+        <legend>Example choices</legend>
+        <button aria-pressed="true" type="button">
+          Current
+        </button>
+        <button aria-pressed="false" type="button">
+          Other
+        </button>
+      </fieldset>
+    );
+  }
   return (
     <nav aria-label="Example choices">
       <a aria-current="page" href="#choice-current">
@@ -39,16 +65,30 @@ export function ChoiceNav() {
     </nav>
   );
 }
-export function BinaryChoice({ legend = "Choose an option" }: { readonly legend?: string }) {
+export type BinaryChoiceVariant = "toggle" | "checkbox" | "radio";
+export function BinaryChoice({
+  legend = "Choose an option",
+  variant = "radio",
+}: {
+  readonly legend?: string;
+  readonly variant?: BinaryChoiceVariant;
+}) {
   const name = useId();
+  if (variant === "toggle") {
+    return (
+      <button aria-pressed="false" type="button">
+        {legend}
+      </button>
+    );
+  }
   return (
     <fieldset>
       <legend>{legend}</legend>
       <label>
-        <input name={name} type="radio" /> Yes
+        <input name={name} type={variant === "checkbox" ? "checkbox" : "radio"} /> Yes
       </label>
       <label>
-        <input name={name} type="radio" /> No
+        <input name={name} type={variant === "checkbox" ? "checkbox" : "radio"} /> No
       </label>
     </fieldset>
   );
@@ -57,21 +97,34 @@ export function Field({
   label = "Response",
   error,
   id: explicitId,
+  variant = "text",
 }: {
   readonly label?: string;
   readonly error?: string;
   readonly id?: string;
+  readonly variant?: "text" | "select" | "date" | "month" | "schedule";
 }) {
   const generatedId = useId();
   const id = explicitId ?? generatedId;
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <input
-        aria-describedby={error ? `${id}-error` : undefined}
-        aria-invalid={Boolean(error)}
-        id={id}
-      />
+      {variant === "select" ? (
+        <select
+          aria-describedby={error ? `${id}-error` : undefined}
+          aria-invalid={Boolean(error)}
+          id={id}
+        >
+          <option>Choose one</option>
+        </select>
+      ) : (
+        <input
+          aria-describedby={error ? `${id}-error` : undefined}
+          aria-invalid={Boolean(error)}
+          id={id}
+          type={variant === "schedule" ? "datetime-local" : variant}
+        />
+      )}
       {error ? (
         <p className="field-error" id={`${id}-error`}>
           {error}
@@ -80,8 +133,20 @@ export function Field({
     </div>
   );
 }
-export function AnswerChoice({ legend = "Choose the answer" }: { readonly legend?: string }) {
-  return <BinaryChoice legend={legend} />;
+export type AnswerChoiceVariant = "single" | "multiple" | "revealed";
+export function AnswerChoice({
+  legend = "Choose the answer",
+  variant = "single",
+}: {
+  readonly legend?: string;
+  readonly variant?: AnswerChoiceVariant;
+}) {
+  return (
+    <>
+      <BinaryChoice legend={legend} variant={variant === "multiple" ? "checkbox" : "radio"} />
+      {variant === "revealed" ? <p role="status">Answer revealed after submission.</p> : null}
+    </>
+  );
 }
 export function MatchingPair() {
   return (
@@ -177,21 +242,38 @@ export function CoachMessage() {
 }
 
 export function ProjectionCard({ projection }: { readonly projection: ProjectionCardContract }) {
+  if (!isSupportedProjectionCard(projection)) {
+    throw new Error("Unsupported consequential UI projection");
+  }
+  const announcementRole = projection.announcement === "assertive" ? "alert" : "status";
+  const focusable = projection.focusTarget !== "none";
   return (
-    <SemanticCard status={projection.status} title={projection.title}>
-      <StatusWord status={projection.status === "neutral" ? "system" : projection.status}>
-        {projection.state.replaceAll("_", " ")}
-      </StatusWord>
-      <p>{projection.message}</p>
-      {projection.affectedScope.length > 0 ? (
-        <p>
-          <strong>Affected:</strong> {projection.affectedScope.join(", ")}
-        </p>
-      ) : null}
-      {projection.action ? (
-        <Action href={projection.action.href} label={projection.action.label} />
-      ) : null}
-    </SemanticCard>
+    <section
+      aria-live={projection.announcement === "none" ? undefined : projection.announcement}
+      data-focus-target={projection.focusTarget}
+      data-source-cut={projection.source.sourceCut}
+      data-source-release={projection.source.release}
+      role={projection.announcement === "none" ? undefined : announcementRole}
+      tabIndex={focusable ? -1 : undefined}
+    >
+      <SemanticCard status={projection.status} title={projection.title}>
+        <StatusWord status={projection.status === "neutral" ? "system" : projection.status}>
+          {projection.state.replaceAll("_", " ")}
+        </StatusWord>
+        <p>{projection.message}</p>
+        {projection.affectedScope.length > 0 ? (
+          <p>
+            <strong>Affected:</strong> {projection.affectedScope.join(", ")}
+          </p>
+        ) : null}
+        {projection.action ? (
+          <Action href={projection.action.href} label={projection.action.label} />
+        ) : null}
+      </SemanticCard>
+      <p className="visually-hidden">
+        Source cut {projection.source.sourceCut}, release {projection.source.release}
+      </p>
+    </section>
   );
 }
 
@@ -649,11 +731,15 @@ export function DataRightsStatus() {
 }
 
 const projection = {
+  announcement: "polite",
+  contract: { major: 1, minor: 0 },
+  focusTarget: "heading",
   state: "pending",
   title: "Pending evidence",
   message: "Only Writing is affected.",
   status: "attention",
   affectedScope: ["Writing"],
+  source: { release: "fixture-1", sourceCut: 1 },
 } as const;
 
 export interface ComponentFixtureContract {
@@ -664,9 +750,9 @@ export interface ComponentFixtureContract {
   readonly render: () => ReactNode;
 }
 
-/** A gallery case names the concrete state rendered through the family's public API. */
+/** Each gallery case is one concrete owned variant rendered through the public family API. */
 export interface ComponentFixtureCase extends ComponentFixtureContract {
-  readonly state: string;
+  readonly variant: string;
 }
 
 export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
@@ -994,74 +1080,155 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   },
 ] as const;
 
-const renderedStateByFamily: Record<(typeof componentFamilies)[number][0], string> = {
-  C01: "protected",
-  C02: "stickyActionBar",
-  C03: "measuredTimer",
-  C04: "dialog",
-  C05: "stepper",
-  C06: "disabled",
-  C07: "link",
-  C08: "segmented",
-  C09: "radio",
-  C10: "invalid",
-  C11: "single",
-  C12: "select-place",
-  C13: "input",
-  C14: "move",
-  C15: "errorSummary",
-  C16: "whyThisDisclosure",
-  C17: "standard",
-  C18: "plan",
-  C19: "partial",
-  C20: "excerpt",
-  C21: "pattern",
-  C22: "closed",
-  C23: "available",
-  C24: "changed",
-  C25: "practice-only",
-  C26: "due",
-  C27: "due",
-  C28: "pending",
-  C29: "capability",
-  C30: "under-review",
-  C31: "due",
-  C32: "gates-a-f",
-  C33: "events",
-  C34: "current",
-  C35: "comparison",
-  C36: "expanded",
-  C37: "questionList",
-  C38: "gap",
-  C39: "audioPlayer",
-  C40: "editor",
-  C41: "preflight",
-  C42: "expired-mid-attempt",
-  C43: "sending",
-};
+function fixtureProjection(state: ProjectionCardContract["state"]): ProjectionCardContract {
+  return {
+    affectedScope: ["Writing"],
+    announcement: "polite",
+    contract: { major: 1, minor: 0 },
+    focusTarget: "heading",
+    message: `Fixture presentation for ${state.replaceAll("_", " ")}.`,
+    source: { release: "fixture-1", sourceCut: 1 },
+    state,
+    status: state === "pending" || state === "partial" || state === "slow" ? "attention" : "system",
+    title: `Fixture ${state.replaceAll("_", " ")}`,
+  };
+}
 
-export const componentFixtureCases: readonly ComponentFixtureCase[] = componentFixtureRegistry.map(
-  (fixture) => ({ ...fixture, state: renderedStateByFamily[fixture.id] }),
-);
+function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string): ReactNode {
+  switch (fixture.id) {
+    case "C08":
+      return <ChoiceNav variant={variant as ChoiceNavVariant} />;
+    case "C09":
+      return <BinaryChoice variant={variant as BinaryChoiceVariant} />;
+    case "C10":
+      return (
+        <Field
+          {...(variant === "invalid" ? { error: "Required" } : {})}
+          variant={
+            variant === "invalid"
+              ? "text"
+              : (variant as "text" | "select" | "date" | "month" | "schedule")
+          }
+        />
+      );
+    case "C11":
+      return <AnswerChoice variant={variant as AnswerChoiceVariant} />;
+    case "C19": {
+      const state =
+        variant === "outcome" ? "valid" : variant === "validity" ? "partially_valid" : "partial";
+      return <ResultCard projection={fixtureProjection(state)} />;
+    }
+    case "C25":
+      return (
+        <EvidenceLabel
+          {...(variant === "practice-only" ? { eligibility: "practice-only" } : {})}
+          reason="Fixture reason"
+          validity="interrupted"
+        />
+      );
+    case "C28":
+      return (
+        <PendingBanner
+          projection={fixtureProjection(
+            variant.replaceAll("-", "_") as ProjectionCardContract["state"],
+          )}
+        />
+      );
+    case "C29":
+      return <SystemFailureBanner projection={fixtureProjection("unavailable")} />;
+    case "C32":
+      return (
+        <ReadinessEvidence
+          gates={[]}
+          state={variant === "six-readiness-states" ? "evidence_building" : "not_ready"}
+        />
+      );
+    case "C42":
+      return (
+        <SessionNotice
+          state={variant.replaceAll("-", "_") as Parameters<typeof SessionNotice>[0]["state"]}
+        />
+      );
+    case "C43":
+      return (
+        <UploadStatus
+          {...(variant === "sending" ? { progress: 50 } : {})}
+          state={variant.replaceAll("-", "_") as Parameters<typeof UploadStatus>[0]["state"]}
+        />
+      );
+    default:
+      return fixture.render();
+  }
+}
+
+function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: string) {
+  if (fixture.id === "C08") {
+    return {
+      expectedText: "Current",
+      selector:
+        variant === "segmented" ? "nav" : variant === "tabs" ? "[role='tablist']" : "fieldset",
+    };
+  }
+  if (fixture.id === "C09") {
+    return {
+      expectedText: "Choose an option",
+      selector: variant === "toggle" ? "button" : "fieldset",
+    };
+  }
+  if (fixture.id === "C10") {
+    return {
+      expectedText: variant === "invalid" ? "Required" : "Response",
+      selector: variant === "select" ? "select" : "input",
+    };
+  }
+  if (fixture.id === "C28") {
+    return { expectedText: variant.replaceAll("-", " "), selector: "[data-status]" };
+  }
+  if (fixture.id === "C19") {
+    const state =
+      variant === "outcome" ? "valid" : variant === "validity" ? "partially valid" : "partial";
+    return { expectedText: `Fixture ${state}`, selector: "[data-source-release]" };
+  }
+  if (fixture.id === "C29")
+    return { expectedText: "Fixture unavailable", selector: "[data-source-release]" };
+  if (fixture.id === "C42") {
+    return {
+      expectedText: variant === "access-denied" ? "cannot open" : "sign in",
+      selector: ".card",
+    };
+  }
+  if (fixture.id === "C43") return { expectedText: "Transfer status", selector: ".transfer" };
+  return { expectedText: fixture.expectedText, selector: fixture.selector };
+}
+
+export const componentFixtureCases: readonly ComponentFixtureCase[] =
+  componentFixtureRegistry.flatMap((fixture) =>
+    fixture.variants.map((variant) => ({
+      ...fixture,
+      ...fixtureCaseAssertions(fixture, variant),
+      variant,
+      render: () => renderFixtureVariant(fixture, variant),
+    })),
+  );
 
 export function ComponentGallery() {
   return (
     <div className="component-gallery">
       {componentFamilies.map(([id, name]) => {
-        const fixture = componentFixtureCases.find((entry) => entry.id === id);
-        if (!fixture) throw new Error(`Missing component fixture ${id}`);
+        const fixtures = componentFixtureCases.filter((entry) => entry.id === id);
+        if (fixtures.length === 0) throw new Error(`Missing component fixture ${id}`);
         return (
           <section className="gallery-item" data-component-family={id} id={`family-${id}`} key={id}>
             <h2 className="visually-hidden">
               {id} {name}
             </h2>
             <p className="eyebrow">{id}</p>
-            <div
-              data-fixture-state={fixture.state}
-              data-fixture-variants={fixture.variants.join(" ")}
-            >
-              {fixture.render()}
-            </div>
+            {fixtures.map((fixture) => (
+              <div data-fixture-variant={fixture.variant} key={fixture.variant}>
+                <p className="visually-hidden">{fixture.variant}</p>
+                {fixture.render()}
+              </div>
+            ))}
           </section>
         );
       })}
