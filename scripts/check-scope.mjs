@@ -38,7 +38,7 @@ const stage01Allowed = [
 ];
 const stage02Allowed = [
   /^\.env\.example$/,
-  /^\.github\/workflows\/ci\.yml$/,
+  /^\.github\/workflows\/(?:ci|release-candidate)\.yml$/,
   /^config\/personal-provider-readiness\.example\.json$/,
   /^docs\/configuration\.md$/,
   /^docs\/setup\/personal\//,
@@ -70,7 +70,7 @@ const stage03Allowed = [
 ];
 const stage04Allowed = [
   /^\.gitignore$/,
-  /^\.github\/workflows\/ci\.yml$/,
+  /^\.github\/workflows\/(?:ci|release-candidate)\.yml$/,
   /^apps\/web\/(?:package\.json|public\/theme-init\.js|src\/app\/|src\/server\/frontend-data(?:\.unit\.test)?\.ts|src\/ui\/|tests\/(?:baseline\.spec\.ts|p04-))/,
   /^Implementation\/Personal\/04-responsive-web-design-system\/handoff\.md$/,
   /^package\.json$/,
@@ -79,7 +79,8 @@ const stage04Allowed = [
   /^packages\/design-system\//,
   /^playwright\.config\.ts$/,
   /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
-  /^scripts\/(?:check-assets|check-design-coverage|check-generated|check-scope|check-web-budget|generate-design-coverage|test-scope)\.mjs$/,
+  /^schemas\/release-manifest\.schema\.json$/,
+  /^scripts\/(?:check-assets|check-design-coverage|check-generated|check-scope|check-web-budget|generate-design-coverage|test-release-manifest|test-scope)\.mjs$/,
 ];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {
