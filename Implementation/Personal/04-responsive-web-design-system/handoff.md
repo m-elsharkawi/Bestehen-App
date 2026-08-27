@@ -52,7 +52,7 @@ record `19a16e5ff781949879457e36eb1f912e075656ee` is an ancestor. The accepted p
   forced-color, no-third-party-request, forbidden-copy, and fail-closed route checks.
   The manual screen-reader script is `apps/web/tests/p04-screen-reader-script.md`.
 - Added hard checks for asset origins/digests, exact coverage counts, and web budgets.
-  The production result is 10,921 bytes gzip of App-owned client JavaScript, 3,605
+  The production result is 25,922 bytes gzip of App-owned client JavaScript, 3,729
   bytes gzip of CSS, 262,144 font bytes, and 1,863 bytes gzip of compiled icon/brand
   source. Next.js framework runtime is reported separately. No dependency was added.
 
@@ -103,6 +103,12 @@ processor, or Stage 05 work was added.
   overclaim with typed APIs for actual states and one-case targeted proof for co-present
   subparts, corrects ChoiceNav chip semantics, and removes provider/queue/storage jargon
   from rendered product copy.
+- `a28ac3cac0d735e86b3c48558fedf387dc6f4c16` makes every Stage 04 evidence ID a
+  required release-manifest field, maps them into both candidate workflows, adds a
+  missing-P04 negative test, and preserves baseline-range whitespace checking in scope.
+- `cf5b1f3c7b6972b5ef5d75eb9a9b1746d7eec5c1` gives sheet and destructive-confirm dialogs their distinct responsive and
+  keyboard contracts, and closes every consequential state behind provider-neutral
+  presentation labels with exhaustive negative-copy coverage.
 
 The documentation/checklist commit containing this handoff is the candidate head in
 PR #11. Review and acceptance must use that exact head, not an earlier implementation
@@ -115,21 +121,22 @@ Local deterministic checks used the repository-pinned Node `24.19.0`, pnpm
 external provider calls stayed disabled.
 
 - `pnpm check` passed at the current code candidate with repository-pinned Node
-  `24.19.0` and pnpm `11.23.0`: `P04-SCOPE-001` for 80 accepted paths, preserved
+  `24.19.0` and pnpm `11.23.0`: `P04-SCOPE-001` for 83 accepted paths, preserved
   scope fixtures and baseline-range `git diff --check`, `P04-COVERAGE-001`,
   `P04-ASSET-001`, exact-lock/runtime policy, secret scan, fake-provider readiness,
   format, lint, typecheck, package boundaries, 183 unit tests across 16 files,
   release-manifest tests, production build, `P04-PERF-001`, and generated-file
-  policy. The current product-owned client result is 25,456 bytes gzip and CSS is
-  3,662 bytes gzip.
-- `pnpm test:e2e` passed 52 tests with two expected skips. Firefox and WebKit skip
+  policy. The current product-owned client result is 25,922 bytes gzip and CSS is
+  3,729 bytes gzip.
+- `pnpm test:e2e` passed 55 tests with two expected skips. Firefox and WebKit skip
   only the duplicate raster comparison; Chromium owns seven portable supplemental
   baselines at a maximum two-percent pixel difference. All three engines pass every
   accepted breakpoint edge, representative 200% text reflow, 400% text reflow spot,
   portrait/landscape resize with draft/theme retention, history return, pre-paint theme
   hydration check, JavaScript-disabled server-content proof, all 43 gallery families,
-  126 distinct renders with 143 explicit variant/subpart assertions, and native modal
-  focus containment/Escape/focus return proof.
+  126 distinct renders with 143 explicit variant/subpart assertions, responsive
+  sheet positioning, destructive-confirm Escape prevention with explicit Cancel/Confirm,
+  and native modal focus containment/Escape/focus-return proof.
 - The exact-head Linux browser run `33103277759` initially failed only its
   `coach-390-light` visual comparison: the image inspection showed that a repaired
   fixed theme control covered the Account link, rather than a font-raster-only
@@ -170,6 +177,8 @@ Evidence IDs map as follows:
   checks remain authoritative, and no tolerance was raised or visual case removed.
 - `P04-ASSET-001`, `P04-COVERAGE-001`, `P04-PERF-001`, and `P04-SCOPE-001`: the four
   repository checks in `scripts/` and their negative fixtures.
+- All 13 Stage 04 IDs are immutable required properties in the release-manifest schema
+  and appear in both the CI and release-candidate candidate evidence maps.
 
 The pinned browser manifest is Chrome for Testing `151.0.7922.34` / Chromium build
 `1234`, Firefox `153.0` / build `1538`, and WebKit `26.5` / build `2336`. WebKit is not
