@@ -54,6 +54,37 @@ export type DeletionState = (typeof deletionStates)[number];
 export const draftConflictStates = ["compare", "select", "merge"] as const;
 export type DraftConflictState = (typeof draftConflictStates)[number];
 
+/**
+ * Server-owned content serving states (`Architecture/09-…` §9.2). Missing, unknown, quarantined or
+ * incompatible content renders no score, zero, weakness or probability field in any of them.
+ */
+export const contentServingStates = [
+  "available",
+  "loading_media",
+  "unavailable_no_fresh_family",
+  "unavailable_rights_or_target",
+  "quarantined_after_pin",
+  "media_failed_not_counted",
+  "replacement_ready",
+  "update_required",
+] as const;
+export type ContentServingState = (typeof contentServingStates)[number];
+
+/**
+ * Client-visible attempt runtime states. `ready`, `interrupted` and `unavailable` are already
+ * carried by existing unions and are deliberately reused rather than duplicated here.
+ */
+export const attemptRuntimeUiStates = [
+  "acquiring_manifest",
+  "in_progress",
+  "checkpointed",
+  "submission_unknown",
+  "submitted",
+  "scoring",
+  "result_available",
+] as const;
+export type AttemptRuntimeUiState = (typeof attemptRuntimeUiStates)[number];
+
 export interface UiProjectionBase<State extends string> {
   readonly contract: typeof uiProjectionVersion;
   readonly state: State;
@@ -79,6 +110,8 @@ export const consequentialUiProjectionStates = [
   ...exportStates,
   ...deletionStates,
   ...draftConflictStates,
+  ...contentServingStates,
+  ...attemptRuntimeUiStates,
 ] as const;
 export type ConsequentialUiProjectionState = (typeof consequentialUiProjectionStates)[number];
 
@@ -90,7 +123,9 @@ export type ConsequentialUiProjection =
   | UiProjectionBase<TransferState>
   | UiProjectionBase<ExportState>
   | UiProjectionBase<DeletionState>
-  | UiProjectionBase<DraftConflictState>;
+  | UiProjectionBase<DraftConflictState>
+  | UiProjectionBase<ContentServingState>
+  | UiProjectionBase<AttemptRuntimeUiState>;
 
 export function statusForState(state: ConsequentialUiProjection["state"]): SemanticStatus {
   switch (state) {
@@ -100,12 +135,18 @@ export function statusForState(state: ConsequentialUiProjection["state"]): Seman
     case "ready":
     case "sent":
     case "completed":
+    case "available":
+    case "replacement_ready":
+    case "result_available":
       return "positive";
     case "borderline":
     case "pending":
     case "slow":
     case "partial":
     case "provider_pending":
+    case "quarantined_after_pin":
+    case "submission_unknown":
+    case "update_required":
       return "attention";
     case "not_ready":
     case "failed":
@@ -139,6 +180,15 @@ export function statusForState(state: ConsequentialUiProjection["state"]): Seman
     case "compare":
     case "select":
     case "merge":
+    case "loading_media":
+    case "unavailable_no_fresh_family":
+    case "unavailable_rights_or_target":
+    case "media_failed_not_counted":
+    case "acquiring_manifest":
+    case "in_progress":
+    case "checkpointed":
+    case "submitted":
+    case "scoring":
       return "system";
   }
 }
