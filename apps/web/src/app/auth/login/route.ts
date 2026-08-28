@@ -2,18 +2,23 @@ import { NextResponse } from "next/server";
 import { parseServerEnvironmentForService } from "@bestehen/configuration";
 import { getIdentityService } from "../../../server/identity";
 import { applicationRequestUrl } from "../../../server/runtime";
+import { syntheticFixtureEnabled } from "../../../server/runtime";
 
 export async function GET(request: Request): Promise<Response> {
   const current = applicationRequestUrl(request.url);
   const returnTo = current.searchParams.get("returnTo");
-  const environment = parseServerEnvironmentForService(process.env, "web");
   if (
-    environment.BESTEHEN_APP_ENV === "test" &&
-    environment.BESTEHEN_RELEASE_COMMIT === "playwright-synthetic" &&
+    syntheticFixtureEnabled() &&
     current.searchParams.get("synthetic") === "1" &&
     returnTo === "/readiness"
   ) {
-    return NextResponse.redirect(new URL(returnTo, current.origin), 303);
+    const response = NextResponse.redirect(new URL(returnTo, current.origin), 303);
+    response.cookies.set("bestehen-synthetic-session", "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+    });
+    return response;
   }
   try {
     const destination = await getIdentityService().loginUrl(
