@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { Readable, Writable } from "node:stream";
+import { appOwnedChunks, protectedRouteBudgetError, protectedRouteFiles } from "./web-budget.mjs";
 
 async function gzipBytes(path) {
   let bytes = 0;
@@ -22,19 +23,42 @@ async function gzipBytes(path) {
 const nextRoot = "apps/web/.next";
 const chunksRoot = join(nextRoot, "static/chunks");
 const build = JSON.parse(readFileSync(join(nextRoot, "build-manifest.json"), "utf8"));
+const routeManifestPath = join(
+  nextRoot,
+  "server/app/(protected)/coach/page_client-reference-manifest.js",
+);
+const routeManifestText = readFileSync(routeManifestPath, "utf8");
+const routeManifest = JSON.parse(
+  routeManifestText.slice(
+    routeManifestText.indexOf(" = {") + 3,
+    routeManifestText.lastIndexOf(";"),
+  ),
+);
+const protectedFiles = protectedRouteFiles(build, routeManifest, "/(protected)/coach/page");
+const protectedGzip = (
+  await Promise.all(protectedFiles.map((file) => gzipBytes(join(nextRoot, file))))
+).reduce((sum, value) => sum + value, 0);
+const protectedBudgetError = protectedRouteBudgetError(protectedGzip);
+if (protectedBudgetError) throw new Error(protectedBudgetError);
+
+// App-owned chunks: every .js chunk on disk minus the shared framework runtime
+// (rootMainFiles + polyfillFiles). This is the full chunk set, independent of which
+// route(s) reference each file, so it must not be narrowed to a single route's entries.
 const framework = new Set(
   [...build.polyfillFiles, ...build.rootMainFiles].map((path) => join(nextRoot, path)),
 );
 const jsFiles = readdirSync(chunksRoot)
   .filter((file) => file.endsWith(".js"))
   .map((file) => join(chunksRoot, file));
-const productChunks = jsFiles.filter((file) => !framework.has(file));
+const productChunks = appOwnedChunks(jsFiles, framework);
 const productGzip = (await Promise.all(productChunks.map(gzipBytes))).reduce(
   (sum, value) => sum + value,
   0,
 );
 if (productGzip > 90 * 1024)
-  throw new Error(`Product shell client JS exceeds 90 KiB gzip: ${productGzip}`);
+  throw new Error(
+    `App-owned chunks (excluding shared framework runtime) exceed 90 KiB gzip: ${productGzip}`,
+  );
 for (const file of productChunks) {
   const bytes = await gzipBytes(file);
   if (bytes > 60 * 1024) throw new Error(`Client island exceeds 60 KiB gzip: ${file} ${bytes}`);
@@ -60,5 +84,5 @@ if (iconAndLogoGzip > 40 * 1024)
   throw new Error(`Icon and logo sources exceed 40 KiB gzip: ${iconAndLogoGzip}`);
 
 process.stdout.write(
-  `P04-PERF-001 passed: product client ${productGzip} B gzip, CSS ${cssGzip} B gzip, fonts ${fontBytes} B, icons/brand ${iconAndLogoGzip} B gzip. Framework runtime is reported separately by Next.\n`,
+  `P04-PERF-001 passed: protected route first load (includes shared framework runtime) ${protectedGzip} B gzip <= 200 KiB, App-owned chunks (excludes shared framework runtime) ${productGzip} B gzip <= 90 KiB, CSS ${cssGzip} B gzip, fonts ${fontBytes} B, icons/brand ${iconAndLogoGzip} B gzip.\n`,
 );
