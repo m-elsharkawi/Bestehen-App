@@ -44,13 +44,39 @@ describe("P04-COVERAGE-001 source anchor manifest", () => {
     ];
     expect(new Set(rows.map((row) => row.id)).size).toBe(rows.length);
     for (const row of rows) {
-      expect(row.target).toMatch(/\.(?:ts|tsx|css)$/);
+      expect(row.targetPath).toMatch(/\.(?:ts|tsx|css)$/);
       expect(row.targetAnchor).not.toBe("");
-      expect(row.tests.length).toBeGreaterThan(0);
+      expect(row.automatedTestIds.length).toBeGreaterThan(0);
+      expect(row.manualEvidenceIds.length).toBeGreaterThan(0);
+      expect(Array.isArray(row.semanticStates)).toBe(true);
+      expect(Array.isArray(row.semanticReasons)).toBe(true);
+      expect(row.responsiveLanes.length).toBeGreaterThan(0);
       expect(row.resolution).not.toBe("");
       expect(["accepted", "corrected", "derived", "obsolete"]).toContain(row.status);
     }
     expect(representativeRoutes).toContain("/settings/data");
     expect(representativeRoutes).toContain("/attempt/synthetic-reading/result");
+  });
+
+  it("keeps product semantics separate from coverage disposition", () => {
+    expect(sourceAnchorManifest.schema.semanticStates).toContain("partially_valid");
+    expect(sourceAnchorManifest.schema.semanticStates).toContain("ready_to_book");
+    expect(sourceAnchorManifest.schema.semanticStates as readonly string[]).not.toContain(
+      "accepted-contract",
+    );
+    expect(
+      sourceAnchorManifest.schema.semanticReasons.every((reason) =>
+        /^[A-Z]+\.[A-Z_]+$/.test(reason),
+      ),
+    ).toBe(true);
+    expect(
+      sourceAnchorManifest.componentFamilies.find((row) => row.id === "C42")?.semanticStates,
+    ).toEqual([
+      "signed_out",
+      "callback_failed",
+      "expired_idle",
+      "expired_mid_attempt",
+      "access_denied",
+    ]);
   });
 });
