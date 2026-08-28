@@ -1,4 +1,5 @@
 import { appId, objectiveUnitOutcomeKinds } from "@bestehen/domain";
+import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { canonicalJson } from "./digest.js";
 import type { ItemBinding } from "./model.js";
@@ -657,5 +658,90 @@ describe("rejections and union parity", () => {
     const serialized = canonicalJson(result.value);
     expect(serialized).not.toContain("scoredAt");
     expect(serialized).not.toContain("outcomeId");
+  });
+});
+
+/* ------------------------------------------------------------------------------------------------
+ * Determinism and replay-checksum stability, property-tested (D10)
+ * ---------------------------------------------------------------------------------------------- */
+
+describe("scoring determinism, property-tested", () => {
+  const itemIds = ["item-alpha", "item-bravo", "item-charlie"] as const;
+  const optionIds = ["opt-1", "opt-2", "opt-3"] as const;
+
+  const units = itemIds.map((itemId, index) =>
+    unit(itemId, { kind: "select", questionId: `q-${index}` }, [...optionIds]),
+  );
+  const pinnedKeys = itemIds.map((itemId, index) =>
+    key(itemId, [{ kind: "option", optionId: optionIds[index % optionIds.length] ?? "opt-1" }]),
+  );
+
+  const operationArbitrary: fc.Arbitrary<ResponseOperation> = fc.oneof(
+    fc.record({
+      kind: fc.constant("set_selection" as const),
+      itemId: fc.constantFrom(...itemIds),
+      optionId: fc.constantFrom(...optionIds),
+    }),
+    fc.record({
+      kind: fc.constant("clear_selection" as const),
+      itemId: fc.constantFrom(...itemIds),
+    }),
+    fc.record({
+      kind: fc.constant("confirm_boundary" as const),
+      boundaryId: fc.constantFrom("block-1", "block-2"),
+    }),
+  );
+
+  function score(operations: readonly ResponseOperation[], offeredOrder: readonly string[]) {
+    const { response } = canonicalizeResponse(operations);
+    const reordered = units.map((entry) => ({ ...entry, offeredIdentifiers: offeredOrder }));
+    return scoreObjectiveSubmission(
+      submission(reordered, response),
+      pinnedKeys,
+      policy,
+      algorithmVersion,
+    );
+  }
+
+  it("produces the same checksum for the same operations, every time", () => {
+    fc.assert(
+      fc.property(fc.array(operationArbitrary, { maxLength: 24 }), (operations) => {
+        const first = score(operations, [...optionIds]);
+        const second = score(operations, [...optionIds]);
+        expect(first.ok && second.ok).toBe(true);
+        if (!first.ok || !second.ok) return;
+        expect(second.value.checksum).toBe(first.value.checksum);
+        expect(canonicalJson(second.value)).toBe(canonicalJson(first.value));
+      }),
+    );
+  });
+
+  it("is unchanged by the presentation order of the offered identities", () => {
+    fc.assert(
+      fc.property(fc.array(operationArbitrary, { maxLength: 24 }), (operations) => {
+        const declared = score(operations, [...optionIds]);
+        const reversed = score(operations, [...optionIds].reverse());
+        expect(declared.ok && reversed.ok).toBe(true);
+        if (!declared.ok || !reversed.ok) return;
+        expect(reversed.value.checksum).toBe(declared.value.checksum);
+      }),
+    );
+  });
+
+  it("never reports a wrong answer for a unit the learner never touched", () => {
+    fc.assert(
+      fc.property(fc.array(operationArbitrary, { maxLength: 24 }), (operations) => {
+        const result = score(operations, [...optionIds]);
+        expect(result.ok).toBe(true);
+        if (!result.ok) return;
+        const { response } = canonicalizeResponse(operations);
+        for (const outcome of result.value.unitOutcomes) {
+          const touched = Object.hasOwn(response.selections, outcome.itemId);
+          if (!touched) expect(outcome.kind).toBe("blank");
+        }
+        // Every scored unit is in the supported scope, and nothing else is.
+        expect(result.value.supportedScope).toEqual([...itemIds].sort());
+      }),
+    );
   });
 });
