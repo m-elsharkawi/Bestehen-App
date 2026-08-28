@@ -26,9 +26,7 @@ test("personal owner routes deny anonymously and fake identity makes no provider
 
   await page.goto("/auth/login");
   await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured$/);
-  await expect(
-    page.getByRole("heading", { level: 1, name: "Sign-in is not configured" }),
-  ).toBeVisible();
-  await expect(page.getByText(/not configured a sign-in provider/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign-in unavailable" })).toBeVisible();
+  await expect(page.getByText("Sign in to continue.")).toBeVisible();
   await expect(page.getByText(/password/i)).toHaveCount(0);
 });

@@ -37,15 +37,20 @@ export function AppShell({
   banner,
   aside,
   backHref,
-}: ShellSlots) {
+  embedded = false,
+}: ShellSlots & { readonly embedded?: boolean }) {
   const mainId = useId();
   const focused = kind === "focused";
   const bare = kind === "bare";
+  const Content = embedded ? "div" : "main";
+  const Title = embedded ? "h3" : "h1";
   return (
     <div className={`app-shell shell-${kind}`}>
-      <a className="skip-link" href={`#${mainId}`}>
-        Skip to main content
-      </a>
+      {embedded ? null : (
+        <a className="skip-link" href={`#${mainId}`}>
+          Skip to main content
+        </a>
+      )}
       <header className="app-header">
         <a aria-label="Bestehen App home" href="/">
           <Brand compact={focused} />
@@ -58,20 +63,20 @@ export function AppShell({
         ) : null}
       </header>
       {!bare && !focused ? <PrimaryNavigation active={activeDestination} /> : null}
-      <main id={mainId} tabIndex={-1}>
+      <Content id={mainId} tabIndex={embedded ? undefined : -1}>
         {backHref ? (
           <a className="back-link" href={backHref}>
             Back
           </a>
         ) : null}
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        <h1>{title}</h1>
+        <Title>{title}</Title>
         {banner}
         <div className={aside ? "content-with-aside" : "content-column"}>
           <div>{children}</div>
           {aside ? <aside aria-label="Supporting evidence">{aside}</aside> : null}
         </div>
-      </main>
+      </Content>
       {!bare && !focused ? (
         <footer>
           <small>Private personal release</small>
@@ -87,14 +92,16 @@ export function AttemptShell({
   conditions,
   children,
   action,
+  embedded = false,
 }: {
   readonly title: string;
   readonly conditions: readonly string[];
   readonly children: ReactNode;
   readonly action: ReactNode;
+  readonly embedded?: boolean;
 }) {
   return (
-    <AppShell eyebrow="Focused practice" kind="focused" title={title}>
+    <AppShell embedded={embedded} eyebrow="Focused practice" kind="focused" title={title}>
       <ul aria-label="Attempt conditions" className="conditions-row">
         {conditions.map((condition) => (
           <li key={condition}>{condition}</li>
@@ -110,13 +117,15 @@ export function MockShell({
   children,
   remaining,
   interrupted = false,
+  embedded = false,
 }: {
   readonly children: ReactNode;
   readonly remaining: string;
   readonly interrupted?: boolean;
+  readonly embedded?: boolean;
 }) {
   return (
-    <AppShell eyebrow="Measured mock" kind="focused" title="Written mock">
+    <AppShell embedded={embedded} eyebrow="Measured mock" kind="focused" title="Written mock">
       <p className="timer">
         <Icon name="measured-time" /> <span>Time remaining</span> <time>{remaining}</time>
       </p>

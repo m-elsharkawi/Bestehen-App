@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   AppShell,
   BinaryChoice,
@@ -188,6 +188,61 @@ describe("P04-COMPONENT-001 design system", () => {
     expect(screen.getByText(/local recording is still available/i)).toBeInTheDocument();
     expect(screen.queryByText(/still counts/i)).not.toBeInTheDocument();
   });
+
+  it("does not offer sign-in for access denied and keeps session copy detail-free", () => {
+    const { container } = render(<SessionNotice state="access_denied" />);
+    expect(screen.getByText(/do not have permission/i)).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /sign in/i })).not.toBeInTheDocument();
+    expect(container.querySelector("a[href='/auth/login']")).toBeNull();
+
+    for (const state of [
+      "signed_out",
+      "callback_failed",
+      "expired_idle",
+      "expired_mid_attempt",
+      "access_denied",
+    ] as const) {
+      const { container: notice, unmount } = render(<SessionNotice state={state} />);
+      expect(notice).not.toHaveTextContent(/provider|credential|otp|password/i);
+      unmount();
+    }
+  });
+
+  it.each([
+    ["expired_idle", "Sign in to continue."],
+    [
+      "expired_mid_attempt",
+      "Your draft, elapsed time, and attempt conditions are preserved. The server will decide the final validity after you sign in.",
+    ],
+  ] as const)(
+    "announces %s assertively exactly once after the empty region mounts",
+    async (state, copy) => {
+      vi.useFakeTimers();
+      try {
+        const { container, rerender } = render(<SessionNotice state="signed_out" />);
+        rerender(<SessionNotice state={state} />);
+        const assertiveRegions = container.querySelectorAll("[aria-live='assertive']");
+        expect(assertiveRegions).toHaveLength(1);
+        const region = assertiveRegions.item(0);
+        if (!region) throw new Error("Session expiry announcement region is missing");
+        expect(region).toHaveAttribute("aria-atomic", "true");
+        expect(region).toBeEmptyDOMElement();
+
+        const changes: string[] = [];
+        const observer = new MutationObserver(() => changes.push(region.textContent ?? ""));
+        observer.observe(region, { childList: true });
+        await act(async () => {
+          vi.runAllTimers();
+        });
+        observer.disconnect();
+
+        expect(region).toHaveTextContent(copy);
+        expect(changes).toEqual([copy]);
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
 
   it("provides keyboard-native alternatives for matching, ordering, and duration", () => {
     render(

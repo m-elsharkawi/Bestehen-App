@@ -232,7 +232,15 @@ test("P04-COMPONENT-001 deterministic gallery exposes all component families", a
   await expect(page.getByRole("dialog", { name: "Overlay" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(overlayTrigger).toBeFocused();
-  expect((await new AxeBuilder({ page }).include("#family-C04").analyze()).violations).toEqual([]);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test("P04-A11Y-001 transfer statuses are named and axe-clean", async ({ page }) => {
+  await page.goto("/ui-fixtures/transfer");
+  await expect(
+    page.getByRole("progressbar", { name: "Transfer status Sending 38% transferred" }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test("P04-A11Y-001 sheet and destructive confirmation use their distinct modal contracts", async ({

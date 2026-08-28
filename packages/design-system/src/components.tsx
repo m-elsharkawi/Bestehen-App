@@ -6,6 +6,7 @@ import { Icon } from "./icons.js";
 import { Overlay } from "./overlay.js";
 import { Action, SemanticCard, StatusWord } from "./primitives.js";
 import { AppShell, AttemptShell, MockShell } from "./shells.js";
+import { SessionExpiryAnnouncement } from "./session-expiry-announcement.js";
 
 export { Overlay } from "./overlay.js";
 
@@ -601,10 +602,11 @@ export interface ReadinessEvidenceProps {
 }
 export function ReadinessEvidence({ state, written, oral, gates }: ReadinessEvidenceProps) {
   const headingId = useId();
+  const stateId = useId();
   return (
-    <section aria-labelledby={headingId} className="readiness-evidence">
+    <section aria-labelledby={`${headingId} ${stateId}`} className="readiness-evidence">
       <h2 id={headingId}>Readiness evidence</h2>
-      <p>
+      <p id={stateId}>
         <StatusWord
           status={
             state === "safe" || state === "ready_to_book"
@@ -886,74 +888,29 @@ export function DraftConflict() {
 export type SessionNoticeState =
   | "signed_out"
   | "callback_failed"
-  | "identity_not_configured"
-  | "sign_in_unavailable"
-  | "sign_in_failed"
   | "expired_idle"
   | "expired_mid_attempt"
   | "access_denied";
-export function sessionNoticeTitle(state: SessionNoticeState): string {
+export function SessionNotice({ state }: { readonly state: SessionNoticeState }) {
   const title: Record<SessionNoticeState, string> = {
     signed_out: "Sign in required",
     callback_failed: "Sign-in needs another try",
-    identity_not_configured: "Sign-in is not configured",
-    sign_in_unavailable: "Sign-in is temporarily unavailable",
-    sign_in_failed: "Sign-in could not be completed",
     expired_idle: "Sign-in timed out",
     expired_mid_attempt: "Sign-in needed to continue",
     access_denied: "This area is unavailable",
   };
-  return title[state];
-}
-export function SessionNotice({
-  state,
-  returnTo,
-  hideTitle = false,
-}: {
-  readonly state: SessionNoticeState;
-  readonly returnTo?: string;
-  readonly hideTitle?: boolean;
-}) {
-  const title = sessionNoticeTitle(state);
   const copy =
     state === "expired_mid_attempt"
       ? "Your draft, elapsed time, and attempt conditions are preserved. The server will decide the final validity after you sign in."
       : state === "access_denied"
-        ? "This account cannot open that personal area."
-        : state === "identity_not_configured"
-          ? "The server has not configured a sign-in provider yet."
-          : state === "sign_in_unavailable"
-            ? "The server cannot start sign-in right now. Please try again later."
-            : state === "sign_in_failed"
-              ? "The server could not complete sign-in. Please try again."
-              : "Sign in with the owner's email code to continue.";
-  const actionHref =
-    state === "identity_not_configured" || state === "sign_in_unavailable"
-      ? "/"
-      : `/auth/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
-  return hideTitle ? (
-    <section className="card" data-status="system">
+        ? "You do not have permission and cannot open this personal area. Ask the area owner if access should change."
+        : "Sign in to continue.";
+  const isExpired = state === "expired_idle" || state === "expired_mid_attempt";
+  return (
+    <SemanticCard status="system" title={title[state]}>
       <p>{copy}</p>
-      <Action
-        href={actionHref}
-        label={
-          state === "identity_not_configured" || state === "sign_in_unavailable"
-            ? "Return"
-            : "Continue to sign in"
-        }
-      />
-    </section>
-  ) : (
-    <SemanticCard status="system" title={title}>
-      <p>{copy}</p>
-      <Action
-        href={actionHref}
-        label={
-          state === "identity_not_configured" || state === "sign_in_unavailable"
-            ? "Return"
-            : "Continue to sign in"
-        }
-      />
+      {isExpired ? <SessionExpiryAnnouncement message={copy} /> : null}
+      {state === "access_denied" ? null : <Action href="/auth/login" label="Continue to sign in" />}
     </SemanticCard>
   );
 }
@@ -972,6 +929,8 @@ export function UploadStatus({
   readonly progress?: number;
 }) {
   const headingId = useId();
+  const stateId = useId();
+  const progressId = useId();
   const label: Record<UploadState, string> = {
     preparing: "Preparing",
     sending: "Sending",
@@ -981,17 +940,21 @@ export function UploadStatus({
     sent: "Sent",
   };
   return (
-    <section aria-labelledby={headingId} className="transfer">
+    <section aria-labelledby={`${headingId} ${stateId}`} className="transfer">
       <h2 id={headingId}>Transfer status</h2>
       <p>
-        <strong>{label[state]}</strong>
+        <strong id={stateId}>{label[state]}</strong>
       </p>
       {progress === undefined ? null : (
         <>
-          <progress max={100} value={progress}>
+          <progress
+            aria-labelledby={`${headingId} ${stateId} ${progressId}`}
+            max={100}
+            value={progress}
+          >
             {progress}%
           </progress>
-          <span>{progress}% transferred</span>
+          <span id={progressId}>{progress}% transferred</span>
         </>
       )}
       <p>
@@ -1066,7 +1029,11 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     variants: ["protected", "bare", "focused"],
     selector: "main",
     expectedText: "Fixture shell",
-    render: () => <AppShell title="Fixture shell">Content</AppShell>,
+    render: () => (
+      <AppShell embedded title="Fixture shell">
+        Content
+      </AppShell>
+    ),
   },
   {
     id: "C02",
@@ -1074,7 +1041,12 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     selector: ".sticky-action",
     expectedText: "Continue",
     render: () => (
-      <AttemptShell action={<Action label="Continue" />} conditions={["Timed"]} title="Attempt">
+      <AttemptShell
+        action={<Action label="Continue" />}
+        conditions={["Timed"]}
+        embedded
+        title="Attempt"
+      >
         Task
       </AttemptShell>
     ),
@@ -1084,7 +1056,11 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     variants: ["measuredTimer", "interruptionRecovery"],
     selector: "time",
     expectedText: "12:00",
-    render: () => <MockShell remaining="12:00">Mock task</MockShell>,
+    render: () => (
+      <MockShell embedded remaining="12:00">
+        Mock task
+      </MockShell>
+    ),
   },
   {
     id: "C04",
@@ -1423,13 +1399,13 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
   switch (fixture.id) {
     case "C01":
       return (
-        <AppShell kind={variant as "protected" | "bare" | "focused"} title="Fixture shell">
+        <AppShell embedded kind={variant as "protected" | "bare" | "focused"} title="Fixture shell">
           Content
         </AppShell>
       );
     case "C03":
       return (
-        <MockShell interrupted={variant === "interruptionRecovery"} remaining="12:00">
+        <MockShell embedded interrupted={variant === "interruptionRecovery"} remaining="12:00">
           Mock task
         </MockShell>
       );
