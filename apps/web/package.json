@@ -13,6 +13,7 @@
     "@bestehen/configuration": "workspace:*",
     "@bestehen/contracts": "workspace:*",
     "@bestehen/design-system": "workspace:*",
+    "@bestehen/domain": "workspace:*",
     "@bestehen/infrastructure": "workspace:*",
     "next": "16.3.2",
     "react": "19.2.8",

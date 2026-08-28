@@ -70,6 +70,18 @@ export interface UiProjectionBase<State extends string> {
 export type ValidityState = (typeof evidenceValidityStates)[number];
 export type ReadinessState = (typeof readinessStates)[number];
 
+export const consequentialUiProjectionStates = [
+  ...evidenceValidityStates,
+  ...readinessStates,
+  ...uiCapabilityStates,
+  ...sessionNoticeStates,
+  ...transferStates,
+  ...exportStates,
+  ...deletionStates,
+  ...draftConflictStates,
+] as const;
+export type ConsequentialUiProjectionState = (typeof consequentialUiProjectionStates)[number];
+
 export type ConsequentialUiProjection =
   | UiProjectionBase<ValidityState>
   | UiProjectionBase<ReadinessState>
@@ -136,14 +148,5 @@ export function isSupportedUiProjection(value: {
   readonly state: string;
 }): boolean {
   if (value.contract.major !== uiProjectionVersion.major) return false;
-  return new Set<string>([
-    ...evidenceValidityStates,
-    ...readinessStates,
-    ...uiCapabilityStates,
-    ...sessionNoticeStates,
-    ...transferStates,
-    ...exportStates,
-    ...deletionStates,
-    ...draftConflictStates,
-  ]).has(value.state);
+  return new Set<string>(consequentialUiProjectionStates).has(value.state);
 }
