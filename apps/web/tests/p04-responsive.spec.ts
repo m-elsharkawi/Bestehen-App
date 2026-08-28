@@ -240,6 +240,59 @@ test("P04-COMPONENT-001 deterministic gallery exposes all component families", a
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
+test("P04-A11Y-001 inert gallery cases do not promise missing interaction behavior", async ({
+  page,
+}) => {
+  await page.goto("/ui-fixtures/gallery");
+  const family = (id: string) => page.locator(`[data-component-family='${id}']`);
+
+  for (const variant of ["segmented", "tabs"]) {
+    const choice = family("C08").locator(`[data-fixture-variant='${variant}']`);
+    await expect(choice).toContainText("Current");
+    await expect(choice.locator("a, button, input, [role='tablist'], [role='tab']")).toHaveCount(0);
+  }
+  const chips = family("C08").locator("[data-fixture-variant='chip'] input");
+  await expect(chips).toHaveCount(2);
+  await expect(chips.first()).toBeEnabled();
+
+  const revealedAnswer = family("C11").locator("[data-fixture-variant='revealed']");
+  await expect(revealedAnswer.getByRole("radio").first()).toBeEnabled();
+  await expect(revealedAnswer.locator("[role='status'], [aria-live]")).toHaveCount(0);
+
+  for (const id of ["C12", "C14"]) {
+    const controls = family(id).getByRole("button");
+    expect(await controls.count()).toBeGreaterThan(0);
+    for (let index = 0; index < (await controls.count()); index++) {
+      await expect(controls.nth(index)).toBeDisabled();
+    }
+    await expect(family(id)).toContainText("unavailable in this static preview");
+  }
+
+  await expect(family("C13").locator("[data-fixture-variant='input'] input")).toBeEnabled();
+  const clozeOptions = family("C13").locator("[data-fixture-variant='options'] input");
+  await expect(clozeOptions).toHaveCount(2);
+  await expect(clozeOptions.first()).toBeEnabled();
+
+  const listening = family("C39");
+  await expect(listening).toContainText("Audio controls are unavailable");
+  expect(await listening.locator("audio").getAttribute("controls")).toBeNull();
+
+  const autosave = family("C40").locator("[data-fixture-variant='autosave']");
+  await expect(autosave.getByLabel("Your draft")).toBeEnabled();
+  await expect(autosave).toContainText("No draft is saved by this fixture");
+  await expect(autosave).not.toContainText("Saved on this device");
+  await expect(autosave.locator("[role='status'], [aria-live]")).toHaveCount(0);
+
+  const speaking = family("C41");
+  const speakingControls = speaking.getByRole("button");
+  await expect(speakingControls).toHaveCount(4);
+  for (let index = 0; index < (await speakingControls.count()); index++) {
+    await expect(speakingControls.nth(index)).toBeDisabled();
+  }
+  await expect(speaking.locator("[role='status'], [aria-live]")).toHaveCount(0);
+  await expect(speaking).not.toContainText("Recording is in progress");
+});
+
 test("P04-A11Y-001 transfer statuses are named and axe-clean", async ({ page }) => {
   await page.goto("/ui-fixtures/transfer");
   await expect(

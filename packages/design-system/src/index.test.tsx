@@ -84,6 +84,74 @@ describe("P04-COMPONENT-001 design system", () => {
     ).toHaveLength(12);
   });
 
+  it("keeps inert Stage 04 fixtures static while native form entry remains available", () => {
+    const fixture = (id: string, variant: string) => {
+      const match = componentFixtureCases.find(
+        (candidate) => candidate.id === id && candidate.variant === variant,
+      );
+      if (!match) throw new Error(`Missing ${id} ${variant} fixture`);
+      return match.render();
+    };
+    const { container } = render(
+      <>
+        <section data-test-family="C08-segmented">{fixture("C08", "segmented")}</section>
+        <section data-test-family="C08-tabs">{fixture("C08", "tabs")}</section>
+        <section data-test-family="C08-chip">{fixture("C08", "chip")}</section>
+        <section data-test-family="C11">{fixture("C11", "revealed")}</section>
+        <section data-test-family="C12">{fixture("C12", "select-place")}</section>
+        <section data-test-family="C13-input">{fixture("C13", "input")}</section>
+        <section data-test-family="C13-options">{fixture("C13", "options")}</section>
+        <section data-test-family="C14">{fixture("C14", "move")}</section>
+        <section data-test-family="C39">{fixture("C39", "audioPlayer")}</section>
+        <section data-test-family="C40">{fixture("C40", "autosave")}</section>
+        <section data-test-family="C41">{fixture("C41", "recording")}</section>
+      </>,
+    );
+
+    for (const variant of ["C08-segmented", "C08-tabs"]) {
+      const choicePreview = container.querySelector(`[data-test-family='${variant}']`);
+      expect(choicePreview).toHaveTextContent("Current");
+      expect(
+        choicePreview?.querySelector("a, button, input, [role='tablist'], [role='tab']"),
+      ).toBeNull();
+    }
+    const chip = container.querySelector("[data-test-family='C08-chip'] input");
+    expect(chip).toBeEnabled();
+
+    const answer = container.querySelector("[data-test-family='C11']");
+    expect(answer?.querySelector("input")).toBeEnabled();
+    expect(answer?.querySelector("[role='status'], [aria-live]")).toBeNull();
+
+    for (const family of ["C12", "C14"]) {
+      const controls = container.querySelectorAll(`[data-test-family='${family}'] button`);
+      expect(controls.length).toBeGreaterThan(0);
+      for (const control of controls) expect(control).toBeDisabled();
+      expect(container.querySelector(`[data-test-family='${family}']`)).toHaveTextContent(
+        /unavailable in this static preview/i,
+      );
+    }
+
+    expect(container.querySelector("[data-test-family='C13-input'] input")).toBeEnabled();
+    const clozeOptions = container.querySelectorAll("[data-test-family='C13-options'] input");
+    expect(clozeOptions).toHaveLength(2);
+    for (const option of clozeOptions) expect(option).toBeEnabled();
+
+    const listening = container.querySelector("[data-test-family='C39']");
+    expect(listening).toHaveTextContent("Audio controls are unavailable");
+    expect(listening?.querySelector("audio")).not.toHaveAttribute("controls");
+
+    const writing = container.querySelector("[data-test-family='C40']");
+    expect(writing?.querySelector("textarea")).toBeEnabled();
+    expect(writing).toHaveTextContent("No draft is saved by this fixture");
+    expect(writing).not.toHaveTextContent("Saved on this device");
+    expect(writing?.querySelector("[role='status'], [aria-live]")).toBeNull();
+
+    const speaking = container.querySelector("[data-test-family='C41']");
+    expect(speaking).toHaveTextContent("No microphone capture is running");
+    expect(speaking?.querySelector("button")).toBeDisabled();
+    expect(speaking?.querySelector("[role='status'], [aria-live]")).toBeNull();
+  });
+
   it("drives C29 fault categories and C32 readiness states through their public APIs", () => {
     const failures = componentFixtureCases.filter((fixture) => fixture.id === "C29");
     expect(failures.map((fixture) => fixture.variant)).toEqual([
@@ -214,7 +282,7 @@ describe("P04-COMPONENT-001 design system", () => {
     expect(pending).toHaveTextContent("Affected: Speaking recording");
   });
 
-  it("preserves both draft branches and gives keyboard-native resolution choices", () => {
+  it("renders both draft versions and keyboard-native preview choices", () => {
     render(<DraftConflict />);
     expect(screen.getByRole("heading", { name: "This device" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Server checkpoint" })).toBeInTheDocument();
@@ -288,7 +356,7 @@ describe("P04-COMPONENT-001 design system", () => {
     },
   );
 
-  it("provides keyboard-native alternatives for matching, ordering, and duration", () => {
+  it("disables deferred matching and ordering commands while duration stays native", () => {
     render(
       <>
         <MatchingPair />
@@ -296,9 +364,11 @@ describe("P04-COMPONENT-001 design system", () => {
         <SessionDurationPicker />
       </>,
     );
-    expect(screen.getByRole("button", { name: "Select item A" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Place in position 1" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Move up" })).toBeEnabled();
-    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    expect(screen.getByRole("button", { name: "Select item A" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Place in position 1" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Move up" })).toBeDisabled();
+    const durationChoices = screen.getAllByRole("radio");
+    expect(durationChoices).toHaveLength(3);
+    for (const choice of durationChoices) expect(choice).toBeEnabled();
   });
 });

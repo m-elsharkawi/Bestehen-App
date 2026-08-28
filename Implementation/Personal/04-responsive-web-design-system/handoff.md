@@ -245,6 +245,15 @@ keyboard, axe, reduced-motion, forced-color, and visual coverage remains passing
 exact-head CI. These named live-device limitations are deferred honestly and do not
 weaken or replace that CI coverage.
 
+For issue #12 finding 2, the owner selected Done-when option (b). The inert C08,
+C11-C14, and C39-C41 fixtures now expose only static content or behavior supplied by
+native form controls. They do not claim a tab widget, matching or ordering commands,
+live answer or recording announcements, media playback or capture, autosave, or draft
+resolution. Controls whose commands have no Stage 04 runtime are visibly disabled.
+Stage 05 owns those interactions, persistence, and event-driven announcements. This
+handoff claims accessible fixture content and native text, radio, and checkbox entry
+only.
+
 ## Stage 05 inputs
 
 Stage 05 should reuse the versioned UI projection seam, App/Attempt/Mock shells,
