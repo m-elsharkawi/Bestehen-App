@@ -127,6 +127,10 @@ const expectedSchema = {
   coverageStatuses: ["accepted", "corrected", "derived", "obsolete"],
 };
 const maximumTargetAnchorUses = 5;
+const semanticUnionSources = {
+  semanticStates: "packages/contracts consequentialUiProjectionStates",
+  semanticReasons: "packages/domain reasonRegistryV1",
+};
 
 function filesUnder(directory) {
   return readdirSync(directory).flatMap((entry) => {
@@ -146,6 +150,51 @@ export function loadCoverageManifest(root = process.cwd()) {
     { cwd: root, encoding: "utf8" },
   );
   return JSON.parse(source);
+}
+
+export function loadProductSemanticUnions(root = process.cwd()) {
+  const source = execFileSync(
+    process.execPath,
+    [
+      "--import=tsx",
+      "--eval",
+      `import { consequentialUiProjectionStates } from './packages/contracts/src/ui-projections.ts';` +
+        `import { reasonRegistryV1 } from './packages/domain/src/index.ts';` +
+        `process.stdout.write(JSON.stringify({` +
+        `semanticStates: [...new Set(consequentialUiProjectionStates)],` +
+        `semanticReasons: reasonRegistryV1.map((definition) => definition.code),` +
+        `}));`,
+    ],
+    { cwd: root, encoding: "utf8" },
+  );
+  return JSON.parse(source);
+}
+
+export function assertSemanticUnionParity(productUnions, schema = expectedSchema) {
+  for (const field of ["semanticStates", "semanticReasons"]) {
+    const declared = schema[field] ?? [];
+    const actual = productUnions[field] ?? [];
+    const declaredSet = new Set(declared);
+    const actualSet = new Set(actual);
+    const extra = [...declaredSet].filter((value) => !actualSet.has(value));
+    const missing = [...actualSet].filter((value) => !declaredSet.has(value));
+    if (extra.length > 0 || missing.length > 0) {
+      throw new Error(
+        `Coverage manifest ${field} drifted from ${semanticUnionSources[field]}: ` +
+          `extra [${extra.join(", ")}]; missing [${missing.join(", ")}]`,
+      );
+    }
+    if (declared.join("|") !== actual.join("|")) {
+      throw new Error(
+        `Coverage manifest ${field} order drifted from ${semanticUnionSources[field]}: ` +
+          `expected [${actual.join(", ")}]`,
+      );
+    }
+  }
+  return {
+    semanticStates: productUnions.semanticStates.length,
+    semanticReasons: productUnions.semanticReasons.length,
+  };
 }
 
 export function loadGeneratedCoverage(root = process.cwd()) {
@@ -377,15 +426,28 @@ export function validateCoverageManifest(
       throw new Error(`Over-reused target anchor: ${targetKey} serves ${targetIds.join(", ")}`);
     }
   }
+
+  for (const [field, label] of [
+    ["semanticStates", "semantic state"],
+    ["semanticReasons", "semantic reason"],
+  ]) {
+    const claimed = new Set(rows.flatMap((row) => row[field]));
+    const unclaimed = expectedSchema[field].filter((value) => !claimed.has(value));
+    if (unclaimed.length > 0) {
+      throw new Error(`Unclaimed ${label} in the coverage manifest: ${unclaimed.join(", ")}`);
+    }
+  }
   return { rows: rows.length, targetAnchors: targetAnchorUses.size };
 }
 
 export function runCoverageCheck(root = process.cwd()) {
   const manifest = loadCoverageManifest(root);
   const generated = loadGeneratedCoverage(root);
+  const unions = assertSemanticUnionParity(loadProductSemanticUnions(root));
   const result = validateCoverageManifest(manifest, { root, generated });
   process.stdout.write(
-    `P04-COVERAGE-001 full reciprocal 37/41/8/43/20 projection passed (${result.targetAnchors} target anchors).\n`,
+    `P04-COVERAGE-001 full reciprocal 37/41/8/43/20 projection passed (${result.targetAnchors} target anchors, ` +
+      `${unions.semanticStates} product states, ${unions.semanticReasons} product reasons).\n`,
   );
 }
 
