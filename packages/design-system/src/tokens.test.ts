@@ -48,6 +48,24 @@ describe("P04-TOKEN-001 canonical design tokens", () => {
     }
     return "";
   };
+  const tokenValue = (css: string, name: string) =>
+    css.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`, "i"))?.[1] ?? "";
+  const relativeLuminance = (hex: string) => {
+    if (!/^#[0-9a-f]{6}$/i.test(hex)) throw new Error(`Invalid color token ${hex}`);
+    const channel = (offset: number) => {
+      const value = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    };
+    return 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5);
+  };
+  const contrastRatio = (foreground: string, background: string) => {
+    const foregroundLuminance = relativeLuminance(foreground);
+    const backgroundLuminance = relativeLuminance(background);
+    return (
+      (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
+      (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+    );
+  };
 
   it("contains the exact 25 semantic names and both modes", () => {
     const expected: string[] = [...semanticTokens].sort();
@@ -74,5 +92,12 @@ describe("P04-TOKEN-001 canonical design tokens", () => {
     ])
       expect(tokens).toContain(`--${token}:`);
     expect(tokens).toContain("--target-min: 44px");
+  });
+
+  it("keeps muted light-mode text readable on the paper surface", () => {
+    const light = block(tokens, ":root {");
+    expect(
+      contrastRatio(tokenValue(light, "text-muted"), tokenValue(light, "surface-paper")),
+    ).toBeGreaterThanOrEqual(4.5);
   });
 });
