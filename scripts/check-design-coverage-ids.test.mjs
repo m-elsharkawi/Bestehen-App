@@ -5,9 +5,9 @@ describe("executable coverage ID extraction", () => {
   test("accepts IDs in test and describe titles", () => {
     expect([
       ...executableCheckIds(
-        "test(\"QA-VISUAL-001 works\", () => {}); describe('QA-TOKEN-001 tokens', () => {})",
+        "test(\"P04-DEMO-001 works\", () => {}); describe('P04-SAMPLE-001 tokens', () => {})",
       ),
-    ]).toEqual(["QA-VISUAL-001", "QA-TOKEN-001"]);
+    ]).toEqual(["P04-DEMO-001", "P04-SAMPLE-001"]);
   });
 
   it("rejects comments and unrelated strings", () => {
