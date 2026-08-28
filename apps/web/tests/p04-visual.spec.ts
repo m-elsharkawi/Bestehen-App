@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { existsSync } from "node:fs";
 
 test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserName }) => {
+  test.skip(
+    process.env.BESTEHEN_VISUAL_RASTER !== "pinned-container" ||
+      !existsSync("/etc/bestehen-visual-raster"),
+    "Visual anchors compare only in the pinned raster container.",
+  );
   test.skip(
     browserName !== "chromium",
     "One fixed raster engine owns supplemental visual baselines",
@@ -36,8 +42,9 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     await expect(page).toHaveScreenshot(`${name}.png`, {
       animations: "disabled",
       fullPage: true,
-      // Self-hosted font hinting differs across macOS and Linux; semantic tests remain authoritative.
-      maxDiffPixelRatio: 0.02,
+      // The container fixes the browser, OS libraries, and self-hosted-font raster path.
+      // Semantic tests remain authoritative; this only catches visual regressions.
+      maxDiffPixelRatio: 0.0024,
     });
   }
 });

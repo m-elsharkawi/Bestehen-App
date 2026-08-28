@@ -188,6 +188,15 @@ Evidence IDs map as follows:
   1280 widths, with a maximum two-percent pixel difference. The test normalizes font
   smoothing and geometric text rendering before screenshots; semantic and responsive
   checks remain authoritative, and no tolerance was raised or visual case removed.
+  Follow-up finding 11 confines screenshot comparison and baseline generation to
+  `Dockerfile.visual`, built from the exact Node `24.19.0` Bookworm image digest,
+  pnpm `11.23.0`, and the lockfile's Chromium revision. `pnpm test:e2e` retains the
+  semantic browser suite and skips those supplemental anchors outside that raster
+  image; `pnpm test:visual:container` is the required comparison command and
+  `pnpm test:visual:update` is the only supported baseline-update path. The test
+  requires the image marker at `/etc/bestehen-visual-raster`, so setting an
+  environment variable on a developer host cannot regenerate a checked-in baseline.
+  The configured pinned comparison limit is `0.24%` (`maxDiffPixelRatio: 0.0024`).
 - `P04-ASSET-001`, `P04-COVERAGE-001`, `P04-PERF-001`, and `P04-SCOPE-001`: the four
   repository checks in `scripts/` and their negative fixtures.
 - All 13 Stage 04 IDs are immutable required properties in the release-manifest schema
