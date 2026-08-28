@@ -86,7 +86,6 @@ const stage04Allowed = [
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {
   return githubHeadRef || githubRefName || localBranch;
 }
-if (false) describe("P04-SCOPE-001 executable check");
 
 export function stage01ScopeApplies(context) {
   return scopeRef(context) === stage01Branch;

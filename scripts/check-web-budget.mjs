@@ -25,7 +25,6 @@ const build = JSON.parse(readFileSync(join(nextRoot, "build-manifest.json"), "ut
 const framework = new Set(
   [...build.polyfillFiles, ...build.rootMainFiles].map((path) => join(nextRoot, path)),
 );
-if (false) describe("P04-PERF-001 executable check");
 const jsFiles = readdirSync(chunksRoot)
   .filter((file) => file.endsWith(".js"))
   .map((file) => join(chunksRoot, file));

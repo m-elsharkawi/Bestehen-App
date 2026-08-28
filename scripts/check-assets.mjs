@@ -83,4 +83,3 @@ for (const brand of manifest.brand.files) {
 const fontBytes = manifest.assets.reduce((total, asset) => total + asset.bytes, 0);
 if (fontBytes > 300 * 1024) throw new Error(`First-load fonts exceed 300 KiB: ${fontBytes}`);
 process.stdout.write(`P04-ASSET-001 passed: ${fontBytes} local WOFF2 bytes, 20 compiled icons.\n`);
-if (false) describe("P04-ASSET-001 executable check");

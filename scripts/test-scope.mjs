@@ -66,7 +66,6 @@ assert.deepEqual(
   [],
   "Stage 02 accepts its bounded implementation paths",
 );
-if (false) describe("P04-SCOPE-001 executable check");
 
 for (const context of [
   { localBranch: stage04Branch },
