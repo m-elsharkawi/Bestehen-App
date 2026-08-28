@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
 import {
+  consequentialUiProjectionStates,
   deletionStates,
   draftConflictStates,
   exportStates,
@@ -10,26 +11,19 @@ import {
   uiCapabilityStates,
 } from "@bestehen/contracts";
 import {
+  consequentialProjectionStates,
   isSupportedProjectionCard,
   ProjectionCard,
   type ProjectionCardContract,
 } from "@bestehen/design-system";
+import { evidenceValidityStates, readinessStates } from "@bestehen/domain";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 afterEach(cleanup);
 
-const validityStates = ["valid", "partially_valid", "interrupted", "not_counted"] as const;
-const readinessStates = [
-  "evidence_building",
-  "not_ready",
-  "borderline",
-  "safe",
-  "ready_to_book",
-  "stale_contradicted",
-] as const;
 const consequentialStates = [
-  ...validityStates,
+  ...evidenceValidityStates,
   ...readinessStates,
   ...uiCapabilityStates,
   ...sessionNoticeStates,
@@ -55,6 +49,15 @@ function projectionFor(state: ProjectionCardContract["state"]): ProjectionCardCo
 }
 
 describe("P04-SEMANTIC-001 consequential projection fixtures", () => {
+  it("keeps contracts and design-system consequential projection states in parity", () => {
+    expect([...consequentialUiProjectionStates]).toEqual(
+      expect.arrayContaining([...consequentialProjectionStates]),
+    );
+    expect([...consequentialProjectionStates]).toEqual(
+      expect.arrayContaining([...consequentialUiProjectionStates]),
+    );
+  });
+
   it.each(consequentialStates)(
     "renders the %s state through the presentation-only card",
     (state) => {
