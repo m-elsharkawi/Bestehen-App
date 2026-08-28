@@ -110,6 +110,15 @@ test("P04-RSP-001 breakpoint edges and representative text scaling retain conten
   }
 });
 
+test("P04-RSP-001 focused mock content remains at most 720 CSS pixels", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/ui-fixtures/mock");
+  const width = await page
+    .locator(".mock-measure")
+    .evaluate((node) => node.getBoundingClientRect().width);
+  expect(width).toBeLessThanOrEqual(720);
+});
+
 test("P04-RSP-001 resize preserves theme and draft while history returns", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ui-fixtures/writing");
