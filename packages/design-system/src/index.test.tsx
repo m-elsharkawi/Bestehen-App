@@ -19,9 +19,11 @@ import {
   Overlay,
   ReadinessEvidence,
   ReorderList,
+  ResultCard,
   SessionDurationPicker,
   SessionNotice,
   UploadStatus,
+  PendingBanner,
 } from "./index.js";
 
 afterEach(cleanup);
@@ -168,6 +170,48 @@ describe("P04-COMPONENT-001 design system", () => {
     expect(screen.getByText("evidence building")).toBeInTheDocument();
     expect(screen.getAllByText(/Gate [A-F]:/)).toHaveLength(6);
     expect(screen.getAllByText("Not enough evidence")).toHaveLength(2);
+  });
+
+  it("keeps C19 results and C28 capability status as distinct public contracts", () => {
+    const resultProjection = {
+      affectedScope: ["Writing response"],
+      announcement: "none",
+      contract: { major: 1, minor: 0 },
+      focusTarget: "heading",
+      message: "The written result is available.",
+      source: { release: "test-1", sourceCut: 1 },
+      state: "partially_valid",
+      status: "attention",
+      title: "Writing result",
+    } as const;
+    const pendingProjection = {
+      affectedScope: ["Speaking recording"],
+      announcement: "polite",
+      contract: { major: 1, minor: 0 },
+      focusTarget: "none",
+      message: "Capability status is waiting for a server update.",
+      source: { release: "test-1", sourceCut: 1 },
+      state: "pending",
+      status: "attention",
+      title: "Capability status",
+    } as const;
+    const { container } = render(
+      <>
+        <ResultCard projection={resultProjection} />
+        <PendingBanner projection={pendingProjection} />
+      </>,
+    );
+
+    const result = container.querySelector("[data-component='result-card']");
+    const pending = container.querySelector("[data-component='pending-banner']");
+    expect(result).toHaveTextContent("Outcome");
+    expect(result).toHaveTextContent("Validity");
+    expect(result).toHaveTextContent("Affected: Writing response");
+    expect(result).toHaveAttribute("tabindex", "-1");
+    expect(pending).toHaveAttribute("aria-live", "polite");
+    expect(pending).toHaveAttribute("role", "status");
+    expect(pending).toHaveAttribute("data-state", "pending");
+    expect(pending).toHaveTextContent("Affected: Speaking recording");
   });
 
   it("preserves both draft branches and gives keyboard-native resolution choices", () => {
