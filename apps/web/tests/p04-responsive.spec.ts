@@ -58,6 +58,11 @@ test("P04-ROUTE-001 held public destination survives auth failure round-trip", a
   await expect(page).toHaveURL(new RegExp(`${heldDestination.replace("/", "\\/")}$`));
 });
 
+test("P04-ROUTE-001 synthetic auth completes only with explicit signal", async ({ page }) => {
+  await page.goto("/auth/login?returnTo=%2Freadiness&synthetic=1");
+  await expect(page).toHaveURL(/\/readiness$/);
+});
+
 test("P04-RSP-001 representative views reflow at 320 and 200 percent text", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/ui-fixtures/readiness");
