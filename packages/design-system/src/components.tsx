@@ -6,6 +6,7 @@ import { Icon } from "./icons.js";
 import { Overlay } from "./overlay.js";
 import { Action, SemanticCard, StatusWord } from "./primitives.js";
 import { AppShell, AttemptShell, MockShell } from "./shells.js";
+import { SessionExpiryAnnouncement } from "./session-expiry-announcement.js";
 
 export { Overlay } from "./overlay.js";
 
@@ -902,12 +903,14 @@ export function SessionNotice({ state }: { readonly state: SessionNoticeState })
     state === "expired_mid_attempt"
       ? "Your draft, elapsed time, and attempt conditions are preserved. The server will decide the final validity after you sign in."
       : state === "access_denied"
-        ? "This account cannot open that personal area."
-        : "Sign in with the owner's email code to continue.";
+        ? "You do not have permission and cannot open this personal area. Ask the area owner if access should change."
+        : "Sign in to continue.";
+  const isExpired = state === "expired_idle" || state === "expired_mid_attempt";
   return (
     <SemanticCard status="system" title={title[state]}>
       <p>{copy}</p>
-      <Action href="/auth/login" label="Continue to sign in" />
+      {isExpired ? <SessionExpiryAnnouncement message={copy} /> : null}
+      {state === "access_denied" ? null : <Action href="/auth/login" label="Continue to sign in" />}
     </SemanticCard>
   );
 }
