@@ -28,7 +28,9 @@ describe("P04-PERF-001 web budget integrity", () => {
       "static/chunks/layout.js",
       "static/chunks/route.js",
     ]);
-    expect(files).not.toContain("static/chunks/unrelated.js");
+    expect(() =>
+      protectedRouteFiles({ rootMainFiles: [], polyfillFiles: [] }, { entryJSFiles: {} }, "/coach"),
+    ).toThrow("missing /coach");
     expect(protectedRouteBudgetError(200 * 1024 + 1)).toContain("exceeds 200 KiB gzip");
   });
 
