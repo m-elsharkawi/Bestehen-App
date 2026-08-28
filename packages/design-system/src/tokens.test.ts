@@ -45,7 +45,7 @@ describe("P04-TOKEN-001 canonical design tokens", () => {
   };
 
   it("contains the exact 25 semantic names and both modes", () => {
-    const expected = [...semanticTokens].sort();
+    const expected: string[] = [...semanticTokens].sort();
     expect(
       declarationNames(block(tokens, ":root {"))
         .filter((name) => expected.includes(name))
