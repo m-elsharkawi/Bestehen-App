@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
+import { parseServerEnvironmentForService } from "@bestehen/configuration";
 import { getIdentityService } from "../../../server/identity";
 import { applicationRequestUrl } from "../../../server/runtime";
 
 export async function GET(request: Request): Promise<Response> {
   const current = applicationRequestUrl(request.url);
   const returnTo = current.searchParams.get("returnTo");
+  const environment = parseServerEnvironmentForService(process.env, "web");
   if (
-    process.env.BESTEHEN_APP_ENV === "test" &&
-    process.env.BESTEHEN_RELEASE_COMMIT === "playwright-synthetic" &&
+    environment.BESTEHEN_APP_ENV === "test" &&
+    environment.BESTEHEN_RELEASE_COMMIT === "playwright-synthetic" &&
     current.searchParams.get("synthetic") === "1" &&
     returnTo === "/readiness"
   ) {
