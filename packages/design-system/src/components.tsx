@@ -380,6 +380,21 @@ const consequentialStateLabels: Record<ProjectionCardContract["state"], string> 
   compare: "Compare drafts",
   select: "Choose a draft",
   merge: "Combine drafts",
+  available: "Available",
+  loading_media: "Loading",
+  unavailable_no_fresh_family: "No fresh content available",
+  unavailable_rights_or_target: "Not available for this target",
+  quarantined_after_pin: "Under review",
+  media_failed_not_counted: "Could not load; not counted",
+  replacement_ready: "Replacement ready",
+  update_required: "Update required",
+  acquiring_manifest: "Preparing",
+  in_progress: "In progress",
+  checkpointed: "Progress saved",
+  submission_unknown: "Submission unconfirmed",
+  submitted: "Submitted",
+  scoring: "Being scored",
+  result_available: "Result available",
 };
 
 export function ProjectionCard({ projection }: { readonly projection: ProjectionCardContract }) {
