@@ -18,3 +18,12 @@ export function protectedRouteFiles(build, routeManifest, routeKey) {
     ),
   ];
 }
+
+// Every App-owned chunk (i.e. not part of the shared framework runtime), regardless of
+// whether any single route's client-reference manifest happens to reference it. This is
+// deliberately independent of protectedRouteFiles: a chunk can be App-owned (and therefore
+// subject to the per-file/aggregate App-owned budgets below) without being part of the
+// /coach protected-route first-load entry set.
+export function appOwnedChunks(chunkFiles, framework) {
+  return chunkFiles.filter((file) => !framework.has(file));
+}

@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { protectedRouteBudgetError, protectedRouteFiles } from "./web-budget.mjs";
+import { appOwnedChunks, protectedRouteBudgetError, protectedRouteFiles } from "./web-budget.mjs";
 import { describe, expect, it } from "vitest";
 
 describe("P04-ASSET-001 asset integrity", () => {
@@ -32,6 +32,27 @@ describe("P04-PERF-001 web budget integrity", () => {
       protectedRouteFiles({ rootMainFiles: [], polyfillFiles: [] }, { entryJSFiles: {} }, "/coach"),
     ).toThrow("missing /coach");
     expect(protectedRouteBudgetError(200 * 1024 + 1)).toContain("exceeds 200 KiB gzip");
+  });
+
+  it("gates the protected-route total exactly at the 200 KiB cap boundary", () => {
+    expect(protectedRouteBudgetError(200 * 1024)).toBeNull();
+    expect(protectedRouteBudgetError(200 * 1024 + 1)).toContain("exceeds 200 KiB gzip");
+  });
+
+  it("scans every App-owned chunk, not just chunks a given route's entry set references", () => {
+    const framework = new Set(["dist/static/chunks/framework-main.js"]);
+    const allChunksOnDisk = [
+      "dist/static/chunks/framework-main.js",
+      "dist/static/chunks/coach-route.js",
+      "dist/static/chunks/settings-route.js",
+    ];
+    // "settings-route.js" is not part of the /coach protected route's entry set, but it is
+    // still an App-owned chunk on disk, so it must remain in the per-file 60 KiB scan.
+    const owned = appOwnedChunks(allChunksOnDisk, framework);
+    expect(owned).toEqual([
+      "dist/static/chunks/coach-route.js",
+      "dist/static/chunks/settings-route.js",
+    ]);
   });
 
   it("builds when needed and executes the web budget checker", () => {
