@@ -601,10 +601,11 @@ export interface ReadinessEvidenceProps {
 }
 export function ReadinessEvidence({ state, written, oral, gates }: ReadinessEvidenceProps) {
   const headingId = useId();
+  const stateId = useId();
   return (
-    <section aria-labelledby={headingId} className="readiness-evidence">
+    <section aria-labelledby={`${headingId} ${stateId}`} className="readiness-evidence">
       <h2 id={headingId}>Readiness evidence</h2>
-      <p>
+      <p id={stateId}>
         <StatusWord
           status={
             state === "safe" || state === "ready_to_book"
@@ -925,6 +926,8 @@ export function UploadStatus({
   readonly progress?: number;
 }) {
   const headingId = useId();
+  const stateId = useId();
+  const progressId = useId();
   const label: Record<UploadState, string> = {
     preparing: "Preparing",
     sending: "Sending",
@@ -934,17 +937,21 @@ export function UploadStatus({
     sent: "Sent",
   };
   return (
-    <section aria-labelledby={headingId} className="transfer">
+    <section aria-labelledby={`${headingId} ${stateId}`} className="transfer">
       <h2 id={headingId}>Transfer status</h2>
       <p>
-        <strong>{label[state]}</strong>
+        <strong id={stateId}>{label[state]}</strong>
       </p>
       {progress === undefined ? null : (
         <>
-          <progress max={100} value={progress}>
+          <progress
+            aria-labelledby={`${headingId} ${stateId} ${progressId}`}
+            max={100}
+            value={progress}
+          >
             {progress}%
           </progress>
-          <span>{progress}% transferred</span>
+          <span id={progressId}>{progress}% transferred</span>
         </>
       )}
       <p>
@@ -1019,7 +1026,11 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     variants: ["protected", "bare", "focused"],
     selector: "main",
     expectedText: "Fixture shell",
-    render: () => <AppShell title="Fixture shell">Content</AppShell>,
+    render: () => (
+      <AppShell embedded title="Fixture shell">
+        Content
+      </AppShell>
+    ),
   },
   {
     id: "C02",
@@ -1027,7 +1038,12 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     selector: ".sticky-action",
     expectedText: "Continue",
     render: () => (
-      <AttemptShell action={<Action label="Continue" />} conditions={["Timed"]} title="Attempt">
+      <AttemptShell
+        action={<Action label="Continue" />}
+        conditions={["Timed"]}
+        embedded
+        title="Attempt"
+      >
         Task
       </AttemptShell>
     ),
@@ -1037,7 +1053,11 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
     variants: ["measuredTimer", "interruptionRecovery"],
     selector: "time",
     expectedText: "12:00",
-    render: () => <MockShell remaining="12:00">Mock task</MockShell>,
+    render: () => (
+      <MockShell embedded remaining="12:00">
+        Mock task
+      </MockShell>
+    ),
   },
   {
     id: "C04",
@@ -1376,13 +1396,13 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
   switch (fixture.id) {
     case "C01":
       return (
-        <AppShell kind={variant as "protected" | "bare" | "focused"} title="Fixture shell">
+        <AppShell embedded kind={variant as "protected" | "bare" | "focused"} title="Fixture shell">
           Content
         </AppShell>
       );
     case "C03":
       return (
-        <MockShell interrupted={variant === "interruptionRecovery"} remaining="12:00">
+        <MockShell embedded interrupted={variant === "interruptionRecovery"} remaining="12:00">
           Mock task
         </MockShell>
       );
