@@ -13,9 +13,10 @@ export async function GET(request: Request): Promise<Response> {
       303,
     );
   } catch {
-    return NextResponse.redirect(
-      new URL("/auth/failure?code=sign_in_unavailable", current.origin),
-      303,
-    );
+    const failure = new URL("/auth/failure", current.origin);
+    failure.searchParams.set("code", "sign_in_unavailable");
+    const returnTo = current.searchParams.get("returnTo");
+    if (returnTo) failure.searchParams.set("returnTo", returnTo);
+    return NextResponse.redirect(failure, 303);
   }
 }

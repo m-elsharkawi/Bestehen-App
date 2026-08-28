@@ -10,7 +10,11 @@ export async function GET(request: Request): Promise<Response> {
     .completeCallback(current)
     .catch(() => undefined);
   if (!callback?.ok) {
-    return NextResponse.redirect(new URL("/auth/failure?code=sign_in_failed", current.origin), 303);
+    const failure = new URL("/auth/failure", current.origin);
+    failure.searchParams.set("code", "sign_in_failed");
+    const returnTo = current.searchParams.get("returnTo");
+    if (returnTo) failure.searchParams.set("returnTo", returnTo);
+    return NextResponse.redirect(failure, 303);
   }
   const cookieStore = await cookies();
   cookieStore.set(appSessionCookie.name, callback.value.token, appSessionCookie.options);

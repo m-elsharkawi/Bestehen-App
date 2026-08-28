@@ -886,27 +886,60 @@ export function DraftConflict() {
 export type SessionNoticeState =
   | "signed_out"
   | "callback_failed"
+  | "identity_not_configured"
+  | "sign_in_unavailable"
+  | "sign_in_failed"
   | "expired_idle"
   | "expired_mid_attempt"
   | "access_denied";
-export function SessionNotice({ state }: { readonly state: SessionNoticeState }) {
+export function sessionNoticeTitle(state: SessionNoticeState): string {
   const title: Record<SessionNoticeState, string> = {
     signed_out: "Sign in required",
     callback_failed: "Sign-in needs another try",
+    identity_not_configured: "Sign-in is not configured",
+    sign_in_unavailable: "Sign-in is temporarily unavailable",
+    sign_in_failed: "Sign-in could not be completed",
     expired_idle: "Sign-in timed out",
     expired_mid_attempt: "Sign-in needed to continue",
     access_denied: "This area is unavailable",
   };
+  return title[state];
+}
+export function SessionNotice({
+  state,
+  returnTo,
+}: {
+  readonly state: SessionNoticeState;
+  readonly returnTo?: string;
+}) {
+  const title = sessionNoticeTitle(state);
   const copy =
     state === "expired_mid_attempt"
       ? "Your draft, elapsed time, and attempt conditions are preserved. The server will decide the final validity after you sign in."
       : state === "access_denied"
         ? "This account cannot open that personal area."
-        : "Sign in with the owner's email code to continue.";
+        : state === "identity_not_configured"
+          ? "The server has not configured a sign-in provider yet."
+          : state === "sign_in_unavailable"
+            ? "The server cannot start sign-in right now. Please try again later."
+            : state === "sign_in_failed"
+              ? "The server could not complete sign-in. Please try again."
+              : "Sign in with the owner's email code to continue.";
+  const actionHref =
+    state === "identity_not_configured" || state === "sign_in_unavailable"
+      ? "/"
+      : `/auth/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
   return (
-    <SemanticCard status="system" title={title[state]}>
+    <SemanticCard status="system" title={title}>
       <p>{copy}</p>
-      <Action href="/auth/login" label="Continue to sign in" />
+      <Action
+        href={actionHref}
+        label={
+          state === "identity_not_configured" || state === "sign_in_unavailable"
+            ? "Return"
+            : "Continue to sign in"
+        }
+      />
     </SemanticCard>
   );
 }

@@ -35,13 +35,18 @@ test("P04-ROUTE-001 protected and focused product routes fail closed", async ({ 
     ["/readiness", "/readiness"],
     ["/attempt/synthetic", "/attempt/current"],
   ] as const) {
-    await page.goto(path);
-    await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured$/);
+    await page.goto(`${path}?returnTo=${encodeURIComponent(returnPath)}`);
+    await expect(page).toHaveURL(
+      new RegExp(
+        `/auth/failure\\?code=identity_not_configured&returnTo=${encodeURIComponent(returnPath)}`,
+      ),
+    );
     const url = new URL(page.url());
     expect(url.pathname).toBe("/auth/failure");
     expect(url.searchParams.get("code")).toBe("identity_not_configured");
-    expect(page.url()).not.toContain("synthetic");
-    expect(returnPath.startsWith("/")).toBe(true);
+    expect(url.searchParams.get("returnTo")).toBe(returnPath);
+    await page.getByRole("link", { name: "Return" }).click();
+    await expect(page).not.toHaveURL(/\/auth\/failure/);
   }
 });
 
