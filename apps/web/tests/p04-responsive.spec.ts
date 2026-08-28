@@ -35,14 +35,23 @@ test("P04-ROUTE-001 protected and focused product routes fail closed", async ({ 
     ["/readiness", "/readiness"],
     ["/attempt/synthetic", "/attempt/current"],
   ] as const) {
-    await page.goto(path);
-    await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured$/);
+    await page.goto(`${path}?returnTo=${encodeURIComponent(returnPath)}`);
+    await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured/);
     const url = new URL(page.url());
     expect(url.pathname).toBe("/auth/failure");
     expect(url.searchParams.get("code")).toBe("identity_not_configured");
-    expect(page.url()).not.toContain("synthetic");
-    expect(returnPath.startsWith("/")).toBe(true);
+    expect(url.searchParams.get("returnTo")).toBe(returnPath);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.getByRole("link", { name: "Return" })).toHaveAttribute("href", "/");
+    await page.getByRole("link", { name: "Return" }).click();
+    await expect(page).not.toHaveURL(/\/auth\/failure/);
   }
+});
+
+test("P04-ROUTE-001 synthetic auth completes only with explicit signal", async ({ page }) => {
+  await page.setExtraHTTPHeaders({ "x-bestehen-synthetic-auth": "1" });
+  await page.goto("/auth/login?returnTo=%2Freadiness&synthetic=1");
+  await expect(page).toHaveURL(/\/readiness$/);
 });
 
 test("P04-RSP-001 representative views reflow at 320 and 200 percent text", async ({ page }) => {

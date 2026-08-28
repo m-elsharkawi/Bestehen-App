@@ -18,6 +18,14 @@ export function applicationRequestUrl(requestUrl: string): URL {
   return canonicalApplicationRequestUrl(requestUrl, environment.BESTEHEN_APPLICATION_BASE_URL);
 }
 
+export function syntheticFixtureEnabled(): boolean {
+  const environment = parseServerEnvironmentForService(process.env, "web");
+  return (
+    environment.BESTEHEN_APP_ENV === "test" &&
+    environment.BESTEHEN_RELEASE_COMMIT === "playwright-synthetic"
+  );
+}
+
 export function livenessPayload(
   releaseCommit = process.env.BESTEHEN_RELEASE_COMMIT ?? "unconfigured",
 ) {
