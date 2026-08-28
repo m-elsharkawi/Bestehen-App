@@ -383,7 +383,66 @@ export function ProjectionCard({ projection }: { readonly projection: Projection
   );
 }
 
-export const ResultCard = ProjectionCard;
+export type ResultCardState =
+  | "valid"
+  | "partially_valid"
+  | "interrupted"
+  | "not_counted"
+  | "pending"
+  | "partial";
+export type ResultCardContract = Omit<ProjectionCardContract, "state"> & {
+  readonly state: ResultCardState;
+};
+
+const resultValidityLabels: Record<ResultCardState, readonly [string, string]> = {
+  valid: ["Outcome recorded", "Valid evidence"],
+  partially_valid: ["Outcome recorded with limits", "Partly valid evidence"],
+  interrupted: ["Outcome interrupted", "Interrupted evidence"],
+  not_counted: ["Outcome is not counted", "Not counted"],
+  pending: ["Outcome is waiting for evidence", "Validity pending"],
+  partial: ["Outcome is partly available", "Validity pending for the remaining scope"],
+};
+
+/** C19 result projection: outcome and validity remain separate authoritative facts. */
+export function ResultCard({ projection }: { readonly projection: ResultCardContract }) {
+  if (!isSupportedProjectionCard(projection)) {
+    throw new Error("Unsupported result UI projection");
+  }
+  const [outcome, validity] = resultValidityLabels[projection.state];
+  return (
+    <section
+      aria-live={projection.announcement === "none" ? undefined : projection.announcement}
+      data-component="result-card"
+      data-focus-target="heading"
+      data-source-cut={projection.source.sourceCut}
+      data-source-release={projection.source.release}
+      role={
+        projection.announcement === "assertive"
+          ? "alert"
+          : projection.announcement === "polite"
+            ? "status"
+            : undefined
+      }
+      tabIndex={-1}
+    >
+      <SemanticCard status={projection.status} title={projection.title}>
+        <dl>
+          <dt>Outcome</dt>
+          <dd>{outcome}</dd>
+          <dt>Validity</dt>
+          <dd>{validity}</dd>
+        </dl>
+        <p>{projection.message}</p>
+        <p>
+          <strong>Affected:</strong> {projection.affectedScope.join(", ")}
+        </p>
+        {projection.action ? (
+          <Action href={projection.action.href} label={projection.action.label} />
+        ) : null}
+      </SemanticCard>
+    </section>
+  );
+}
 export function DecisiveEvidence() {
   return (
     <SemanticCard title="Decisive evidence">
@@ -534,7 +593,48 @@ export function DueReviewGroup({ state = "due" }: { readonly state?: DueReviewSt
     </section>
   );
 }
-export const PendingBanner = ProjectionCard;
+export type PendingBannerState =
+  | "processing"
+  | "slow"
+  | "pending"
+  | "partial"
+  | "unavailable"
+  | "retry_fresh";
+export type PendingBannerContract = Omit<ProjectionCardContract, "announcement" | "state"> & {
+  readonly announcement: "polite";
+  readonly state: PendingBannerState;
+};
+
+/** C28 capability status: a polite, server-driven banner without polling or provider detail. */
+export function PendingBanner({ projection }: { readonly projection: PendingBannerContract }) {
+  if (!isSupportedProjectionCard(projection)) {
+    throw new Error("Unsupported pending UI projection");
+  }
+  return (
+    <section
+      aria-atomic="true"
+      aria-live="polite"
+      data-component="pending-banner"
+      data-source-cut={projection.source.sourceCut}
+      data-source-release={projection.source.release}
+      data-state={projection.state}
+      role="status"
+    >
+      <SemanticCard status={projection.status} title={projection.title}>
+        <StatusWord status={projection.status === "neutral" ? "system" : projection.status}>
+          {consequentialStateLabels[projection.state]}
+        </StatusWord>
+        <p>{projection.message}</p>
+        <p>
+          <strong>Affected:</strong> {projection.affectedScope.join(", ")}
+        </p>
+        {projection.action ? (
+          <Action href={projection.action.href} label={projection.action.label} />
+        ) : null}
+      </SemanticCard>
+    </section>
+  );
+}
 export type SystemFailureKind = "identity" | "media" | "capability" | "transfer" | "storage";
 const systemFailureCopy: Record<SystemFailureKind, string> = {
   identity: "Sign-in confirmation is unavailable.",
@@ -1219,9 +1319,9 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   {
     id: "C19",
     variants: ["outcome", "validity", "partial"],
-    selector: "[data-status='attention']",
+    selector: "[data-component='result-card']",
     expectedText: "Pending evidence",
-    render: () => <ResultCard projection={projection} />,
+    render: () => <ResultCard projection={projection as ResultCardContract} />,
   },
   {
     id: "C20",
@@ -1291,9 +1391,9 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   {
     id: "C28",
     variants: ["processing", "slow", "pending", "partial", "unavailable", "retry-fresh"],
-    selector: "[data-status='attention']",
+    selector: "[data-component='pending-banner']",
     expectedText: "pending",
-    render: () => <PendingBanner projection={projection} />,
+    render: () => <PendingBanner projection={projection as PendingBannerContract} />,
   },
   {
     id: "C29",
@@ -1515,7 +1615,7 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
     case "C19": {
       const state =
         variant === "outcome" ? "valid" : variant === "validity" ? "partially_valid" : "partial";
-      return <ResultCard projection={fixtureProjection(state)} />;
+      return <ResultCard projection={fixtureProjection(state) as ResultCardContract} />;
     }
     case "C25":
       return (
@@ -1542,9 +1642,11 @@ function renderFixtureVariant(fixture: ComponentFixtureContract, variant: string
     case "C28":
       return (
         <PendingBanner
-          projection={fixtureProjection(
-            variant.replaceAll("-", "_") as ProjectionCardContract["state"],
-          )}
+          projection={
+            fixtureProjection(
+              variant.replaceAll("-", "_") as ProjectionCardContract["state"],
+            ) as PendingBannerContract
+          }
         />
       );
     case "C29":
