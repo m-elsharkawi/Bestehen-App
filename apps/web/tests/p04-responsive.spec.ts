@@ -36,11 +36,7 @@ test("P04-ROUTE-001 protected and focused product routes fail closed", async ({ 
     ["/attempt/synthetic", "/attempt/current"],
   ] as const) {
     await page.goto(`${path}?returnTo=${encodeURIComponent(returnPath)}`);
-    await expect(page).toHaveURL(
-      new RegExp(
-        `/auth/failure\\?code=identity_not_configured&returnTo=${encodeURIComponent(returnPath)}`,
-      ),
-    );
+    await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured/);
     const url = new URL(page.url());
     expect(url.pathname).toBe("/auth/failure");
     expect(url.searchParams.get("code")).toBe("identity_not_configured");
