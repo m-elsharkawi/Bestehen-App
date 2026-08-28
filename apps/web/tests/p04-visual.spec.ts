@@ -22,6 +22,9 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     ["coach-1024", "/ui-fixtures/coach", 1024, 900, "light"],
     ["readiness-1280", "/ui-fixtures/readiness", 1280, 900, "light"],
     ["progress-1280", "/ui-fixtures/progress", 1280, 900, "light"],
+    // LG-D4 caps the focused mock at a 720px measure, which is the kind of
+    // numeric contract that regresses silently without an anchor holding it.
+    ["mock-1280", "/ui-fixtures/mock", 1280, 900, "light"],
   ] as const;
   for (const [name, path, width, height, theme] of anchors) {
     await page.setViewportSize({ width, height });
