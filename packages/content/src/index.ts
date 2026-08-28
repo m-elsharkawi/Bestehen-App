@@ -16,6 +16,7 @@ export * from "./rights.js";
 export * from "./accessibility.js";
 export * from "./digest.js";
 export * from "./publication.js";
+export * from "./scoring.js";
 
 /**
  * The versioned publication boundary. Stage 05 is the first stage to produce content, so `produced`
