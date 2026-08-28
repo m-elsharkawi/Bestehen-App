@@ -79,6 +79,21 @@ export const consequentialProjectionStates = [
   "compare",
   "select",
   "merge",
+  "available",
+  "loading_media",
+  "unavailable_no_fresh_family",
+  "unavailable_rights_or_target",
+  "quarantined_after_pin",
+  "media_failed_not_counted",
+  "replacement_ready",
+  "update_required",
+  "acquiring_manifest",
+  "in_progress",
+  "checkpointed",
+  "submission_unknown",
+  "submitted",
+  "scoring",
+  "result_available",
 ] as const;
 export type ConsequentialProjectionState = (typeof consequentialProjectionStates)[number];
 
