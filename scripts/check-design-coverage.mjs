@@ -139,35 +139,56 @@ function filesUnder(directory) {
   });
 }
 
-export function loadCoverageManifest(root = process.cwd()) {
-  const source = execFileSync(
-    process.execPath,
-    [
-      "--import=tsx",
-      "--eval",
-      `import { sourceAnchorManifest } from './packages/design-system/src/coverage/source-anchors.ts'; process.stdout.write(JSON.stringify(sourceAnchorManifest));`,
-    ],
-    { cwd: root, encoding: "utf8" },
+// The workspace tsconfig maps every `@bestehen/*` bare specifier to its `src` entry point. Pointing
+// tsx at it keeps these subprocesses on source resolution, so `check:coverage` reads the real
+// product unions on a clean checkout where no package has been built and no `dist/` exists yet.
+function workspaceSourceResolutionEnvironment(root) {
+  const tsconfigPath = resolve(root, "tsconfig.base.json");
+  const paths = JSON.parse(readFileSync(tsconfigPath, "utf8")).compilerOptions?.paths ?? {};
+  const unmappedToSource = Object.entries(paths).filter(
+    ([specifier, targets]) =>
+      specifier.startsWith("@bestehen/") &&
+      !targets.every((target) => /^packages\/[^/]+\/src\//.test(target)),
   );
-  return JSON.parse(source);
+  if (Object.keys(paths).length === 0 || unmappedToSource.length > 0) {
+    throw new Error(
+      `tsconfig.base.json must map every @bestehen/* specifier to its src entry point for ` +
+        `build-artifact-free coverage checks; offending: ` +
+        `${unmappedToSource.map(([specifier]) => specifier).join(", ") || "(no paths declared)"}`,
+    );
+  }
+  return { ...process.env, TSX_TSCONFIG_PATH: tsconfigPath };
+}
+
+function evaluateWorkspaceSource(root, program) {
+  return execFileSync(process.execPath, ["--import=tsx", "--eval", program], {
+    cwd: root,
+    encoding: "utf8",
+    env: workspaceSourceResolutionEnvironment(root),
+  });
+}
+
+export function loadCoverageManifest(root = process.cwd()) {
+  return JSON.parse(
+    evaluateWorkspaceSource(
+      root,
+      `import { sourceAnchorManifest } from './packages/design-system/src/coverage/source-anchors.ts'; process.stdout.write(JSON.stringify(sourceAnchorManifest));`,
+    ),
+  );
 }
 
 export function loadProductSemanticUnions(root = process.cwd()) {
-  const source = execFileSync(
-    process.execPath,
-    [
-      "--import=tsx",
-      "--eval",
+  return JSON.parse(
+    evaluateWorkspaceSource(
+      root,
       `import { consequentialUiProjectionStates } from './packages/contracts/src/ui-projections.ts';` +
         `import { reasonRegistryV1 } from './packages/domain/src/index.ts';` +
         `process.stdout.write(JSON.stringify({` +
         `semanticStates: [...new Set(consequentialUiProjectionStates)],` +
         `semanticReasons: reasonRegistryV1.map((definition) => definition.code),` +
         `}));`,
-    ],
-    { cwd: root, encoding: "utf8" },
+    ),
   );
-  return JSON.parse(source);
 }
 
 export function assertSemanticUnionParity(productUnions, schema = expectedSchema) {
