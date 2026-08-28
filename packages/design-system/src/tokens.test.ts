@@ -32,7 +32,7 @@ const semanticTokens = [
 describe("P04-TOKEN-001 canonical design tokens", () => {
   const tokens = readFileSync(new URL("./tokens.css", import.meta.url), "utf8");
   const declarationNames = (css: string) =>
-    [...css.matchAll(/--([a-z0-9-]+)\s*:/g)].map(([, name]) => name);
+    [...css.matchAll(/--([a-z0-9-]+)\s*:/g)].map(([, name]) => name ?? "");
   const block = (css: string, start: string) => {
     const begin = css.indexOf(start);
     if (begin < 0) return "";
