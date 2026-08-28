@@ -46,6 +46,7 @@
   --radius-small: 6px;
   --radius-medium: 12px;
   --radius-large: 20px;
+  --radius-panel: 7px;
   --motion-state: 120ms;
   --motion-content: 200ms;
   --motion-sheet: 260ms;

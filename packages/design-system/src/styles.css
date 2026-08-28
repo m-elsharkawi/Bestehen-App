@@ -206,6 +206,9 @@ summary,
 }
 .primary-nav a {
   align-items: center;
+  /* Every destination reserves the active rule so marking one does not
+     re-centre its label 1.5px below its siblings. */
+  border-top: 3px solid transparent;
   color: var(--text-secondary);
   display: flex;
   flex-direction: column;
@@ -218,8 +221,8 @@ summary,
   text-decoration: none;
 }
 .primary-nav a[aria-current="page"] {
-  background: var(--accent-tint);
-  color: var(--accent-text);
+  border-top-color: var(--text-primary);
+  color: var(--text-primary);
   font-weight: 650;
 }
 .app-shell > main {
@@ -279,9 +282,9 @@ summary,
   grid-template-columns: minmax(0, 1fr);
 }
 .content-with-aside aside {
-  background: var(--surface-sunken);
+  background: var(--surface-raised);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-medium);
+  border-radius: var(--radius-panel);
   padding: var(--space-4);
 }
 .card {
@@ -339,6 +342,20 @@ summary,
 .action-primary {
   background: var(--surface-ink);
   color: var(--text-on-ink);
+}
+/* Dark theme: --surface-ink sits too close to --surface-raised (the card
+   surface .action-primary usually appears on) to read as a control, so the
+   fill/label pair is inverted here rather than redefining the shared token
+   (which also drives the nav rail's active item and the measured timer). */
+:root[data-theme="dark"] .action-primary {
+  background: var(--text-on-ink);
+  color: var(--surface-ink);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .action-primary {
+    background: var(--text-on-ink);
+    color: var(--surface-ink);
+  }
 }
 .action-secondary {
   background: var(--surface-raised);
@@ -641,8 +658,9 @@ input[type="checkbox"] {
     grid-template-rows: auto 1fr auto;
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav {
-    background: var(--surface-ink);
+    background: var(--surface-raised);
     border: 0;
+    border-right: 1px solid var(--border-default);
     min-height: 100dvh;
     position: sticky;
     top: 0;
@@ -653,14 +671,18 @@ input[type="checkbox"] {
     padding: var(--space-21) var(--space-3) var(--space-3);
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav a {
-    color: var(--text-on-ink);
+    /* The side rail marks the active destination with a filled pill, so the
+       bottom bar's reserved rule is dropped for every item alike. */
+    border-top: 0;
     flex-direction: row;
     justify-content: flex-start;
     padding-inline: var(--space-4);
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav a[aria-current="page"] {
-    background: var(--accent-base);
-    color: var(--surface-ink);
+    background: var(--surface-ink);
+    border-radius: var(--radius-panel);
+    color: var(--text-on-ink);
+    margin-inline: var(--space-2);
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .app-header {
     border-left: 1px solid var(--border-default);

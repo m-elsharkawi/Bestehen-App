@@ -34,9 +34,10 @@ export function CoachView() {
     <AppShell
       activeDestination="coach"
       aside={
-        <SemanticCard title="Why this plan">
+        <>
+          <h2>Why this plan</h2>
           <p>Reading evidence is current. A fresh Writing sample is due.</p>
-        </SemanticCard>
+        </>
       }
       eyebrow="Today"
       title="Your next useful session"
@@ -58,9 +59,10 @@ export function ReadinessView() {
     <AppShell
       activeDestination="readiness"
       aside={
-        <SemanticCard title="Evidence notes">
+        <>
+          <h2>Evidence notes</h2>
           <p>Numbers are absent until enough direct evidence exists.</p>
-        </SemanticCard>
+        </>
       }
       eyebrow="Current source cut"
       title="Readiness"
@@ -91,9 +93,10 @@ export function ProgressView() {
     <AppShell
       activeDestination="progress"
       aside={
-        <SemanticCard title="Weakness detail">
+        <>
+          <h2>Weakness detail</h2>
           <p>Content-point coverage is improving. A fresh check is due tomorrow.</p>
-        </SemanticCard>
+        </>
       }
       title="Progress"
     >
