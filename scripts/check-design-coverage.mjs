@@ -57,7 +57,6 @@ const evidenceFiles = ["apps", "packages", "scripts"]
 const executableIds = new Set(
   evidenceFiles.flatMap((path) => {
     const contents = readFileSync(path, "utf8");
-    if (/\.mjs$/.test(path)) return [...contents.matchAll(/P04-[A-Z0-9]+-001/g)].map(([id]) => id);
     return [...executableCheckIds(contents)];
   }),
 );
