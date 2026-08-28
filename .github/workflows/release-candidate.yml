@@ -72,8 +72,9 @@ jobs:
           pnpm check:advisories
           pnpm test:integration
           pnpm test:process
-          pnpm exec playwright install --with-deps chromium
+          pnpm exec playwright install --with-deps chromium firefox webkit
           pnpm test:e2e
+          pnpm test:visual:container
           pnpm check:docs
       - name: Build both OCI artifacts once and prove runtime contracts
         env:
