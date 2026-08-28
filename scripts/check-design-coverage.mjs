@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { executableCheckIds } from "./check-design-coverage-ids.mjs";
@@ -132,10 +132,20 @@ const semanticUnionSources = {
   semanticReasons: "packages/domain reasonRegistryV1",
 };
 
+// Coverage evidence lives in tracked workspace source, so dependency trees and build output are
+// not walked. Besides scanning third-party tests for our own check ids, descending into
+// `apps/web/.next` follows a self-referential pnpm symlink chain until the path exceeds the OS
+// limit, and races Next's transient `next-build-backup-*` directories as they are removed.
+// Named narrowly on purpose: `packages/design-system/src/coverage` is tracked source, so this must
+// not exclude directories by a generic name like "coverage".
+const unwalkedDirectories = new Set([".next", "dist", "node_modules"]);
+
 function filesUnder(directory) {
-  return readdirSync(directory).flatMap((entry) => {
-    const path = join(directory, entry);
-    return statSync(path).isDirectory() ? filesUnder(path) : [path];
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.isSymbolicLink()) return [];
+    const path = join(directory, entry.name);
+    if (!entry.isDirectory()) return [path];
+    return unwalkedDirectories.has(entry.name) ? [] : filesUnder(path);
   });
 }
 
