@@ -20,7 +20,7 @@ export default async function SignInFailurePage({
   const returnTo = params.returnTo?.startsWith("/") ? params.returnTo : undefined;
   return (
     <AppShell kind="bare" title={sessionNoticeTitle(state)}>
-      <SessionNotice state={state} {...(returnTo ? { returnTo } : {})} />
+      <SessionNotice hideTitle state={state} {...(returnTo ? { returnTo } : {})} />
     </AppShell>
   );
 }

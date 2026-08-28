@@ -908,9 +908,11 @@ export function sessionNoticeTitle(state: SessionNoticeState): string {
 export function SessionNotice({
   state,
   returnTo,
+  hideTitle = false,
 }: {
   readonly state: SessionNoticeState;
   readonly returnTo?: string;
+  readonly hideTitle?: boolean;
 }) {
   const title = sessionNoticeTitle(state);
   const copy =
@@ -929,7 +931,19 @@ export function SessionNotice({
     state === "identity_not_configured" || state === "sign_in_unavailable"
       ? "/"
       : `/auth/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
-  return (
+  return hideTitle ? (
+    <section className="card" data-status="system">
+      <p>{copy}</p>
+      <Action
+        href={actionHref}
+        label={
+          state === "identity_not_configured" || state === "sign_in_unavailable"
+            ? "Return"
+            : "Continue to sign in"
+        }
+      />
+    </section>
+  ) : (
     <SemanticCard status="system" title={title}>
       <p>{copy}</p>
       <Action

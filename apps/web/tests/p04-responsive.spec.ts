@@ -41,6 +41,8 @@ test("P04-ROUTE-001 protected and focused product routes fail closed", async ({ 
     expect(url.pathname).toBe("/auth/failure");
     expect(url.searchParams.get("code")).toBe("identity_not_configured");
     expect(url.searchParams.get("returnTo")).toBe(returnPath);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.getByRole("link", { name: "Return" })).toHaveAttribute("href", "/");
     await page.getByRole("link", { name: "Return" }).click();
     await expect(page).not.toHaveURL(/\/auth\/failure/);
   }
