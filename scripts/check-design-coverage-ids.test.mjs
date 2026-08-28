@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import { executableCheckIds } from "./check-design-coverage-ids.mjs";
 
 describe("executable coverage ID extraction", () => {
