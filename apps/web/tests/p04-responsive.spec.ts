@@ -49,6 +49,7 @@ test("P04-ROUTE-001 protected and focused product routes fail closed", async ({ 
 });
 
 test("P04-ROUTE-001 synthetic auth completes only with explicit signal", async ({ page }) => {
+  await page.setExtraHTTPHeaders({ "x-bestehen-synthetic-auth": "1" });
   await page.goto("/auth/login?returnTo=%2Freadiness&synthetic=1");
   await expect(page).toHaveURL(/\/readiness$/);
 });

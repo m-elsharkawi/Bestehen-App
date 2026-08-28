@@ -11,15 +11,10 @@ export async function GET(request: Request): Promise<Response> {
   if (
     syntheticFixtureEnabled() &&
     current.searchParams.get("synthetic") === "1" &&
-    returnTo === "/readiness"
+    returnTo === "/readiness" &&
+    request.headers.get("x-bestehen-synthetic-auth") === "1"
   ) {
-    const response = NextResponse.redirect(new URL(returnTo, current.origin), 303);
-    response.cookies.set("bestehen-synthetic-session", "1", {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
-    return response;
+    return NextResponse.redirect(new URL(returnTo, current.origin), 303);
   }
   try {
     const destination = await getIdentityService().loginUrl(
