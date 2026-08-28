@@ -4,6 +4,8 @@ import { getIdentityService } from "../../../server/identity";
 import { applicationRequestUrl } from "../../../server/runtime";
 import { syntheticFixtureEnabled } from "../../../server/runtime";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request): Promise<Response> {
   const current = applicationRequestUrl(request.url);
   const returnTo = current.searchParams.get("returnTo");
