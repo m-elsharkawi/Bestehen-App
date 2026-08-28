@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { executableCheckIds } from "./check-design-coverage-ids.mjs";
 
 const source = execFileSync(
   "node",
@@ -51,12 +52,13 @@ const evidenceFiles = ["apps", "packages", "scripts"]
   .filter(
     (path) =>
       /(?:\.(?:test|spec)\.(?:ts|tsx)|\.mjs)$/.test(path) &&
-      !path.endsWith("scripts/check-design-coverage.mjs"),
+      !path.endsWith("scripts/check-design-coverage.mjs") &&
+      !path.endsWith("scripts/check-design-coverage-ids.test.mjs"),
   );
-const executableCheckIds = new Set(
+const executableIds = new Set(
   evidenceFiles.flatMap((path) => {
     const contents = readFileSync(path, "utf8");
-    return [...contents.matchAll(/P04-[A-Z0-9]+-001/g)].map(([id]) => id);
+    return [...executableCheckIds(contents)];
   }),
 );
 
@@ -73,7 +75,7 @@ for (const row of rows) {
     );
   if (!row.tests.length || row.tests.some((id) => !manifest.tests.includes(id)))
     throw new Error(`Invalid test mapping for ${row.id}`);
-  if (row.tests.some((id) => !executableCheckIds.has(id)))
+  if (row.tests.some((id) => !executableIds.has(id)))
     throw new Error(`Non-executable test mapping for ${row.id}: ${row.tests.join(", ")}`);
   if (!row.status || !row.resolution)
     throw new Error(`Incomplete coverage resolution for ${row.id}`);
