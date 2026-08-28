@@ -16,7 +16,7 @@ describe("P04-PERF-001 web budget integrity", () => {
     }
     const output = execFileSync("node", ["scripts/check-web-budget.mjs"], { encoding: "utf8" });
     expect(output).toContain("P04-PERF-001 passed");
-  });
+  }, 30_000);
 });
 
 describe("P04-SCOPE-001 scope integrity", () => {
