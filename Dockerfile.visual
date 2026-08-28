@@ -13,9 +13,30 @@ ENV COREPACK_HOME=/corepack \
 
 RUN corepack enable && corepack prepare pnpm@11.23.0 --activate
 RUN touch /etc/bestehen-visual-raster
+
+# Dependency layers are kept ahead of the source copy so that editing a component
+# or a stylesheet does not re-resolve the lockfile or re-download the browser.
+# Only the manifests the install actually reads are copied here; every workspace
+# package listed in pnpm-workspace.yaml needs its manifest present for
+# `--frozen-lockfile` to resolve.
+COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json apps/web/
+COPY apps/worker/package.json apps/worker/
+COPY packages/application/package.json packages/application/
+COPY packages/configuration/package.json packages/configuration/
+COPY packages/content/package.json packages/content/
+COPY packages/contracts/package.json packages/contracts/
+COPY packages/design-system/package.json packages/design-system/
+COPY packages/domain/package.json packages/domain/
+COPY packages/infrastructure/package.json packages/infrastructure/
+COPY packages/test-support/package.json packages/test-support/
+RUN pnpm install --frozen-lockfile
+RUN pnpm exec playwright install --with-deps chromium
+
 COPY . .
-RUN pnpm install --frozen-lockfile && \
-    pnpm build && \
-    pnpm exec playwright install --with-deps chromium
+# The workspace injects rather than symlinks its own packages, so the copies made
+# during the manifest-only install hold no source. Re-linking against the real
+# tree costs a few seconds from the warm store and leaves node_modules correct.
+RUN pnpm install --frozen-lockfile --offline && pnpm build
 
 CMD ["pnpm", "test:visual"]
