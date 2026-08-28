@@ -14,5 +14,8 @@
   ],
   "scripts": {
     "build": "tsc -b"
+  },
+  "dependencies": {
+    "@bestehen/domain": "workspace:*"
   }
 }
