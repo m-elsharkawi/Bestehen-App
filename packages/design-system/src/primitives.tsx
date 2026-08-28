@@ -50,15 +50,6 @@ export function SemanticCard({
   );
 }
 
-export function LiveRegions() {
-  return (
-    <>
-      <div aria-atomic="true" aria-live="polite" className="visually-hidden" />
-      <div aria-atomic="true" aria-live="assertive" className="visually-hidden" />
-    </>
-  );
-}
-
 export function StatusWord({
   children,
   status = "system",

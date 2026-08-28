@@ -2,7 +2,6 @@ import { type ReactNode, useId } from "react";
 import { Brand } from "./brand.js";
 import type { NavigationDestination, ShellSlots } from "./contracts.js";
 import { Icon, type IconName } from "./icons.js";
-import { LiveRegions } from "./primitives.js";
 
 const destinations: readonly [NavigationDestination, string, IconName][] = [
   ["coach", "Coach", "coach"],
@@ -82,7 +81,6 @@ export function AppShell({
           <small>Private personal release</small>
         </footer>
       ) : null}
-      <LiveRegions />
     </div>
   );
 }
@@ -107,6 +105,7 @@ export function AttemptShell({
           <li key={condition}>{condition}</li>
         ))}
       </ul>
+      {/* Assertion hook: keeps attempt content identifiable in the component gallery. */}
       <div className="attempt-content">{children}</div>
       <div className="sticky-action">{action}</div>
     </AppShell>

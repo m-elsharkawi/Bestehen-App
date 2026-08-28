@@ -229,6 +229,16 @@ summary,
 .shell-focused > main {
   max-width: var(--measure-task);
 }
+.attempt-content {
+  max-width: var(--measure-task);
+}
+.mock-measure {
+  max-width: 720px;
+}
+.evidence-label {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
 .app-shell > footer {
   color: var(--text-muted);
   grid-area: footer;

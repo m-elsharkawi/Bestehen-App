@@ -25,6 +25,8 @@ record `19a16e5ff781949879457e36eb1f912e075656ee` is an ancestor. The accepted p
   and a closed 20-icon Lucide registry. Licenses, immutable revisions, source paths,
   byte counts, and SHA-256 digests are recorded in
   `packages/design-system/assets/manifest.json` and `THIRD_PARTY_NOTICES.md`.
+  Font loading deliberately remains always-on for this shared design-system stylesheet;
+  the measured cost is 262,144 bytes, and all font URLs remain relative and self-hosted.
 - Implemented the accepted APIs for all 43 component families and five typed skill
   regions. Consequential presentation consumes the complete versioned projection
   contract, fails closed for unknown majors/states, and keeps source lineage

@@ -192,6 +192,7 @@ export function ClozeGap({
   readonly state?: ClozeGapState;
 }) {
   if (state === "options") {
+    // Assertion hook: identifies the cloze gap in the component gallery.
     return (
       <fieldset className="cloze-gap">
         <legend>Gap {number}</legend>
@@ -204,6 +205,7 @@ export function ClozeGap({
       </fieldset>
     );
   }
+  // Assertion hook: identifies the cloze gap in the component gallery.
   return (
     <span className="cloze-gap">
       {state === "result" ? (
@@ -243,6 +245,7 @@ export function FormFeedback({ errors }: { readonly errors: readonly FormError[]
       <ul>
         {errors.map((error) => {
           const message = typeof error === "string" ? error : error.message;
+          // Assertion hook: identifies the form error in the component gallery.
           return (
             <li className="form-error" key={message}>
               {typeof error === "string" ? message : <a href={error.href}>{message}</a>}
