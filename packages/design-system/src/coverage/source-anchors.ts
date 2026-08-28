@@ -83,79 +83,270 @@ export const iconRegistry = [
   ["I20", "upload", "ArrowUp"],
 ] as const;
 
-export type CoverageStatus = "accepted" | "corrected" | "derived" | "obsolete";
+export const coverageKinds = [
+  "board",
+  "compact-frame",
+  "large-exemplar",
+  "component-family",
+  "icon",
+] as const;
+export const sourceAnchorTypes = ["attribute", "heading", "design-token"] as const;
+export const routeArchetypes = [
+  "governance",
+  "foundation",
+  "entry",
+  "coach",
+  "attempt",
+  "result",
+  "repair",
+  "readiness",
+  "train",
+  "mock",
+  "progress",
+  "account",
+  "session",
+  "skill-region",
+  "system-state",
+  "responsive-rule",
+  "handoff",
+  "component-library",
+  "icon-library",
+] as const;
+export const semanticStates = [
+  "valid",
+  "partially_valid",
+  "pending",
+  "interrupted",
+  "not_counted",
+  "evidence_building",
+  "not_ready",
+  "borderline",
+  "safe",
+  "ready_to_book",
+  "stale_contradicted",
+  "processing",
+  "slow",
+  "partial",
+  "unavailable",
+  "retry_fresh",
+  "signed_out",
+  "callback_failed",
+  "expired_idle",
+  "expired_mid_attempt",
+  "access_denied",
+  "preparing",
+  "sending",
+  "queued_offline",
+  "retrying",
+  "not_sent",
+  "sent",
+  "requested",
+  "building",
+  "ready",
+  "expired",
+  "failed",
+  "recent_auth_required",
+  "confirmation_required",
+  "revoking",
+  "purge_running",
+  "provider_pending",
+  "live_purge_complete",
+  "completed",
+  "compare",
+  "select",
+  "merge",
+] as const;
+export const semanticReasons = [
+  "VALIDITY.CONTENT_APPROVAL",
+  "VALIDITY.RIGHTS_COMPATIBILITY",
+  "VALIDITY.ACCESS_EQUIVALENCE",
+  "VALIDITY.TECHNICAL_PREFLIGHT",
+  "VALIDITY.IDENTITY_CLAIM_INVALID",
+  "DIRECT.MISSING_WRITTEN",
+  "DIRECT.MISSING_ORAL",
+  "DIRECT.TARGET_CONDITION_GAP",
+  "DIRECT.ASSISTANCE_DEPENDENT",
+  "DIRECT.STALE_DIRECT_SAMPLE",
+  "RISK.WRITTEN_BLOCKER",
+  "RISK.ORAL_BLOCKER",
+  "RISK.BOOKED_DATE",
+  "RISK.MOCK_REVEALED",
+  "UNCERTAINTY.PENDING_EVALUATION",
+  "UNCERTAINTY.CONTRADICTORY_EVIDENCE",
+  "UNCERTAINTY.CAUSE_UNRESOLVED",
+  "UNCERTAINTY.PROJECTION_UPDATING",
+  "DUE.TRANSFER_WINDOW",
+  "DUE.RETENTION_WINDOW",
+  "DUE.POST_MOCK_CLARIFIER",
+  "PROGRESSION.REACHABLE_PREREQUISITE",
+  "PROGRESSION.ASSISTANCE_FADE",
+  "PROGRESSION.REALISM_PROBE",
+  "COVERAGE.SECTION_AGING",
+  "COVERAGE.TASK_FAMILY_GAP",
+  "COVERAGE.NORMAL_ROTATION",
+  "PREFERENCE.REQUESTED_SKILL",
+  "PREFERENCE.REQUESTED_MODE",
+  "PREFERENCE.VARIETY",
+  "CONTEXT.TIME_CHANGED",
+  "CONTEXT.LOW_ENERGY",
+  "CONTEXT.NO_AUDIO",
+  "CONTEXT.NO_MIC",
+  "CONTEXT.OFFLINE",
+  "CONTEXT.ACCESS_NEED",
+  "FALLBACK.NO_VALID_PLAN",
+  "FALLBACK.CONTENT_UNAVAILABLE",
+  "FALLBACK.EVALUATOR_PENDING",
+  "FALLBACK.TECHNICAL_FAULT",
+  "FALLBACK.NO_FRESH_RETRY",
+  "FALLBACK.AUTHORIZATION_DENIED",
+  "FALLBACK.JOB_RETRY_EXHAUSTED",
+] as const;
+export const responsiveLanes = ["compact", "tablet", "desktop"] as const;
+export const coverageStatuses = ["accepted", "corrected", "derived", "obsolete"] as const;
+
+type CheckId = (typeof p04CheckIds)[number];
+type ComponentFamilyId = (typeof componentFamilies)[number][0];
+type IconId = (typeof iconRegistry)[number][0];
+type CoverageKind = (typeof coverageKinds)[number];
+type SourceAnchorType = (typeof sourceAnchorTypes)[number];
+type RouteArchetype = (typeof routeArchetypes)[number];
+type SemanticState = (typeof semanticStates)[number];
+type SemanticReason = (typeof semanticReasons)[number];
+type ResponsiveLane = (typeof responsiveLanes)[number];
+export type CoverageStatus = (typeof coverageStatuses)[number];
+
 export interface CoverageRow {
   readonly id: string;
-  readonly source: string;
-  readonly anchor: string;
-  readonly target: string;
-  /** A concrete symbol, selector, or test declaration in the implementation target. */
+  readonly sourcePath: string;
+  readonly sourceAnchor: string;
+  readonly sourceAnchorType: SourceAnchorType;
+  readonly kind: CoverageKind;
+  readonly routeArchetype: RouteArchetype;
+  readonly semanticStates: readonly SemanticState[];
+  readonly semanticReasons: readonly SemanticReason[];
+  readonly componentDependencies: readonly ComponentFamilyId[];
+  readonly iconDependencies: readonly IconId[];
+  readonly targetPath: string;
   readonly targetAnchor: string;
-  readonly tests: readonly (typeof p04CheckIds)[number][];
+  readonly targetImplementationExports: readonly string[];
+  readonly automatedTestIds: readonly CheckId[];
+  readonly manualEvidenceIds: readonly string[];
+  readonly responsiveLanes: readonly ResponsiveLane[];
   readonly status: CoverageStatus;
   readonly resolution: string;
 }
 
-const originalGroups = [
-  [1, 4, "bare entry, goal, foundation route, and result", "corrected"],
-  [2, 6, "App shell and shared attempt, result, and repair flow", "accepted"],
-  [3, 4, "five typed skill regions in the shared shell", "accepted"],
-  [4, 6, "protected destinations, mock shells, and Gates A through F", "corrected"],
-  [5, 6, "architecture-owned recovery, interruption, and data-rights states", "corrected"],
-] as const;
-const originalCompactFrames: CoverageRow[] = originalGroups.flatMap(
-  ([group, count, resolution, status]) =>
-    Array.from({ length: count }, (_, index) => ({
-      id: `CF-${String(group).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
-      source: "Design/Bestehen-02-Mobile-Screens.dc.html",
-      anchor: `${group}.${index + 1}`,
-      target: "apps/web/src/ui/archetypes.tsx",
-      targetAnchor: "StateView",
-      tests: ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
-      status,
-      resolution,
-    })),
-);
+type RowInput = Omit<
+  CoverageRow,
+  | "semanticStates"
+  | "semanticReasons"
+  | "componentDependencies"
+  | "iconDependencies"
+  | "manualEvidenceIds"
+  | "responsiveLanes"
+> & {
+  readonly semanticStates?: readonly SemanticState[] | undefined;
+  readonly semanticReasons?: readonly SemanticReason[] | undefined;
+  readonly componentDependencies?: readonly ComponentFamilyId[] | undefined;
+  readonly iconDependencies?: readonly IconId[] | undefined;
+  readonly responsiveLanes?: readonly ResponsiveLane[] | undefined;
+};
 
-const deltaCompactFrames: CoverageRow[] = Array.from({ length: 15 }, (_, index) => ({
-  id: `CF-06-${String(index + 1).padStart(2, "0")}`,
-  source: "Design/Bestehen-06-Critical-View-Deltas.dc.html",
-  anchor: `6.${index + 1}`,
-  target: "apps/web/src/ui/archetypes.tsx",
-  targetAnchor: "StateView",
-  tests: ["P04-COMPONENT-001", "P04-RSP-001", "P04-SEMANTIC-001"],
-  status: index < 2 || index === 3 || index > 9 ? "corrected" : "accepted",
-  resolution: "Architecture-owned critical state rendered through the shared shell and components",
-}));
+function row(input: RowInput): CoverageRow {
+  return {
+    ...input,
+    semanticStates: input.semanticStates ?? [],
+    semanticReasons: input.semanticReasons ?? [],
+    componentDependencies: input.componentDependencies ?? [],
+    iconDependencies: input.iconDependencies ?? [],
+    manualEvidenceIds: [`P04-MANUAL-${input.id}`],
+    responsiveLanes: input.responsiveLanes ?? responsiveLanes,
+  };
+}
 
-export const compactFrames = [...originalCompactFrames, ...deltaCompactFrames] as const;
+const validitySemanticStates = [
+  "valid",
+  "partially_valid",
+  "pending",
+  "interrupted",
+  "not_counted",
+] as const satisfies readonly SemanticState[];
+const readinessSemanticStates = [
+  "evidence_building",
+  "not_ready",
+  "borderline",
+  "safe",
+  "ready_to_book",
+  "stale_contradicted",
+] as const satisfies readonly SemanticState[];
+const capabilitySemanticStates = [
+  "processing",
+  "slow",
+  "pending",
+  "partial",
+  "unavailable",
+  "retry_fresh",
+] as const satisfies readonly SemanticState[];
+const sessionSemanticStates = [
+  "signed_out",
+  "callback_failed",
+  "expired_idle",
+  "expired_mid_attempt",
+  "access_denied",
+] as const satisfies readonly SemanticState[];
+const transferSemanticStates = [
+  "preparing",
+  "sending",
+  "queued_offline",
+  "retrying",
+  "not_sent",
+  "sent",
+] as const satisfies readonly SemanticState[];
+const exportSemanticStates = [
+  "requested",
+  "building",
+  "ready",
+  "expired",
+  "failed",
+] as const satisfies readonly SemanticState[];
+const deletionSemanticStates = [
+  "recent_auth_required",
+  "confirmation_required",
+  "revoking",
+  "purge_running",
+  "provider_pending",
+  "live_purge_complete",
+  "completed",
+] as const satisfies readonly SemanticState[];
+const draftConflictSemanticStates = [
+  "compare",
+  "select",
+  "merge",
+] as const satisfies readonly SemanticState[];
+const validityReasonCodes = [
+  "VALIDITY.CONTENT_APPROVAL",
+  "VALIDITY.RIGHTS_COMPATIBILITY",
+  "VALIDITY.ACCESS_EQUIVALENCE",
+  "VALIDITY.TECHNICAL_PREFLIGHT",
+  "VALIDITY.IDENTITY_CLAIM_INVALID",
+] as const satisfies readonly SemanticReason[];
+const gateReasonCodes = [
+  "DIRECT.MISSING_WRITTEN",
+  "DIRECT.MISSING_ORAL",
+  "DIRECT.TARGET_CONDITION_GAP",
+  "RISK.WRITTEN_BLOCKER",
+  "RISK.ORAL_BLOCKER",
+  "RISK.BOOKED_DATE",
+] as const satisfies readonly SemanticReason[];
+const capabilityReasonCodes = [
+  "UNCERTAINTY.PENDING_EVALUATION",
+  "UNCERTAINTY.CAUSE_UNRESOLVED",
+  "UNCERTAINTY.PROJECTION_UPDATING",
+  "FALLBACK.EVALUATOR_PENDING",
+  "FALLBACK.TECHNICAL_FAULT",
+] as const satisfies readonly SemanticReason[];
 
-export const largeExemplars: readonly CoverageRow[] = [
-  "D1",
-  "D2",
-  "D3",
-  "D4",
-  "D5",
-  "V3",
-  "V4",
-  "V7",
-].map((anchor) => ({
-  id: `LG-${anchor}`,
-  source: anchor.startsWith("D")
-    ? "Design/Bestehen-03-Desktop-Responsive.dc.html"
-    : "Design/Bestehen-06-Critical-View-Deltas.dc.html",
-  anchor,
-  target: "apps/web/src/ui/archetypes.tsx",
-  targetAnchor: "StateView",
-  tests: ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
-  status: anchor === "V7" ? "corrected" : "accepted",
-  resolution:
-    anchor === "V7"
-      ? "Gates A through F replace the obsolete four-row gate list"
-      : "Shared responsive archetype",
-}));
-
-const boardAnchorIds = [
+const boardIds = [
   "01-s00",
   "01-s01",
   "01-s02",
@@ -195,24 +386,7 @@ const boardAnchorIds = [
   "06-v9",
 ] as const;
 
-const correctedBoards = new Set([
-  "01-s02",
-  "01-s03",
-  "02-a1",
-  "02-a4",
-  "02-a5",
-  "04-c",
-  "06-v1",
-  "06-v2",
-  "06-v6",
-  "06-v7",
-  "06-v8",
-]);
-const derivedBoards = new Set(["03-d6", "04-f", "04-h", "05-u0", "06-v0", "06-v9"]);
-const boardChecks: Record<
-  (typeof boardAnchorIds)[number],
-  readonly (typeof p04CheckIds)[number][]
-> = {
+const boardChecks: Record<(typeof boardIds)[number], readonly CheckId[]> = {
   "01-s00": ["P04-COVERAGE-001", "P04-SEMANTIC-001"],
   "01-s01": ["P04-TOKEN-001", "P04-ASSET-001", "P04-RSP-001"],
   "01-s02": ["P04-COVERAGE-001", "P04-COMPONENT-001", "P04-A11Y-001"],
@@ -251,61 +425,1027 @@ const boardChecks: Record<
   "06-v8": ["P04-ROUTE-001", "P04-SEMANTIC-001", "P04-RSP-001"],
   "06-v9": ["P04-COVERAGE-001", "P04-SEMANTIC-001", "P04-COMPAT-001"],
 };
-export const boardAnchors: readonly CoverageRow[] = boardAnchorIds.map((id) => ({
-  id,
-  source: `Design/Bestehen-${id.slice(0, 2)}-${id.startsWith("01") ? "Design-System" : id.startsWith("02") ? "Mobile-Screens" : id.startsWith("03") ? "Desktop-Responsive" : id.startsWith("04") ? "Flows-Handoff" : id.startsWith("05") ? "UI-Foundation-Delta" : "Critical-View-Deltas"}.dc.html`,
-  anchor: id.slice(3),
-  target:
-    id === "01-s01"
-      ? "packages/design-system/src/tokens.css"
-      : id === "04-c" || id === "05-u0"
-        ? "packages/design-system/src/coverage/source-anchors.ts"
-        : id.startsWith("04")
-          ? "apps/web/tests/p04-responsive.spec.ts"
-          : "apps/web/src/ui/archetypes.tsx",
-  targetAnchor:
-    id === "01-s01"
-      ? ":root"
-      : id === "04-c" || id === "05-u0"
-        ? "sourceAnchorManifest"
-        : id.startsWith("04")
-          ? "test("
-          : "StateView",
-  tests: boardChecks[id],
-  status: correctedBoards.has(id) ? "corrected" : derivedBoards.has(id) ? "derived" : "accepted",
-  resolution: correctedBoards.has(id)
-    ? "Architecture-owned state and copy replace the named stale Design contract"
-    : derivedBoards.has(id)
-      ? "Rule or composition maps to shared implementation rather than a separate route"
-      : "Accepted presentation contract",
-}));
 
-export const componentRows: readonly CoverageRow[] = componentFamilies.map(([id, name]) => ({
-  id,
-  source: "Implementation/Personal/04-responsive-web-design-system/plan.md",
-  anchor: id,
-  target:
+type BoardTarget = readonly [
+  RouteArchetype,
+  string,
+  string,
+  (readonly ComponentFamilyId[])?,
+  (readonly IconId[])?,
+];
+const boardTargets: Record<(typeof boardIds)[number], BoardTarget> = {
+  "01-s00": [
+    "governance",
+    "packages/design-system/src/coverage/source-anchors.ts",
+    "coverageKinds",
+  ],
+  "01-s01": ["foundation", "packages/design-system/src/tokens.css", ":root", [], ["I01"]],
+  "01-s02": [
+    "component-library",
+    "packages/design-system/src/components.tsx",
+    "componentFixtureRegistry",
+    ["C01"],
+  ],
+  "01-s03": [
+    "system-state",
+    "packages/design-system/src/components.tsx",
+    "ProjectionCard",
+    ["C19", "C25"],
+  ],
+  "02-a1": [
+    "entry",
+    "apps/web/src/ui/archetypes.tsx",
+    "SessionView",
+    ["C01", "C05", "C42"],
+    ["I19"],
+  ],
+  "02-a2": ["coach", "apps/web/src/ui/archetypes.tsx", "CoachView", ["C01", "C18"]],
+  "02-a3": [
+    "skill-region",
+    "packages/design-system/src/components.tsx",
+    "ReadingRegion",
+    ["C37", "C39", "C40", "C41"],
+  ],
+  "02-a4": [
+    "readiness",
+    "apps/web/src/ui/archetypes.tsx",
+    "ReadinessView",
+    ["C32", "C35"],
+    ["I02"],
+  ],
+  "02-a5": [
+    "system-state",
+    "packages/design-system/src/components.tsx",
+    "SystemFailureBanner",
+    ["C29", "C31"],
+    ["I17"],
+  ],
+  "03-d1": ["coach", "apps/web/src/ui/archetypes.tsx", "CoachView", ["C01", "C18"]],
+  "03-d2": ["readiness", "apps/web/src/ui/archetypes.tsx", "ReadinessView", ["C32"], ["I02"]],
+  "03-d3": [
+    "skill-region",
+    "packages/design-system/src/components.tsx",
+    "WritingRegion",
+    ["C40"],
+    ["I07"],
+  ],
+  "03-d4": ["mock", "apps/web/src/ui/archetypes.tsx", "MockView", ["C03", "C35"], ["I09"]],
+  "03-d5": ["responsive-rule", "packages/design-system/src/overlay.tsx", "Overlay", ["C04"]],
+  "03-d6": [
+    "responsive-rule",
+    "apps/web/tests/p04-responsive.spec.ts",
+    "P04-RSP-001 breakpoint edges and representative text scaling retain content",
+  ],
+  "04-f": [
+    "handoff",
+    "apps/web/tests/p04-responsive.spec.ts",
+    "P04-ROUTE-001 protected and focused product routes fail closed",
+  ],
+  "04-a": [
+    "responsive-rule",
+    "apps/web/tests/p04-responsive.spec.ts",
+    "P04-RSP-001 representative views reflow at 320 and 200 percent text",
+  ],
+  "04-c": [
+    "governance",
+    "packages/design-system/src/coverage/source-anchors.ts",
+    "sourceAnchorManifest",
+  ],
+  "04-h": [
+    "handoff",
+    "apps/web/tests/p04-responsive.spec.ts",
+    "P04-A11Y-001 reduced motion, forced colors, and draft recovery remain usable",
+  ],
+  "05-u0": [
+    "governance",
+    "packages/design-system/src/coverage/source-anchors.ts",
+    "componentFamilies",
+  ],
+  "05-u1": ["system-state", "packages/design-system/src/shells.tsx", "AppShell", ["C01"]],
+  "05-u2": [
+    "system-state",
+    "packages/design-system/src/components.tsx",
+    "SessionNotice",
+    ["C42"],
+    ["I19"],
+  ],
+  "05-u3": ["system-state", "packages/design-system/src/components.tsx", "PendingBanner", ["C28"]],
+  "05-u4": [
+    "system-state",
+    "packages/design-system/src/components.tsx",
+    "UploadStatus",
+    ["C40", "C43"],
+    ["I20"],
+  ],
+  "05-u5": [
+    "system-state",
+    "packages/design-system/src/components.tsx",
+    "SystemFailureBanner",
+    ["C29"],
+    ["I17"],
+  ],
+  "05-u6": ["responsive-rule", "packages/design-system/src/shells.tsx", 'kind === "bare"', ["C01"]],
+  "05-u7": [
+    "responsive-rule",
+    "apps/web/tests/p04-responsive.spec.ts",
+    "P04-A11Y-001 transfer statuses are named and axe-clean",
+  ],
+  "06-v0": [
+    "governance",
+    "packages/design-system/src/coverage/source-anchors.ts",
+    "semanticStates",
+  ],
+  "06-v1": [
+    "system-state",
+    "packages/design-system/src/components.tsx",
+    "SessionNotice",
+    ["C42"],
+    ["I19"],
+  ],
+  "06-v2": [
+    "account",
+    "packages/design-system/src/components.tsx",
+    "DataRightsStatus",
+    ["C01", "C43"],
+  ],
+  "06-v3": ["progress", "apps/web/src/ui/archetypes.tsx", "ProgressView", ["C26", "C33"]],
+  "06-v4": [
+    "skill-region",
+    "packages/design-system/src/components.tsx",
+    "LanguageElementsRegion",
+    ["C13", "C38"],
+  ],
+  "06-v5": [
+    "skill-region",
+    "packages/design-system/src/components.tsx",
+    "UploadStatus",
+    ["C41", "C43"],
+    ["I20"],
+  ],
+  "06-v6": [
+    "system-state",
+    "packages/design-system/src/components.tsx",
+    "PendingBanner",
+    ["C28", "C29"],
+  ],
+  "06-v7": [
+    "readiness",
+    "packages/design-system/src/components.tsx",
+    "ReadinessEvidence",
+    ["C32"],
+    ["I10"],
+  ],
+  "06-v8": ["session", "apps/web/src/ui/archetypes.tsx", "SessionView", ["C02", "C05", "C19"]],
+  "06-v9": [
+    "governance",
+    "packages/design-system/src/coverage/source-anchors.ts",
+    "sourceAnchorTypes",
+  ],
+};
+
+type RowSemantics = readonly [readonly SemanticState[], readonly SemanticReason[]];
+const boardSemantics: Partial<Record<(typeof boardIds)[number], RowSemantics>> = {
+  "01-s03": [
+    [...validitySemanticStates, ...readinessSemanticStates],
+    [...validityReasonCodes, ...gateReasonCodes, "UNCERTAINTY.CONTRADICTORY_EVIDENCE"],
+  ],
+  "02-a1": [
+    ["signed_out", "evidence_building"],
+    ["DIRECT.MISSING_WRITTEN", "DIRECT.MISSING_ORAL", "FALLBACK.AUTHORIZATION_DENIED"],
+  ],
+  "02-a4": [
+    [...validitySemanticStates, ...readinessSemanticStates],
+    [...validityReasonCodes, ...gateReasonCodes],
+  ],
+  "02-a5": [
+    ["interrupted", "not_counted", "stale_contradicted", "unavailable", "not_sent"],
+    [
+      "DIRECT.STALE_DIRECT_SAMPLE",
+      "CONTEXT.NO_AUDIO",
+      "CONTEXT.NO_MIC",
+      "CONTEXT.OFFLINE",
+      "FALLBACK.TECHNICAL_FAULT",
+    ],
+  ],
+  "03-d2": [readinessSemanticStates, gateReasonCodes],
+  "04-f": [
+    ["partially_valid", "pending", "interrupted", "not_counted"],
+    ["UNCERTAINTY.PENDING_EVALUATION", "FALLBACK.TECHNICAL_FAULT"],
+  ],
+  "05-u2": [sessionSemanticStates, ["FALLBACK.AUTHORIZATION_DENIED"]],
+  "05-u3": [capabilitySemanticStates, capabilityReasonCodes],
+  "05-u4": [transferSemanticStates, ["DUE.TRANSFER_WINDOW", "FALLBACK.TECHNICAL_FAULT"]],
+  "05-u5": [
+    ["unavailable", "not_sent"],
+    ["UNCERTAINTY.CAUSE_UNRESOLVED", "FALLBACK.TECHNICAL_FAULT"],
+  ],
+  "06-v1": [
+    sessionSemanticStates,
+    ["VALIDITY.IDENTITY_CLAIM_INVALID", "FALLBACK.AUTHORIZATION_DENIED"],
+  ],
+  "06-v2": [
+    [...exportSemanticStates, ...deletionSemanticStates],
+    ["VALIDITY.RIGHTS_COMPATIBILITY", "DUE.RETENTION_WINDOW", "FALLBACK.TECHNICAL_FAULT"],
+  ],
+  "06-v3": [
+    ["stale_contradicted"],
+    ["DIRECT.STALE_DIRECT_SAMPLE", "UNCERTAINTY.CONTRADICTORY_EVIDENCE"],
+  ],
+  "06-v4": [validitySemanticStates, validityReasonCodes],
+  "06-v5": [
+    [...transferSemanticStates, "not_counted"],
+    ["DUE.TRANSFER_WINDOW", "FALLBACK.TECHNICAL_FAULT"],
+  ],
+  "06-v6": [capabilitySemanticStates, capabilityReasonCodes],
+  "06-v7": [readinessSemanticStates, gateReasonCodes],
+  "06-v8": [
+    ["evidence_building"],
+    ["DIRECT.MISSING_WRITTEN", "DIRECT.MISSING_ORAL", "DIRECT.TARGET_CONDITION_GAP"],
+  ],
+  "06-v9": [semanticStates, semanticReasons],
+};
+
+const correctedBoards = new Set([
+  "01-s02",
+  "01-s03",
+  "02-a1",
+  "02-a4",
+  "02-a5",
+  "04-c",
+  "06-v1",
+  "06-v2",
+  "06-v6",
+  "06-v7",
+  "06-v8",
+]);
+const derivedBoards = new Set(["03-d6", "04-f", "04-h", "05-u0", "06-v0", "06-v9"]);
+const boardNames: Record<string, string> = {
+  "01": "Design-System",
+  "02": "Mobile-Screens",
+  "03": "Desktop-Responsive",
+  "04": "Flows-Handoff",
+  "05": "UI-Foundation-Delta",
+  "06": "Critical-View-Deltas",
+};
+
+export const boardAnchors: readonly CoverageRow[] = boardIds.map((id) => {
+  const [routeArchetype, targetPath, targetAnchor, componentDependencies, iconDependencies] =
+    boardTargets[id];
+  const status: CoverageStatus = correctedBoards.has(id)
+    ? "corrected"
+    : derivedBoards.has(id)
+      ? "derived"
+      : "accepted";
+  const [rowStates, rowReasons] = boardSemantics[id] ?? [[], []];
+  return row({
+    id,
+    sourcePath: `Design/Bestehen-${id.slice(0, 2)}-${boardNames[id.slice(0, 2)]}.dc.html`,
+    sourceAnchor: id.slice(3),
+    sourceAnchorType: "attribute",
+    kind: "board",
+    routeArchetype,
+    semanticStates: rowStates,
+    semanticReasons: rowReasons,
+    componentDependencies,
+    iconDependencies,
+    targetPath,
+    targetAnchor,
+    targetImplementationExports: [targetAnchor],
+    automatedTestIds: boardChecks[id],
+    status,
+    resolution:
+      status === "corrected"
+        ? "Architecture-owned state and copy replace the named stale Design contract"
+        : status === "derived"
+          ? "Rule or composition maps to shared implementation rather than a separate route"
+          : "Accepted presentation contract",
+  });
+});
+
+type CompactDefinition = readonly [
+  string,
+  string,
+  string,
+  RouteArchetype,
+  string,
+  string,
+  readonly ComponentFamilyId[],
+  (readonly IconId[] | undefined)?,
+  (readonly SemanticState[] | undefined)?,
+  (readonly SemanticReason[] | undefined)?,
+];
+const mobile = "Design/Bestehen-02-Mobile-Screens.dc.html";
+const critical = "Design/Bestehen-06-Critical-View-Deltas.dc.html";
+const archetypes = "apps/web/src/ui/archetypes.tsx";
+const components = "packages/design-system/src/components.tsx";
+const shells = "packages/design-system/src/shells.tsx";
+const compactDefinitions: readonly CompactDefinition[] = [
+  [
+    "CF-01-01",
+    mobile,
+    "1.1",
+    "entry",
+    shells,
+    "AppShell",
+    ["C01", "C42"],
+    ["I19"],
+    ["signed_out"],
+    ["FALLBACK.AUTHORIZATION_DENIED"],
+  ],
+  [
+    "CF-01-02",
+    mobile,
+    "1.2",
+    "entry",
+    archetypes,
+    "AccountView",
+    ["C01", "C10"],
+    ["I11"],
+    undefined,
+    [],
+  ],
+  ["CF-01-03", mobile, "1.3", "session", archetypes, "SessionView", ["C02", "C05"]],
+  [
+    "CF-01-04",
+    mobile,
+    "1.4",
+    "result",
+    archetypes,
+    "ResultView",
+    ["C19", "C25"],
+    ["I15"],
+    ["evidence_building"],
+    ["DIRECT.MISSING_WRITTEN", "DIRECT.MISSING_ORAL"],
+  ],
+  ["CF-02-01", mobile, "2.1", "coach", archetypes, "CoachView", ["C01", "C18"], ["I01"]],
+  ["CF-02-02", mobile, "2.2", "attempt", archetypes, "AttemptView", ["C02", "C11"]],
+  [
+    "CF-02-03",
+    mobile,
+    "2.3",
+    "result",
+    components,
+    "ResultCard",
+    ["C19", "C20"],
+    ["I10"],
+    ["valid"],
+    ["VALIDITY.CONTENT_APPROVAL", "VALIDITY.ACCESS_EQUIVALENCE"],
+  ],
+  ["CF-02-04", mobile, "2.4", "repair", components, "RepairCard", ["C21"]],
+  ["CF-02-05", mobile, "2.5", "attempt", components, "FreshCheckBanner", ["C23"]],
+  ["CF-02-06", mobile, "2.6", "result", components, "WhatChangedSummary", ["C24"]],
+  ["CF-03-01", mobile, "3.1", "skill-region", components, "ListeningRegion", ["C39"], ["I06"]],
+  ["CF-03-02", mobile, "3.2", "skill-region", components, "WritingRegion", ["C40"], ["I07"]],
+  ["CF-03-03", mobile, "3.3", "skill-region", components, "SpeakingRegion", ["C41"], ["I08"]],
+  ["CF-03-04", mobile, "3.4", "skill-region", components, "SpeakingRegion", ["C41"], ["I08"]],
+  ["CF-04-01", mobile, "4.1", "readiness", archetypes, "ReadinessView", ["C32"], ["I02"]],
+  [
+    "CF-04-02",
+    mobile,
+    "4.2",
+    "readiness",
+    components,
+    "TextAlternativeTable",
+    ["C32", "C36"],
+    ["I10"],
+  ],
+  ["CF-04-03", mobile, "4.3", "train", archetypes, "TrainView", ["C01", "C17"]],
+  ["CF-04-04", mobile, "4.4", "mock", archetypes, "MockView", ["C03"], ["I09"]],
+  [
+    "CF-04-05",
+    mobile,
+    "4.5",
+    "mock",
+    components,
+    "MockOutcome",
+    ["C19", "C35"],
+    ["I10"],
+    ["partially_valid"],
+    ["VALIDITY.TECHNICAL_PREFLIGHT"],
+  ],
+  [
+    "CF-04-06",
+    mobile,
+    "4.6",
+    "readiness",
+    components,
+    "ReadinessEvidence",
+    ["C32"],
+    ["I12", "I14"],
+    readinessSemanticStates,
+    gateReasonCodes,
+  ],
+  [
+    "CF-05-01",
+    mobile,
+    "5.1",
+    "system-state",
+    components,
+    "SpeakingRegion",
+    ["C29", "C41"],
+    ["I17"],
+    ["unavailable"],
+    ["CONTEXT.NO_MIC"],
+  ],
+  [
+    "CF-05-02",
+    mobile,
+    "5.2",
+    "system-state",
+    components,
+    "SystemFailureBanner",
+    ["C29", "C39"],
+    ["I17"],
+    ["not_counted"],
+    ["CONTEXT.NO_AUDIO", "FALLBACK.TECHNICAL_FAULT"],
+  ],
+  [
+    "CF-05-03",
+    mobile,
+    "5.3",
+    "system-state",
+    components,
+    "WritingRegion",
+    ["C29", "C40"],
+    ["I17"],
+    ["interrupted"],
+    ["CONTEXT.OFFLINE"],
+  ],
+  [
+    "CF-05-04",
+    mobile,
+    "5.4",
+    "mock",
+    shells,
+    "MockShell",
+    ["C03", "C29"],
+    ["I09"],
+    ["interrupted"],
+    ["FALLBACK.TECHNICAL_FAULT"],
+  ],
+  [
+    "CF-05-05",
+    mobile,
+    "5.5",
+    "system-state",
+    components,
+    "StaleEvidenceNotice",
+    ["C31"],
+    ["I16"],
+    ["stale_contradicted"],
+    ["DIRECT.STALE_DIRECT_SAMPLE"],
+  ],
+  [
+    "CF-05-06",
+    mobile,
+    "5.6",
+    "account",
+    components,
+    "DataRightsStatus",
+    ["C43"],
+    ["I20"],
+    deletionSemanticStates,
+    ["VALIDITY.RIGHTS_COMPATIBILITY", "DUE.RETENTION_WINDOW"],
+  ],
+  [
+    "CF-06-01",
+    critical,
+    "6.1",
+    "system-state",
+    components,
+    "SessionNotice",
+    ["C01", "C42"],
+    ["I19"],
+    ["signed_out"],
+    ["FALLBACK.AUTHORIZATION_DENIED"],
+  ],
+  [
+    "CF-06-02",
+    critical,
+    "6.2",
+    "system-state",
+    components,
+    "SessionNotice",
+    ["C02", "C42"],
+    ["I19"],
+    ["expired_mid_attempt"],
+    ["VALIDITY.IDENTITY_CLAIM_INVALID"],
+  ],
+  ["CF-06-03", critical, "6.3", "account", archetypes, "AccountView", ["C01"]],
+  [
+    "CF-06-04",
+    critical,
+    "6.4",
+    "account",
+    components,
+    "DataRightsStatus",
+    ["C04", "C43"],
+    ["I19"],
+    deletionSemanticStates,
+    ["VALIDITY.RIGHTS_COMPATIBILITY", "DUE.RETENTION_WINDOW"],
+  ],
+  [
+    "CF-06-05",
+    critical,
+    "6.5",
+    "progress",
+    archetypes,
+    "ProgressView",
+    ["C26", "C33"],
+    ["I04"],
+    ["stale_contradicted"],
+    ["DIRECT.STALE_DIRECT_SAMPLE"],
+  ],
+  [
+    "CF-06-06",
+    critical,
+    "6.6",
+    "progress",
+    components,
+    "WeaknessCard",
+    ["C26", "C33"],
+    ["I16"],
+    ["stale_contradicted"],
+    ["DIRECT.STALE_DIRECT_SAMPLE", "UNCERTAINTY.CONTRADICTORY_EVIDENCE"],
+  ],
+  [
+    "CF-06-07",
+    critical,
+    "6.7",
+    "skill-region",
+    components,
+    "LanguageElementsRegion",
+    ["C13", "C38"],
+  ],
+  [
+    "CF-06-08",
+    critical,
+    "6.8",
+    "result",
+    components,
+    "LanguageElementsRegion",
+    ["C13", "C19", "C38"],
+    ["I10"],
+    ["valid", "partially_valid"],
+    validityReasonCodes,
+  ],
+  [
+    "CF-06-09",
+    critical,
+    "6.9",
+    "skill-region",
+    components,
+    "UploadStatus",
+    ["C41", "C43"],
+    ["I20"],
+    ["sending"],
+    ["DUE.TRANSFER_WINDOW"],
+  ],
+  [
+    "CF-06-10",
+    critical,
+    "6.10",
+    "system-state",
+    components,
+    "UploadStatus",
+    ["C29", "C43"],
+    ["I17", "I20"],
+    ["not_sent", "not_counted"],
+    ["FALLBACK.TECHNICAL_FAULT"],
+  ],
+  [
+    "CF-06-11",
+    critical,
+    "6.11",
+    "result",
+    components,
+    "ResultCard",
+    ["C19", "C28"],
+    ["I13"],
+    ["partial", "partially_valid"],
+    ["UNCERTAINTY.PENDING_EVALUATION"],
+  ],
+  [
+    "CF-06-12",
+    critical,
+    "6.12",
+    "readiness",
+    components,
+    "PendingBanner",
+    ["C28", "C32"],
+    ["I15"],
+    ["pending"],
+    ["UNCERTAINTY.PENDING_EVALUATION"],
+  ],
+  [
+    "CF-06-13",
+    critical,
+    "6.13",
+    "readiness",
+    components,
+    "ReadinessEvidence",
+    ["C32"],
+    ["I12", "I14"],
+    readinessSemanticStates,
+    gateReasonCodes,
+  ],
+  [
+    "CF-06-14",
+    critical,
+    "6.14",
+    "session",
+    archetypes,
+    "AttemptView",
+    ["C02", "C05"],
+    undefined,
+    [],
+    [],
+  ],
+  [
+    "CF-06-15",
+    critical,
+    "6.15",
+    "result",
+    archetypes,
+    "ResultView",
+    ["C19", "C25"],
+    ["I15"],
+    ["evidence_building"],
+    ["DIRECT.MISSING_WRITTEN", "DIRECT.MISSING_ORAL", "DIRECT.TARGET_CONDITION_GAP"],
+  ],
+];
+
+const correctedCompactIds = new Set([
+  "CF-01-01",
+  "CF-01-02",
+  "CF-01-03",
+  "CF-01-04",
+  "CF-04-01",
+  "CF-04-02",
+  "CF-04-03",
+  "CF-04-04",
+  "CF-04-05",
+  "CF-04-06",
+  "CF-05-01",
+  "CF-05-02",
+  "CF-05-03",
+  "CF-05-04",
+  "CF-05-05",
+  "CF-05-06",
+  "CF-06-01",
+  "CF-06-02",
+  "CF-06-04",
+  "CF-06-11",
+  "CF-06-12",
+  "CF-06-13",
+  "CF-06-14",
+  "CF-06-15",
+]);
+
+export const compactFrames: readonly CoverageRow[] = compactDefinitions.map((definition) => {
+  const [
+    id,
+    sourcePath,
+    sourceAnchor,
+    routeArchetype,
+    targetPath,
+    targetAnchor,
+    componentDependencies,
+    iconDependencies,
+    rowStates,
+    rowReasons,
+  ] = definition;
+  const status: CoverageStatus = correctedCompactIds.has(id) ? "corrected" : "accepted";
+  return row({
+    id,
+    sourcePath,
+    sourceAnchor,
+    sourceAnchorType: "heading",
+    kind: "compact-frame",
+    routeArchetype,
+    semanticStates: rowStates,
+    semanticReasons: rowReasons,
+    componentDependencies,
+    iconDependencies,
+    targetPath,
+    targetAnchor,
+    targetImplementationExports: [targetAnchor],
+    automatedTestIds: ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
+    responsiveLanes: ["compact"],
+    status,
+    resolution:
+      sourcePath === critical
+        ? "Architecture-owned critical state maps to its named shared shell or component export"
+        : "Plan section 5.1 destination maps to its named shared shell, route, or component export",
+  });
+});
+
+type LargeDefinition = readonly [
+  string,
+  string,
+  string,
+  RouteArchetype,
+  string,
+  string,
+  readonly ComponentFamilyId[],
+  (readonly IconId[] | undefined)?,
+  (readonly ResponsiveLane[] | undefined)?,
+];
+const largeDefinitions: readonly LargeDefinition[] = [
+  [
+    "LG-D1",
+    "Design/Bestehen-03-Desktop-Responsive.dc.html",
+    "D1",
+    "coach",
+    archetypes,
+    "CoachView",
+    ["C01", "C18"],
+    ["I01"],
+    ["desktop"],
+  ],
+  [
+    "LG-D2",
+    "Design/Bestehen-03-Desktop-Responsive.dc.html",
+    "D2",
+    "readiness",
+    archetypes,
+    "ReadinessView",
+    ["C32"],
+    ["I02"],
+    ["desktop"],
+  ],
+  [
+    "LG-D3",
+    "Design/Bestehen-03-Desktop-Responsive.dc.html",
+    "D3",
+    "skill-region",
+    components,
+    "WritingRegion",
+    ["C02", "C40"],
+    ["I07"],
+    ["tablet", "desktop"],
+  ],
+  [
+    "LG-D4",
+    "Design/Bestehen-03-Desktop-Responsive.dc.html",
+    "D4",
+    "mock",
+    archetypes,
+    "MockView",
+    ["C03"],
+    ["I09"],
+    ["desktop"],
+  ],
+  [
+    "LG-D5",
+    "Design/Bestehen-03-Desktop-Responsive.dc.html",
+    "D5",
+    "responsive-rule",
+    "packages/design-system/src/overlay.tsx",
+    "Overlay",
+    ["C04"],
+    undefined,
+    ["tablet", "desktop"],
+  ],
+  [
+    "LG-V3",
+    critical,
+    "V3",
+    "progress",
+    archetypes,
+    "ProgressView",
+    ["C26", "C33"],
+    ["I04"],
+    ["desktop"],
+  ],
+  [
+    "LG-V4",
+    critical,
+    "V4",
+    "skill-region",
+    components,
+    "LanguageElementsRegion",
+    ["C13", "C38"],
+    undefined,
+    ["tablet", "desktop"],
+  ],
+  [
+    "LG-V7",
+    critical,
+    "V7",
+    "readiness",
+    components,
+    "ReadinessEvidence",
+    ["C32"],
+    ["I10"],
+    ["desktop"],
+  ],
+];
+const largeSemantics: Record<string, RowSemantics> = {
+  "LG-D1": [[], []],
+  "LG-D2": [readinessSemanticStates, gateReasonCodes],
+  "LG-D3": [[], []],
+  "LG-D4": [validitySemanticStates, ["VALIDITY.TECHNICAL_PREFLIGHT"]],
+  "LG-D5": [[], []],
+  "LG-V3": [
+    ["stale_contradicted"],
+    ["DIRECT.STALE_DIRECT_SAMPLE", "UNCERTAINTY.CONTRADICTORY_EVIDENCE"],
+  ],
+  "LG-V4": [validitySemanticStates, validityReasonCodes],
+  "LG-V7": [readinessSemanticStates, gateReasonCodes],
+};
+
+export const largeExemplars: readonly CoverageRow[] = largeDefinitions.map((definition) => {
+  const [
+    id,
+    sourcePath,
+    sourceAnchor,
+    routeArchetype,
+    targetPath,
+    targetAnchor,
+    componentDependencies,
+    iconDependencies,
+    lanes,
+  ] = definition;
+  const [rowStates, rowReasons] = largeSemantics[id] ?? [[], []];
+  return row({
+    id,
+    sourcePath,
+    sourceAnchor,
+    sourceAnchorType: "attribute",
+    kind: "large-exemplar",
+    routeArchetype,
+    semanticStates: rowStates,
+    semanticReasons: rowReasons,
+    componentDependencies,
+    iconDependencies,
+    targetPath,
+    targetAnchor,
+    targetImplementationExports: [targetAnchor],
+    automatedTestIds: ["P04-RSP-001", "P04-VISUAL-001", "P04-A11Y-001"],
+    responsiveLanes: lanes,
+    status: id === "LG-V7" ? "corrected" : "accepted",
+    resolution:
+      id === "LG-V7"
+        ? "Gates A through F replace the obsolete four-row gate list in the named Readiness export"
+        : "Plan section 5.2 exemplar maps to its named responsive implementation export",
+  });
+});
+
+const componentSourceAnchors: Record<ComponentFamilyId, readonly [string, string]> = {
+  C01: ["Design/Bestehen-01-Design-System.dc.html", "AppShell"],
+  C02: ["Design/Bestehen-01-Design-System.dc.html", "AttemptShell"],
+  C03: ["Design/Bestehen-01-Design-System.dc.html", "MockShell"],
+  C04: ["Design/Bestehen-01-Design-System.dc.html", "2.13 SHELL, OVERLAYS AND NAVIGATION"],
+  C05: ["Design/Bestehen-01-Design-System.dc.html", "Stepper"],
+  C06: ["Design/Bestehen-01-Design-System.dc.html", "Button"],
+  C07: ["Design/Bestehen-01-Design-System.dc.html", "IconButton"],
+  C08: ["Design/Bestehen-01-Design-System.dc.html", "Segmented"],
+  C09: ["Design/Bestehen-01-Design-System.dc.html", "Toggle"],
+  C10: ["Design/Bestehen-01-Design-System.dc.html", "TextField"],
+  C11: ["Design/Bestehen-01-Design-System.dc.html", "AnswerChoice"],
+  C12: ["Design/Bestehen-01-Design-System.dc.html", "MatchingPair"],
+  C13: ["Design/Bestehen-01-Design-System.dc.html", "ClozeGap"],
+  C14: ["Design/Bestehen-01-Design-System.dc.html", "ReorderList"],
+  C15: ["Design/Bestehen-01-Design-System.dc.html", "FormError"],
+  C16: ["Design/Bestehen-01-Design-System.dc.html", "RecommendationCard"],
+  C17: ["Design/Bestehen-01-Design-System.dc.html", "SessionDurationPicker"],
+  C18: ["Design/Bestehen-01-Design-System.dc.html", "CoachMessage"],
+  C19: ["Design/Bestehen-01-Design-System.dc.html", "ResultCard"],
+  C20: ["Design/Bestehen-01-Design-System.dc.html", "DecisiveEvidence"],
+  C21: ["Design/Bestehen-01-Design-System.dc.html", "RepairCard"],
+  C22: ["Design/Bestehen-01-Design-System.dc.html", "HintDisclosure"],
+  C23: ["Design/Bestehen-01-Design-System.dc.html", "FreshCheckBanner"],
+  C24: ["Design/Bestehen-01-Design-System.dc.html", "WhatChangedSummary"],
+  C25: ["Design/Bestehen-01-Design-System.dc.html", "EvidenceLabel"],
+  C26: ["Design/Bestehen-01-Design-System.dc.html", "WeaknessCard"],
+  C27: ["Design/Bestehen-01-Design-System.dc.html", "DueReviewGroup"],
+  C28: ["Design/Bestehen-01-Design-System.dc.html", "PendingBanner"],
+  C29: ["Design/Bestehen-01-Design-System.dc.html", "SystemFailureBanner"],
+  C30: ["Design/Bestehen-01-Design-System.dc.html", "ContradictionNotice"],
+  C31: ["Design/Bestehen-01-Design-System.dc.html", "StaleEvidenceNotice"],
+  C32: ["Design/Bestehen-01-Design-System.dc.html", "ReadinessBand"],
+  C33: ["Design/Bestehen-01-Design-System.dc.html", "ChangeTimeline"],
+  C34: ["Design/Bestehen-01-Design-System.dc.html", "MilestoneRow"],
+  C35: ["Design/Bestehen-01-Design-System.dc.html", "MockResultCard"],
+  C36: ["Design/Bestehen-01-Design-System.dc.html", "TextAlternativeTable"],
+  C37: ["Design/Bestehen-01-Design-System.dc.html", "ReadingTextPane"],
+  C38: ["Design/Bestehen-01-Design-System.dc.html", "ClozeTextPane"],
+  C39: ["Design/Bestehen-01-Design-System.dc.html", "AudioPlayer"],
+  C40: ["Design/Bestehen-01-Design-System.dc.html", "WritingEditor"],
+  C41: ["Design/Bestehen-01-Design-System.dc.html", "SpeakingPrompt"],
+  C42: ["Design/Bestehen-05-UI-Foundation-Delta.dc.html", "SessionNotice"],
+  C43: ["Design/Bestehen-05-UI-Foundation-Delta.dc.html", "UploadStatus"],
+};
+const componentSemantics: Partial<Record<ComponentFamilyId, RowSemantics>> = {
+  C03: [["interrupted", "not_counted"], ["VALIDITY.TECHNICAL_PREFLIGHT"]],
+  C19: [
+    [...validitySemanticStates, ...capabilitySemanticStates],
+    [...validityReasonCodes, ...capabilityReasonCodes],
+  ],
+  C23: [["unavailable", "retry_fresh"], ["FALLBACK.NO_FRESH_RETRY"]],
+  C25: [validitySemanticStates, validityReasonCodes],
+  C26: [
+    ["stale_contradicted"],
+    ["DIRECT.STALE_DIRECT_SAMPLE", "UNCERTAINTY.CONTRADICTORY_EVIDENCE"],
+  ],
+  C28: [capabilitySemanticStates, capabilityReasonCodes],
+  C29: [[], ["FALLBACK.TECHNICAL_FAULT"]],
+  C30: [["stale_contradicted"], ["UNCERTAINTY.CONTRADICTORY_EVIDENCE"]],
+  C31: [["stale_contradicted"], ["DIRECT.STALE_DIRECT_SAMPLE"]],
+  C32: [readinessSemanticStates, gateReasonCodes],
+  C35: [validitySemanticStates, validityReasonCodes],
+  C40: [draftConflictSemanticStates, ["UNCERTAINTY.CAUSE_UNRESOLVED"]],
+  C42: [sessionSemanticStates, ["FALLBACK.AUTHORIZATION_DENIED"]],
+  C43: [transferSemanticStates, ["DUE.TRANSFER_WINDOW", "FALLBACK.TECHNICAL_FAULT"]],
+};
+
+export const componentRows: readonly CoverageRow[] = componentFamilies.map(([id, name]) => {
+  const [sourcePath, sourceAnchor] = componentSourceAnchors[id];
+  const [rowStates, rowReasons] = componentSemantics[id] ?? [[], []];
+  const targetPath =
     id <= "C03"
       ? "packages/design-system/src/shells.tsx"
       : id === "C04"
         ? "packages/design-system/src/overlay.tsx"
-        : "packages/design-system/src/components.tsx",
-  targetAnchor: name,
-  tests: ["P04-COMPONENT-001", "P04-A11Y-001"],
-  status: "accepted",
-  resolution: `${name} closed fixture registry entry`,
-}));
+        : components;
+  return row({
+    id,
+    sourcePath,
+    sourceAnchor,
+    sourceAnchorType: "design-token",
+    kind: "component-family",
+    routeArchetype: "component-library",
+    semanticStates: rowStates,
+    semanticReasons: rowReasons,
+    targetPath,
+    targetAnchor: name,
+    targetImplementationExports: [name],
+    automatedTestIds: ["P04-COMPONENT-001", "P04-A11Y-001"],
+    status: "accepted",
+    resolution: `${name} maps from its Design 01 section 2.14 or Design 05 delta token to one exported family`,
+  });
+});
 
-export const iconRows: readonly CoverageRow[] = iconRegistry.map(([id, name]) => ({
-  id,
-  source: "Implementation/Personal/04-responsive-web-design-system/plan.md",
-  anchor: id,
-  target: "packages/design-system/src/icons.tsx",
-  targetAnchor: name,
-  tests: ["P04-ASSET-001", "P04-COMPONENT-001"],
-  status: "accepted",
-  resolution: "Closed local Lucide geometry registry",
-}));
+const iconSourceAnchors: Record<IconId, readonly [string, string, SourceAnchorType]> = {
+  I01: ["Design/Bestehen-01-Design-System.dc.html", "Coach", "design-token"],
+  I02: ["Design/Bestehen-01-Design-System.dc.html", "Readiness", "design-token"],
+  I03: ["Design/Bestehen-01-Design-System.dc.html", "Train", "design-token"],
+  I04: ["Design/Bestehen-01-Design-System.dc.html", "Progress", "design-token"],
+  I05: ["Design/Bestehen-01-Design-System.dc.html", "Reading", "design-token"],
+  I06: ["Design/Bestehen-01-Design-System.dc.html", "Listening", "design-token"],
+  I07: ["Design/Bestehen-01-Design-System.dc.html", "Writing", "design-token"],
+  I08: ["Design/Bestehen-01-Design-System.dc.html", "Speaking", "design-token"],
+  I09: ["Design/Bestehen-01-Design-System.dc.html", "Measured time", "design-token"],
+  I10: ["Design/Bestehen-01-Design-System.dc.html", "Evidence", "design-token"],
+  I11: ["Design/Bestehen-01-Design-System.dc.html", "Exam date", "design-token"],
+  I12: ["Design/Bestehen-01-Design-System.dc.html", "Safe / correct", "design-token"],
+  I13: ["Design/Bestehen-01-Design-System.dc.html", "Borderline", "design-token"],
+  I14: ["Design/Bestehen-01-Design-System.dc.html", "Not ready", "design-token"],
+  I15: ["Design/Bestehen-01-Design-System.dc.html", "Evidence building", "design-token"],
+  I16: ["Design/Bestehen-01-Design-System.dc.html", "Stale / recheck", "design-token"],
+  I17: ["Design/Bestehen-01-Design-System.dc.html", "Our fault", "design-token"],
+  I18: ["Design/Bestehen-01-Design-System.dc.html", "Transcript", "design-token"],
+  I19: ["Design/Bestehen-05-UI-Foundation-Delta.dc.html", "i-lock", "attribute"],
+  I20: ["Design/Bestehen-05-UI-Foundation-Delta.dc.html", "i-up", "attribute"],
+};
+const iconSemantics: Partial<Record<IconId, RowSemantics>> = {
+  I02: [readinessSemanticStates, gateReasonCodes],
+  I09: [["interrupted", "not_counted"], ["VALIDITY.TECHNICAL_PREFLIGHT"]],
+  I10: [validitySemanticStates, validityReasonCodes],
+  I12: [["valid", "safe"], ["VALIDITY.CONTENT_APPROVAL"]],
+  I13: [["pending", "borderline"], ["UNCERTAINTY.PENDING_EVALUATION"]],
+  I14: [["not_ready"], ["RISK.WRITTEN_BLOCKER", "RISK.ORAL_BLOCKER"]],
+  I15: [
+    ["evidence_building"],
+    ["DIRECT.MISSING_WRITTEN", "DIRECT.MISSING_ORAL", "DIRECT.TARGET_CONDITION_GAP"],
+  ],
+  I16: [["stale_contradicted"], ["DIRECT.STALE_DIRECT_SAMPLE"]],
+  I17: [["unavailable", "not_sent", "not_counted"], ["FALLBACK.TECHNICAL_FAULT"]],
+  I19: [sessionSemanticStates, ["FALLBACK.AUTHORIZATION_DENIED"]],
+  I20: [transferSemanticStates, ["DUE.TRANSFER_WINDOW", "FALLBACK.TECHNICAL_FAULT"]],
+};
+
+export const iconRows: readonly CoverageRow[] = iconRegistry.map(([id, name]) => {
+  const [sourcePath, sourceAnchor, sourceAnchorType] = iconSourceAnchors[id];
+  const [rowStates, rowReasons] = iconSemantics[id] ?? [[], []];
+  return row({
+    id,
+    sourcePath,
+    sourceAnchor,
+    sourceAnchorType,
+    kind: "icon",
+    routeArchetype: "icon-library",
+    semanticStates: rowStates,
+    semanticReasons: rowReasons,
+    targetPath: "packages/design-system/src/icons.tsx",
+    targetAnchor: `"${name}"`,
+    targetImplementationExports: ["iconNames", "Icon"],
+    automatedTestIds: ["P04-ASSET-001", "P04-COMPONENT-001"],
+    status: "accepted",
+    resolution: "Design icon token maps to one closed local geometry registry key",
+  });
+});
 
 export const representativeRoutes = [
   "/",
@@ -323,7 +1463,16 @@ export const representativeRoutes = [
 ] as const;
 
 export const sourceAnchorManifest = {
-  version: "p04-source-anchors/v1",
+  version: "p04-source-anchors/v2",
+  schema: {
+    coverageKinds,
+    sourceAnchorTypes,
+    routeArchetypes,
+    semanticStates,
+    semanticReasons,
+    responsiveLanes,
+    coverageStatuses,
+  },
   inventory: { compactFrames: 41, largeExemplars: 8, componentFamilies: 43, icons: 20 },
   boardAnchors,
   compactFrames,
