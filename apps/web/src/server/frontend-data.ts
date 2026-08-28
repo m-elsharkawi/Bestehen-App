@@ -35,10 +35,12 @@ export async function requirePersonalSession(returnPath: string): Promise<void> 
   const token = cookieStore.get(appSessionCookie.name)?.value;
   let authorized =
     syntheticFixtureEnabled() && cookieStore.get("bestehen-synthetic-session")?.value === "1";
-  try {
-    authorized = Boolean(await getIdentityService().authenticate(token));
-  } catch {
-    authorized = false;
+  if (!authorized) {
+    try {
+      authorized = Boolean(await getIdentityService().authenticate(token));
+    } catch {
+      authorized = false;
+    }
   }
   if (!authorized) redirect(`/auth/login?returnTo=${encodeURIComponent(returnPath)}`);
 }

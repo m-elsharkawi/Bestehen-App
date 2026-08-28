@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { parseServerEnvironmentForService } from "@bestehen/configuration";
 import { getIdentityService } from "../../../server/identity";
 import { applicationRequestUrl } from "../../../server/runtime";
 import { syntheticFixtureEnabled } from "../../../server/runtime";
