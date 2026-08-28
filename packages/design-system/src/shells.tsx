@@ -2,6 +2,7 @@ import { type ReactNode, useId } from "react";
 import { Brand } from "./brand.js";
 import type { NavigationDestination, ShellSlots } from "./contracts.js";
 import { Icon, type IconName } from "./icons.js";
+import { ThemeControl } from "./theme-control.js";
 
 const destinations: readonly [NavigationDestination, string, IconName][] = [
   ["coach", "Coach", "coach"],
@@ -36,6 +37,7 @@ export function AppShell({
   banner,
   aside,
   backHref,
+  utilityHeader,
   embedded = false,
 }: ShellSlots & { readonly embedded?: boolean }) {
   const mainId = useId();
@@ -54,12 +56,20 @@ export function AppShell({
         <a aria-label="Bestehen App home" href="/">
           <Brand compact={focused} />
         </a>
-        {!bare && !focused ? (
-          <a className="account-link" href="/settings">
-            <Icon name="lock" />
-            Account
-          </a>
-        ) : null}
+        {/* Utility slot: header-flow home for shell-level controls. An embedded
+            shell is a gallery specimen, so it carries no live utility control. */}
+        {embedded ? null : (
+          <div className="header-utility">
+            {utilityHeader}
+            <ThemeControl />
+            {!bare && !focused ? (
+              <a className="account-link" href="/settings">
+                <Icon name="lock" />
+                Account
+              </a>
+            ) : null}
+          </div>
+        )}
       </header>
       {!bare && !focused ? <PrimaryNavigation active={activeDestination} /> : null}
       <Content id={mainId} tabIndex={embedded ? undefined : -1}>

@@ -9,7 +9,12 @@ function applyTheme(theme: Theme) {
   else document.documentElement.dataset.theme = theme;
 }
 
-export function ThemeController() {
+/**
+ * Header utility control for the local theme preference. It owns only the
+ * preference; the pre-paint script applies the stored value before hydration.
+ * Rendered once per shell header, never inside an embedded shell.
+ */
+export function ThemeControl() {
   const [theme, setTheme] = useState<Theme>("system");
   useEffect(() => {
     const saved = localStorage.getItem("bestehen-theme");

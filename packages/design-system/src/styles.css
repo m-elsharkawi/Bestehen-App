@@ -162,14 +162,26 @@ summary,
   align-items: center;
   background: var(--surface-raised);
   border-bottom: 1px solid var(--border-default);
+  column-gap: var(--space-4);
   display: flex;
+  flex-wrap: wrap;
   grid-area: header;
   justify-content: space-between;
   min-height: 64px;
   padding: var(--space-3) var(--space-4);
+  row-gap: var(--space-2);
 }
-.app-header > a {
+.app-header a {
   text-decoration: none;
+}
+.header-utility {
+  align-items: center;
+  column-gap: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+  row-gap: var(--space-2);
 }
 .account-link {
   align-items: center;
@@ -222,6 +234,8 @@ summary,
   align-self: center;
   max-width: var(--measure-bare);
 }
+/* Compact focused/bare headers centre the brand together with the utility
+   cluster, so the row wraps instead of cramping the control at small widths. */
 .shell-bare .app-header,
 .shell-focused .app-header {
   justify-content: center;
@@ -552,14 +566,11 @@ input[type="checkbox"] {
   border: 1px solid var(--border-strong);
   border-radius: 999px;
   color: var(--text-primary);
+  max-width: 100%;
   min-height: var(--target-min);
-  max-width: calc(100vw - var(--space-5));
+  min-width: 0;
   overflow-wrap: anywhere;
   padding-inline: var(--space-3);
-  position: fixed;
-  right: 96px;
-  top: 10px;
-  z-index: 30;
 }
 .skeleton {
   background: linear-gradient(

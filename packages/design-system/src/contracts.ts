@@ -12,6 +12,8 @@ export interface ShellSlots {
   readonly banner?: ReactNode;
   readonly aside?: ReactNode;
   readonly backHref?: string;
+  /** Extra header-flow utility controls, placed before the shell's own controls. */
+  readonly utilityHeader?: ReactNode;
 }
 
 export interface ActionContract {

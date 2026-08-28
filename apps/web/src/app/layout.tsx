@@ -2,7 +2,6 @@ import "@bestehen/design-system/styles.css";
 import type { Metadata } from "next";
 import Script from "next/script";
 import type { ReactNode } from "react";
-import { ThemeController } from "../ui/theme-controller";
 
 export const metadata: Metadata = {
   title: { default: "Bestehen App", template: "%s · Bestehen App" },
@@ -15,7 +14,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <Script src="/theme-init.js" strategy="beforeInteractive" />
         {children}
-        <ThemeController />
       </body>
     </html>
   );
