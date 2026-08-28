@@ -57,13 +57,12 @@ export type ChoiceNavVariant = "segmented" | "tabs" | "chip";
 export function ChoiceNav({ variant = "segmented" }: { readonly variant?: ChoiceNavVariant }) {
   if (variant === "tabs") {
     return (
-      <div aria-label="Example choices" role="tablist">
-        <button aria-selected="true" role="tab" type="button">
-          Current
-        </button>
-        <button aria-selected="false" role="tab" type="button">
-          Other
-        </button>
+      <div className="choice-nav-preview">
+        <p>Example choices</p>
+        <ul>
+          <li>Current</li>
+          <li>Other</li>
+        </ul>
       </div>
     );
   }
@@ -81,12 +80,13 @@ export function ChoiceNav({ variant = "segmented" }: { readonly variant?: Choice
     );
   }
   return (
-    <nav aria-label="Example choices">
-      <a aria-current="page" href="#choice-current">
-        Current
-      </a>{" "}
-      <a href="#choice-other">Other</a>
-    </nav>
+    <div className="choice-nav-preview">
+      <p>Example choices</p>
+      <ul>
+        <li>Current</li>
+        <li>Other</li>
+      </ul>
+    </div>
   );
 }
 export type BinaryChoiceVariant = "toggle" | "checkbox" | "radio";
@@ -168,15 +168,16 @@ export function AnswerChoice({
   return (
     <>
       <BinaryChoice legend={legend} variant={variant === "multiple" ? "checkbox" : "radio"} />
-      {variant === "revealed" ? <p role="status">Answer revealed after submission.</p> : null}
+      {variant === "revealed" ? <p>Answer revealed after submission.</p> : null}
     </>
   );
 }
 export function MatchingPair() {
   return (
-    <fieldset>
+    <fieldset disabled>
       <legend>Match each item</legend>
       <p>Select an item, then choose its numbered position.</p>
+      <p>Matching controls are unavailable in this static preview.</p>
       <button type="button">Select item A</button>
       <button type="button">Place in position 1</button>
       <button type="button">Reset matches</button>
@@ -223,16 +224,27 @@ export function ReorderList() {
   return (
     <section>
       <h2>Put the steps in order</h2>
+      <p>Ordering controls are unavailable in this static preview.</p>
       <ol>
         <li>
-          First item <button type="button">Move down</button>{" "}
-          <button type="button">Set position 1</button>
+          First item{" "}
+          <button disabled type="button">
+            Move down
+          </button>{" "}
+          <button disabled type="button">
+            Set position 1
+          </button>
         </li>
         <li>
-          Second item <button type="button">Move up</button>
+          Second item{" "}
+          <button disabled type="button">
+            Move up
+          </button>
         </li>
       </ol>
-      <button type="button">Reset order</button>
+      <button disabled type="button">
+        Reset order
+      </button>
     </section>
   );
 }
@@ -895,7 +907,8 @@ export function ListeningRegion() {
     <section>
       <h2>Hören</h2>
       {/* biome-ignore lint/a11y/useMediaCaption: timed text is intentionally unavailable during this exam task */}
-      <audio aria-label="Listening task audio" controls preload="none" />
+      <audio preload="none" />
+      <p>Audio controls are unavailable in this static preview.</p>
       <p>Replay limit: two. No transcript is available during this task.</p>
     </section>
   );
@@ -915,10 +928,10 @@ export function WritingRegion({ variant = "editor" }: { readonly variant?: Writi
         <textarea id={draftId} rows={12} />
         <p>
           {variant === "autosave"
-            ? "Saved on this device. The server has not accepted this draft as evidence."
+            ? "Autosave status preview. No draft is saved by this fixture."
             : variant === "revisionDiff"
-              ? "The latest revision differs from the saved checkpoint; both versions remain available."
-              : "Your draft remains on this device until you send it."}
+              ? "Revision difference preview. No versions are loaded or saved by this fixture."
+              : "Text entry works in this static preview. No draft is saved or sent."}
         </p>
       </div>
     </section>
@@ -931,23 +944,20 @@ export function SpeakingRegion({
   readonly variant?: SpeakingRegionVariant;
 }) {
   const copy: Record<SpeakingRegionVariant, readonly [string, string]> = {
-    preflight: [
-      "Start recording",
-      "Microphone access begins only after you choose Start recording.",
-    ],
-    recording: ["Stop recording", "Recording is in progress."],
-    "turn-taking": ["Continue", "Wait for the prompt before your next turn."],
-    transcript: ["View transcript", "The transcript is available after recording ends."],
+    preflight: ["Start recording", "Microphone access is not requested in this static preview."],
+    recording: ["Stop recording", "Recording-state preview. No microphone capture is running."],
+    "turn-taking": ["Continue", "Turn-taking preview. No turn progression runs here."],
+    transcript: ["View transcript", "Transcript preview. No recording or transcript is loaded."],
   };
   return (
     <section>
       <h2>Speaking</h2>
       <p>{copy[variant][1]}</p>
-      <button className="action action-primary" type="button">
+      <button className="action action-primary" disabled type="button">
         <Icon name="speaking" />
         {copy[variant][0]}
       </button>
-      <p role="status">{variant === "recording" ? "Recording" : "Not recording"}</p>
+      <p>{variant === "recording" ? "Recording controls unavailable" : "Not recording"}</p>
     </section>
   );
 }
@@ -957,8 +967,8 @@ export function DraftConflict() {
   const name = useId();
   return (
     <section aria-labelledby={headingId}>
-      <h2 id={headingId}>Two saved drafts need your choice</h2>
-      <p>Both branches are preserved. Compare them before selecting or merging.</p>
+      <h2 id={headingId}>Draft conflict preview</h2>
+      <p>Static comparison only. Choosing an option does not resolve or merge a draft.</p>
       <div className="draft-compare">
         <article>
           <h3>This device</h3>
@@ -970,7 +980,7 @@ export function DraftConflict() {
         </article>
       </div>
       <fieldset>
-        <legend>Resolve the draft</legend>
+        <legend>Preview resolution choices</legend>
         <label>
           <input name={name} type="radio" />
           Keep this device
@@ -1242,7 +1252,7 @@ export const componentFixtureRegistry: readonly ComponentFixtureContract[] = [
   {
     id: "C08",
     variants: ["segmented", "tabs", "chip"],
-    selector: "nav",
+    selector: ".choice-nav-preview",
     expectedText: "Current",
     render: () => <ChoiceNav />,
   },
@@ -1740,8 +1750,7 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
   if (fixture.id === "C08") {
     return {
       expectedText: "Current",
-      selector:
-        variant === "segmented" ? "nav" : variant === "tabs" ? "[role='tablist']" : "fieldset",
+      selector: variant === "chip" ? "fieldset" : ".choice-nav-preview",
     };
   }
   if (fixture.id === "C09") {
@@ -1967,9 +1976,9 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
     return {
       expectedText:
         variant === "conflict"
-          ? "Two saved drafts"
+          ? "Draft conflict preview"
           : variant === "revisionDiff"
-            ? "differs"
+            ? "Revision difference preview"
             : "Your draft",
       selector: variant === "conflict" ? ".draft-compare" : ".writing-region",
     };
@@ -1977,9 +1986,9 @@ function fixtureCaseAssertions(fixture: ComponentFixtureContract, variant: strin
   if (fixture.id === "C41") {
     const text: Record<SpeakingRegionVariant, string> = {
       preflight: "Start recording",
-      recording: "Recording is in progress",
-      "turn-taking": "Wait for the prompt",
-      transcript: "transcript is available",
+      recording: "Recording-state preview",
+      "turn-taking": "Turn-taking preview",
+      transcript: "Transcript preview",
     };
     return { expectedText: text[variant as SpeakingRegionVariant], selector: "section" };
   }

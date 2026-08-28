@@ -30,7 +30,7 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     }, theme);
     if (name === "writing-768") {
       await expect(
-        page.getByText("Saved on this device. The server has not accepted this draft as evidence."),
+        page.getByText("Autosave status preview. No draft is saved by this fixture."),
       ).toBeVisible();
     }
     await expect(page).toHaveScreenshot(`${name}.png`, {
