@@ -38,6 +38,7 @@ export function AppShell({
   aside,
   backHref,
   utilityHeader,
+  contentSplit = "default",
   embedded = false,
 }: ShellSlots & { readonly embedded?: boolean }) {
   const mainId = useId();
@@ -81,7 +82,15 @@ export function AppShell({
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <Title>{title}</Title>
         {banner}
-        <div className={aside ? "content-with-aside" : "content-column"}>
+        <div
+          className={
+            aside
+              ? contentSplit === "narrow-aside"
+                ? "content-with-aside content-with-aside--narrow-aside"
+                : "content-with-aside"
+              : "content-column"
+          }
+        >
           <div>{children}</div>
           {aside ? <aside aria-label="Supporting evidence">{aside}</aside> : null}
         </div>

@@ -39,6 +39,7 @@ export function CoachView() {
           <p>Reading evidence is current. A fresh Writing sample is due.</p>
         </>
       }
+      contentSplit="narrow-aside"
       eyebrow="Today"
       title="Your next useful session"
     >

@@ -14,6 +14,12 @@ export interface ShellSlots {
   readonly backHref?: string;
   /** Extra header-flow utility controls, placed before the shell's own controls. */
   readonly utilityHeader?: ReactNode;
+  /**
+   * Main/aside width ratio for the `content-with-aside` grid at >=1024px.
+   * "default" is the 2:1 split (LG-D2 readiness, LG-V3 progress, LG-V7).
+   * "narrow-aside" is the 7:5 (1.4) split required by LG-D1 (coach).
+   */
+  readonly contentSplit?: "default" | "narrow-aside";
 }
 
 export interface ActionContract {
