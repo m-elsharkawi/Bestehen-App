@@ -29,6 +29,6 @@ test("personal owner routes deny anonymously and fake identity makes no provider
   await expect(
     page.getByRole("heading", { level: 1, name: "Sign-in is not configured" }),
   ).toBeVisible();
-  await expect(page.getByText(/owner's email code/i)).toBeVisible();
+  await expect(page.getByText(/not configured a sign-in provider/i)).toBeVisible();
   await expect(page.getByText(/password/i)).toHaveCount(0);
 });
