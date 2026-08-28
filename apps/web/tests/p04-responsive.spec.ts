@@ -48,6 +48,16 @@ test("P04-ROUTE-001 protected and focused product routes fail closed", async ({ 
   }
 });
 
+test("P04-ROUTE-001 held public destination survives auth failure round-trip", async ({ page }) => {
+  const heldDestination = "/";
+  await page.goto(`/auth/login?returnTo=${encodeURIComponent(heldDestination)}`);
+  await expect(page).toHaveURL(/\/auth\/failure\?code=identity_not_configured/);
+  const failureUrl = new URL(page.url());
+  expect(failureUrl.searchParams.get("returnTo")).toBe(heldDestination);
+  await page.getByRole("link", { name: "Return" }).click();
+  await expect(page).toHaveURL(new RegExp(`${heldDestination.replace("/", "\\/")}$`));
+});
+
 test("P04-RSP-001 representative views reflow at 320 and 200 percent text", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/ui-fixtures/readiness");
