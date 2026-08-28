@@ -35,9 +35,6 @@ const routeManifest = JSON.parse(
   ),
 );
 const protectedFiles = protectedRouteFiles(build, routeManifest, "/(protected)/coach/page");
-const jsFiles = readdirSync(chunksRoot)
-  .filter((file) => file.endsWith(".js"))
-  .map((file) => `static/chunks/${file}`);
 const productChunks = protectedFiles.filter(
   (file) => !new Set([...build.polyfillFiles, ...build.rootMainFiles]).has(file),
 );
