@@ -229,7 +229,8 @@ summary,
 .primary-nav a[aria-current="page"] {
   border-top-color: var(--text-primary);
   color: var(--text-primary);
-  font-weight: 650;
+  /* Board 02 2.1 and board 03 D1 both mark the active destination at 600. */
+  font-weight: 600;
 }
 .app-shell > main {
   grid-area: main;
@@ -901,17 +902,26 @@ input[type="checkbox"] {
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav a {
     /* The side rail marks the active destination with a filled pill, so the
-       bottom bar's reserved rule is dropped for every item alike. */
+       bottom bar's reserved rule is dropped for every item alike. Board 03 D1
+       draws these rows at 15px over a 44px row with a 12px icon gap — the
+       bottom bar's 12px label and 60px touch row read undersized here. */
     border-top: 0;
     flex-direction: row;
+    font-size: 0.9375rem;
+    gap: var(--space-3);
     justify-content: flex-start;
-    padding-inline: var(--space-4);
+    /* Hold the label's line box to the 20px icon so the row lands on the
+       board's 44px rather than being pushed taller by the larger type. */
+    line-height: 1.3;
+    min-height: var(--target-min);
+    padding: var(--space-3);
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav a[aria-current="page"] {
+    /* The board insets every row equally and fills the active one, so the
+       highlight must not be narrower than its neighbours. */
     background: var(--surface-ink);
     border-radius: var(--radius-panel);
     color: var(--text-on-ink);
-    margin-inline: var(--space-2);
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .app-header {
     /* The header now sits above the rail rather than beside it, so its own
