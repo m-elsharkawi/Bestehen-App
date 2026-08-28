@@ -52,7 +52,8 @@ const evidenceFiles = ["apps", "packages", "scripts"]
   .filter(
     (path) =>
       /(?:\.(?:test|spec)\.(?:ts|tsx)|\.mjs)$/.test(path) &&
-      !path.endsWith("scripts/check-design-coverage.mjs"),
+      !path.endsWith("scripts/check-design-coverage.mjs") &&
+      !path.endsWith("scripts/check-design-coverage-ids.test.mjs"),
   );
 const executableIds = new Set(
   evidenceFiles.flatMap((path) => {
