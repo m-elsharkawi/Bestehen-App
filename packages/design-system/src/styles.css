@@ -588,10 +588,8 @@ input[type="checkbox"] {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-panel);
   hyphens: auto;
-  /* Board 06 · 6.7 opens the passage to line-height 2 so the gaps have room.
-     Here a gap is a real control and keeps the system's 44px target floor, so
-     the line box is opened to clear it instead — same intent, larger number. */
-  line-height: calc(var(--target-min) + 6px);
+  /* Board 06 · 6.7 opens the passage to line-height 2 so the gaps have room. */
+  line-height: 2;
   margin: 0;
   max-width: var(--measure-task);
   min-width: 0;
@@ -612,6 +610,13 @@ input[type="checkbox"] {
   border: 1px dashed var(--border-strong);
   line-height: 1.4;
   margin-inline: 0.15em;
+  /* A filled gap is sized by the word it holds, so at 320px under 200% text
+     scaling a long German word would otherwise push the passage sideways.
+     Firefox and WebKit honour the input's `size` as an intrinsic floor where
+     Chromium does not, so the token and its flex children must be allowed to
+     shrink; the word then scrolls inside its own field instead. */
+  max-width: 100%;
+  min-width: 0;
   padding: 1px var(--space-2);
   vertical-align: middle;
 }
@@ -629,6 +634,8 @@ input[type="checkbox"] {
   align-items: center;
   display: inline-flex;
   gap: var(--space-1);
+  max-width: 100%;
+  min-width: 0;
 }
 /* Standalone in the gallery the gap still reads "Gap 1"; inside the passage the
    word would repeat eight times, so only the number is shown there. */
@@ -657,6 +664,12 @@ input[type="checkbox"] {
   color: inherit;
   font: inherit;
   max-width: 100%;
+  /* WCAG 2.5.8 excepts targets sized by the line-height of the sentence they
+     sit in, so an inline gap drops the system's 44px floor to stay the ~26px
+     token board 06 · 6.7 draws. The passage has to read as prose, not a form.
+     This exception is inline gaps only — every other control keeps the floor. */
+  min-height: 0;
+  min-width: 0;
   padding: 0;
   width: 3.5ch;
 }
