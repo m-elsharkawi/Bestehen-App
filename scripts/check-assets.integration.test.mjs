@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { protectedRouteBudgetError, protectedRouteFiles } from "./web-budget.mjs";
 import { describe, expect, it } from "vitest";
 
 describe("P04-ASSET-001 asset integrity", () => {
@@ -10,6 +11,27 @@ describe("P04-ASSET-001 asset integrity", () => {
 });
 
 describe("P04-PERF-001 web budget integrity", () => {
+  it("includes shared runtime files and rejects synthetic over-cap totals", () => {
+    const files = protectedRouteFiles(
+      { rootMainFiles: ["static/chunks/shared.js"], polyfillFiles: ["static/chunks/polyfill.js"] },
+      {
+        entryJSFiles: {
+          layout: ["/_next/static/chunks/layout.js"],
+          "/coach": ["/_next/static/chunks/shared.js", "static/chunks/route.js"],
+        },
+      },
+      "/coach",
+    );
+    expect(files).toEqual([
+      "static/chunks/polyfill.js",
+      "static/chunks/shared.js",
+      "static/chunks/layout.js",
+      "static/chunks/route.js",
+    ]);
+    expect(files).not.toContain("static/chunks/unrelated.js");
+    expect(protectedRouteBudgetError(200 * 1024 + 1)).toContain("exceeds 200 KiB gzip");
+  });
+
   it("builds when needed and executes the web budget checker", () => {
     if (!existsSync("apps/web/.next/build-manifest.json")) {
       execFileSync("pnpm", ["--filter", "@bestehen/web", "build"], { stdio: "pipe" });
