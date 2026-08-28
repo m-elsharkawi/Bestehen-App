@@ -7,3 +7,4 @@ export * from "./overlay.js";
 export * from "./primitives.js";
 export * from "./shells.js";
 export * from "./skill-regions.js";
+export * from "./theme-control.js";

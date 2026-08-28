@@ -2,7 +2,6 @@ import { type ReactNode, useId } from "react";
 import { Brand } from "./brand.js";
 import type { NavigationDestination, ShellSlots } from "./contracts.js";
 import { Icon, type IconName } from "./icons.js";
-import { ThemeControl } from "./theme-control.js";
 
 const destinations: readonly [NavigationDestination, string, IconName][] = [
   ["coach", "Coach", "coach"],
@@ -54,7 +53,7 @@ export function AppShell({
         </a>
       )}
       <header className="app-header">
-        <a aria-label="Bestehen App home" href="/">
+        <a aria-label="Bestehen home" href="/">
           <Brand compact={focused} />
         </a>
         {/* Utility slot: header-flow home for shell-level controls. An embedded
@@ -62,7 +61,6 @@ export function AppShell({
         {embedded ? null : (
           <div className="header-utility">
             {utilityHeader}
-            <ThemeControl />
             {!bare && !focused ? (
               <a className="account-link" href="/settings">
                 <Icon name="lock" />

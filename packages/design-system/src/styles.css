@@ -153,7 +153,10 @@ summary,
   stroke: var(--accent-base);
 }
 .brand-word {
-  white-space: nowrap;
+  /* The wordmark stays on one line at every real width, but it must be able to
+     break under extreme text scaling: at 320px and 400% it is wider than the
+     viewport, and nowrap would force a horizontal scrollbar (P04-RSP-001). */
+  overflow-wrap: anywhere;
 }
 .app-shell {
   display: grid;
@@ -818,9 +821,6 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 360px) {
-  .brand-word {
-    display: none;
-  }
   .primary-nav ul {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -876,23 +876,28 @@ input[type="checkbox"] {
 }
 
 @media (min-width: 1024px) {
+  /* The header spans both columns so the brand sits in the true top-left
+     corner rather than being pushed inboard by the rail, and the rail reads as
+     part of the same frame instead of a detached panel beside it. */
   .app-shell:not(.shell-bare):not(.shell-focused) {
-    grid-template-areas: "nav header" "nav main" "nav footer";
+    grid-template-areas: "header header" "nav main" "nav footer";
     grid-template-columns: 232px minmax(0, 1fr);
     grid-template-rows: auto 1fr auto;
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav {
+    align-self: stretch;
     background: var(--surface-raised);
     border: 0;
     border-right: 1px solid var(--border-default);
-    min-height: 100dvh;
     position: sticky;
     top: 0;
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav ul {
     display: grid;
     grid-template-columns: 1fr;
-    padding: var(--space-21) var(--space-3) var(--space-3);
+    /* The rail now starts below the header, so it no longer reserves the
+       header's height at its top. */
+    padding: var(--space-3);
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .primary-nav a {
     /* The side rail marks the active destination with a filled pill, so the
@@ -909,7 +914,8 @@ input[type="checkbox"] {
     margin-inline: var(--space-2);
   }
   .app-shell:not(.shell-bare):not(.shell-focused) .app-header {
-    border-left: 1px solid var(--border-default);
+    /* The header now sits above the rail rather than beside it, so its own
+       bottom border is the only rule needed between the two. */
   }
   .component-gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));

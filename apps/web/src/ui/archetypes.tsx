@@ -15,6 +15,7 @@ import {
   SemanticCard,
   Sequence,
   SessionNotice,
+  ThemeControl,
   UploadStatus,
   WritingRegion,
 } from "@bestehen/design-system";
@@ -117,6 +118,10 @@ export function AccountView({ data = false }: { readonly data?: boolean }) {
         <DataRightsStatus />
       ) : (
         <>
+          <SemanticCard title="Appearance">
+            <p>Choose how this device renders the app. The setting stays on this device.</p>
+            <ThemeControl />
+          </SemanticCard>
           <DeviceSessionList />
           <SemanticCard title="Recent sign-in required">
             <p>Sign in again before revoking other sessions or starting deletion.</p>

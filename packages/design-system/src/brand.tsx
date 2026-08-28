@@ -14,9 +14,7 @@ export function Brand({ compact = false }: { readonly compact?: boolean }) {
           strokeWidth={compact ? 16 : 11}
         />
       </svg>
-      <span className="brand-word">
-        Bestehen <span aria-hidden="true">/</span> App
-      </span>
+      <span className="brand-word">Bestehen</span>
     </span>
   );
 }
