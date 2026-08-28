@@ -4,6 +4,50 @@ import { join } from "node:path";
 
 const root = "packages/design-system";
 const manifest = JSON.parse(readFileSync(join(root, "assets/manifest.json"), "utf8"));
+
+function svgPathData(path) {
+  const paths = [...readFileSync(path, "utf8").matchAll(/<path d="([^"]+)"/g)].map(
+    (match) => match[1],
+  );
+  if (paths.length !== 4) throw new Error(`Expected four paths in ${path}`);
+  return paths;
+}
+
+function jsxPathData(source) {
+  const paths = [...source.matchAll(/d=\{compact \? "([^"]+)" : "([^"]+)"\}/g)];
+  if (paths.length !== 4) throw new Error("Expected four compact/primary paths in brand.tsx");
+  return {
+    micro: paths.map((match) => match[1]),
+    primary: paths.map((match) => match[2]),
+  };
+}
+
+function assertBrandGeometry(source) {
+  const jsx = jsxPathData(source);
+  for (const [variant, asset] of [
+    ["primary", "bestehen-symbol-primary.svg"],
+    ["micro", "bestehen-symbol-micro.svg"],
+  ]) {
+    const expected = svgPathData(join(root, "assets/brand", asset));
+    if (JSON.stringify(jsx[variant]) !== JSON.stringify(expected)) {
+      throw new Error(`Brand geometry mismatch: brand.tsx ${variant} paths differ from ${asset}`);
+    }
+  }
+}
+
+const brandSource = readFileSync(join(root, "src/brand.tsx"), "utf8");
+assertBrandGeometry(brandSource);
+const alteredBrandSource = brandSource.replace("M25 20V80", "M25 21V80");
+if (alteredBrandSource === brandSource)
+  throw new Error("Brand drift test fixture did not alter primary geometry");
+try {
+  assertBrandGeometry(alteredBrandSource);
+  throw new Error("Brand geometry drift was not detected");
+} catch (error) {
+  if (error.message === "Brand geometry drift was not detected") throw error;
+  if (!error.message.startsWith("Brand geometry mismatch:")) throw error;
+}
+
 for (const asset of manifest.assets) {
   const path = join(root, "assets", asset.emittedFile);
   const digest = createHash("sha256").update(readFileSync(path)).digest("hex");
