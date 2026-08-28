@@ -16,6 +16,9 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     ["coach-390-dark", "/ui-fixtures/coach", 390, 844, "dark"],
     ["readiness-320", "/ui-fixtures/readiness", 320, 900, "light"],
     ["writing-768", "/ui-fixtures/writing?draft=autosave", 768, 900, "light"],
+    // LG-V4's contract turns on at exactly 768, where the option list and gap
+    // index leave the text flow into a side column.
+    ["language-768", "/ui-fixtures/language", 768, 900, "light"],
     ["coach-1024", "/ui-fixtures/coach", 1024, 900, "light"],
     ["readiness-1280", "/ui-fixtures/readiness", 1280, 900, "light"],
     ["progress-1280", "/ui-fixtures/progress", 1280, 900, "light"],
