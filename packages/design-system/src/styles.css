@@ -542,6 +542,207 @@ input[type="checkbox"] {
   display: grid;
   gap: var(--space-4);
 }
+
+/* Design 06 · V4. One column below 768: passage, then the options for the one
+   active gap, then the gap index — the order the phone frame (6.7) reads in.
+   At 768 and above the options leave the text flow into a side column and the
+   index becomes a persistent one; nothing else about the region changes. */
+.cloze-region {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+.cloze-region > h2 {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+.cloze-text-pane,
+.cloze-options-pane {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  min-width: 0;
+}
+.cloze-pane-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  justify-content: space-between;
+}
+.cloze-pane-head h3 {
+  margin: 0;
+}
+.cloze-eyebrow {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+/* The passage stays under 720px and hyphenates rather than overflowing, so a
+   long German compound never widens the page (Design 06 · V4, 320px note). */
+.cloze-passage {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-panel);
+  hyphens: auto;
+  /* Board 06 · 6.7 opens the passage to line-height 2 so the gaps have room.
+     Here a gap is a real control and keeps the system's 44px target floor, so
+     the line box is opened to clear it instead — same intent, larger number. */
+  line-height: calc(var(--target-min) + 6px);
+  margin: 0;
+  max-width: var(--measure-task);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: var(--space-4);
+}
+.cloze-gap {
+  align-items: center;
+  border-radius: var(--radius-small);
+  display: inline-flex;
+  gap: var(--space-1);
+  vertical-align: baseline;
+}
+/* The passage runs at line-height 2 so the gaps have room; the gaps themselves
+   run tight, otherwise each token would inflate its own line box. */
+.cloze-passage .cloze-gap {
+  background: var(--surface-raised);
+  border: 1px dashed var(--border-strong);
+  line-height: 1.4;
+  margin-inline: 0.15em;
+  padding: 1px var(--space-2);
+  vertical-align: middle;
+}
+.cloze-passage .cloze-gap[data-cloze-status="filled"] {
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-base);
+  color: var(--accent-text);
+}
+.cloze-passage .cloze-gap[data-cloze-status="active"] {
+  border: 2px solid var(--accent-base);
+  outline: 2px solid var(--accent-base);
+  outline-offset: 2px;
+}
+.cloze-passage .cloze-gap label {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-1);
+}
+/* Standalone in the gallery the gap still reads "Gap 1"; inside the passage the
+   word would repeat eight times, so only the number is shown there. */
+.cloze-passage .cloze-gap-word {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+.cloze-gap-number {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.cloze-passage .cloze-gap[data-cloze-status="filled"] .cloze-gap-number {
+  color: var(--accent-text);
+}
+/* An unanswered gap is a short blank, not a full-width field — the passage has
+   to keep reading as a sentence (Design 06 · 6.7). An answered gap is sized to
+   the word it holds, so the learner reads their own sentence back. */
+.cloze-passage .cloze-gap input {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  max-width: 100%;
+  padding: 0;
+  width: 3.5ch;
+}
+.cloze-passage .cloze-gap[data-cloze-status="filled"] input {
+  font-weight: 600;
+  width: auto;
+}
+.cloze-gap-options {
+  border: 0;
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+.cloze-gap-options legend {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 0;
+  text-transform: uppercase;
+}
+.cloze-gap-options label {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-medium);
+  display: flex;
+  gap: var(--space-3);
+  min-height: var(--target-min);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: var(--space-2) var(--space-3);
+}
+.cloze-option-key {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.cloze-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cloze-index li {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-small);
+  color: var(--text-muted);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  justify-content: center;
+  min-height: 2rem;
+  min-width: 2rem;
+  padding: var(--space-1);
+}
+.cloze-index li[data-cloze-status="filled"],
+.cloze-index li[data-cloze-outcome="right"] {
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-base);
+  color: var(--accent-text);
+}
+.cloze-index li[data-cloze-status="active"] {
+  border: 2px solid var(--accent-base);
+  color: var(--accent-text);
+}
+.cloze-index li[data-cloze-outcome="wrong"] {
+  background: var(--status-risk-tint);
+  border: 1px solid var(--status-risk-graphic);
+  color: var(--status-risk-text);
+}
+.cloze-note {
+  color: var(--text-secondary);
+  margin: 0;
+}
+.cloze-saved {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
 .draft-compare article {
   background: var(--surface-sunken);
   border: 1px solid var(--border-default);
@@ -645,6 +846,13 @@ input[type="checkbox"] {
   .writing-region,
   .draft-compare {
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+  /* Design 06 · V4: the options leave the text flow. 1.55fr / 1fr is the board's
+     split; at 1024 and above the region keeps this same arrangement inside the
+     sidebar shell — there is no third layout. */
+  .cloze-region {
+    column-gap: var(--space-6);
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
   }
   .gate-list {
     grid-template-columns: 1fr 1fr;

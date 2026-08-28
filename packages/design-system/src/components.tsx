@@ -185,36 +185,59 @@ export function MatchingPair() {
   );
 }
 export type ClozeGapState = "input" | "options" | "result";
+/** Design 06 · 6.7 draws three gap conditions inside one passage: the gap that
+ *  holds focus, gaps already answered (which read the learner's own word back)
+ *  and gaps not visited yet (dashed, never zeroed). */
+export type ClozeGapStatus = "active" | "filled" | "unvisited";
+const CLOZE_OPTION_KEYS = ["a", "b", "c", "d"] as const;
 export function ClozeGap({
   number = 1,
   state = "input",
+  status = "active",
+  options,
+  word,
 }: {
   readonly number?: number;
   readonly state?: ClozeGapState;
+  readonly status?: ClozeGapStatus;
+  /** Board 06 · 6.7 keeps the choices scoped to the one active gap, so the option
+   *  words travel with the gap rather than being fixed by the family. */
+  readonly options?: readonly string[];
+  /** The word already chosen for this gap, shown inline so the learner reads
+   *  their own sentence back (Design 06 · 6.7). */
+  readonly word?: string;
 }) {
   if (state === "options") {
+    const choices = options ?? ["weil", "dass"];
     // Assertion hook: identifies the cloze gap in the component gallery.
     return (
-      <fieldset className="cloze-gap">
-        <legend>Gap {number}</legend>
-        <label>
-          <input name={`gap-${number}`} type="radio" /> weil
-        </label>
-        <label>
-          <input name={`gap-${number}`} type="radio" /> dass
-        </label>
+      <fieldset className="cloze-gap cloze-gap-options">
+        <legend>Gap {number} · choose one</legend>
+        {choices.map((choice, index) => (
+          <label key={choice}>
+            <input name={`gap-${number}`} type="radio" />
+            <span aria-hidden="true" className="cloze-option-key">
+              {CLOZE_OPTION_KEYS[index] ?? index + 1}
+            </span>
+            <span lang="de">{choice}</span>
+          </label>
+        ))}
       </fieldset>
     );
   }
   // Assertion hook: identifies the cloze gap in the component gallery.
   return (
-    <span className="cloze-gap">
+    <span className="cloze-gap" data-cloze-status={state === "result" ? undefined : status}>
       {state === "result" ? (
         <>Gap {number}: because</>
       ) : (
         <label>
-          Gap {number}
-          <input aria-label={`Answer for gap ${number}`} />
+          <span className="cloze-gap-word">{"Gap "}</span>
+          <span className="cloze-gap-number">{number}</span>
+          <input
+            aria-label={`Answer for gap ${number}`}
+            {...(word === undefined ? {} : { defaultValue: word, size: Math.max(word.length, 3) })}
+          />
         </label>
       )}
     </span>
@@ -887,18 +910,112 @@ export function ReadingRegion() {
   );
 }
 export type LanguageElementsVariant = "input" | "result";
+/** Design 06 · 6.7 runs a passage of eight gaps and focuses one at a time; the
+ *  passage itself is drawn as the excerpt that carries gaps 1 to 4. */
+const CLOZE_GAP_TOTAL = 8;
+const CLOZE_ACTIVE_GAP = 3;
+const CLOZE_GAP_OPTIONS = ["kommen", "komme", "gekommen", "zu kommen"] as const;
+/** Board 06 · 6.8 maps the same eight gaps to their outcome. */
+const CLOZE_WRONG_GAPS: readonly number[] = [3, 6];
+
+function clozeIndexStatus(number: number): ClozeGapStatus {
+  if (number === CLOZE_ACTIVE_GAP) return "active";
+  return number < CLOZE_ACTIVE_GAP ? "filled" : "unvisited";
+}
+
+/** The gap grid of Design 06 · 6.7 and 6.8. It is a persistent index, never a
+ *  heat map and never a percentage, and every cell names its state in words. It
+ *  carries no tab stop of its own — the passage gaps remain the tab order. */
+function ClozeGapIndex({ variant = "input" }: { readonly variant?: LanguageElementsVariant }) {
+  const numbers = Array.from({ length: CLOZE_GAP_TOTAL }, (_, index) => index + 1);
+  return (
+    <ol
+      aria-label={variant === "result" ? "Gap by gap" : "Gap index"}
+      className="cloze-index"
+      lang="en"
+    >
+      {numbers.map((number) => {
+        const status = clozeIndexStatus(number);
+        const outcome = CLOZE_WRONG_GAPS.includes(number) ? "wrong" : "right";
+        const label =
+          variant === "result"
+            ? `Gap ${number}, ${outcome}`
+            : status === "active"
+              ? `Gap ${number}, being answered now`
+              : status === "filled"
+                ? `Gap ${number}, answered`
+                : `Gap ${number}, not visited`;
+        return (
+          <li
+            data-cloze-outcome={variant === "result" ? outcome : undefined}
+            data-cloze-status={variant === "result" ? undefined : status}
+            key={number}
+          >
+            <span aria-hidden="true">{number}</span>
+            <span className="visually-hidden">{label}</span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 export function LanguageElementsRegion({
   variant = "input",
 }: {
   readonly variant?: LanguageElementsVariant;
 }) {
+  if (variant === "result") {
+    return (
+      <article className="cloze-region cloze-region-result" lang="de">
+        <h2>Sprachbausteine</h2>
+        <div className="cloze-text-pane">
+          <p className="cloze-passage">
+            Leider kann ich am Montag nicht <ClozeGap number={CLOZE_ACTIVE_GAP} state="result" />,
+            weil ich bis 18 Uhr arbeite.
+          </p>
+        </div>
+        <div className="cloze-options-pane" lang="en">
+          <p className="cloze-eyebrow">Gap by gap</p>
+          <ClozeGapIndex variant="result" />
+          <p className="cloze-note">
+            Gaps 3 and 6 both follow a modal verb. That is one pattern, not two mistakes.
+          </p>
+        </div>
+      </article>
+    );
+  }
   return (
-    <article lang="de">
+    <article className="cloze-region" lang="de">
       <h2>Sprachbausteine</h2>
-      <p>
-        Ich freue mich <ClozeGap number={1} state={variant === "result" ? "result" : "input"} />
-        Ihre Antwort.
-      </p>
+      <div className="cloze-text-pane">
+        <div className="cloze-pane-head" lang="en">
+          <h3>Fill the gaps</h3>
+          <p className="cloze-eyebrow">
+            Gap {CLOZE_ACTIVE_GAP} of {CLOZE_GAP_TOTAL}
+          </p>
+        </div>
+        <p className="cloze-passage">
+          Sehr geehrte Frau Berger, ich habe Ihre Anzeige{" "}
+          <ClozeGap number={1} state="input" status="filled" word="in" />
+          der Zeitung gelesen und{" "}
+          <ClozeGap number={2} state="input" status="filled" word="interessiere" />
+          mich für den Kurs. Leider kann ich am Montag nicht{" "}
+          <ClozeGap number={CLOZE_ACTIVE_GAP} state="input" status="active" />, weil ich bis 18 Uhr
+          arbeite. Könnten Sie mir <ClozeGap number={4} state="input" status="unvisited" />
+          mitteilen, ob es einen späteren Termin gibt?
+        </p>
+      </div>
+      <div className="cloze-options-pane" lang="en">
+        <ClozeGap
+          number={CLOZE_ACTIVE_GAP}
+          options={CLOZE_GAP_OPTIONS}
+          state="options"
+          status="active"
+        />
+        <ClozeGapIndex />
+        <p className="cloze-note cloze-saved">Saved 7:31</p>
+      </div>
     </article>
   );
 }
