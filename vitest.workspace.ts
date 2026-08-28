@@ -21,6 +21,8 @@ export default defineConfig({
             "packages/*/src/**/*.test.tsx",
             "apps/*/src/**/*.unit.test.ts",
             "apps/*/src/**/*.unit.test.tsx",
+            "scripts/check-design-coverage-ids.test.mjs",
+            "scripts/check-assets.integration.test.mjs",
           ],
           exclude: ["**/*.integration.test.ts", "**/*.process.test.ts"],
         },
