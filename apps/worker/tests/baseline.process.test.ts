@@ -1,6 +1,6 @@
 import { type ChildProcess, spawn } from "node:child_process";
 import { once } from "node:events";
-import { foundationRevision, migrateDatabase } from "@bestehen/infrastructure";
+import { foundationRevision, migrateDatabase, stage05Revision } from "@bestehen/infrastructure";
 import { withIsolatedDatabase, withSyntheticDatabaseUnavailable } from "@bestehen/test-support";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -19,7 +19,12 @@ function environment(databaseUrl: string, port: number): NodeJS.ProcessEnv {
     BESTEHEN_OBJECT_STORAGE_ADAPTER: "fake",
     BESTEHEN_RELEASE_COMMIT: "process-synthetic",
     BESTEHEN_RELEASE_DIRTY: "false",
-    BESTEHEN_SCHEMA_MAX_REVISION: foundationRevision,
+    // `migrateDatabase` now brings the database to the Stage 05 terminal revision, so a window
+    // that ends at the Stage 03 revision reports the schema as ahead of the image and readiness
+    // stays 503 forever. The window is the one the configuration default already describes: from
+    // the Stage 03 revision, so a rollback without a database rollback is still legal, through the
+    // Stage 05 terminal revision the migrator actually applies.
+    BESTEHEN_SCHEMA_MAX_REVISION: stage05Revision,
     BESTEHEN_SCHEMA_MIN_REVISION: foundationRevision,
     BESTEHEN_SHUTDOWN_GRACE_MS: "5000",
     BESTEHEN_STT_ADAPTER: "fake",

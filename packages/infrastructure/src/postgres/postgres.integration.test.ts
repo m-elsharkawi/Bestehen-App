@@ -1,5 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
-import { appId, attemptRuntimeStates, reasonRegistryRelease } from "@bestehen/domain";
+import {
+  type AuthorizedScope,
+  appId,
+  attemptRuntimeStates,
+  type ContentApprovalLevel,
+  reasonRegistryRelease,
+} from "@bestehen/domain";
 import { withIsolatedDatabase } from "@bestehen/test-support";
 import { Kysely, PostgresDialect } from "kysely";
 import { Migrator } from "kysely/migration";
@@ -7,8 +13,13 @@ import type { Pool } from "pg";
 import { describe, expect, it } from "vitest";
 import { AesGcmSealer, HmacDigest } from "../crypto.js";
 import { PostgresOidcTransactionStore } from "../identity/index.js";
+import { foundationJobPolicy, jobPolicyFor } from "../jobs/index.js";
+import {
+  type ApprovalDecisionInput,
+  PostgresContentRepository,
+  type ServingManifestIssueRequest,
+} from "./content-repository.js";
 import { bootstrapPersonalOwner, PostgresFoundationRepository } from "./foundation-repository.js";
-import { foundationMigrations } from "./migrations.js";
 import {
   checkDatabaseReadiness,
   checkSchemaCompatibility,
@@ -18,6 +29,7 @@ import {
   migrationChecksums,
   stage05Revision,
 } from "./index.js";
+import { foundationMigrations } from "./migrations.js";
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
 
@@ -1515,6 +1527,676 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 05 content and attempt ru
       await expect(insertAttempt(pool, chain, "not_counted")).rejects.toMatchObject({
         code: "23514",
       });
+      await pool.end();
+    });
+  });
+});
+
+/* ------------------------------------------------------------------------------------------------
+ * The content repository against a real database
+ * ---------------------------------------------------------------------------------------------- */
+
+/** Makes one seeded revision servable: a current rights envelope and a passing a11y manifest. */
+async function makeServable(pool: Pool, chain: SeededChain): Promise<void> {
+  const rightsEnvelopeId = randomUUID();
+  const accessibilityManifestId = `accessibility/${chain.contentRevisionId}`;
+  await pool.query(
+    `INSERT INTO app.rights_envelopes(id,envelope_key,state,envelope,digest)
+     VALUES($1,$2,'current','{}',$3)`,
+    [rightsEnvelopeId, `rights/${chain.contentRevisionId}`, hex(`rights:${rightsEnvelopeId}`)],
+  );
+  await pool.query(
+    `INSERT INTO app.accessibility_manifests(id,manifest,language_tag,gate_status,digest)
+     VALUES($1,'{}','de','pass',$2)`,
+    [accessibilityManifestId, hex(`a11y:${accessibilityManifestId}`)],
+  );
+  await pool.query(
+    `UPDATE app.content_revisions
+        SET content_class='C2', rights_envelope_id=$2, accessibility_manifest_id=$3
+      WHERE id=$1`,
+    [chain.contentRevisionId, rightsEnvelopeId, accessibilityManifestId],
+  );
+}
+
+function scopeOf(chain: SeededChain): AuthorizedScope {
+  return {
+    principalId: appId<"principal">(randomUUID()),
+    learnerScopeId: appId<"learner_scope">(chain.learnerScopeId),
+    actorKind: "owner",
+    capabilities: [],
+    authenticatedAt: new Date("2026-09-01T09:00:00.000Z"),
+  };
+}
+
+const issuedAt = new Date("2026-09-01T10:00:00.000Z");
+const expiresAt = new Date("2026-09-01T10:45:00.000Z");
+const releaseIdentity = "content-release/integration";
+
+function approvalFor(
+  chain: SeededChain,
+  level: ContentApprovalLevel,
+  decidedAt: string,
+  overrides: Partial<ApprovalDecisionInput> = {},
+): ApprovalDecisionInput {
+  return {
+    decisionId: randomUUID(),
+    subjectKind: "content_revision",
+    subjectId: chain.contentRevisionId,
+    contentClass: "C2",
+    level,
+    outcome: "granted",
+    authorRef: "owner:author",
+    validatorRef: "owner:validator",
+    approverRef: "owner:approver",
+    methodVersion: "content-qa-gates/v1",
+    reasonCode: "VALIDITY.CONTENT_APPROVAL",
+    evidenceRef: `gate-report/${level}`,
+    decidedAt: new Date(decidedAt),
+    ...overrides,
+  };
+}
+
+function issueFor(
+  chain: SeededChain,
+  overrides: Partial<ServingManifestIssueRequest> = {},
+): ServingManifestIssueRequest {
+  const servingManifestId = randomUUID();
+  return {
+    servingManifestId: appId<"serving_manifest">(servingManifestId),
+    operationId: appId<"operation">(randomUUID()),
+    contentClass: "C2",
+    approvalRole: "independent_b1",
+    entries: [
+      { ordinal: 1, contentRevisionId: appId<"content_revision">(chain.contentRevisionId) },
+    ],
+    keyRevisionDigests: [hex(`key:${chain.contentRevisionId}`)],
+    allowedConditions: { navigation: "linear" },
+    learnerSafePayloadDigest: hex(`payload:${servingManifestId}`),
+    freshnessDecision: "fresh",
+    comparedFamilyRefs: [chain.contentFamilyId],
+    authorizationVersion: "authorization/v1",
+    contentReleaseIdentity: releaseIdentity,
+    issuedAt,
+    expiresAt,
+    digest: hex(`manifest:${servingManifestId}`),
+    ...overrides,
+  };
+}
+
+/** Publishes one release containing the chain's revision, under the shared release identity. */
+async function publishRelease(
+  repository: PostgresContentRepository,
+  chain: SeededChain,
+  ordinal: number,
+): Promise<string> {
+  const releaseId = `${releaseIdentity}#${ordinal}:${chain.contentRevisionId}`;
+  const published = await repository.publishContentRelease({
+    releaseId,
+    releaseIdentity,
+    digest: hex(`release:${releaseId}`),
+    entries: [{ contentRevisionId: appId<"content_revision">(chain.contentRevisionId) }],
+    activatedAt: new Date(`2026-09-0${ordinal}T07:00:00.000Z`),
+  });
+  expect(published).toEqual({ ok: true, value: { disposition: "created", releaseId } });
+  return releaseId;
+}
+
+describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 content repository", () => {
+  it("gates issuance on the active release and keeps issuing across a release rotation", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const repository = new PostgresContentRepository(pool);
+      const chain = await seedLearnerChain(pool);
+      await makeServable(pool, chain);
+      const scope = scopeOf(chain);
+
+      // A revision with no approval decision at all cannot be leased.
+      const releaseId = await publishRelease(repository, chain, 1);
+      expect(await repository.issueServingManifest(scope, issueFor(chain))).toEqual({
+        ok: false,
+        error: "approval_ineligible",
+      });
+
+      // The chain starts where `draft` reaches and walks one legal arrow at a time.
+      expect(
+        await repository.appendApprovalDecision(
+          approvalFor(chain, "independent_b1", "2026-09-01T06:00:00.000Z"),
+        ),
+      ).toEqual({ ok: false, error: "illegal_transition" });
+      expect(
+        await repository.appendApprovalDecision(
+          approvalFor(chain, "training", "2026-09-01T06:00:00.000Z"),
+        ),
+      ).toEqual({ ok: true, value: { disposition: "created" } });
+      expect(
+        await repository.appendApprovalDecision(
+          approvalFor(chain, "independent_b1", "2026-09-01T07:30:00.000Z"),
+        ),
+      ).toEqual({ ok: true, value: { disposition: "created", priorLevel: "training" } });
+      expect(
+        (await repository.readApprovalChain("content_revision", chain.contentRevisionId)).map(
+          (entry) => entry.level,
+        ),
+      ).toEqual(["training", "independent_b1"]);
+
+      const issued = await repository.issueServingManifest(scope, issueFor(chain));
+      expect(issued.ok).toBe(true);
+
+      // Re-running the same publication is a no-op; the same id under a different digest is not.
+      expect(
+        await repository.publishContentRelease({
+          releaseId,
+          releaseIdentity,
+          digest: hex(`release:${releaseId}`),
+          entries: [{ contentRevisionId: appId<"content_revision">(chain.contentRevisionId) }],
+          activatedAt: new Date("2026-09-01T07:00:00.000Z"),
+        }),
+      ).toEqual({ ok: true, value: { disposition: "replayed", releaseId } });
+      expect(
+        await repository.publishContentRelease({
+          releaseId,
+          releaseIdentity,
+          digest: hex("a different release"),
+          entries: [{ contentRevisionId: appId<"content_revision">(chain.contentRevisionId) }],
+          activatedAt: new Date("2026-09-01T07:00:00.000Z"),
+        }),
+      ).toEqual({ ok: false, error: "conflict" });
+
+      // Two rotations. The revision now belongs to three `content_release_entries` rows — one per
+      // release — of which exactly one release is active. Joining that table to answer "is this
+      // revision in the active release" produced three rows for one revision and let row order
+      // decide; the correlated EXISTS produces one row and one answer.
+      await publishRelease(repository, chain, 2);
+      await publishRelease(repository, chain, 3);
+      const entryRows = await pool.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM app.content_release_entries WHERE content_revision_id=$1",
+        [chain.contentRevisionId],
+      );
+      expect(entryRows.rows[0]?.count).toBe(3);
+      const activeReleases = await pool.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM app.content_releases WHERE release_identity=$1 AND state='active'",
+        [releaseIdentity],
+      );
+      expect(activeReleases.rows[0]?.count).toBe(1);
+      for (let attempt = 0; attempt < 8; attempt += 1) {
+        const again = await repository.issueServingManifest(scope, issueFor(chain));
+        expect(again.ok, `issuance ${attempt} after rotation`).toBe(true);
+      }
+
+      // Now roll back to the FIRST release: it becomes active again and the newest is retired. The
+      // active entry is no longer the last row the join would produce for this revision, which is
+      // the arrangement under which the old join silently answered `content_unavailable` for a
+      // perfectly servable revision.
+      await pool.query(
+        "UPDATE app.content_releases SET state='retired',retired_at=transaction_timestamp() WHERE release_identity=$1 AND state='active'",
+        [releaseIdentity],
+      );
+      await pool.query("UPDATE app.content_releases SET state='active' WHERE id=$1", [releaseId]);
+      const rolledBack = await repository.issueServingManifest(scope, issueFor(chain));
+      expect(rolledBack.ok, "issuance after a rollback to the first release").toBe(true);
+
+      // A lease that cites a release identity nobody published is refused.
+      expect(
+        await repository.issueServingManifest(
+          scope,
+          issueFor(chain, { contentReleaseIdentity: "content-release/never-published" }),
+        ),
+      ).toEqual({ ok: false, error: "content_unavailable" });
+
+      await pool.end();
+    });
+  });
+
+  it("replays every content command exactly and refuses a conflicting reuse of one identity", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const repository = new PostgresContentRepository(pool);
+      const chain = await seedLearnerChain(pool);
+      await makeServable(pool, chain);
+      const scope = scopeOf(chain);
+      await publishRelease(repository, chain, 1);
+      await repository.appendApprovalDecision(
+        approvalFor(chain, "training", "2026-09-01T06:00:00.000Z"),
+      );
+      const promotion = approvalFor(chain, "independent_b1", "2026-09-01T07:30:00.000Z");
+      expect(await repository.appendApprovalDecision(promotion)).toMatchObject({ ok: true });
+
+      // ---- the approval chain ------------------------------------------------------------
+      expect(await repository.appendApprovalDecision(promotion)).toEqual({
+        ok: true,
+        value: { disposition: "replayed" },
+      });
+      // Same decision id, different reason. Nothing is overwritten — the relation is append-only —
+      // but answering `replayed` would tell the caller a decision it never made had been recorded.
+      expect(
+        await repository.appendApprovalDecision({
+          ...promotion,
+          reasonCode: "VALIDITY.RIGHTS_COMPATIBILITY",
+        }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+      expect(
+        await repository.appendApprovalDecision({ ...promotion, evidenceRef: "gate-report/other" }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+      const decisions = await pool.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM app.approval_decisions WHERE subject_id=$1",
+        [chain.contentRevisionId],
+      );
+      expect(decisions.rows[0]?.count).toBe(2);
+      // Stage 05 decisions cite the v1.1 registry so a Stage 05 code stays addressable.
+      const registries = await pool.query<{ reason_registry_id: string }>(
+        "SELECT DISTINCT reason_registry_id FROM app.approval_decisions WHERE subject_id=$1",
+        [chain.contentRevisionId],
+      );
+      expect(registries.rows.map((row) => row.reason_registry_id)).toEqual([
+        reasonRegistryRelease.id,
+      ]);
+
+      // ---- the serving lease: a reconnect issues no second lease and no second ordinal ----
+      const request = issueFor(chain);
+      const first = await repository.issueServingManifest(scope, request);
+      expect(first.ok).toBe(true);
+      if (!first.ok) return;
+      const replayed = await repository.issueServingManifest(scope, request);
+      expect(replayed.ok).toBe(true);
+      if (!replayed.ok) return;
+      expect(replayed.value.disposition).toBe("replayed");
+      expect(replayed.value.manifest).toEqual(first.value.manifest);
+      expect(
+        await repository.issueServingManifest(scope, {
+          ...request,
+          servingManifestId: appId<"serving_manifest">(randomUUID()),
+          digest: hex("a different lease"),
+        }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+      const leases = await pool.query<{ manifests: number; entries: number }>(
+        `SELECT (SELECT count(*)::int FROM app.serving_manifests WHERE learner_scope_id=$1) AS manifests,
+                (SELECT count(*)::int FROM app.serving_manifest_entries WHERE learner_scope_id=$1) AS entries`,
+        [chain.learnerScopeId],
+      );
+      expect(leases.rows[0]).toEqual({ manifests: 1, entries: 1 });
+      // Only key digests reached the relation.
+      const stored = await pool.query<{ key_revision_digests: string[] }>(
+        "SELECT key_revision_digests FROM app.serving_manifests WHERE id=$1",
+        [request.servingManifestId],
+      );
+      expect(
+        stored.rows[0]?.key_revision_digests.every((entry) => /^[a-f0-9]{64}$/.test(entry)),
+      ).toBe(true);
+
+      // ---- the exposure index: a reconnect counts once -----------------------------------
+      const exposure = {
+        operationId: appId<"operation">(randomUUID()),
+        contentFamilyId: appId<"content_family">(chain.contentFamilyId),
+        exposureClass: "answer_exposed" as const,
+        trigger: "key_or_rationale" as const,
+        occurredAt: issuedAt,
+        payloadDigest: hex("exposure"),
+      };
+      expect(await repository.recordExposure(scope, exposure)).toEqual({
+        ok: true,
+        value: { disposition: "created", exposureClass: "answer_exposed" },
+      });
+      expect(await repository.recordExposure(scope, exposure)).toEqual({
+        ok: true,
+        value: { disposition: "replayed", exposureClass: "answer_exposed" },
+      });
+      expect(
+        await repository.recordExposure(scope, { ...exposure, payloadDigest: hex("different") }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+      // A later, weaker trigger under a NEW operation counts, and never downgrades the class.
+      expect(
+        await repository.recordExposure(scope, {
+          ...exposure,
+          operationId: appId<"operation">(randomUUID()),
+          exposureClass: "exposed_family",
+          trigger: "learner_visible_stimulus",
+          payloadDigest: hex("exposure-2"),
+        }),
+      ).toEqual({ ok: true, value: { disposition: "created", exposureClass: "answer_exposed" } });
+      expect(
+        await repository.readExposureIndex(scope, [appId<"content_family">(chain.contentFamilyId)]),
+      ).toMatchObject([{ exposureClass: "answer_exposed", occurrenceCount: 2 }]);
+
+      // ---- the defect report --------------------------------------------------------------
+      const report = {
+        defectReportId: randomUUID(),
+        operationId: appId<"operation">(randomUUID()),
+        contentRevisionId: appId<"content_revision">(chain.contentRevisionId),
+        category: "ambiguous_key" as const,
+        note: "Two options both fit the passage.",
+        reportedAt: issuedAt,
+      };
+      expect(await repository.appendDefectReport(scope, report)).toEqual({
+        ok: true,
+        value: { disposition: "created", defectReportId: report.defectReportId },
+      });
+      expect(await repository.appendDefectReport(scope, report)).toEqual({
+        ok: true,
+        value: { disposition: "replayed", defectReportId: report.defectReportId },
+      });
+      expect(
+        await repository.appendDefectReport(scope, { ...report, category: "media_defect" }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+      const reports = await pool.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM app.content_defect_reports WHERE learner_scope_id=$1",
+        [chain.learnerScopeId],
+      );
+      expect(reports.rows[0]?.count).toBe(1);
+
+      // ---- the content job ----------------------------------------------------------------
+      const job = {
+        jobId: appId<"job">(randomUUID()),
+        learnerScopeId: appId<"learner_scope">(chain.learnerScopeId),
+        kind: "content_publication_v1" as const,
+        semanticIdentity: `${releaseIdentity}#1`,
+        payloadDigest: hex("job"),
+        deadline: new Date("2026-09-01T12:00:00.000Z"),
+        maximumAttempts: 4,
+      };
+      expect(await repository.acceptContentJob(job)).toEqual({
+        ok: true,
+        value: { disposition: "created", jobId: job.jobId },
+      });
+      expect(
+        await repository.acceptContentJob({ ...job, jobId: appId<"job">(randomUUID()) }),
+      ).toEqual({ ok: true, value: { disposition: "replayed", jobId: job.jobId } });
+      expect(
+        await repository.acceptContentJob({
+          ...job,
+          jobId: appId<"job">(randomUUID()),
+          payloadDigest: hex("different job"),
+        }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+      const jobRow = await pool.query<{ owner: string; release: string; count: number }>(
+        `SELECT owner,release,(SELECT count(*)::int FROM app.job_resources) AS count
+           FROM app.job_resources WHERE id=$1`,
+        [job.jobId],
+      );
+      expect(jobRow.rows[0]).toMatchObject({
+        owner: "content",
+        release: jobPolicyFor("content_publication_v1").revision,
+        count: 1,
+      });
+      expect(jobRow.rows[0]?.release).not.toBe(foundationJobPolicy.revision);
+
+      await pool.end();
+    });
+  });
+
+  it("stops serving on a withdrawal without rewriting one validity assertion", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const repository = new PostgresContentRepository(pool);
+      const chain = await seedLearnerChain(pool);
+      await makeServable(pool, chain);
+      const scope = scopeOf(chain);
+      await publishRelease(repository, chain, 1);
+      await repository.appendApprovalDecision(
+        approvalFor(chain, "training", "2026-09-01T06:00:00.000Z"),
+      );
+      await repository.appendApprovalDecision(
+        approvalFor(chain, "independent_b1", "2026-09-01T07:30:00.000Z"),
+      );
+
+      const issued = await repository.issueServingManifest(scope, issueFor(chain));
+      expect(issued.ok).toBe(true);
+      if (!issued.ok) return;
+      const manifest = issued.value.manifest;
+
+      // The attempt pins the lease, and its observation is the history the withdrawal must not touch.
+      const attemptId = await insertAttempt(pool, chain, "in_progress");
+      await pool.query(
+        "UPDATE app.attempts SET serving_manifest_id=$2 WHERE id=$1 AND learner_scope_id=$3",
+        [attemptId, manifest.servingManifestId, chain.learnerScopeId],
+      );
+      const observation = await seedObservation(pool, chain, attemptId, 1);
+      const historyBefore = await pool.query<{ digest: string }>(
+        `SELECT md5(string_agg(a.id::text || a.state || a.affected_scope::text || a.unaffected_scope::text, '|' ORDER BY a.id)) AS digest
+           FROM app.validity_assertions a WHERE a.learner_scope_id=$1`,
+        [chain.learnerScopeId],
+      );
+
+      // The rights envelope is withdrawn. Serving stops; nothing else moves.
+      await pool.query("UPDATE app.rights_envelopes SET state='withdrawn' WHERE envelope_key=$1", [
+        `rights/${chain.contentRevisionId}`,
+      ]);
+      expect(await repository.issueServingManifest(scope, issueFor(chain))).toEqual({
+        ok: false,
+        error: "rights_withdrawn",
+      });
+      expect(
+        await repository.revokeServingManifest(
+          scope,
+          manifest.servingManifestId,
+          "revoked_after_pin",
+        ),
+      ).toEqual({ ok: true, value: { disposition: "created" } });
+      expect(
+        await repository.revokeServingManifest(
+          scope,
+          manifest.servingManifestId,
+          "revoked_after_pin",
+        ),
+      ).toEqual({ ok: true, value: { disposition: "replayed" } });
+      expect(
+        await repository.revokeServingManifest(
+          scope,
+          manifest.servingManifestId,
+          "revoked_before_start",
+        ),
+      ).toEqual({ ok: false, error: "conflict" });
+
+      // The attempt already under way still resolves its exact pinned material.
+      const resolved = await repository.readServingManifest(scope, manifest.servingManifestId);
+      expect(resolved).toEqual({ ...manifest, revocationState: "revoked_after_pin" });
+      expect(resolved?.entries).toEqual(manifest.entries);
+      expect(resolved?.contentReleaseIdentity).toBe(manifest.contentReleaseIdentity);
+
+      // Not one validity assertion moved, and the observation still points at the same one.
+      const historyAfter = await pool.query<{ digest: string }>(
+        `SELECT md5(string_agg(a.id::text || a.state || a.affected_scope::text || a.unaffected_scope::text, '|' ORDER BY a.id)) AS digest
+           FROM app.validity_assertions a WHERE a.learner_scope_id=$1`,
+        [chain.learnerScopeId],
+      );
+      expect(historyAfter.rows[0]?.digest).toBe(historyBefore.rows[0]?.digest);
+      const current = await pool.query<{ current_assertion_id: string }>(
+        "SELECT current_assertion_id FROM app.evidence_observations WHERE id=$1",
+        [observation.observationId],
+      );
+      expect(current.rows[0]?.current_assertion_id).toBe(observation.assertionId);
+
+      // A quarantine after the pin behaves the same way: no new lease, the old lease intact.
+      await pool.query("UPDATE app.rights_envelopes SET state='current' WHERE envelope_key=$1", [
+        `rights/${chain.contentRevisionId}`,
+      ]);
+      expect(
+        await repository.appendApprovalDecision(
+          approvalFor(chain, "quarantine", "2026-09-01T11:00:00.000Z"),
+        ),
+      ).toEqual({ ok: true, value: { disposition: "created", priorLevel: "independent_b1" } });
+      expect(await repository.issueServingManifest(scope, issueFor(chain))).toEqual({
+        ok: false,
+        error: "approval_ineligible",
+      });
+      expect(await repository.readServingManifest(scope, manifest.servingManifestId)).toEqual({
+        ...manifest,
+        revocationState: "revoked_after_pin",
+      });
+
+      await pool.end();
+    });
+  });
+
+  it("resolves impact targets inside their scope bound and leaves the unaffected observation byte-identical", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const repository = new PostgresContentRepository(pool);
+      const chain = await seedLearnerChain(pool);
+      const neighbour = await seedLearnerChain(pool);
+      await makeServable(pool, chain);
+      const scope = scopeOf(chain);
+      await publishRelease(repository, chain, 1);
+      await repository.appendApprovalDecision(
+        approvalFor(chain, "training", "2026-09-01T06:00:00.000Z"),
+      );
+      await repository.appendApprovalDecision(
+        approvalFor(chain, "independent_b1", "2026-09-01T07:30:00.000Z"),
+      );
+
+      // One observation reached through the pinned serving manifest, one through the Stage 03
+      // `app.attempts.content_revision_id` column that predates it, and one in another learner scope.
+      const issued = await repository.issueServingManifest(scope, issueFor(chain));
+      expect(issued.ok).toBe(true);
+      if (!issued.ok) return;
+      const pinnedAttempt = await insertAttempt(pool, chain, "result_available");
+      await pool.query(
+        "UPDATE app.attempts SET serving_manifest_id=$2 WHERE id=$1 AND learner_scope_id=$3",
+        [pinnedAttempt, issued.value.manifest.servingManifestId, chain.learnerScopeId],
+      );
+      const pinned = await seedObservation(pool, chain, pinnedAttempt, 1);
+      const legacyAttempt = await insertAttempt(pool, chain, "result_available");
+      const legacy = await seedObservation(pool, chain, legacyAttempt, 2);
+      const foreignAttempt = await insertAttempt(pool, neighbour, "result_available");
+      const foreign = await seedObservation(pool, neighbour, foreignAttempt, 1);
+
+      const byRevision = await repository.resolveImpactTargets(
+        { contentRevisionIds: [appId<"content_revision">(chain.contentRevisionId)] },
+        [appId<"learner_scope">(chain.learnerScopeId)],
+      );
+      expect(byRevision.map((target) => target.observationId).sort()).toEqual(
+        [pinned.observationId, legacy.observationId].sort(),
+      );
+      // The neighbour's observation shares the content family and is still not reachable: the
+      // learner scope bound is the fence, not a filter applied afterwards.
+      expect(byRevision.some((target) => target.observationId === foreign.observationId)).toBe(
+        false,
+      );
+      expect(
+        await repository.resolveImpactTargets(
+          { contentFamilyIds: [appId<"content_family">(chain.contentFamilyId)] },
+          [appId<"learner_scope">(chain.learnerScopeId)],
+        ),
+      ).toHaveLength(2);
+      expect(
+        await repository.resolveImpactTargets(
+          { observationIds: [appId<"evidence_observation">(pinned.observationId)] },
+          [appId<"learner_scope">(chain.learnerScopeId)],
+        ),
+      ).toEqual([{ learnerScopeId: chain.learnerScopeId, observationId: pinned.observationId }]);
+      // An empty selector selects nothing at all rather than everything in the bound.
+      expect(
+        await repository.resolveImpactTargets({}, [appId<"learner_scope">(chain.learnerScopeId)]),
+      ).toEqual([]);
+
+      // A rights takedown is serving-only: it may name no validity assertion at all.
+      const servingOnlyId = randomUUID();
+      expect(
+        await repository.appendImpactAssertion({
+          impactAssertionId: servingOnlyId,
+          incidentId: "incident/rights",
+          ownerContext: "Content & Publication",
+          actorRef: "owner",
+          authorizationVersion: "authorization/v1",
+          causeKind: "rights_takedown",
+          impactMode: "serving_only",
+          selectors: { observationIds: [appId<"evidence_observation">(pinned.observationId)] },
+          learnerScopeBound: [appId<"learner_scope">(chain.learnerScopeId)],
+          declaredCardinality: 1,
+          affectedScope: [],
+          unaffectedScope: ["written", "oral"],
+          reasonCode: "VALIDITY.RIGHTS_COMPATIBILITY",
+          evidenceRefs: ["incident/rights"],
+          policyAndContractVersions: { canonicalization: "canonical-json/v1" },
+          effectiveAt: issuedAt,
+          digest: hex(`impact:${servingOnlyId}`),
+        }),
+      ).toEqual({ ok: true, value: { disposition: "created" } });
+      expect(
+        await repository.recordImpactTargets(servingOnlyId, [
+          {
+            learnerScopeId: appId<"learner_scope">(chain.learnerScopeId),
+            observationId: appId<"evidence_observation">(pinned.observationId),
+            assertionId: pinned.assertionId,
+            disposition: "resolved",
+          },
+        ]),
+      ).toEqual({ ok: false, error: "conflict" });
+
+      const unaffectedBefore = await pool.query<{ digest: string }>(
+        `SELECT md5(o.*::text || a.*::text) AS digest
+           FROM app.evidence_observations o JOIN app.validity_assertions a ON a.id=o.current_assertion_id
+          WHERE o.id=$1`,
+        [legacy.observationId],
+      );
+
+      expect(
+        await repository.recordImpactTargets(servingOnlyId, [
+          {
+            learnerScopeId: appId<"learner_scope">(chain.learnerScopeId),
+            observationId: appId<"evidence_observation">(pinned.observationId),
+            disposition: "resolved",
+          },
+        ]),
+      ).toEqual({ ok: true, value: { recorded: 1, total: 1 } });
+      // The retry inserts nothing and still reports the committed set, so a replay is not mistaken
+      // for a resolution that reached nothing.
+      expect(
+        await repository.recordImpactTargets(servingOnlyId, [
+          {
+            learnerScopeId: appId<"learner_scope">(chain.learnerScopeId),
+            observationId: appId<"evidence_observation">(pinned.observationId),
+            disposition: "resolved",
+          },
+        ]),
+      ).toEqual({ ok: true, value: { recorded: 0, total: 1 } });
+
+      // The unaffected observation is byte-identical, and the serving-only impact appended no
+      // validity assertion for anyone.
+      const unaffectedAfter = await pool.query<{ digest: string }>(
+        `SELECT md5(o.*::text || a.*::text) AS digest
+           FROM app.evidence_observations o JOIN app.validity_assertions a ON a.id=o.current_assertion_id
+          WHERE o.id=$1`,
+        [legacy.observationId],
+      );
+      expect(unaffectedAfter.rows[0]?.digest).toBe(unaffectedBefore.rows[0]?.digest);
+      const assertionCount = await pool.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM app.validity_assertions WHERE learner_scope_id=$1",
+        [chain.learnerScopeId],
+      );
+      expect(assertionCount.rows[0]?.count).toBe(2);
+
+      // A replay of the assertion itself, and a different assertion under the same id.
+      const replayInput = {
+        impactAssertionId: servingOnlyId,
+        incidentId: "incident/rights",
+        ownerContext: "Content & Publication",
+        actorRef: "owner",
+        authorizationVersion: "authorization/v1",
+        causeKind: "rights_takedown" as const,
+        impactMode: "serving_only" as const,
+        selectors: { observationIds: [appId<"evidence_observation">(pinned.observationId)] },
+        learnerScopeBound: [appId<"learner_scope">(chain.learnerScopeId)],
+        declaredCardinality: 1,
+        affectedScope: [],
+        unaffectedScope: ["written", "oral"],
+        reasonCode: "VALIDITY.RIGHTS_COMPATIBILITY",
+        evidenceRefs: ["incident/rights"],
+        policyAndContractVersions: { canonicalization: "canonical-json/v1" },
+        effectiveAt: issuedAt,
+        digest: hex(`impact:${servingOnlyId}`),
+      };
+      expect(await repository.appendImpactAssertion(replayInput)).toEqual({
+        ok: true,
+        value: { disposition: "replayed" },
+      });
+      expect(
+        await repository.appendImpactAssertion({ ...replayInput, digest: hex("something else") }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+
       await pool.end();
     });
   });
