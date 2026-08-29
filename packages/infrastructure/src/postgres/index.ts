@@ -2,7 +2,7 @@ import { Kysely, PostgresDialect } from "kysely";
 import { type Migration, type MigrationProvider, Migrator } from "kysely/migration";
 import { Pool, type PoolConfig } from "pg";
 import { PgBoss } from "pg-boss";
-import { foundationJobPolicy, foundationQueues } from "../jobs/index.js";
+import { foundationQueues, jobPolicyFor } from "../jobs/index.js";
 import { foundationMigrations, migrationChecksums } from "./migrations.js";
 
 interface EmptyDatabase {
@@ -91,12 +91,13 @@ async function migratePgBoss(databaseUrl: string): Promise<void> {
   boss.on("error", () => undefined);
   await boss.start();
   for (const queue of foundationQueues) {
+    const policy = jobPolicyFor(queue);
     await boss.createQueue(queue, {
-      expireInSeconds: foundationJobPolicy.leaseSeconds,
-      retryLimit: foundationJobPolicy.retryLimit,
-      retryDelay: foundationJobPolicy.retryDelaySeconds,
-      retryBackoff: foundationJobPolicy.retryBackoff,
-      retentionSeconds: foundationJobPolicy.retentionDays * 86_400,
+      expireInSeconds: policy.leaseSeconds,
+      retryLimit: policy.retryLimit,
+      retryDelay: policy.retryDelaySeconds,
+      retryBackoff: policy.retryBackoff,
+      retentionSeconds: policy.retentionDays * 86_400,
     });
   }
   await boss.stop({ graceful: true, timeout: 5_000 });

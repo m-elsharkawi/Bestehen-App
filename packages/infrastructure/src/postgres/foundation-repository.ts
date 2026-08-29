@@ -109,6 +109,14 @@ async function lockActiveLearnerScope(
   return result.rows[0] ? { nextSequence: Number(result.rows[0].next_sequence) } : undefined;
 }
 
+/**
+ * The registry release a Stage 03 database is guaranteed to hold. `BESTEHEN_SCHEMA_MIN_REVISION`
+ * still defaults to the P03 revision, so a database inside the supported window may have `v1` and
+ * nothing else; defaulting to `v1.1` would violate the composite FK on
+ * `app.validity_assertions(reason_registry_id, reason_code)` there.
+ */
+export const stage03ReasonRegistryReleaseId = "reason-registry/v1";
+
 export class PostgresFoundationRepository
   implements
     IdentityDirectory,
@@ -119,7 +127,21 @@ export class PostgresFoundationRepository
     SemanticJobStore,
     SecurityAuditSink
 {
-  public constructor(private readonly pool: Pool) {}
+  private readonly reasonRegistryReleaseId: string;
+
+  /**
+   * `reasonRegistryReleaseId` selects which registry release an appended validity assertion cites.
+   * It defaults to the Stage 03 release so every existing caller is byte-identical; a Stage 05
+   * composition, whose database has run `20260901_051_content_graph`, passes
+   * `reasonRegistryRelease.id` from `@bestehen/domain` so an assertion may cite a Stage 05 code —
+   * `VALIDITY.CONTENT_QUARANTINED_AFTER_PIN` and its siblings exist only in `v1.1`.
+   */
+  public constructor(
+    private readonly pool: Pool,
+    reasonRegistryReleaseId: string = stage03ReasonRegistryReleaseId,
+  ) {
+    this.reasonRegistryReleaseId = reasonRegistryReleaseId;
+  }
 
   public async resolve(
     proof: IdentityProof,
@@ -373,7 +395,7 @@ export class PostgresFoundationRepository
   ): Promise<void> {
     await client.query(
       `INSERT INTO app.validity_assertions(id,learner_scope_id,observation_id,prior_assertion_id,state,affected_scope,unaffected_scope,reason_registry_id,reason_code,asserted_owner,actor_ref,evidence_ref,effective_at,release)
-       VALUES($1,$2,$3,$4,$5,$6,$7,'reason-registry/v1',$8,'Evidence & Capability','app-principal','owner-command',$9,'evidence-contract/v1')`,
+       VALUES($1,$2,$3,$4,$5,$6,$7,$10,$8,'Evidence & Capability','app-principal','owner-command',$9,'evidence-contract/v1')`,
       [
         assertion.id,
         learnerScopeId,
@@ -384,6 +406,7 @@ export class PostgresFoundationRepository
         JSON.stringify(assertion.partition.unaffected),
         assertion.reasonCode,
         assertion.effectiveAt,
+        this.reasonRegistryReleaseId,
       ],
     );
   }

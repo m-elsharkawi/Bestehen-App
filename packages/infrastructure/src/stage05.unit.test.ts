@@ -1,8 +1,17 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
+import { jobEnvelopeSchema } from "@bestehen/contracts";
 import { attemptRuntimeStates, reasonRegistryRelease, reasonRegistryV1 } from "@bestehen/domain";
 import type { Pool } from "pg";
 import { describe, expect, it } from "vitest";
+import {
+  contentImpactRecomputeJobPolicy,
+  contentPublicationJobPolicy,
+  contentQueues,
+  foundationJobPolicy,
+  foundationQueues,
+  jobPolicyFor,
+} from "./jobs/index.js";
 import { checkSchemaCompatibility } from "./postgres/index.js";
 import {
   foundationMigrations,
@@ -301,5 +310,68 @@ describe("checksum verification at the Stage 05 revision", () => {
     await expect(
       checkSchemaCompatibility(pool, foundationRevision, stage05Revision),
     ).resolves.toMatchObject({ compatible: false, observedRevision: "uninitialized" });
+  });
+});
+
+describe("Stage 05 queue policy", () => {
+  it("registers exactly the two content queues after the Stage 03 three", () => {
+    expect(foundationQueues).toEqual([
+      "projection_rebuild_v1",
+      "outbox_dispatch_v1",
+      "rights_reconcile_v1",
+      "content_publication_v1",
+      "content_impact_recompute_v1",
+    ]);
+    expect(contentQueues.every((queue) => foundationQueues.includes(queue))).toBe(true);
+  });
+
+  it("agrees with the job envelope kinds and the job_resources CHECK", () => {
+    const wireKinds = jobEnvelopeSchema.shape.kind.options;
+    expect([...wireKinds].sort()).toEqual([...foundationQueues].sort());
+    const clause = source("20260901_053_content_impact").match(
+      /ADD CONSTRAINT job_resources_kind_check CHECK\(kind IN \(([\s\S]*?)\)\)/,
+    )?.[1];
+    const declared = [...(clause as string).matchAll(/'([a-z0-9_]+)'/g)].map((match) => match[1]);
+    expect(declared).toEqual([...foundationQueues]);
+  });
+
+  it("leaves every Stage 03 queue on the unchanged foundation policy", () => {
+    for (const queue of [
+      "projection_rebuild_v1",
+      "outbox_dispatch_v1",
+      "rights_reconcile_v1",
+    ] as const) {
+      expect(jobPolicyFor(queue)).toBe(foundationJobPolicy);
+    }
+    expect(foundationJobPolicy.leaseSeconds).toBe(30);
+    expect(foundationJobPolicy.retentionDays).toBe(7);
+  });
+
+  it("gives publication a lease long enough for the gates, digests and media render", () => {
+    const policy = jobPolicyFor("content_publication_v1");
+    expect(policy).toBe(contentPublicationJobPolicy);
+    expect(policy.leaseSeconds).toBeGreaterThan(foundationJobPolicy.leaseSeconds);
+    expect(policy.leaseSeconds).toBeLessThan(policy.hardDeadlineSeconds);
+    expect(policy.heartbeatSeconds).toBeLessThan(policy.leaseSeconds);
+    // An audit-bearing job keeps its receipt long enough to be reviewed.
+    expect(policy.retentionDays).toBeGreaterThan(foundationJobPolicy.retentionDays);
+  });
+
+  it("gives recompute a lease between the foundation and publication policies", () => {
+    const policy = jobPolicyFor("content_impact_recompute_v1");
+    expect(policy).toBe(contentImpactRecomputeJobPolicy);
+    expect(policy.leaseSeconds).toBeGreaterThan(foundationJobPolicy.leaseSeconds);
+    expect(policy.leaseSeconds).toBeLessThan(contentPublicationJobPolicy.leaseSeconds);
+    expect(policy.heartbeatSeconds).toBeLessThan(policy.leaseSeconds);
+  });
+
+  it("keeps the retry limit inside the maximum_attempts CHECK for every queue", () => {
+    for (const queue of foundationQueues) {
+      const policy = jobPolicyFor(queue);
+      expect(policy.retryLimit).toBeGreaterThanOrEqual(1);
+      expect(policy.retryLimit).toBeLessThanOrEqual(20);
+      expect(policy.concurrency).toBe(1);
+      expect(policy.retryBackoff).toBe(true);
+    }
   });
 });
