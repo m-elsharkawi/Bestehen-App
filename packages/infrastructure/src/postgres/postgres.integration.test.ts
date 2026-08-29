@@ -2729,10 +2729,23 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 attempt repository", () => {
       expect(revealed.ok).toBe(true);
       if (!revealed.ok) return;
       expect(revealed.value).toHaveLength(2);
-      expect(revealed.value.map((entry) => entry.decisiveEvidence)).toEqual([
-        { safeRevealSpanOrRelation: "paragraph 1" },
-        { safeRevealSpanOrRelation: "paragraph 2" },
-      ]);
+      // Keyed by item, never by position: `readDecisiveEvidence` orders by `content_item_id` and
+      // the fixture mints those as random UUIDs, so a positional assertion was asserting the sort
+      // order of two UUIDs. Keying also proves the association a positional compare never did —
+      // that each item carries ITS OWN evidence rather than merely that both strings came back.
+      const byItem = new Map(revealed.value.map((entry) => [String(entry.contentItemId), entry]));
+      // A collapsed duplicate would shrink this map, which is the shape of the row-order defect
+      // `assertServable` carried next door.
+      expect(byItem.size).toBe(2);
+      for (const [index, itemId] of world.itemIds.entries()) {
+        expect(byItem.get(itemId)).toMatchObject({
+          kind: index === 0 ? "correct" : "incorrect",
+          decisiveEvidence: { safeRevealSpanOrRelation: `paragraph ${index + 1}` },
+          distractorRationale: {
+            whyPlausible: `shares the surface form of item ${index + 1}`,
+          },
+        });
+      }
 
       // Another learner's committed submission opens no gate here.
       const other = await seedAttemptWorld(pool);
@@ -2761,7 +2774,13 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 attempt repository", () => {
       expect(replayed.ok).toBe(true);
       if (!replayed.ok) return;
       expect(replayed.value.disposition).toBe("replayed");
+      // Byte-for-byte, including the order of the unit outcomes. The committing path used to echo
+      // the caller's array order while this path reads `ORDER BY content_item_id`, so the two
+      // agreed only when the generated ids happened to sort that way.
       expect(replayed.value.submission).toEqual(first.value.submission);
+      expect(replayed.value.submission.unitOutcomes.map((unit) => unit.contentItemId)).toEqual(
+        [...world.itemIds].sort(),
+      );
 
       for (const conflicting of [
         { ...input, responseDigest: hex("a different response") },
@@ -2980,6 +2999,9 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 attempt repository", () => {
             WHERE a.id=$1`,
           [firstAttemptId],
         );
+        // Indexing row zero is only meaningful while the join yields exactly one row; asserting it
+        // turns a silent assumption about row order into a checked one.
+        expect(result.rows).toHaveLength(1);
         return result.rows[0];
       };
       const before = await snapshot();

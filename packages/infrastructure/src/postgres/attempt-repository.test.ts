@@ -490,6 +490,27 @@ describe("P05-EVIDENCE-001 the evidence-proposal transaction", () => {
     expect(result.value.submission.scoredAt.toISOString()).toBe("2026-09-01T10:05:00.000Z");
   });
 
+  it("returns unit outcomes in the same order the committed read does, whatever order they arrive in", async () => {
+    const base = submissionInput();
+    const { repository } = repositoryOn(submitRoutes());
+
+    const result = await repository.submitObjectiveAttempt(scope, {
+      ...base,
+      // Reversed on the way in. The committing path must not echo this: the committed read is
+      // `ORDER BY content_item_id`, and a `created` answer in a different order from the
+      // `replayed` answer for the same submission reads to a client as a changed outcome.
+      outcome: { ...base.outcome, unitOutcomes: [...base.outcome.unitOutcomes].reverse() },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.submission.unitOutcomes.map((unit) => unit.contentItemId)).toEqual([
+      itemAlpha,
+      itemBeta,
+    ]);
+    expect(itemAlpha < itemBeta).toBe(true);
+  });
+
   it("derives the rebuild job identity from the submission so a replay cannot name another job", async () => {
     const { repository, recorder } = repositoryOn(submitRoutes());
 

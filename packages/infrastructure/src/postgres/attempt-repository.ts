@@ -401,6 +401,31 @@ function textArray(value: unknown): readonly string[] {
   return Array.isArray(value) ? value.map((entry) => String(entry)) : [];
 }
 
+/**
+ * Orders unit outcomes by content item id, matching the `ORDER BY content_item_id` the committed
+ * read uses.
+ *
+ * The two paths through {@link PostgresAttemptRepository.submitObjectiveAttempt} must be
+ * indistinguishable: a `created` result that echoed the caller's array order while a `replayed`
+ * result came back in item-id order would differ on nothing but sequence, and a client reconciling
+ * a retry against its original answer would read that as a changed outcome. Whether the two orders
+ * happened to coincide depended entirely on how the ids sorted, so the disagreement was invisible
+ * on roughly half of all runs.
+ */
+function sortedUnitOutcomes(
+  units: readonly ObjectiveUnitOutcomeInput[],
+): readonly ObjectiveUnitOutcomeRecord[] {
+  return [...units]
+    .sort((left, right) => (left.contentItemId < right.contentItemId ? -1 : 1))
+    .map((unit) => ({
+      contentItemId: unit.contentItemId,
+      kind: unit.kind,
+      ...(unit.issueCode === undefined ? {} : { issueCode: unit.issueCode }),
+      taskRef: unit.taskRef,
+      keyRevisionId: unit.keyRevisionId,
+    }));
+}
+
 /* ------------------------------------------------------------------------------------------------
  * Repository
  * ---------------------------------------------------------------------------------------------- */
@@ -1396,13 +1421,7 @@ export class PostgresAttemptRepository {
               scoredAt,
               checksum: input.outcome.checksum,
               responseDigest: input.responseDigest,
-              unitOutcomes: input.outcome.unitOutcomes.map((unit) => ({
-                contentItemId: unit.contentItemId,
-                kind: unit.kind,
-                ...(unit.issueCode === undefined ? {} : { issueCode: unit.issueCode }),
-                taskRef: unit.taskRef,
-                keyRevisionId: unit.keyRevisionId,
-              })),
+              unitOutcomes: sortedUnitOutcomes(input.outcome.unitOutcomes),
               validity: {
                 assertionId: input.assertionId,
                 observationId: input.observationId,
