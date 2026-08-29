@@ -333,6 +333,11 @@ export class PostgresContentRepository {
     if (!canHoldApprovalLevel(expected.contentClass, expected.approvalRole)) {
       return "approval_ineligible";
     }
+    // Release membership is asked as a correlated EXISTS, not as a join. A revision that survives a
+    // release rotation belongs to BOTH the retired and the active release, so joining
+    // `content_release_entries` returns several rows for one revision and whichever row landed last
+    // decided the answer. That made serving depend on row order: the same database could refuse a
+    // perfectly servable revision. One row per revision, and the membership question answered once.
     const result = await client.query(
       `SELECT cr.id,
               cr.content_class,
@@ -340,22 +345,24 @@ export class PostgresContentRepository {
               ad.outcome AS approval_outcome,
               re.state AS rights_state,
               am.gate_status AS accessibility_status,
-              rel.id AS release_id
+              EXISTS (
+                SELECT 1 FROM app.content_release_entries cre
+                  JOIN app.content_releases rel ON rel.id = cre.release_id
+                 WHERE cre.content_revision_id = cr.id
+                   AND rel.state = 'active' AND rel.release_identity = $2
+              ) AS in_active_release
          FROM app.content_revisions cr
          LEFT JOIN app.approval_decisions ad ON ad.id = cr.current_approval_decision_id
          LEFT JOIN app.rights_envelopes re ON re.id = cr.rights_envelope_id
          LEFT JOIN app.accessibility_manifests am ON am.id = cr.accessibility_manifest_id
-         LEFT JOIN app.content_release_entries cre ON cre.content_revision_id = cr.id
-         LEFT JOIN app.content_releases rel
-                ON rel.id = cre.release_id AND rel.state = 'active'
-               AND rel.release_identity = $2
         WHERE cr.id = ANY($1::uuid[])`,
       [[...revisionIds], expected.contentReleaseIdentity],
     );
     const byId = new Map(result.rows.map((row) => [String(row.id), row]));
     for (const revisionId of revisionIds) {
       const row = byId.get(revisionId);
-      if (!row?.release_id) return "content_unavailable";
+      if (!row) return "content_unavailable";
+      if (row.in_active_release !== true) return "content_unavailable";
       if (row.content_class !== expected.contentClass) return "content_unavailable";
       if (row.approval_outcome !== "granted" || row.approval_level !== expected.approvalRole) {
         return "approval_ineligible";
@@ -477,8 +484,16 @@ export class PostgresContentRepository {
     }
     return inTransaction(this.pool, async (client) => {
       await lockApprovalSubject(client, input.subjectId);
+      // Every field the decision asserts takes part in the replay comparison. Comparing only the
+      // level and the subject let a second command reuse a decision id while naming a different
+      // reason, a different evidence reference or a different signing chain, and be told
+      // `replayed` — the caller would believe its decision was recorded when the stored, different
+      // decision still stood. The relation is append-only, so nothing was overwritten; the answer
+      // was simply wrong. A conflicting reuse is now refused.
       const replay = await client.query(
-        "SELECT level,outcome,subject_kind,subject_id FROM app.approval_decisions WHERE id=$1",
+        `SELECT level,outcome,subject_kind,subject_id,content_class,author_ref,validator_ref,
+                approver_ref,method_version,reason_code,evidence_ref,decided_at
+           FROM app.approval_decisions WHERE id=$1`,
         [input.decisionId],
       );
       const replayed = replay.rows[0];
@@ -487,7 +502,15 @@ export class PostgresContentRepository {
           replayed.level === input.level &&
           replayed.outcome === input.outcome &&
           replayed.subject_kind === input.subjectKind &&
-          replayed.subject_id === input.subjectId;
+          String(replayed.subject_id) === input.subjectId &&
+          replayed.content_class === input.contentClass &&
+          replayed.author_ref === input.authorRef &&
+          replayed.validator_ref === input.validatorRef &&
+          replayed.approver_ref === input.approverRef &&
+          replayed.method_version === input.methodVersion &&
+          replayed.reason_code === input.reasonCode &&
+          replayed.evidence_ref === input.evidenceRef &&
+          new Date(String(replayed.decided_at)).getTime() === input.decidedAt.getTime();
         return same
           ? { ok: true as const, value: { disposition: "replayed" as const } }
           : { ok: false as const, error: "idempotency_conflict" as const };
@@ -807,12 +830,20 @@ export class PostgresContentRepository {
         [scope.learnerScopeId, input.operationId, input.payloadDigest, input.contentFamilyId],
       );
       if (!claimed.rows[0]) {
+        // `resource_ref` is compared as well as the digest. The receipt records which family it
+        // claimed; without that comparison a replay naming a different family read back THAT
+        // family's stored class and reported it as the committed result of this operation.
         const existing = await client.query(
-          `SELECT payload_digest FROM app.operation_receipts
+          `SELECT payload_digest,resource_ref FROM app.operation_receipts
             WHERE learner_scope_id=$1 AND operation_id=$2 AND kind='attempt.exposure' FOR UPDATE`,
           [scope.learnerScopeId, input.operationId],
         );
-        if (existing.rows[0]?.payload_digest !== input.payloadDigest) {
+        const receipt = existing.rows[0];
+        if (
+          !receipt ||
+          receipt.payload_digest !== input.payloadDigest ||
+          String(receipt.resource_ref) !== input.contentFamilyId
+        ) {
           return { ok: false as const, error: "idempotency_conflict" as const };
         }
         const stored = await client.query(
@@ -1012,11 +1043,18 @@ export class PostgresContentRepository {
    * A `serving_only` impact may not name a validity assertion: the mode is read back from the
    * stored assertion rather than trusted from the caller, so a rights withdrawal cannot smuggle a
    * validity change in through this method.
+   *
+   * `recorded` counts the rows this call inserted and `total` the rows the assertion now holds. A
+   * retried job sees `recorded: 0, total: n` — the same committed set, reached without a second
+   * effect. Returning only `recorded` made a replay indistinguishable from a resolution that
+   * reached nothing, which is precisely the cardinality fault the retry must NOT raise.
    */
   public async recordImpactTargets(
     impactAssertionId: string,
     targets: readonly ImpactTargetInput[],
-  ): Promise<Result<{ readonly recorded: number }, ContentRepositoryError>> {
+  ): Promise<
+    Result<{ readonly recorded: number; readonly total: number }, ContentRepositoryError>
+  > {
     return inTransaction(this.pool, async (client) => {
       const assertion = await client.query(
         "SELECT impact_mode FROM app.content_impact_assertions WHERE id=$1",
@@ -1045,7 +1083,14 @@ export class PostgresContentRepository {
         );
         if (inserted.rows[0]) recorded += 1;
       }
-      return { ok: true as const, value: { recorded } };
+      const counted = await client.query(
+        "SELECT count(*)::int AS total FROM app.content_impact_targets WHERE impact_assertion_id=$1",
+        [impactAssertionId],
+      );
+      return {
+        ok: true as const,
+        value: { recorded, total: Number(counted.rows[0]?.total ?? 0) },
+      };
     });
   }
 
