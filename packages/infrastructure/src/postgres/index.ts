@@ -177,6 +177,7 @@ export {
   reasonRegistryV1Frozen,
   stage05Revision,
 } from "./migrations.js";
+export * from "./attempt-repository.js";
 export * from "./content-repository.js";
 export * from "./foundation-repository.js";
 
