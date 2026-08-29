@@ -18,8 +18,11 @@
     "start": "node dist/main.js"
   },
   "dependencies": {
+    "@bestehen/application": "workspace:*",
     "@bestehen/configuration": "workspace:*",
+    "@bestehen/content": "workspace:*",
     "@bestehen/contracts": "workspace:*",
+    "@bestehen/domain": "workspace:*",
     "@bestehen/infrastructure": "workspace:*"
   },
   "devDependencies": {

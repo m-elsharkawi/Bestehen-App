@@ -112,12 +112,21 @@ importers:
 
   apps/worker:
     dependencies:
+      '@bestehen/application':
+        specifier: workspace:*
+        version: link:../../packages/application
       '@bestehen/configuration':
         specifier: workspace:*
         version: link:../../packages/configuration
+      '@bestehen/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@bestehen/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@bestehen/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@bestehen/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
