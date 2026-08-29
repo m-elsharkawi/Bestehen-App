@@ -12,6 +12,79 @@ export const foundationRevision = "20260825_040_p03_foundation";
  */
 export const stage05Revision = "20260901_054_p05_content_runtime";
 
+/**
+ * The frozen membership of `reason-registry/v1`, exactly as Stage 03 published it (43 codes).
+ *
+ * The `010` seed callback used to iterate the **live** `reasonRegistryV1`, which Stage 05 extended
+ * from 43 codes to 54. That made the content of a release identity depend on *when* the database was
+ * migrated: a fresh migrate wrote v1 = 54 codes with one digest while an already-migrated Stage 03
+ * database held v1 = 43 codes with another. A release identity whose membership varies by migration
+ * date is not an immutable release and violates plan §15.3, so the v1 membership is pinned here.
+ *
+ * Freezing is safe on every already-migrated database: only the SQL string is checksummed
+ * (`checksum(source)` below), and the `seed?:` callback is a separate parameter that no checksum
+ * covers. Nothing about `verifyMigrationChecksums` changes.
+ *
+ * The list is a filter over the live registry rather than a second copy of the definitions, so the
+ * seeded rows keep exactly the Stage 03 field values — including array order, since Stage 05
+ * appended its codes after the Stage 03 ones inside each family and added no family.
+ */
+const reasonRegistryV1FrozenCodes: readonly string[] = [
+  "VALIDITY.CONTENT_APPROVAL",
+  "VALIDITY.RIGHTS_COMPATIBILITY",
+  "VALIDITY.ACCESS_EQUIVALENCE",
+  "VALIDITY.TECHNICAL_PREFLIGHT",
+  "VALIDITY.IDENTITY_CLAIM_INVALID",
+  "DIRECT.MISSING_WRITTEN",
+  "DIRECT.MISSING_ORAL",
+  "DIRECT.TARGET_CONDITION_GAP",
+  "DIRECT.ASSISTANCE_DEPENDENT",
+  "DIRECT.STALE_DIRECT_SAMPLE",
+  "RISK.WRITTEN_BLOCKER",
+  "RISK.ORAL_BLOCKER",
+  "RISK.BOOKED_DATE",
+  "RISK.MOCK_REVEALED",
+  "UNCERTAINTY.PENDING_EVALUATION",
+  "UNCERTAINTY.CONTRADICTORY_EVIDENCE",
+  "UNCERTAINTY.CAUSE_UNRESOLVED",
+  "UNCERTAINTY.PROJECTION_UPDATING",
+  "DUE.TRANSFER_WINDOW",
+  "DUE.RETENTION_WINDOW",
+  "DUE.POST_MOCK_CLARIFIER",
+  "PROGRESSION.REACHABLE_PREREQUISITE",
+  "PROGRESSION.ASSISTANCE_FADE",
+  "PROGRESSION.REALISM_PROBE",
+  "COVERAGE.SECTION_AGING",
+  "COVERAGE.TASK_FAMILY_GAP",
+  "COVERAGE.NORMAL_ROTATION",
+  "PREFERENCE.REQUESTED_SKILL",
+  "PREFERENCE.REQUESTED_MODE",
+  "PREFERENCE.VARIETY",
+  "CONTEXT.TIME_CHANGED",
+  "CONTEXT.LOW_ENERGY",
+  "CONTEXT.NO_AUDIO",
+  "CONTEXT.NO_MIC",
+  "CONTEXT.OFFLINE",
+  "CONTEXT.ACCESS_NEED",
+  "FALLBACK.NO_VALID_PLAN",
+  "FALLBACK.CONTENT_UNAVAILABLE",
+  "FALLBACK.EVALUATOR_PENDING",
+  "FALLBACK.TECHNICAL_FAULT",
+  "FALLBACK.NO_FRESH_RETRY",
+  "FALLBACK.AUTHORIZATION_DENIED",
+  "FALLBACK.JOB_RETRY_EXHAUSTED",
+];
+
+/** The 43 Stage 03 definitions, in Stage 03 order. Throws rather than seeding a drifted v1. */
+export const reasonRegistryV1Frozen: readonly (typeof reasonRegistryV1)[number][] = (() => {
+  const frozen = new Set(reasonRegistryV1FrozenCodes);
+  const selected = reasonRegistryV1.filter((reason) => frozen.has(reason.code));
+  if (selected.length !== reasonRegistryV1FrozenCodes.length) {
+    throw new Error("reason-registry/v1 lost a frozen code; its published membership is immutable");
+  }
+  return selected;
+})();
+
 const identityAndReleaseSql = `
 CREATE SCHEMA IF NOT EXISTS app;
 CREATE TABLE app.learner_scopes (
@@ -858,11 +931,13 @@ async function upsertSchemaRevisions(db: Kysely<unknown>): Promise<void> {
 
 export const foundationMigrations: Readonly<Record<string, Migration>> = {
   "20260825_010_identity_release": immutableMigration(identityAndReleaseSql, async (db) => {
-    const registryDigest = checksum(JSON.stringify(reasonRegistryV1));
+    // `reasonRegistryV1Frozen`, not the live registry: v1's published membership is 43 codes on
+    // every database, whenever it was migrated. See the constant for why this is checksum-safe.
+    const registryDigest = checksum(JSON.stringify(reasonRegistryV1Frozen));
     await sql`INSERT INTO app.reason_registry_releases(id,major,minor,digest) VALUES ('reason-registry/v1',1,0,${registryDigest})`.execute(
       db,
     );
-    for (const reason of reasonRegistryV1) {
+    for (const reason of reasonRegistryV1Frozen) {
       await sql`INSERT INTO app.reason_codes(registry_id,code,family,owner,learner_fault,template_key,retention_class)
         VALUES ('reason-registry/v1',${reason.code},${reason.code.split(".")[0]},${reason.owner},${reason.learnerFault},${reason.templateKey},${reason.retentionClass})`.execute(
         db,

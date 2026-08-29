@@ -1,4 +1,6 @@
-import { attemptRuntimeStates, reasonRegistryRelease } from "@bestehen/domain";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { attemptRuntimeStates, reasonRegistryRelease, reasonRegistryV1 } from "@bestehen/domain";
 import type { Pool } from "pg";
 import { describe, expect, it } from "vitest";
 import { checkSchemaCompatibility } from "./postgres/index.js";
@@ -7,6 +9,7 @@ import {
   foundationRevision,
   migrationChecksums,
   migrationSources,
+  reasonRegistryV1Frozen,
   stage05Revision,
 } from "./postgres/migrations.js";
 
@@ -166,6 +169,54 @@ describe("registry and terminal source placement", () => {
       "content_publication_v1",
       "content_impact_recompute_v1",
     ]);
+  });
+});
+
+describe("reason-registry/v1 membership is frozen", () => {
+  /**
+   * Pinned from the Stage 03 tree (`git show 3382938:packages/domain/src/index.ts`), which is what
+   * every already-migrated database actually holds in `app.reason_registry_releases`.
+   */
+  const stage03RegistryDigest =
+    "6bbbae970376a3531524fe4a1bb199d43ba3b5b5ccd9e6a7c1fe4f75e34e950f";
+
+  it("seeds exactly the 43 Stage 03 codes, whatever the live registry grows to", () => {
+    expect(reasonRegistryV1Frozen).toHaveLength(43);
+    expect(reasonRegistryV1.length).toBeGreaterThan(reasonRegistryV1Frozen.length);
+    expect(reasonRegistryV1Frozen.every((reason) => reasonRegistryV1.includes(reason))).toBe(true);
+  });
+
+  it("reproduces the digest a Stage 03 database already recorded for v1", () => {
+    const digest = createHash("sha256")
+      .update(JSON.stringify(reasonRegistryV1Frozen))
+      .digest("hex");
+    expect(digest).toBe(stage03RegistryDigest);
+  });
+
+  it("keeps v1 and v1.1 distinct release identities with distinct digests", () => {
+    const v1 = createHash("sha256").update(JSON.stringify(reasonRegistryV1Frozen)).digest("hex");
+    const v11 = createHash("sha256")
+      .update(JSON.stringify({ release: reasonRegistryRelease, codes: reasonRegistryV1 }))
+      .digest("hex");
+    expect(reasonRegistryRelease.id).toBe("reason-registry/v1.1");
+    expect(v11).not.toBe(v1);
+  });
+
+  it("seeds v1 from the frozen list rather than the live registry", () => {
+    // The seed callback is not part of the checksummed source, so no checksum can catch a
+    // regression here. The `010` block is read from the module text instead.
+    const module = readFileSync(new URL("./postgres/migrations.ts", import.meta.url), "utf8");
+    // Both revision names also appear in `migrationSources`, so the search starts at the migration
+    // map itself rather than at the first occurrence in the file.
+    const mapStart = module.indexOf("export const foundationMigrations");
+    const start = module.indexOf('"20260825_010_identity_release": immutableMigration', mapStart);
+    const end = module.indexOf('"20260825_020_learner_facts_evidence"', start);
+    expect(mapStart).toBeGreaterThan(0);
+    expect(start).toBeGreaterThan(mapStart);
+    expect(end).toBeGreaterThan(start);
+    const block = module.slice(start, end);
+    expect(block).toContain("reasonRegistryV1Frozen");
+    expect(block).not.toMatch(/\breasonRegistryV1\b(?!Frozen)/);
   });
 });
 
