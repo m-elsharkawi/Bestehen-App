@@ -93,15 +93,19 @@ describe("D06 attempt state reconciliation", () => {
     expect(declared).not.toContain("completed");
   });
 
-  it("rewrites existing rows before it replaces the constraint", () => {
+  it("drops the old constraint, rewrites existing rows, then adds the new constraint", () => {
+    // The order matters and is not the plan's literal one: `in_progress` and `result_available` are
+    // not in the Stage 03 union, so the rewrite fails with 23514 while the old CHECK still stands.
+    const dropOld = runtimeSql.indexOf("conrelid='app.attempts'::regclass");
     const renameStarted = runtimeSql.indexOf("SET state='in_progress' WHERE state='started'");
     const renameCompleted = runtimeSql.indexOf(
       "SET state='result_available' WHERE state='completed'",
     );
     const moveNotCounted = runtimeSql.indexOf("SET state='interrupted' WHERE state='not_counted'");
     const replaceConstraint = runtimeSql.indexOf("ADD CONSTRAINT attempts_state_check");
+    expect(dropOld).toBeGreaterThan(-1);
     for (const rewrite of [renameStarted, renameCompleted, moveNotCounted]) {
-      expect(rewrite).toBeGreaterThan(-1);
+      expect(rewrite).toBeGreaterThan(dropOld);
       expect(rewrite).toBeLessThan(replaceConstraint);
     }
   });

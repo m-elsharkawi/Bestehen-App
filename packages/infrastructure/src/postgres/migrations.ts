@@ -562,8 +562,20 @@ ALTER TABLE app.validity_assertions ADD CONSTRAINT validity_assertions_partition
   OR (jsonb_array_length(affected_scope)>0
       AND (state='pending' OR jsonb_array_length(unaffected_scope)>0))
 );
--- D06 data disposition, in order. Steps 1-3 run unconditionally and report their row counts; the
--- CHECK is replaced only afterwards, because the new union admits none of the old spellings.
+-- D06 data disposition. The old constraint is dropped FIRST, not last: 'in_progress' and
+-- 'result_available' are not in the Stage 03 union, so rewriting a row while that CHECK is still in
+-- force fails with 23514. The migration runs inside one transaction, so the table is never visible
+-- to anyone else without a state constraint.
+DO $do$
+DECLARE target text;
+BEGIN
+  SELECT conname INTO target FROM pg_constraint
+   WHERE conrelid='app.attempts'::regclass AND contype='c'
+     AND pg_get_constraintdef(oid) LIKE '%not_counted%';
+  IF target IS NULL THEN RAISE EXCEPTION 'attempt state constraint not found'; END IF;
+  EXECUTE format('ALTER TABLE app.attempts DROP CONSTRAINT %I', target);
+END $do$;
+-- Steps 1-3 then run unconditionally and report their row counts.
 DO $do$
 DECLARE started_rows bigint; completed_rows bigint; not_counted_rows bigint;
 BEGIN
@@ -589,15 +601,6 @@ BEGIN
   GET DIAGNOSTICS not_counted_rows = ROW_COUNT;
   RAISE NOTICE 'attempt state reconciliation: started->in_progress %, completed->result_available %, not_counted->interrupted %',
     started_rows, completed_rows, not_counted_rows;
-END $do$;
-DO $do$
-DECLARE target text;
-BEGIN
-  SELECT conname INTO target FROM pg_constraint
-   WHERE conrelid='app.attempts'::regclass AND contype='c'
-     AND pg_get_constraintdef(oid) LIKE '%not_counted%';
-  IF target IS NULL THEN RAISE EXCEPTION 'attempt state constraint not found'; END IF;
-  EXECUTE format('ALTER TABLE app.attempts DROP CONSTRAINT %I', target);
 END $do$;
 ALTER TABLE app.attempts ADD CONSTRAINT attempts_state_check CHECK(state IN (
   'acquiring_manifest','ready','in_progress','checkpointed','submission_unknown','submitted',
