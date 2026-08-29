@@ -16,6 +16,7 @@
     "build": "tsc -b"
   },
   "dependencies": {
+    "@bestehen/contracts": "workspace:*",
     "@bestehen/domain": "workspace:*"
   }
 }

@@ -177,8 +177,7 @@ describe("reason-registry/v1 membership is frozen", () => {
    * Pinned from the Stage 03 tree (`git show 3382938:packages/domain/src/index.ts`), which is what
    * every already-migrated database actually holds in `app.reason_registry_releases`.
    */
-  const stage03RegistryDigest =
-    "6bbbae970376a3531524fe4a1bb199d43ba3b5b5ccd9e6a7c1fe4f75e34e950f";
+  const stage03RegistryDigest = "6bbbae970376a3531524fe4a1bb199d43ba3b5b5ccd9e6a7c1fe4f75e34e950f";
 
   it("seeds exactly the 43 Stage 03 codes, whatever the live registry grows to", () => {
     expect(reasonRegistryV1Frozen).toHaveLength(43);

@@ -155,6 +155,9 @@ importers:
 
   packages/content:
     dependencies:
+      '@bestehen/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@bestehen/domain':
         specifier: workspace:*
         version: link:../domain
