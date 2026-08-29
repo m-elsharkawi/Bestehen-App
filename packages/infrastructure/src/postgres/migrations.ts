@@ -1,9 +1,16 @@
 import { createHash } from "node:crypto";
-import { reasonRegistryV1 } from "@bestehen/domain";
+import { reasonRegistryRelease, reasonRegistryV1 } from "@bestehen/domain";
 import { type Kysely, sql } from "kysely";
 import type { Migration } from "kysely/migration";
 
 export const foundationRevision = "20260825_040_p03_foundation";
+
+/**
+ * Terminal Stage 05 revision. `checkSchemaCompatibility` builds its ordinal list from
+ * `Object.keys(foundationMigrations)`, so insertion order — not the numeric prefix — is the
+ * contract; the prefixes are numbered to agree with it anyway.
+ */
+export const stage05Revision = "20260901_054_p05_content_runtime";
 
 const identityAndReleaseSql = `
 CREATE SCHEMA IF NOT EXISTS app;
@@ -355,6 +362,452 @@ CREATE TABLE app.schema_revisions (
 INSERT INTO app.schema_revisions(revision,checksum) VALUES ('20260825_040_p03_foundation', repeat('0',64));
 `;
 
+/*
+ * ------------------------------------------------------------------------------------------------
+ * Stage 05 — content and deterministic learning runtime.
+ *
+ * Every Stage 05 schema change is an `ALTER`/`CREATE` in a NEW source. The four Stage 03 source
+ * strings above are immutable: `migrationChecksums` is `sha256(source)` per entry and
+ * `verifyMigrationChecksums` reads any difference as drift against every already-migrated database.
+ * ------------------------------------------------------------------------------------------------
+ */
+
+const contentGraphSql = `
+CREATE TABLE app.rights_envelopes (
+  id uuid PRIMARY KEY, envelope_key text NOT NULL,
+  state text NOT NULL CHECK(state IN ('current','superseded','withdrawn','takedown')),
+  envelope jsonb NOT NULL, digest text NOT NULL UNIQUE CHECK(length(digest)=64),
+  predecessor_id uuid REFERENCES app.rights_envelopes(id), effective_at timestamptz,
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp()
+);
+CREATE UNIQUE INDEX rights_envelopes_current_key_uidx ON app.rights_envelopes(envelope_key) WHERE state='current';
+CREATE TABLE app.accessibility_manifests (
+  id text PRIMARY KEY, manifest jsonb NOT NULL, language_tag text NOT NULL,
+  gate_status text NOT NULL CHECK(gate_status IN ('pass','blocked','not_evaluated')),
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64),
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp()
+);
+CREATE TABLE app.corpus_bundles (
+  bundle_id text NOT NULL, revision integer NOT NULL CHECK(revision>0),
+  state text NOT NULL CHECK(state IN ('imported','superseded','withdrawn')),
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64), provenance jsonb NOT NULL,
+  rights_envelope_id uuid NOT NULL REFERENCES app.rights_envelopes(id),
+  imported_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  PRIMARY KEY(bundle_id,revision)
+);
+CREATE TABLE app.media_assets (
+  id uuid PRIMARY KEY, kind text NOT NULL CHECK(kind IN ('audio','image')), manifest_revision text NOT NULL,
+  predecessor_id uuid REFERENCES app.media_assets(id), content_family_id uuid REFERENCES app.content_families(id),
+  listening_family text CHECK(listening_family IS NULL OR (kind='audio' AND listening_family IN ('H1','H2','H3'))),
+  source_role text NOT NULL CHECK(source_role IN ('reviewed_tts','audited_premium_tts','native_human','reusable_direct','authored_image')),
+  authored_speed_ratio numeric CHECK(authored_speed_ratio IS NULL OR authored_speed_ratio>0),
+  generator jsonb NOT NULL, qa jsonb NOT NULL,
+  rights_envelope_id uuid NOT NULL REFERENCES app.rights_envelopes(id),
+  accessibility_manifest_id text REFERENCES app.accessibility_manifests(id),
+  status text NOT NULL CHECK(status IN ('current','superseded','quarantined','withdrawn')),
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64),
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(), UNIQUE(id,manifest_revision)
+);
+CREATE TABLE app.media_revisions (
+  id uuid PRIMARY KEY, asset_id uuid NOT NULL REFERENCES app.media_assets(id),
+  predecessor_id uuid REFERENCES app.media_revisions(id),
+  role text NOT NULL CHECK(role IN ('web_primary','future_optimized')),
+  object_key text NOT NULL, byte_digest text NOT NULL CHECK(length(byte_digest)=64),
+  bytes bigint NOT NULL CHECK(bytes>0), mime text NOT NULL, codec text NOT NULL, container text NOT NULL,
+  duration_ms integer NOT NULL CHECK(duration_ms>=0),
+  sample_rate integer CHECK(sample_rate IS NULL OR sample_rate>0),
+  channels integer CHECK(channels IS NULL OR channels>0),
+  bitrate integer CHECK(bitrate IS NULL OR bitrate>0),
+  cache_policy_ref text NOT NULL, rights_actions jsonb NOT NULL,
+  manifest_digest text NOT NULL UNIQUE CHECK(length(manifest_digest)=64),
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(), UNIQUE(object_key,byte_digest)
+);
+CREATE INDEX media_revisions_asset_role_idx ON app.media_revisions(asset_id,role);
+CREATE TABLE app.transcript_revisions (
+  id uuid PRIMARY KEY, media_revision_id uuid NOT NULL REFERENCES app.media_revisions(id),
+  kind text NOT NULL CHECK(kind IN ('instructional_equivalent','target_transcript','focused_repair_excerpt')),
+  answer_bearing boolean NOT NULL,
+  earliest_reveal_phase text NOT NULL CHECK(earliest_reveal_phase IN ('never','after_attempt','after_block')),
+  rights_envelope_id uuid NOT NULL REFERENCES app.rights_envelopes(id), language text NOT NULL,
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64),
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp()
+);
+CREATE TABLE app.approval_decisions (
+  id uuid PRIMARY KEY,
+  subject_kind text NOT NULL CHECK(subject_kind IN ('content_revision','content_form','media_asset')),
+  subject_id uuid NOT NULL, content_class text NOT NULL CHECK(content_class IN ('C0','C1','C2','C3','C4')),
+  level text NOT NULL CHECK(level IN ('draft','quarantine','training','independent_b1','readiness_p4','gold','retired')),
+  outcome text NOT NULL CHECK(outcome IN ('granted','denied')),
+  author_ref text NOT NULL, validator_ref text NOT NULL, approver_ref text NOT NULL, method_version text NOT NULL,
+  reason_registry_id text NOT NULL, reason_code text NOT NULL, evidence_ref text NOT NULL,
+  predecessor_id uuid REFERENCES app.approval_decisions(id), decided_at timestamptz NOT NULL,
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  FOREIGN KEY(reason_registry_id,reason_code) REFERENCES app.reason_codes(registry_id,code),
+  UNIQUE(subject_kind,subject_id,level,decided_at)
+);
+CREATE INDEX approval_decisions_subject_idx ON app.approval_decisions(subject_kind,subject_id,recorded_at DESC);
+CREATE TRIGGER approval_decisions_immutable BEFORE UPDATE OR DELETE ON app.approval_decisions FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.content_items (
+  id uuid PRIMARY KEY, content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id),
+  predecessor_item_id uuid REFERENCES app.content_items(id), ordinal integer NOT NULL CHECK(ordinal>0),
+  response_kind text NOT NULL CHECK(response_kind IN ('single_select','match','cloze_local_option','cloze_bank_candidate')),
+  binding jsonb NOT NULL, scorable jsonb NOT NULL,
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(content_revision_id,ordinal), UNIQUE(content_revision_id,id)
+);
+CREATE TABLE app.key_revisions (
+  id uuid PRIMARY KEY, content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id),
+  content_item_id uuid NOT NULL REFERENCES app.content_items(id),
+  predecessor_id uuid REFERENCES app.key_revisions(id),
+  accepted_response_set jsonb NOT NULL CHECK(jsonb_array_length(accepted_response_set)>0),
+  response_cardinality_min integer NOT NULL CHECK(response_cardinality_min>=0),
+  response_cardinality_max integer NOT NULL CHECK(response_cardinality_max>=response_cardinality_min),
+  scoring_policy_ref text NOT NULL, decisive_evidence jsonb NOT NULL, distractor_rationale jsonb NOT NULL,
+  intended_cause_mapping jsonb NOT NULL, independent_validation jsonb NOT NULL,
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64),
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  FOREIGN KEY(content_revision_id,content_item_id) REFERENCES app.content_items(content_revision_id,id)
+);
+REVOKE ALL ON app.key_revisions FROM PUBLIC;
+COMMENT ON TABLE app.key_revisions IS 'Server-only key material. Only a key digest may cross the serving boundary; no learner-facing query may read this relation.';
+CREATE TRIGGER key_revisions_immutable BEFORE UPDATE OR DELETE ON app.key_revisions FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.content_gate_results (
+  id uuid PRIMARY KEY, content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id),
+  gate text NOT NULL CHECK(gate IN ('eligibility_brief','semantic_task_design','language_media_creation','deterministic_structure','independent_key_validation','naturalness_register','difficulty_target_fit','anti_copy_diversity','final_media_render_interaction','approval_publish','post_publication_loop')),
+  ordinal integer NOT NULL CHECK(ordinal BETWEEN 1 AND 11),
+  status text NOT NULL CHECK(status IN ('pass','blocked','not_evaluated','not_applicable')),
+  gate_version text NOT NULL, reviewer_ref text NOT NULL, method_version text NOT NULL,
+  findings jsonb NOT NULL, material_defect boolean NOT NULL DEFAULT false,
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(content_revision_id,gate,method_version,recorded_at)
+);
+CREATE INDEX content_gate_results_revision_idx ON app.content_gate_results(content_revision_id,ordinal);
+CREATE TRIGGER content_gate_results_immutable BEFORE UPDATE OR DELETE ON app.content_gate_results FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.content_forms (
+  id uuid PRIMARY KEY, form_revision_id text NOT NULL, form_family_id text,
+  target_blueprint_release_id text NOT NULL,
+  approval_decision_id uuid NOT NULL REFERENCES app.approval_decisions(id),
+  intended_role text NOT NULL CHECK(intended_role IN ('learning_practice','repair_check','independent_practice','mini_mock','section_mock','full_mock','booking_confirmation')),
+  progression_profile text NOT NULL CHECK(progression_profile IN ('P0','P1','P2','P3','P4')),
+  block_contracts jsonb NOT NULL, navigation_policy text NOT NULL, feedback_policy text NOT NULL,
+  checkpoint_policy_ref text NOT NULL, rights_and_accessibility_refs jsonb NOT NULL,
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64),
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(), UNIQUE(id,form_revision_id)
+);
+CREATE TABLE app.content_form_entries (
+  form_id uuid NOT NULL REFERENCES app.content_forms(id), ordinal integer NOT NULL CHECK(ordinal>0),
+  block_id text NOT NULL, content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id),
+  content_item_id uuid REFERENCES app.content_items(id), PRIMARY KEY(form_id,ordinal),
+  FOREIGN KEY(content_revision_id,content_item_id) REFERENCES app.content_items(content_revision_id,id)
+);
+CREATE TABLE app.content_releases (
+  id text PRIMARY KEY, release_identity text NOT NULL,
+  state text NOT NULL CHECK(state IN ('candidate','active','retired','quarantined')),
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64), predecessor_id text REFERENCES app.content_releases(id),
+  created_at timestamptz NOT NULL DEFAULT transaction_timestamp(), activated_at timestamptz, retired_at timestamptz
+);
+CREATE UNIQUE INDEX content_releases_one_active_uidx ON app.content_releases(release_identity) WHERE state='active';
+CREATE TABLE app.content_release_entries (
+  release_id text NOT NULL REFERENCES app.content_releases(id),
+  content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id),
+  form_id uuid REFERENCES app.content_forms(id), PRIMARY KEY(release_id,content_revision_id)
+);
+ALTER TABLE app.content_families
+  ADD COLUMN task_definition_id text,
+  ADD COLUMN task_definition_revision integer CHECK(task_definition_revision IS NULL OR task_definition_revision>0),
+  ADD COLUMN task_family_kind text CHECK(task_family_kind IS NULL OR task_family_kind IN ('R1HeadingMatching','R2DetailedSelect','R3SituationNoticeMatching','SB1ContextualGrammarCloze','SB2SharedBankLexicalCloze','H1ShortAnnouncements','H2ConversationInterview','H3ShortFunctionalTexts')),
+  ADD COLUMN assignment_basis jsonb,
+  ADD COLUMN review_state text CHECK(review_state IS NULL OR review_state IN ('same_family','independent','unresolved'));
+ALTER TABLE app.content_revisions
+  ADD COLUMN content_class text CHECK(content_class IS NULL OR content_class IN ('C0','C1','C2','C3','C4')),
+  ADD COLUMN task_definition_id text,
+  ADD COLUMN task_definition_revision integer CHECK(task_definition_revision IS NULL OR task_definition_revision>0),
+  ADD COLUMN generation_brief_id text,
+  ADD COLUMN generation_brief_revision integer CHECK(generation_brief_revision IS NULL OR generation_brief_revision>0),
+  ADD COLUMN corpus_bundle_id text,
+  ADD COLUMN corpus_bundle_revision integer,
+  ADD COLUMN target_blueprint_release text,
+  ADD COLUMN taxonomy_release text,
+  ADD COLUMN capability_refs jsonb,
+  ADD COLUMN progression_profile text CHECK(progression_profile IS NULL OR progression_profile IN ('P0','P1','P2','P3','P4')),
+  ADD COLUMN intended_evidence_roles jsonb,
+  ADD COLUMN instruction jsonb,
+  ADD COLUMN learner_payload jsonb,
+  ADD COLUMN frozen_at timestamptz,
+  ADD COLUMN rights_envelope_id uuid REFERENCES app.rights_envelopes(id),
+  ADD COLUMN accessibility_manifest_id text REFERENCES app.accessibility_manifests(id),
+  ADD COLUMN current_approval_decision_id uuid REFERENCES app.approval_decisions(id),
+  ADD CONSTRAINT content_revisions_corpus_bundle_fk FOREIGN KEY(corpus_bundle_id,corpus_bundle_revision) REFERENCES app.corpus_bundles(bundle_id,revision);
+CREATE INDEX content_revisions_family_approval_idx ON app.content_revisions(family_id,approval_state);
+`;
+
+const attemptRuntimeSql = `
+-- Whole-scope 'pending' is representable. The Stage 03 constraint required BOTH partitions to be
+-- non-empty for 'partially_valid' AND 'pending', but a content quarantine after pin legitimately
+-- suspends the WHOLE supported scope: 'classifyInitialValidity' emits 'pending' with an empty
+-- 'unaffected' for it, and Architecture/15-… §6.2 (OriginalOutcome --> Pending) endorses exactly
+-- that. Only the 'pending' arm is widened: 'partially_valid' without a surviving partition is still
+-- meaningless and is still rejected, as is either state with an empty affected scope.
+DO $do$
+DECLARE target text;
+BEGIN
+  SELECT conname INTO target FROM pg_constraint
+   WHERE conrelid='app.validity_assertions'::regclass AND contype='c'
+     AND pg_get_constraintdef(oid) LIKE '%unaffected_scope%';
+  IF target IS NULL THEN RAISE EXCEPTION 'validity partition constraint not found'; END IF;
+  EXECUTE format('ALTER TABLE app.validity_assertions DROP CONSTRAINT %I', target);
+END $do$;
+ALTER TABLE app.validity_assertions ADD CONSTRAINT validity_assertions_partition_check CHECK(
+  state NOT IN ('partially_valid','pending')
+  OR (jsonb_array_length(affected_scope)>0
+      AND (state='pending' OR jsonb_array_length(unaffected_scope)>0))
+);
+-- D06 data disposition, in order. Steps 1-3 run unconditionally and report their row counts; the
+-- CHECK is replaced only afterwards, because the new union admits none of the old spellings.
+DO $do$
+DECLARE started_rows bigint; completed_rows bigint; not_counted_rows bigint;
+BEGIN
+  UPDATE app.attempts SET state='in_progress' WHERE state='started';
+  GET DIAGNOSTICS started_rows = ROW_COUNT;
+  UPDATE app.attempts SET state='result_available' WHERE state='completed';
+  GET DIAGNOSTICS completed_rows = ROW_COUNT;
+  WITH appended AS (
+    INSERT INTO app.validity_assertions(
+      id,learner_scope_id,observation_id,prior_assertion_id,state,affected_scope,unaffected_scope,
+      reason_registry_id,reason_code,asserted_owner,actor_ref,evidence_ref,effective_at,release)
+    SELECT gen_random_uuid(),o.learner_scope_id,o.id,o.current_assertion_id,'not_counted',
+           o.supported_scope,'[]'::jsonb,'reason-registry/v1.1','VALIDITY.RESPONSE_STRUCTURALLY_INVALID',
+           'Evidence & Capability','migration:20260901_052_attempt_runtime',
+           'migration:20260901_052_attempt_runtime',transaction_timestamp(),'evidence-contract/v1'
+      FROM app.evidence_observations o
+      JOIN app.attempts a ON a.learner_scope_id=o.learner_scope_id AND a.id=o.attempt_id
+     WHERE a.state='not_counted'
+    RETURNING id,learner_scope_id,observation_id)
+  UPDATE app.evidence_observations o SET current_assertion_id=appended.id
+    FROM appended WHERE o.learner_scope_id=appended.learner_scope_id AND o.id=appended.observation_id;
+  UPDATE app.attempts SET state='interrupted' WHERE state='not_counted';
+  GET DIAGNOSTICS not_counted_rows = ROW_COUNT;
+  RAISE NOTICE 'attempt state reconciliation: started->in_progress %, completed->result_available %, not_counted->interrupted %',
+    started_rows, completed_rows, not_counted_rows;
+END $do$;
+DO $do$
+DECLARE target text;
+BEGIN
+  SELECT conname INTO target FROM pg_constraint
+   WHERE conrelid='app.attempts'::regclass AND contype='c'
+     AND pg_get_constraintdef(oid) LIKE '%not_counted%';
+  IF target IS NULL THEN RAISE EXCEPTION 'attempt state constraint not found'; END IF;
+  EXECUTE format('ALTER TABLE app.attempts DROP CONSTRAINT %I', target);
+END $do$;
+ALTER TABLE app.attempts ADD CONSTRAINT attempts_state_check CHECK(state IN (
+  'acquiring_manifest','ready','in_progress','checkpointed','submission_unknown','submitted',
+  'scoring','interpreting_evidence','result_available','interrupted','unavailable'));
+CREATE TABLE app.serving_manifests (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  operation_id uuid NOT NULL, form_id uuid REFERENCES app.content_forms(id),
+  content_class text NOT NULL CHECK(content_class IN ('C0','C1','C2','C3','C4')),
+  approval_role text NOT NULL CHECK(approval_role IN ('draft','quarantine','training','independent_b1','readiness_p4','gold','retired')),
+  key_revision_digests jsonb NOT NULL, allowed_conditions jsonb NOT NULL,
+  learner_safe_payload_digest text NOT NULL CHECK(length(learner_safe_payload_digest)=64),
+  freshness_decision text NOT NULL CHECK(freshness_decision IN ('fresh','exposed_review','not_independent','unavailable')),
+  compared_family_refs jsonb NOT NULL, authorization_version text NOT NULL,
+  content_release_identity text NOT NULL, issued_at timestamptz NOT NULL, expires_at timestamptz NOT NULL,
+  revocation_state text NOT NULL CHECK(revocation_state IN ('active','revoked_before_start','revoked_after_pin')),
+  digest text NOT NULL CHECK(length(digest)=64),
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id), CHECK(expires_at>issued_at)
+);
+CREATE INDEX serving_manifests_scope_expiry_idx ON app.serving_manifests(learner_scope_id,revocation_state,expires_at);
+CREATE TABLE app.serving_manifest_entries (
+  serving_manifest_id uuid NOT NULL, learner_scope_id uuid NOT NULL, ordinal integer NOT NULL CHECK(ordinal>0),
+  content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id),
+  content_item_id uuid REFERENCES app.content_items(id),
+  media_revision_id uuid REFERENCES app.media_revisions(id),
+  PRIMARY KEY(serving_manifest_id,ordinal),
+  FOREIGN KEY(learner_scope_id,serving_manifest_id) REFERENCES app.serving_manifests(learner_scope_id,id),
+  FOREIGN KEY(content_revision_id,content_item_id) REFERENCES app.content_items(content_revision_id,id)
+);
+ALTER TABLE app.attempts ADD COLUMN serving_manifest_id uuid,
+  ADD CONSTRAINT attempts_serving_manifest_fk FOREIGN KEY(learner_scope_id,serving_manifest_id) REFERENCES app.serving_manifests(learner_scope_id,id);
+CREATE TABLE app.attempt_submissions (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  attempt_id uuid NOT NULL, operation_id uuid NOT NULL, serving_manifest_id uuid NOT NULL,
+  checkpoint_sequence bigint NOT NULL CHECK(checkpoint_sequence>=0), canonical_response jsonb NOT NULL,
+  response_digest text NOT NULL CHECK(length(response_digest)=64), conditions jsonb NOT NULL,
+  uncaptured_item_ids jsonb NOT NULL, form_and_key_versions jsonb NOT NULL,
+  committed_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id), UNIQUE(learner_scope_id,attempt_id),
+  FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,serving_manifest_id) REFERENCES app.serving_manifests(learner_scope_id,id)
+);
+CREATE TRIGGER attempt_submissions_immutable BEFORE UPDATE OR DELETE ON app.attempt_submissions FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.objective_outcomes (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  submission_id uuid NOT NULL, attempt_id uuid NOT NULL, algorithm_version text NOT NULL,
+  scoring_policy_ref text NOT NULL, form_and_key_versions jsonb NOT NULL, task_rollups jsonb NOT NULL,
+  raw_official_conversion jsonb,
+  supported_scope jsonb NOT NULL CHECK(jsonb_array_length(supported_scope)>0),
+  structurally_invalid_scope jsonb NOT NULL, uncaptured_scope jsonb NOT NULL,
+  checksum text NOT NULL CHECK(length(checksum)=64),
+  scored_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(learner_scope_id,submission_id), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,submission_id) REFERENCES app.attempt_submissions(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id)
+);
+CREATE TRIGGER objective_outcomes_immutable BEFORE UPDATE OR DELETE ON app.objective_outcomes FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.objective_unit_outcomes (
+  outcome_id uuid NOT NULL, learner_scope_id uuid NOT NULL,
+  content_item_id uuid NOT NULL REFERENCES app.content_items(id),
+  kind text NOT NULL CHECK(kind IN ('correct','incorrect','blank','structurally_invalid')),
+  issue_code text, task_ref text NOT NULL, key_revision_id uuid NOT NULL REFERENCES app.key_revisions(id),
+  PRIMARY KEY(outcome_id,content_item_id),
+  FOREIGN KEY(learner_scope_id,outcome_id) REFERENCES app.objective_outcomes(learner_scope_id,id),
+  CHECK(issue_code IS NULL OR kind='structurally_invalid')
+);
+CREATE TRIGGER objective_unit_outcomes_immutable BEFORE UPDATE OR DELETE ON app.objective_unit_outcomes FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.assistance_events (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  attempt_id uuid NOT NULL, operation_id uuid NOT NULL,
+  kind text NOT NULL CHECK(kind IN ('instruction_example','vocabulary_preview','word_help','phrase_translation','sentence_explanation','full_translation','strategy_cue','evidence_location','answer_narrowing','accessibility_support')),
+  state text NOT NULL CHECK(state IN ('offered','used')),
+  phase text NOT NULL CHECK(phase IN ('before_response','during_response','after_submission','repair')),
+  affected_scope jsonb NOT NULL, answer_bearing text NOT NULL CHECK(answer_bearing IN ('yes','no','uncertain')),
+  tested_capability_effect text NOT NULL CHECK(tested_capability_effect IN ('equivalent','altering','unverified','not_applicable')),
+  policy_version text NOT NULL, occurred_at timestamptz NOT NULL,
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id)
+);
+CREATE TRIGGER assistance_events_immutable BEFORE UPDATE OR DELETE ON app.assistance_events FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.listening_plans (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  attempt_id uuid NOT NULL, serving_manifest_id uuid NOT NULL, form_id uuid REFERENCES app.content_forms(id),
+  contract_major integer NOT NULL CHECK(contract_major=1), plan_version text NOT NULL,
+  target_blueprint_version text NOT NULL,
+  evidence_role text NOT NULL CHECK(evidence_role IN ('learning_practice','repair_check','independent_practice','mini_mock','section_mock','full_mock','booking_confirmation')),
+  progression_profile text NOT NULL CHECK(progression_profile IN ('P0','P1','P2','P3','P4')),
+  preflight_policy_ref text NOT NULL, playback_policy_ref text NOT NULL, timer_policy_ref text NOT NULL,
+  issued_at timestamptz NOT NULL, expires_at timestamptz NOT NULL,
+  revocation_state text NOT NULL CHECK(revocation_state IN ('active','revoked_before_start','revoked_after_pin')),
+  UNIQUE(learner_scope_id,id), UNIQUE(learner_scope_id,attempt_id), CHECK(expires_at>issued_at),
+  FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,serving_manifest_id) REFERENCES app.serving_manifests(learner_scope_id,id)
+);
+CREATE TABLE app.listening_plan_occurrences (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL, listening_plan_id uuid NOT NULL,
+  ordinal integer NOT NULL CHECK(ordinal>0), item_or_part_scope jsonb NOT NULL,
+  candidate_media_revision_ids jsonb NOT NULL CHECK(jsonb_array_length(candidate_media_revision_ids)>0),
+  allowed_play_count integer NOT NULL CHECK(allowed_play_count BETWEEN 1 AND 32),
+  authored_speed_ratio numeric NOT NULL CHECK(authored_speed_ratio>0),
+  seeking_allowed boolean NOT NULL, pause_allowed boolean NOT NULL,
+  transcript_phase text NOT NULL CHECK(transcript_phase IN ('never','after_attempt','after_block')),
+  response_window jsonb NOT NULL, UNIQUE(learner_scope_id,id), UNIQUE(listening_plan_id,ordinal),
+  FOREIGN KEY(learner_scope_id,listening_plan_id) REFERENCES app.listening_plans(learner_scope_id,id)
+);
+CREATE TABLE app.playback_occurrences (
+  occurrence_id uuid NOT NULL, learner_scope_id uuid NOT NULL, play_ordinal integer NOT NULL CHECK(play_ordinal>0),
+  operation_id uuid NOT NULL, idempotency_hash text NOT NULL CHECK(length(idempotency_hash)=64),
+  state text NOT NULL CHECK(state IN ('authorized','started','completed','failed')),
+  media_revision_id uuid NOT NULL REFERENCES app.media_revisions(id),
+  authorized_at timestamptz NOT NULL, started_at timestamptz, completed_at timestamptz,
+  start_position_ms integer NOT NULL DEFAULT 0 CHECK(start_position_ms>=0),
+  observed_end_position_ms integer CHECK(observed_end_position_ms IS NULL OR observed_end_position_ms>=0),
+  visibility_changes integer NOT NULL DEFAULT 0 CHECK(visibility_changes>=0),
+  stall_intervals jsonb NOT NULL DEFAULT '[]'::jsonb, output_or_device_change boolean NOT NULL DEFAULT false,
+  learner_pause_ms integer, technical_pause_ms integer,
+  speed_actual numeric CHECK(speed_actual IS NULL OR speed_actual>0),
+  transcript_opened boolean NOT NULL DEFAULT false, help_used boolean NOT NULL DEFAULT false,
+  fault_reason text, client_sequence bigint NOT NULL CHECK(client_sequence>=0), server_receipt text,
+  PRIMARY KEY(occurrence_id,play_ordinal), UNIQUE(learner_scope_id,operation_id),
+  FOREIGN KEY(learner_scope_id,occurrence_id) REFERENCES app.listening_plan_occurrences(learner_scope_id,id),
+  CHECK(state<>'failed' OR fault_reason IS NOT NULL)
+);
+CREATE TABLE app.media_preflight_receipts (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  listening_plan_id uuid NOT NULL, operation_id uuid NOT NULL, policy_versions jsonb NOT NULL,
+  candidate_media_revisions jsonb NOT NULL, verified_digest_and_length jsonb NOT NULL,
+  decoded_or_loaded jsonb NOT NULL, local_retention_class text NOT NULL,
+  output_probe_confirmed boolean NOT NULL, checkpoint_path_confirmed boolean NOT NULL,
+  environment_change_counter integer NOT NULL DEFAULT 0 CHECK(environment_change_counter>=0),
+  outcome text NOT NULL CHECK(outcome IN ('ready','retryable','unavailable_affected_activity')),
+  issued_at timestamptz NOT NULL, expires_at timestamptz NOT NULL,
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id), CHECK(expires_at>issued_at),
+  FOREIGN KEY(learner_scope_id,listening_plan_id) REFERENCES app.listening_plans(learner_scope_id,id)
+);
+CREATE TABLE app.content_exposure_index (
+  learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  content_family_id uuid NOT NULL REFERENCES app.content_families(id),
+  exposure_class text NOT NULL CHECK(exposure_class IN ('unseen','exposed_family','near_duplicate_family','answer_exposed')),
+  last_trigger text NOT NULL CHECK(last_trigger IN ('learner_visible_stimulus','decisive_information','key_or_rationale','transcript','partner_private_content')),
+  last_content_revision_id uuid REFERENCES app.content_revisions(id),
+  occurrence_count bigint NOT NULL DEFAULT 1 CHECK(occurrence_count>0),
+  first_exposed_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  last_exposed_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  PRIMARY KEY(learner_scope_id,content_family_id)
+);
+`;
+
+const contentImpactSql = `
+CREATE TABLE app.content_impact_assertions (
+  id uuid PRIMARY KEY, incident_id text NOT NULL, owner_context text NOT NULL,
+  actor_ref text NOT NULL, authorization_version text NOT NULL,
+  cause_kind text NOT NULL CHECK(cause_kind IN ('content_defect','media_defect','evaluator_release','rubric_or_prompt_defect','rights_takedown','taxonomy_change','blueprint_change','timer_or_platform_fault','manual_correction')),
+  impact_mode text NOT NULL CHECK(impact_mode IN ('serving_only','visibility_redaction','validity_change','target_mapping_change','reevaluation_required')),
+  requested_validity text CHECK(requested_validity IS NULL OR requested_validity IN ('valid','partially_valid','pending','interrupted','not_counted')),
+  selectors jsonb NOT NULL, declared_cardinality bigint NOT NULL CHECK(declared_cardinality>=0),
+  affected_scope jsonb NOT NULL, unaffected_scope jsonb NOT NULL,
+  reason_registry_id text NOT NULL, reason_code text NOT NULL, evidence_refs jsonb NOT NULL,
+  policy_and_contract_versions jsonb NOT NULL, unknown_scope_superset jsonb, reviewed_policy_override_ref text,
+  effective_at timestamptz NOT NULL, recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  digest text NOT NULL UNIQUE CHECK(length(digest)=64),
+  FOREIGN KEY(reason_registry_id,reason_code) REFERENCES app.reason_codes(registry_id,code),
+  CHECK(impact_mode<>'serving_only' OR requested_validity IS NULL)
+);
+CREATE INDEX content_impact_assertions_incident_idx ON app.content_impact_assertions(incident_id,recorded_at DESC);
+CREATE TRIGGER content_impact_assertions_immutable BEFORE UPDATE OR DELETE ON app.content_impact_assertions FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.content_impact_targets (
+  impact_assertion_id uuid NOT NULL REFERENCES app.content_impact_assertions(id),
+  learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id), observation_id uuid NOT NULL,
+  assertion_id uuid, disposition text NOT NULL CHECK(disposition IN ('resolved','unresolved_superset')),
+  recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  PRIMARY KEY(impact_assertion_id,learner_scope_id,observation_id),
+  FOREIGN KEY(learner_scope_id,observation_id) REFERENCES app.evidence_observations(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,assertion_id) REFERENCES app.validity_assertions(learner_scope_id,id)
+);
+CREATE TRIGGER content_impact_targets_immutable BEFORE UPDATE OR DELETE ON app.content_impact_targets FOR EACH ROW EXECUTE FUNCTION app.reject_immutable_mutation();
+CREATE TABLE app.content_defect_reports (
+  id uuid PRIMARY KEY, learner_scope_id uuid NOT NULL REFERENCES app.learner_scopes(id),
+  operation_id uuid NOT NULL, content_revision_id uuid NOT NULL REFERENCES app.content_revisions(id),
+  content_item_id uuid REFERENCES app.content_items(id), attempt_id uuid,
+  category text NOT NULL CHECK(category IN ('ambiguous_key','contradictory_stimulus','media_defect','accessibility_barrier','rights_concern','other')),
+  note text CHECK(note IS NULL OR length(note)<=400),
+  state text NOT NULL CHECK(state IN ('open','triaged','resolved','dismissed')),
+  resolution_impact_assertion_id uuid REFERENCES app.content_impact_assertions(id),
+  reported_at timestamptz NOT NULL, recorded_at timestamptz NOT NULL DEFAULT transaction_timestamp(),
+  UNIQUE(learner_scope_id,operation_id), UNIQUE(learner_scope_id,id),
+  FOREIGN KEY(learner_scope_id,attempt_id) REFERENCES app.attempts(learner_scope_id,id),
+  FOREIGN KEY(content_revision_id,content_item_id) REFERENCES app.content_items(content_revision_id,id)
+);
+CREATE INDEX content_defect_reports_state_idx ON app.content_defect_reports(state,reported_at DESC);
+-- The job-kind widening is strictly additive: every Stage 03 kind stays accepted.
+DO $do$
+DECLARE target text;
+BEGIN
+  SELECT conname INTO target FROM pg_constraint
+   WHERE conrelid='app.job_resources'::regclass AND contype='c'
+     AND pg_get_constraintdef(oid) LIKE '%rights_reconcile_v1%';
+  IF target IS NULL THEN RAISE EXCEPTION 'job kind constraint not found'; END IF;
+  EXECUTE format('ALTER TABLE app.job_resources DROP CONSTRAINT %I', target);
+END $do$;
+ALTER TABLE app.job_resources ADD CONSTRAINT job_resources_kind_check CHECK(kind IN (
+  'projection_rebuild_v1','outbox_dispatch_v1','rights_reconcile_v1',
+  'content_publication_v1','content_impact_recompute_v1'));
+`;
+
+const stage05CompatibilitySql = `
+INSERT INTO app.schema_revisions(revision,checksum) VALUES ('20260901_054_p05_content_runtime', repeat('0',64))
+  ON CONFLICT (revision) DO NOTHING;
+`;
+
 function checksum(source: string): string {
   return createHash("sha256").update(source).digest("hex");
 }
@@ -373,7 +826,7 @@ function immutableMigration(
       await seed?.(db);
     },
     async down() {
-      throw new Error("Stage 03 migrations are roll-forward only");
+      throw new Error("App migrations are roll-forward only");
     },
   };
 }
@@ -383,11 +836,22 @@ export const migrationSources = {
   "20260825_020_learner_facts_evidence": learnerFactsSql,
   "20260825_030_jobs_audit_rights": jobsAuditRightsSql,
   [foundationRevision]: compatibilitySql,
+  "20260901_051_content_graph": contentGraphSql,
+  "20260901_052_attempt_runtime": attemptRuntimeSql,
+  "20260901_053_content_impact": contentImpactSql,
+  [stage05Revision]: stage05CompatibilitySql,
 } as const;
 
 export const migrationChecksums: Readonly<Record<string, string>> = Object.fromEntries(
   Object.entries(migrationSources).map(([name, source]) => [name, checksum(source)]),
 );
+
+async function upsertSchemaRevisions(db: Kysely<unknown>): Promise<void> {
+  for (const [revision, digest] of Object.entries(migrationChecksums)) {
+    await sql`INSERT INTO app.schema_revisions(revision,checksum) VALUES (${revision},${digest})
+      ON CONFLICT (revision) DO UPDATE SET checksum=EXCLUDED.checksum`.execute(db);
+  }
+}
 
 export const foundationMigrations: Readonly<Record<string, Migration>> = {
   "20260825_010_identity_release": immutableMigration(identityAndReleaseSql, async (db) => {
@@ -405,9 +869,31 @@ export const foundationMigrations: Readonly<Record<string, Migration>> = {
   "20260825_020_learner_facts_evidence": immutableMigration(learnerFactsSql),
   "20260825_030_jobs_audit_rights": immutableMigration(jobsAuditRightsSql),
   [foundationRevision]: immutableMigration(compatibilitySql, async (db) => {
-    for (const [revision, digest] of Object.entries(migrationChecksums)) {
-      await sql`INSERT INTO app.schema_revisions(revision,checksum) VALUES (${revision},${digest})
-        ON CONFLICT (revision) DO UPDATE SET checksum=EXCLUDED.checksum`.execute(db);
+    await upsertSchemaRevisions(db);
+  }),
+  // The `reason-registry/v1.1` release and its codes land HERE, not in the terminal source: the
+  // `20260901_052` rewrite appends a validity assertion carrying the composite FK to
+  // `app.reason_codes(registry_id,code)`, so the codes must already exist when 052 runs.
+  "20260901_051_content_graph": immutableMigration(contentGraphSql, async (db) => {
+    const digest = checksum(
+      JSON.stringify({ release: reasonRegistryRelease, codes: reasonRegistryV1 }),
+    );
+    await sql`INSERT INTO app.reason_registry_releases(id,major,minor,digest)
+      VALUES (${reasonRegistryRelease.id},${reasonRegistryRelease.major},${reasonRegistryRelease.minor},${digest})
+      ON CONFLICT (id) DO NOTHING`.execute(db);
+    for (const reason of reasonRegistryV1) {
+      await sql`INSERT INTO app.reason_codes(registry_id,code,family,owner,learner_fault,template_key,retention_class)
+        VALUES (${reasonRegistryRelease.id},${reason.code},${reason.code.split(".")[0]},${reason.owner},${reason.learnerFault},${reason.templateKey},${reason.retentionClass})
+        ON CONFLICT (registry_id,code) DO NOTHING`.execute(db);
     }
+  }),
+  "20260901_052_attempt_runtime": immutableMigration(attemptRuntimeSql),
+  "20260901_053_content_impact": immutableMigration(contentImpactSql),
+  // Terminal compatibility source. It creates no relation and inserts no reason code; it records the
+  // Stage 05 revision and re-upserts the WHOLE checksum map, because an existing Stage 03 database
+  // never re-runs the P03 compatibility migration and `verifyMigrationChecksums` demands exact set
+  // equality between `app.schema_revisions` and `migrationChecksums`.
+  [stage05Revision]: immutableMigration(stage05CompatibilitySql, async (db) => {
+    await upsertSchemaRevisions(db);
   }),
 };

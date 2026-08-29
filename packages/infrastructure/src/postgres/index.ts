@@ -3,7 +3,7 @@ import { type Migration, type MigrationProvider, Migrator } from "kysely/migrati
 import { Pool, type PoolConfig } from "pg";
 import { PgBoss } from "pg-boss";
 import { foundationJobPolicy, foundationQueues } from "../jobs/index.js";
-import { foundationMigrations, foundationRevision, migrationChecksums } from "./migrations.js";
+import { foundationMigrations, migrationChecksums } from "./migrations.js";
 
 interface EmptyDatabase {
   readonly _stage01NoProductTables: never;
@@ -137,7 +137,12 @@ export async function checkSchemaCompatibility(
   maximumRevision: string,
 ): Promise<SchemaCompatibility> {
   const revision = await observedRevision(pool);
-  if (revision === foundationRevision) {
+  const revisions = ["baseline", ...Object.keys(foundationMigrations)];
+  // Verify at EVERY known revision, not only at the Stage 03 terminal one. Gating on
+  // `revision === foundationRevision` made checksum drift invisible in readiness the moment a
+  // later revision became the observed one, which is a silent loss of the integrity check rather
+  // than a deliberate narrowing. This is a strengthening of an existing check.
+  if (revisions.includes(revision)) {
     try {
       await verifyMigrationChecksums(pool);
     } catch {
@@ -149,7 +154,6 @@ export async function checkSchemaCompatibility(
       };
     }
   }
-  const revisions = ["baseline", ...Object.keys(foundationMigrations)];
   const observedIndex = revisions.indexOf(revision);
   const minimumIndex = revisions.indexOf(minimumRevision);
   const maximumIndex = revisions.indexOf(maximumRevision);
@@ -166,7 +170,7 @@ export async function checkSchemaCompatibility(
   };
 }
 
-export { foundationRevision, migrationChecksums } from "./migrations.js";
+export { foundationRevision, migrationChecksums, stage05Revision } from "./migrations.js";
 
 export async function checkDatabaseReadiness(
   pool: Pool,

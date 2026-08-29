@@ -107,8 +107,16 @@ const serverEnvironmentSchema = z
     BESTEHEN_APP_ENV: z.enum(["local", "test", "preview", "staging", "production"]),
     BESTEHEN_RELEASE_COMMIT: z.string().min(1).max(64),
     BESTEHEN_RELEASE_DIRTY: strictBoolean,
+    // The window is an inclusive ordinal range over `Object.keys(foundationMigrations)`. The minimum
+    // stays at the Stage 03 revision deliberately: that is what keeps a migrate-then-deploy rollout
+    // and a deploy-rollback-without-database-rollback both legal (plan §8.1, §15.1). Narrowing it to
+    // the Stage 05 revision would make the previous image unready the instant the migration ran.
     BESTEHEN_SCHEMA_MIN_REVISION: z.string().min(1).max(128).default("20260825_040_p03_foundation"),
-    BESTEHEN_SCHEMA_MAX_REVISION: z.string().min(1).max(128).default("20260825_040_p03_foundation"),
+    BESTEHEN_SCHEMA_MAX_REVISION: z
+      .string()
+      .min(1)
+      .max(128)
+      .default("20260901_054_p05_content_runtime"),
     BESTEHEN_WEB_PORT: positivePort.default(3000),
     BESTEHEN_WORKER_PORT: positivePort.default(3001),
     BESTEHEN_SHUTDOWN_GRACE_MS: z.coerce.number().int().min(100).max(60_000).default(5000),
