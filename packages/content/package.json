@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@bestehen/contracts": "workspace:*",
-    "@bestehen/domain": "workspace:*"
+    "@bestehen/domain": "workspace:*",
+    "zod": "4.4.3"
   }
 }

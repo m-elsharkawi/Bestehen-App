@@ -1,0 +1,1565 @@
+{
+  "packagingSchema": "corpus-bundle-packaging/v1",
+  "index": {
+    "indexSchema": "corpus-publication-index/v1",
+    "publisherId": "corpus-publisher-fixture",
+    "publicationSequence": 41,
+    "generatedAt": "2026-06-01T00:00:00.000Z",
+    "signingKeyId": "corpus-publisher-2026-06",
+    "entries": [
+      {
+        "bundleId": "corpus-b1-written-objective-legacy",
+        "bundleRevision": 3,
+        "contractVersion": {
+          "major": 1,
+          "minor": 0,
+          "patch": 0
+        },
+        "capabilityScope": ["exam_structure_release"],
+        "manifestDigest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "immutableLocation": "corpus://bundles/legacy/3",
+        "publishedAt": "2026-01-01T00:00:00.000Z",
+        "effectiveAt": "2026-01-01T00:00:00.000Z",
+        "supersedes": [],
+        "impactClass": null
+      },
+      {
+        "bundleId": "corpus-b1-written-objective",
+        "bundleRevision": 1,
+        "contractVersion": {
+          "major": 1,
+          "minor": 0,
+          "patch": 0
+        },
+        "capabilityScope": [
+          "exam_structure_release",
+          "skill_graph_release",
+          "generation_blueprint_release",
+          "demand_signal_release"
+        ],
+        "manifestDigest": "01b7eda119a758c1c6d398c757c2bf7e583fc1d15e2b6960222ac81557bba9ae",
+        "immutableLocation": "corpus://bundles/corpus-b1-written-objective/1",
+        "publishedAt": "2026-06-01T00:00:00.000Z",
+        "effectiveAt": "2026-06-01T00:00:00.000Z",
+        "supersedes": [],
+        "impactClass": null
+      }
+    ]
+  },
+  "manifest": {
+    "bundleId": "corpus-b1-written-objective",
+    "bundleRevision": 1,
+    "packagingSchema": "corpus-bundle-packaging/v1",
+    "contractVersion": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    },
+    "capabilityScope": [
+      "exam_structure_release",
+      "skill_graph_release",
+      "generation_blueprint_release",
+      "demand_signal_release"
+    ],
+    "publishedAt": "2026-06-01T00:00:00.000Z",
+    "effectiveAt": "2026-06-01T00:00:00.000Z",
+    "supersedes": [],
+    "state": "current",
+    "requiredAppCapabilities": [
+      "exam_structure_release/v1",
+      "skill_graph_release/v1",
+      "generation_blueprint_release/v1",
+      "demand_signal_release/v1"
+    ],
+    "taxonomyRelease": "corpus-taxonomy/2026.06",
+    "targetProfileRelease": "corpus-target-profile/2026.06",
+    "familyPartitions": [
+      {
+        "family": "skill_graph_release",
+        "payloadSchema": "skill_graph_release/v1",
+        "objectDigest": "0429f19e0b758eba47f5817a1ee8f206223918729b870019c13d545e35bbe6d6",
+        "byteSize": 7976,
+        "recordCount": 8
+      },
+      {
+        "family": "exam_structure_release",
+        "payloadSchema": "exam_structure_release/v1",
+        "objectDigest": "56cc3d931c06f7f00aa7bbd436e319a2125367152d99b439b487b9b360d23258",
+        "byteSize": 9111,
+        "recordCount": 8
+      },
+      {
+        "family": "generation_blueprint_release",
+        "payloadSchema": "generation_blueprint_release/v1",
+        "objectDigest": "9e4eceb965eb5c05e1618f751d4a76f0d03555bea8a0285978876affb2f1be3d",
+        "byteSize": 11991,
+        "recordCount": 8
+      },
+      {
+        "family": "demand_signal_release",
+        "payloadSchema": "demand_signal_release/v1",
+        "objectDigest": "d96b3fc2abbaf1ade24b292dd2a4dd880c7ac358a0c83d865f706fc6c0f1a35e",
+        "byteSize": 9054,
+        "recordCount": 8
+      }
+    ],
+    "exactAssetPartitions": [],
+    "impactManifestRef": null,
+    "limitations": [
+      "Aggregate priors are exploratory only and never drive learner priority or Readiness.",
+      "No exact source component partition is published in this bundle."
+    ],
+    "signingKeyId": "corpus-publisher-2026-06",
+    "signature": null
+  },
+  "objects": {
+    "0429f19e0b758eba47f5817a1ee8f206223918729b870019c13d545e35bbe6d6": {
+      "payloadSchema": "skill_graph_release/v1",
+      "release": "corpus-taxonomy/2026.06",
+      "records": [
+        {
+          "id": "tax.reading.gist",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Global reading for communicative purpose",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        },
+        {
+          "id": "tax.reading.detail",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Locating explicit detail in a short text",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        },
+        {
+          "id": "tax.reading.constraint_match",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Matching a situation to a notice constraint set",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        },
+        {
+          "id": "tax.language.morphosyntax",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Contextual morphosyntactic choice",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        },
+        {
+          "id": "tax.language.lexical_collocation",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Lexical and collocational choice in connected text",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        },
+        {
+          "id": "tax.listening.announcement_gist",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Gist of a short spoken announcement",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        },
+        {
+          "id": "tax.listening.dialogue_detail",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Detail in an interview or conversation",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        },
+        {
+          "id": "tax.listening.functional_intent",
+          "revision": 1,
+          "family": "skill_graph_release",
+          "label": "Speaker intent in a short functional text",
+          "parentRef": null,
+          "relationships": [],
+          "aliases": [],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Curated Corpus skill-graph node; no source expression.",
+          "successorRefs": []
+        }
+      ]
+    },
+    "56cc3d931c06f7f00aa7bbd436e319a2125367152d99b439b487b9b360d23258": {
+      "payloadSchema": "exam_structure_release/v1",
+      "release": "corpus-target-profile/2026.06",
+      "records": [
+        {
+          "id": "task.R1HeadingMatching",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "R1HeadingMatching",
+          "responseMechanic": "match_select_then_place",
+          "respondablePositions": 5,
+          "offeredChoices": 7,
+          "playbackOpportunities": null,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.reading.gist"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        },
+        {
+          "id": "task.R2DetailedSelect",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "R2DetailedSelect",
+          "responseMechanic": "single_select",
+          "respondablePositions": 5,
+          "offeredChoices": 3,
+          "playbackOpportunities": null,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.reading.detail"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        },
+        {
+          "id": "task.R3SituationNoticeMatching",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "R3SituationNoticeMatching",
+          "responseMechanic": "match_select_then_place",
+          "respondablePositions": 10,
+          "offeredChoices": 12,
+          "playbackOpportunities": null,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.reading.constraint_match"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        },
+        {
+          "id": "task.SB1ContextualGrammarCloze",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "SB1ContextualGrammarCloze",
+          "responseMechanic": "cloze_local_options",
+          "respondablePositions": 6,
+          "offeredChoices": 3,
+          "playbackOpportunities": null,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.language.morphosyntax"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        },
+        {
+          "id": "task.SB2SharedBankLexicalCloze",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "SB2SharedBankLexicalCloze",
+          "responseMechanic": "cloze_shared_bank",
+          "respondablePositions": 6,
+          "offeredChoices": 10,
+          "playbackOpportunities": null,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.language.lexical_collocation"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        },
+        {
+          "id": "task.H1ShortAnnouncements",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "H1ShortAnnouncements",
+          "responseMechanic": "single_select",
+          "respondablePositions": 5,
+          "offeredChoices": 3,
+          "playbackOpportunities": 1,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.listening.announcement_gist"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        },
+        {
+          "id": "task.H2ConversationInterview",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "H2ConversationInterview",
+          "responseMechanic": "single_select",
+          "respondablePositions": 5,
+          "offeredChoices": 3,
+          "playbackOpportunities": 2,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.listening.dialogue_detail"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        },
+        {
+          "id": "task.H3ShortFunctionalTexts",
+          "revision": 1,
+          "family": "exam_structure_release",
+          "taskFamilyKind": "H3ShortFunctionalTexts",
+          "responseMechanic": "single_select",
+          "respondablePositions": 5,
+          "offeredChoices": 3,
+          "playbackOpportunities": 2,
+          "navigationPolicy": "free_within_block",
+          "taxonomyNodeRefs": ["tax.listening.functional_intent"],
+          "lifecycle": "current",
+          "useEligibility": "eligible",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Structure semantics only; no provider source text.",
+          "successorRefs": []
+        }
+      ]
+    },
+    "9e4eceb965eb5c05e1618f751d4a76f0d03555bea8a0285978876affb2f1be3d": {
+      "payloadSchema": "generation_blueprint_release/v1",
+      "release": "corpus-blueprint/2026.06",
+      "records": [
+        {
+          "id": "blueprint.R1HeadingMatching",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "R1HeadingMatching",
+          "testedCapabilityRef": "tax.reading.gist",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "80_to_400_words_written",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.reading.gist"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        },
+        {
+          "id": "blueprint.R2DetailedSelect",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "R2DetailedSelect",
+          "testedCapabilityRef": "tax.reading.detail",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "80_to_400_words_written",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.reading.detail"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        },
+        {
+          "id": "blueprint.R3SituationNoticeMatching",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "R3SituationNoticeMatching",
+          "testedCapabilityRef": "tax.reading.constraint_match",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "80_to_400_words_written",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.reading.constraint_match"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        },
+        {
+          "id": "blueprint.SB1ContextualGrammarCloze",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "SB1ContextualGrammarCloze",
+          "testedCapabilityRef": "tax.language.morphosyntax",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "80_to_400_words_written",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.language.morphosyntax"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        },
+        {
+          "id": "blueprint.SB2SharedBankLexicalCloze",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "SB2SharedBankLexicalCloze",
+          "testedCapabilityRef": "tax.language.lexical_collocation",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "80_to_400_words_written",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.language.lexical_collocation"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        },
+        {
+          "id": "blueprint.H1ShortAnnouncements",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "H1ShortAnnouncements",
+          "testedCapabilityRef": "tax.listening.announcement_gist",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "60_to_140_words_spoken",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.listening.announcement_gist"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        },
+        {
+          "id": "blueprint.H2ConversationInterview",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "H2ConversationInterview",
+          "testedCapabilityRef": "tax.listening.dialogue_detail",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "60_to_140_words_spoken",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.listening.dialogue_detail"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        },
+        {
+          "id": "blueprint.H3ShortFunctionalTexts",
+          "revision": 1,
+          "family": "generation_blueprint_release",
+          "taskFamilyKind": "H3ShortFunctionalTexts",
+          "testedCapabilityRef": "tax.listening.functional_intent",
+          "contentConstraints": {
+            "register": "neutral_standard_german",
+            "lengthBand": "60_to_140_words_spoken",
+            "forbiddenTopics": ["medical_advice", "legal_advice", "named_private_individuals"]
+          },
+          "distractorConstraints": {
+            "failureFamilies": [
+              "surface_word_match",
+              "partial_constraint_match",
+              "plausible_but_unsupported"
+            ],
+            "minimumDecisiveMismatch": 1
+          },
+          "groundingManifest": "non-reconstructive-abstraction/v1",
+          "reconstructive": false,
+          "taxonomyNodeRefs": ["tax.listening.functional_intent"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "supported",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Non-reconstructive mechanics abstraction; no source expression is recoverable.",
+          "successorRefs": []
+        }
+      ]
+    },
+    "d96b3fc2abbaf1ade24b292dd2a4dd880c7ac358a0c83d865f706fc6c0f1a35e": {
+      "payloadSchema": "demand_signal_release/v1",
+      "release": "corpus-demand/2026.06",
+      "records": [
+        {
+          "id": "demand.tax.reading.gist",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.reading.gist"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        },
+        {
+          "id": "demand.tax.reading.detail",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.reading.detail"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        },
+        {
+          "id": "demand.tax.reading.constraint_match",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.reading.constraint_match"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        },
+        {
+          "id": "demand.tax.language.morphosyntax",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.language.morphosyntax"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        },
+        {
+          "id": "demand.tax.language.lexical_collocation",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.language.lexical_collocation"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        },
+        {
+          "id": "demand.tax.listening.announcement_gist",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.listening.announcement_gist"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        },
+        {
+          "id": "demand.tax.listening.dialogue_detail",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.listening.dialogue_detail"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        },
+        {
+          "id": "demand.tax.listening.functional_intent",
+          "revision": 1,
+          "family": "demand_signal_release",
+          "cefrBand": "B1",
+          "demandAxes": {
+            "lexical": "moderate",
+            "syntactic": "moderate",
+            "processing": "moderate"
+          },
+          "relevanceBand": "core",
+          "uncertainty": "broad_band_only",
+          "taxonomyNodeRefs": ["tax.listening.functional_intent"],
+          "lifecycle": "current",
+          "useEligibility": "eligible_with_limits",
+          "confidence": {
+            "dimensions": ["structure", "currentness"],
+            "tier": "exploratory",
+            "localScope": "b1_written_objective"
+          },
+          "currentness": {
+            "targetProfileRef": "corpus-target-profile/2026.06",
+            "status": "verified",
+            "effectiveFrom": "2026-06-01T00:00:00.000Z",
+            "lastRecomputedAt": "2026-06-01T00:00:00.000Z",
+            "limitations": []
+          },
+          "evidenceSupport": {
+            "sufficiency": "sufficient",
+            "sourceBreadth": 3,
+            "independentSupport": true,
+            "providerConcentration": "moderate",
+            "sourceFamilyConcentration": "moderate",
+            "analyticalIndependenceRule": "distinct-source-families",
+            "limitations": []
+          },
+          "versions": {
+            "contract": "1.0.0",
+            "taxonomy": "corpus-taxonomy/2026.06",
+            "targetProfile": "corpus-target-profile/2026.06"
+          },
+          "provenanceSummary": "Task-side selection envelope only; never a learner likelihood.",
+          "successorRefs": []
+        }
+      ]
+    }
+  }
+}

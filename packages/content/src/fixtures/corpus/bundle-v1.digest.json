@@ -1,0 +1,12 @@
+{
+  "canonicalizationVersion": "canonical-json/v1",
+  "bundleId": "corpus-b1-written-objective",
+  "bundleRevision": 1,
+  "manifestDigest": "01b7eda119a758c1c6d398c757c2bf7e583fc1d15e2b6960222ac81557bba9ae",
+  "objectDigests": {
+    "skill_graph_release": "0429f19e0b758eba47f5817a1ee8f206223918729b870019c13d545e35bbe6d6",
+    "exam_structure_release": "56cc3d931c06f7f00aa7bbd436e319a2125367152d99b439b487b9b360d23258",
+    "generation_blueprint_release": "9e4eceb965eb5c05e1618f751d4a76f0d03555bea8a0285978876affb2f1be3d",
+    "demand_signal_release": "d96b3fc2abbaf1ade24b292dd2a4dd880c7ac358a0c83d865f706fc6c0f1a35e"
+  }
+}
