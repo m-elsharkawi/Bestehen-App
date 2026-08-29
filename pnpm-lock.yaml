@@ -75,6 +75,9 @@ importers:
       '@bestehen/configuration':
         specifier: workspace:*
         version: link:../../packages/configuration
+      '@bestehen/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@bestehen/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

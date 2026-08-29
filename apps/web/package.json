@@ -11,6 +11,7 @@
   "dependencies": {
     "@bestehen/application": "workspace:*",
     "@bestehen/configuration": "workspace:*",
+    "@bestehen/content": "workspace:*",
     "@bestehen/contracts": "workspace:*",
     "@bestehen/design-system": "workspace:*",
     "@bestehen/domain": "workspace:*",
