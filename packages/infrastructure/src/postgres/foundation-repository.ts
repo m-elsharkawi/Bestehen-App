@@ -74,7 +74,7 @@ function operationReceiptFromRow(row: Record<string, unknown>): OperationReceipt
   };
 }
 
-async function inTransaction<T>(
+export async function inTransaction<T>(
   pool: Pool,
   operation: (client: PoolClient) => Promise<T>,
 ): Promise<T> {
@@ -92,7 +92,11 @@ async function inTransaction<T>(
   }
 }
 
-async function lockActiveLearnerScope(
+/**
+ * Exported so the content repository shares this exact predicate. A second copy of the tombstone
+ * and liveness check would be a security-relevant duplication free to drift.
+ */
+export async function lockActiveLearnerScope(
   client: PoolClient,
   learnerScopeId: LearnerScopeId,
 ): Promise<{ readonly nextSequence: number } | undefined> {

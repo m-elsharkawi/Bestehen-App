@@ -171,7 +171,14 @@ export async function checkSchemaCompatibility(
   };
 }
 
-export { foundationRevision, migrationChecksums, stage05Revision } from "./migrations.js";
+export {
+  foundationRevision,
+  migrationChecksums,
+  reasonRegistryV1Frozen,
+  stage05Revision,
+} from "./migrations.js";
+export * from "./content-repository.js";
+export * from "./foundation-repository.js";
 
 export async function checkDatabaseReadiness(
   pool: Pool,
