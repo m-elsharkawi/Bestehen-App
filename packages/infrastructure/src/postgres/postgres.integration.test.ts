@@ -15,6 +15,13 @@ import { AesGcmSealer, HmacDigest } from "../crypto.js";
 import { PostgresOidcTransactionStore } from "../identity/index.js";
 import { foundationJobPolicy, jobPolicyFor } from "../jobs/index.js";
 import {
+  type AttemptCreateInput,
+  type ObjectiveSubmissionInput,
+  type ObjectiveUnitOutcomeInput,
+  PostgresAttemptRepository,
+  projectionRebuildIdentity,
+} from "./attempt-repository.js";
+import {
   type ApprovalDecisionInput,
   PostgresContentRepository,
   type ServingManifestIssueRequest,
@@ -2196,6 +2203,814 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 content repository", () => {
       expect(
         await repository.appendImpactAssertion({ ...replayInput, digest: hex("something else") }),
       ).toEqual({ ok: false, error: "idempotency_conflict" });
+
+      await pool.end();
+    });
+  });
+});
+
+/* ------------------------------------------------------------------------------------------------
+ * Attempt runtime and the evidence-proposal transaction (T8)
+ *
+ * `P05-IDEMPOTENCY-001`, `P05-EVIDENCE-001` and `P05-SCHEMA-001`, in the halves that need real
+ * constraints, a real transaction boundary and the real widened partition CHECK.
+ * ---------------------------------------------------------------------------------------------- */
+
+interface AttemptWorld {
+  readonly chain: SeededChain;
+  readonly scope: AuthorizedScope;
+  readonly servingManifestId: string;
+  readonly itemIds: readonly string[];
+  readonly keyRevisionIds: readonly string[];
+}
+
+/** Two scorable items with pinned keys, and an active lease that serves them. */
+async function seedAttemptWorld(pool: Pool): Promise<AttemptWorld> {
+  const chain = await seedLearnerChain(pool);
+  await makeServable(pool, chain);
+  const itemIds = [randomUUID(), randomUUID()];
+  const keyRevisionIds = [randomUUID(), randomUUID()];
+  for (const [index, itemId] of itemIds.entries()) {
+    await pool.query(
+      `INSERT INTO app.content_items(id,content_revision_id,ordinal,response_kind,binding,scorable)
+       VALUES($1,$2,$3,'single_select',$4,'{"scored":true}')`,
+      [itemId, chain.contentRevisionId, index + 1, JSON.stringify({ kind: "item", itemId })],
+    );
+    await pool.query(
+      `INSERT INTO app.key_revisions(id,content_revision_id,content_item_id,accepted_response_set,
+         response_cardinality_min,response_cardinality_max,scoring_policy_ref,decisive_evidence,
+         distractor_rationale,intended_cause_mapping,independent_validation,digest)
+       VALUES($1,$2,$3,$4,1,1,'scoring-policy/v1',$5,$6,'{}','{}',$7)`,
+      [
+        keyRevisionIds[index],
+        chain.contentRevisionId,
+        itemId,
+        JSON.stringify([{ kind: "option", optionId: `option-${index}` }]),
+        JSON.stringify({ safeRevealSpanOrRelation: `paragraph ${index + 1}` }),
+        JSON.stringify({ whyPlausible: `shares the surface form of item ${index + 1}` }),
+        hex(`key:${keyRevisionIds[index]}`),
+      ],
+    );
+  }
+  const servingManifestId = await insertServingManifest(pool, chain, itemIds);
+  return { chain, scope: scopeOf(chain), servingManifestId, itemIds, keyRevisionIds };
+}
+
+async function insertServingManifest(
+  pool: Pool,
+  chain: SeededChain,
+  itemIds: readonly string[],
+): Promise<string> {
+  const servingManifestId = randomUUID();
+  await pool.query(
+    `INSERT INTO app.serving_manifests(id,learner_scope_id,operation_id,content_class,approval_role,
+       key_revision_digests,allowed_conditions,learner_safe_payload_digest,freshness_decision,
+       compared_family_refs,authorization_version,content_release_identity,issued_at,expires_at,
+       revocation_state,digest)
+     VALUES($1,$2,$3,'C2','independent_b1',$4,'{"navigation":"linear"}',$5,'fresh',$6,
+       'authorization/v1',$7,$8,$9,'active',$10)`,
+    [
+      servingManifestId,
+      chain.learnerScopeId,
+      randomUUID(),
+      JSON.stringify([hex(`key-digest:${servingManifestId}`)]),
+      hex(`payload:${servingManifestId}`),
+      JSON.stringify([chain.contentFamilyId]),
+      releaseIdentity,
+      issuedAt,
+      expiresAt,
+      hex(`manifest:${servingManifestId}`),
+    ],
+  );
+  for (const [index, itemId] of itemIds.entries()) {
+    await pool.query(
+      `INSERT INTO app.serving_manifest_entries(serving_manifest_id,learner_scope_id,ordinal,
+         content_revision_id,content_item_id)
+       VALUES($1,$2,$3,$4,$5)`,
+      [servingManifestId, chain.learnerScopeId, index + 1, chain.contentRevisionId, itemId],
+    );
+  }
+  return servingManifestId;
+}
+
+function createFor(world: AttemptWorld, overrides: Partial<AttemptCreateInput> = {}) {
+  return {
+    operationId: appId<"operation">(randomUUID()),
+    attemptId: appId<"attempt">(randomUUID()),
+    servingManifestId: appId<"serving_manifest">(world.servingManifestId),
+    sessionId: appId<"session">(world.chain.sessionId),
+    activityOccurrenceId: appId<"activity_occurrence">(world.chain.occurrenceId),
+    episodeId: appId<"episode">(world.chain.episodeId),
+    contentRevisionId: appId<"content_revision">(world.chain.contentRevisionId),
+    modality: "reading" as const,
+    directLane: "written",
+    payloadDigest: hex(`create:${world.servingManifestId}`),
+    occurredAt: issuedAt,
+    ...overrides,
+  } satisfies AttemptCreateInput;
+}
+
+/** Creates an attempt and puts it on the `in_progress` arrow, ready to submit. */
+async function startAttempt(
+  repository: PostgresAttemptRepository,
+  world: AttemptWorld,
+): Promise<string> {
+  const input = createFor(world);
+  const created = await repository.createAttempt(world.scope, input);
+  expect(created.ok).toBe(true);
+  const started = await repository.transitionAttempt(world.scope, {
+    attemptId: input.attemptId,
+    to: "in_progress",
+    expectedVersion: 1,
+  });
+  expect(started.ok).toBe(true);
+  return input.attemptId;
+}
+
+function submissionFor(
+  world: AttemptWorld,
+  attemptId: string,
+  overrides: Partial<ObjectiveSubmissionInput> = {},
+): ObjectiveSubmissionInput {
+  const submissionId = randomUUID();
+  const itemAlpha = world.itemIds[0] as string;
+  const itemBeta = world.itemIds[1] as string;
+  return {
+    operationId: appId<"operation">(randomUUID()),
+    submissionId: appId<"submission">(submissionId),
+    attemptId: appId<"attempt">(attemptId),
+    servingManifestId: appId<"serving_manifest">(world.servingManifestId),
+    checkpointSequence: 2,
+    canonicalResponse: { selections: { [itemAlpha]: "option-0", [itemBeta]: "option-1" } },
+    responseDigest: hex(`response:${submissionId}`),
+    conditions: {
+      nonLearnerFaultScope: [],
+      continuityLostScope: [],
+      timerIntegrity: "in_context_trusted",
+      independenceClass: "first_attempt",
+    },
+    uncapturedItemIds: [],
+    outcome: {
+      algorithmVersion: "objective-scoring/v1",
+      scoringPolicyRef: "scoring-policy/v1",
+      formAndKeyVersions: { contentReleaseIdentity: releaseIdentity },
+      taskRollups: [{ taskRef: "task-1", scoredUnits: 2, correctUnits: 1 }],
+      supportedScope: [itemAlpha, itemBeta],
+      structurallyInvalidScope: [],
+      uncapturedScope: [],
+      checksum: hex(`outcome:${submissionId}`),
+      unitOutcomes: [
+        {
+          contentItemId: appId<"content_item">(itemAlpha),
+          kind: "correct",
+          taskRef: "task-1",
+          keyRevisionId: appId<"key_revision">(world.keyRevisionIds[0] as string),
+        },
+        {
+          contentItemId: appId<"content_item">(itemBeta),
+          kind: "incorrect",
+          taskRef: "task-1",
+          keyRevisionId: appId<"key_revision">(world.keyRevisionIds[1] as string),
+        },
+      ],
+    },
+    occasion: {
+      occasionId: appId<"independent_occasion">(randomUUID()),
+      independenceClass: "first_attempt",
+      familyRelation: "same-family",
+      policyRelease: "independence/v1",
+    },
+    observationId: appId<"evidence_observation">(randomUUID()),
+    assertionId: appId<"validity_assertion">(randomUUID()),
+    contentStatus: "published",
+    facts: [
+      {
+        kind: "condition",
+        factId: appId<"response_fact">(randomUUID()),
+        attemptId: appId<"attempt">(attemptId),
+        factType: "attempt.conditions",
+        envelope: { timerIntegrity: "in_context_trusted" },
+        digest: hex(`condition:${submissionId}`),
+      },
+      {
+        kind: "exposure",
+        factId: appId<"response_fact">(randomUUID()),
+        attemptId: appId<"attempt">(attemptId),
+        factType: "attempt.exposure",
+        envelope: { exposureClass: "unseen" },
+        digest: hex(`exposure:${submissionId}`),
+      },
+    ],
+    projectionRebuild: {
+      jobId: appId<"job">(randomUUID()),
+      payloadDigest: hex(`rebuild:${submissionId}`),
+      deadline: expiresAt,
+      maximumAttempts: 5,
+    },
+    ...overrides,
+  };
+}
+
+/** Indexes into the fixture's unit outcomes without an assertion that erases the type. */
+function unitAt(input: ObjectiveSubmissionInput, index: number): ObjectiveUnitOutcomeInput {
+  const unit = input.outcome.unitOutcomes[index];
+  if (!unit) throw new Error(`no unit outcome at index ${index}`);
+  return unit;
+}
+
+async function countRows(pool: Pool, relation: string, learnerScopeId: string): Promise<number> {
+  const result = await pool.query<{ count: string }>(
+    `SELECT count(*)::text AS count FROM ${relation} WHERE learner_scope_id=$1`,
+    [learnerScopeId],
+  );
+  return Number(result.rows[0]?.count ?? "-1");
+}
+
+const evidenceRelations = [
+  "app.attempt_submissions",
+  "app.objective_outcomes",
+  "app.objective_unit_outcomes",
+  "app.evidence_observations",
+  "app.validity_assertions",
+  "app.condition_facts",
+  "app.exposure_facts",
+  "app.job_resources",
+] as const;
+
+describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 attempt repository", () => {
+  it("writes the whole evidence proposal in one transaction on the pinned engine", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const engine = await pool.query<{ version: string }>("SELECT version() AS version");
+      expect(engine.rows[0]?.version).toMatch(/^PostgreSQL 18\.6\b/);
+
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const attemptId = await startAttempt(repository, world);
+      const input = submissionFor(world, attemptId);
+
+      const committed = await repository.submitObjectiveAttempt(world.scope, input);
+      expect(committed.ok).toBe(true);
+      if (!committed.ok) return;
+      expect(committed.value.disposition).toBe("created");
+      const submission = committed.value.submission;
+
+      const stored = await pool.query(
+        `SELECT s.id AS submission_id,s.checkpoint_sequence,o.id AS outcome_id,o.scored_at,
+                o.supported_scope,o.uncaptured_scope,o.checksum,
+                e.id AS observation_id,e.supported_scope AS observation_scope,e.learner_sequence,
+                e.current_assertion_id,v.state,v.affected_scope,v.unaffected_scope,
+                v.reason_code,v.reason_registry_id,a.state AS attempt_state
+           FROM app.attempt_submissions s
+           JOIN app.objective_outcomes o ON o.submission_id=s.id
+           JOIN app.evidence_observations e ON e.attempt_id=s.attempt_id
+           JOIN app.validity_assertions v ON v.id=e.current_assertion_id
+           JOIN app.attempts a ON a.id=s.attempt_id
+          WHERE s.learner_scope_id=$1`,
+        [world.chain.learnerScopeId],
+      );
+      expect(stored.rows).toHaveLength(1);
+      const row = stored.rows[0] as Record<string, unknown>;
+      expect(row.submission_id).toBe(input.submissionId);
+      expect(row.outcome_id).toBe(submission.outcomeId);
+      // Identity and the instant are minted at the write site, not by the pure scorer.
+      expect(row.outcome_id).not.toBe(input.submissionId);
+      expect(new Date(String(row.scored_at)).getTime()).toBe(submission.scoredAt.getTime());
+      expect(row.state).toBe("valid");
+      expect(row.reason_registry_id).toBe(reasonRegistryRelease.id);
+      expect(row.observation_scope).toEqual(world.itemIds);
+      expect(row.current_assertion_id).toBe(input.assertionId);
+      expect(row.attempt_state).toBe("result_available");
+
+      expect(await countRows(pool, "app.objective_unit_outcomes", world.chain.learnerScopeId)).toBe(
+        2,
+      );
+      expect(await countRows(pool, "app.condition_facts", world.chain.learnerScopeId)).toBe(1);
+      expect(await countRows(pool, "app.exposure_facts", world.chain.learnerScopeId)).toBe(1);
+
+      const job = await pool.query<{ semantic_identity: string; id: string }>(
+        "SELECT id,semantic_identity FROM app.job_resources WHERE learner_scope_id=$1",
+        [world.chain.learnerScopeId],
+      );
+      expect(job.rows[0]?.semantic_identity).toBe(projectionRebuildIdentity(input.submissionId));
+      expect(job.rows[0]?.id).toBe(input.projectionRebuild.jobId);
+
+      // The committed outcome is immutable: no later pass can rewrite what was scored.
+      await expect(
+        pool.query("UPDATE app.objective_outcomes SET checksum=$2 WHERE id=$1", [
+          submission.outcomeId,
+          hex("rewritten"),
+        ]),
+      ).rejects.toThrow(/immutable_relation/);
+
+      await pool.end();
+    });
+  });
+
+  it("leaves nothing behind when the transaction fails partway through", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const attemptId = await startAttempt(repository, world);
+      const before = await pool.query<{ next_sequence: string; state: string }>(
+        `SELECT ls.next_sequence, a.state FROM app.learner_scopes ls
+           JOIN app.attempts a ON a.learner_scope_id=ls.id AND a.id=$2 WHERE ls.id=$1`,
+        [world.chain.learnerScopeId, attemptId],
+      );
+
+      // A unit outcome naming an item that does not exist violates the foreign key on
+      // `app.objective_unit_outcomes` — a genuine failure, raised AFTER the submission and the
+      // outcome have already been inserted in this transaction.
+      const doomed = submissionFor(world, attemptId);
+      const failing = await repository.submitObjectiveAttempt(world.scope, {
+        ...doomed,
+        outcome: {
+          ...doomed.outcome,
+          unitOutcomes: [
+            unitAt(doomed, 0),
+            { ...unitAt(doomed, 1), contentItemId: appId<"content_item">(randomUUID()) },
+          ],
+        },
+      });
+      expect(failing).toEqual({ ok: false, error: "dangling_reference" });
+
+      for (const relation of evidenceRelations) {
+        expect([relation, await countRows(pool, relation, world.chain.learnerScopeId)]).toEqual([
+          relation,
+          0,
+        ]);
+      }
+      const receipts = await pool.query(
+        "SELECT 1 FROM app.operation_receipts WHERE learner_scope_id=$1 AND kind='attempt.submit'",
+        [world.chain.learnerScopeId],
+      );
+      expect(receipts.rows).toHaveLength(0);
+      const after = await pool.query<{ next_sequence: string; state: string }>(
+        `SELECT ls.next_sequence, a.state FROM app.learner_scopes ls
+           JOIN app.attempts a ON a.learner_scope_id=ls.id AND a.id=$2 WHERE ls.id=$1`,
+        [world.chain.learnerScopeId, attemptId],
+      );
+      expect(after.rows[0]).toEqual(before.rows[0]);
+
+      // The failed transaction left no poison: the same operation id still commits.
+      const retried = await repository.submitObjectiveAttempt(world.scope, doomed);
+      expect(retried.ok).toBe(true);
+      expect(await countRows(pool, "app.attempt_submissions", world.chain.learnerScopeId)).toBe(1);
+
+      await pool.end();
+    });
+  });
+
+  it("stores a whole-scope pending and still rejects every meaningless partition", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const attemptId = await startAttempt(repository, world);
+
+      const committed = await repository.submitObjectiveAttempt(
+        world.scope,
+        submissionFor(world, attemptId, { contentStatus: "quarantined_after_pin" }),
+      );
+      expect(committed.ok).toBe(true);
+      if (!committed.ok) return;
+      expect(committed.value.submission.validity.state).toBe("pending");
+      expect(committed.value.submission.validity.unaffectedScope).toEqual([]);
+
+      const assertion = await pool.query(
+        `SELECT state,affected_scope,unaffected_scope,reason_code,reason_registry_id
+           FROM app.validity_assertions WHERE learner_scope_id=$1`,
+        [world.chain.learnerScopeId],
+      );
+      expect(assertion.rows[0]).toEqual({
+        state: "pending",
+        affected_scope: world.itemIds,
+        unaffected_scope: [],
+        reason_code: "VALIDITY.CONTENT_QUARANTINED_AFTER_PIN",
+        reason_registry_id: reasonRegistryRelease.id,
+      });
+
+      // Only the `pending` arm was widened. These three shapes are still meaningless and still
+      // rejected by `validity_assertions_partition_check`.
+      const observationId = await pool.query<{ id: string }>(
+        "SELECT id FROM app.evidence_observations WHERE learner_scope_id=$1",
+        [world.chain.learnerScopeId],
+      );
+      for (const [state, affected, unaffected] of [
+        ["partially_valid", world.itemIds, []],
+        ["partially_valid", [], world.itemIds],
+        ["pending", [], world.itemIds],
+      ] as const) {
+        await expect(
+          pool.query(
+            `INSERT INTO app.validity_assertions(id,learner_scope_id,observation_id,state,
+               affected_scope,unaffected_scope,reason_registry_id,reason_code,asserted_owner,
+               actor_ref,evidence_ref,effective_at,release)
+             VALUES($1,$2,$3,$4,$5,$6,$7,'VALIDITY.CONTENT_QUARANTINED_AFTER_PIN',
+               'Evidence & Capability','app-principal','test',transaction_timestamp(),
+               'evidence-contract/v1')`,
+            [
+              randomUUID(),
+              world.chain.learnerScopeId,
+              observationId.rows[0]?.id,
+              state,
+              JSON.stringify(affected),
+              JSON.stringify(unaffected),
+              reasonRegistryRelease.id,
+            ],
+          ),
+        ).rejects.toThrow(/validity_assertions_partition_check/);
+      }
+
+      await pool.end();
+    });
+  });
+
+  it("cannot cite a Stage 05 reason code against the frozen v1 registry", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const onV1 = new PostgresAttemptRepository(pool, "reason-registry/v1");
+      const attemptId = await startAttempt(onV1, world);
+
+      // `VALIDITY.CONTENT_QUARANTINED_AFTER_PIN` exists only in v1.1, so the composite foreign key
+      // refuses it here. This is why the repository defaults to `reasonRegistryRelease.id`.
+      expect(
+        await onV1.submitObjectiveAttempt(
+          world.scope,
+          submissionFor(world, attemptId, { contentStatus: "quarantined_after_pin" }),
+        ),
+      ).toEqual({ ok: false, error: "dangling_reference" });
+      for (const relation of evidenceRelations) {
+        expect(await countRows(pool, relation, world.chain.learnerScopeId)).toBe(0);
+      }
+
+      await pool.end();
+    });
+  });
+
+  it("routes an uncaptured unit as a system fault and never as a learner blank", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const attemptId = await startAttempt(repository, world);
+      const base = submissionFor(world, attemptId);
+      const lost = world.itemIds[1] as string;
+
+      const committed = await repository.submitObjectiveAttempt(world.scope, {
+        ...base,
+        uncapturedItemIds: [appId<"content_item">(lost)],
+        outcome: {
+          ...base.outcome,
+          supportedScope: [world.itemIds[0] as string],
+          uncapturedScope: [lost],
+          unitOutcomes: [unitAt(base, 0)],
+        },
+      });
+      expect(committed.ok).toBe(true);
+      if (!committed.ok) return;
+
+      expect(committed.value.submission.validity).toMatchObject({
+        state: "partially_valid",
+        affectedScope: [lost],
+        unaffectedScope: [world.itemIds[0]],
+        reasonCode: "FALLBACK.TECHNICAL_FAULT",
+      });
+      const outcome = await pool.query(
+        `SELECT supported_scope,structurally_invalid_scope,uncaptured_scope
+           FROM app.objective_outcomes WHERE learner_scope_id=$1`,
+        [world.chain.learnerScopeId],
+      );
+      expect(outcome.rows[0]).toEqual({
+        supported_scope: [world.itemIds[0]],
+        structurally_invalid_scope: [],
+        uncaptured_scope: [lost],
+      });
+      // Absence produced no unit outcome at all — it never became `blank` or `incorrect`.
+      const units = await pool.query<{ content_item_id: string; kind: string }>(
+        "SELECT content_item_id,kind FROM app.objective_unit_outcomes WHERE learner_scope_id=$1",
+        [world.chain.learnerScopeId],
+      );
+      expect(units.rows).toEqual([{ content_item_id: world.itemIds[0], kind: "correct" }]);
+
+      await pool.end();
+    });
+  });
+
+  it("exposes decisive evidence only after the shaped submission point", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const attemptId = await startAttempt(repository, world);
+
+      expect(
+        await repository.readDecisiveEvidence(world.scope, appId<"attempt">(attemptId)),
+      ).toEqual({ ok: false, error: "not_available" });
+
+      const committed = await repository.submitObjectiveAttempt(
+        world.scope,
+        submissionFor(world, attemptId),
+      );
+      expect(committed.ok).toBe(true);
+
+      const revealed = await repository.readDecisiveEvidence(
+        world.scope,
+        appId<"attempt">(attemptId),
+      );
+      expect(revealed.ok).toBe(true);
+      if (!revealed.ok) return;
+      expect(revealed.value).toHaveLength(2);
+      expect(revealed.value.map((entry) => entry.decisiveEvidence)).toEqual([
+        { safeRevealSpanOrRelation: "paragraph 1" },
+        { safeRevealSpanOrRelation: "paragraph 2" },
+      ]);
+
+      // Another learner's committed submission opens no gate here.
+      const other = await seedAttemptWorld(pool);
+      expect(
+        await repository.readDecisiveEvidence(other.scope, appId<"attempt">(attemptId)),
+      ).toEqual({ ok: false, error: "not_available" });
+
+      await pool.end();
+    });
+  });
+
+  it("returns the committed record on an exact retry and refuses a conflicting reuse", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const attemptId = await startAttempt(repository, world);
+      const input = submissionFor(world, attemptId);
+
+      const first = await repository.submitObjectiveAttempt(world.scope, input);
+      expect(first.ok).toBe(true);
+      if (!first.ok) return;
+
+      const replayed = await repository.submitObjectiveAttempt(world.scope, input);
+      expect(replayed.ok).toBe(true);
+      if (!replayed.ok) return;
+      expect(replayed.value.disposition).toBe("replayed");
+      expect(replayed.value.submission).toEqual(first.value.submission);
+
+      for (const conflicting of [
+        { ...input, responseDigest: hex("a different response") },
+        { ...input, submissionId: appId<"submission">(randomUUID()) },
+        { ...input, attemptId: appId<"attempt">(randomUUID()) },
+      ]) {
+        expect(await repository.submitObjectiveAttempt(world.scope, conflicting)).toEqual({
+          ok: false,
+          error: "idempotency_conflict",
+        });
+      }
+
+      // Neither the replay nor any of the three conflicting reuses wrote a second anything.
+      expect(await countRows(pool, "app.attempt_submissions", world.chain.learnerScopeId)).toBe(1);
+      expect(await countRows(pool, "app.objective_outcomes", world.chain.learnerScopeId)).toBe(1);
+      expect(await countRows(pool, "app.objective_unit_outcomes", world.chain.learnerScopeId)).toBe(
+        2,
+      );
+      expect(await countRows(pool, "app.evidence_observations", world.chain.learnerScopeId)).toBe(
+        1,
+      );
+      expect(await countRows(pool, "app.validity_assertions", world.chain.learnerScopeId)).toBe(1);
+      expect(await countRows(pool, "app.job_resources", world.chain.learnerScopeId)).toBe(1);
+
+      await pool.end();
+    });
+  });
+
+  it("never creates a second attempt, checkpoint or ordinal on a reconnect", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const input = createFor(world);
+
+      expect((await repository.createAttempt(world.scope, input)).ok).toBe(true);
+      const replayed = await repository.createAttempt(world.scope, input);
+      expect(replayed.ok).toBe(true);
+      if (!replayed.ok) return;
+      expect(replayed.value.disposition).toBe("replayed");
+      const otherManifest = await insertServingManifest(pool, world.chain, world.itemIds);
+      expect(
+        await repository.createAttempt(world.scope, {
+          ...input,
+          servingManifestId: appId<"serving_manifest">(otherManifest),
+        }),
+      ).toEqual({ ok: false, error: "idempotency_conflict" });
+      expect(await countRows(pool, "app.attempts", world.chain.learnerScopeId)).toBe(1);
+
+      await repository.transitionAttempt(world.scope, {
+        attemptId: input.attemptId,
+        to: "in_progress",
+        expectedVersion: 1,
+      });
+      const checkpoint = {
+        operationId: appId<"operation">(randomUUID()),
+        checkpointId: appId<"checkpoint">(randomUUID()),
+        attemptId: input.attemptId,
+        stream: "primary",
+        sequence: 2,
+        expectedAttemptVersion: 2,
+        payloadDigest: hex("checkpoint:2"),
+      };
+      const accepted = await repository.recordCheckpoint(world.scope, checkpoint);
+      expect(accepted.ok).toBe(true);
+      if (!accepted.ok) return;
+      expect(accepted.value.disposition).toBe("accepted");
+      expect(accepted.value.attempt.acknowledgedCheckpointSequence).toBe(2);
+
+      const reconnect = await repository.recordCheckpoint(world.scope, checkpoint);
+      expect(reconnect.ok).toBe(true);
+      if (!reconnect.ok) return;
+      expect(reconnect.value.disposition).toBe("replayed");
+
+      const divergent = await repository.recordCheckpoint(world.scope, {
+        ...checkpoint,
+        operationId: appId<"operation">(randomUUID()),
+        checkpointId: appId<"checkpoint">(randomUUID()),
+        expectedAttemptVersion: 3,
+        payloadDigest: hex("a divergent branch"),
+      });
+      expect(divergent.ok).toBe(true);
+      if (!divergent.ok) return;
+      expect(divergent.value.disposition).toBe("divergent");
+      expect(divergent.value.storedDigest).toBe(hex("checkpoint:2"));
+
+      const stale = await repository.recordCheckpoint(world.scope, {
+        ...checkpoint,
+        operationId: appId<"operation">(randomUUID()),
+        checkpointId: appId<"checkpoint">(randomUUID()),
+        stream: "secondary",
+        sequence: 1,
+        expectedAttemptVersion: 3,
+      });
+      expect(stale.ok).toBe(true);
+      if (!stale.ok) return;
+      expect(stale.value.disposition).toBe("stale");
+      expect(await countRows(pool, "app.attempt_checkpoints", world.chain.learnerScopeId)).toBe(1);
+      // The stored branch is untouched: a divergence never overwrites.
+      const stored = await repository.readCheckpoints(world.scope, input.attemptId);
+      expect(stored).toHaveLength(1);
+      expect(stored[0]?.payloadDigest).toBe(hex("checkpoint:2"));
+
+      const factOperation = appId<"operation">(randomUUID());
+      const fact = {
+        kind: "response" as const,
+        factId: appId<"response_fact">(randomUUID()),
+        attemptId: input.attemptId,
+        factType: "attempt.response",
+        envelope: { selections: {} },
+        digest: hex("fact:1"),
+      };
+      const written = await repository.recordAttemptFact(world.scope, factOperation, fact);
+      expect(written.ok).toBe(true);
+      if (!written.ok) return;
+      expect(await repository.recordAttemptFact(world.scope, factOperation, fact)).toEqual({
+        ok: true,
+        value: { disposition: "replayed", learnerSequence: written.value.learnerSequence },
+      });
+      expect(await countRows(pool, "app.response_facts", world.chain.learnerScopeId)).toBe(1);
+      const sequence = await pool.query<{ next_sequence: string }>(
+        "SELECT next_sequence FROM app.learner_scopes WHERE id=$1",
+        [world.chain.learnerScopeId],
+      );
+      expect(Number(sequence.rows[0]?.next_sequence)).toBe(written.value.learnerSequence + 1);
+
+      await pool.end();
+    });
+  });
+
+  it("settles submission_unknown from the committed receipt, not from elapsed time", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const attemptId = await startAttempt(repository, world);
+
+      const unknown = await repository.transitionAttempt(world.scope, {
+        attemptId: appId<"attempt">(attemptId),
+        to: "submission_unknown",
+        expectedVersion: 2,
+      });
+      expect(unknown.ok).toBe(true);
+      if (!unknown.ok) return;
+
+      // No receipt exists, so claiming a submission is refused and reopening is allowed.
+      expect(
+        await repository.transitionAttempt(world.scope, {
+          attemptId: appId<"attempt">(attemptId),
+          to: "submitted",
+          expectedVersion: unknown.value.resourceVersion,
+        }),
+      ).toEqual({ ok: false, error: "conflict" });
+      const reopened = await repository.transitionAttempt(world.scope, {
+        attemptId: appId<"attempt">(attemptId),
+        to: "in_progress",
+        expectedVersion: unknown.value.resourceVersion,
+      });
+      expect(reopened.ok).toBe(true);
+      if (!reopened.ok) return;
+      expect(reopened.value.state).toBe("in_progress");
+
+      const committed = await repository.submitObjectiveAttempt(
+        world.scope,
+        submissionFor(world, attemptId),
+      );
+      expect(committed.ok).toBe(true);
+
+      // A crashed process can leave the runtime state behind while the submission stands. The
+      // guard is a query against the committed receipt, so reopening is now refused whatever the
+      // runtime state says and however much time has passed.
+      await pool.query("UPDATE app.attempts SET state='submission_unknown' WHERE id=$1", [
+        attemptId,
+      ]);
+      const current = await repository.readAttempt(world.scope, appId<"attempt">(attemptId));
+      expect(
+        await repository.transitionAttempt(world.scope, {
+          attemptId: appId<"attempt">(attemptId),
+          to: "in_progress",
+          expectedVersion: current?.resourceVersion ?? 0,
+        }),
+      ).toEqual({ ok: false, error: "submission_committed" });
+      expect(
+        await repository.hasCommittedSubmission(world.scope, appId<"attempt">(attemptId)),
+      ).toBe(true);
+
+      await pool.end();
+    });
+  });
+
+  it("treats a replacement as a new attempt that changes no earlier state or outcome", async () => {
+    await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
+      await migrateDatabase(databaseUrl);
+      const pool = createPostgresPool(databaseUrl);
+      const world = await seedAttemptWorld(pool);
+      const repository = new PostgresAttemptRepository(pool);
+      const firstAttemptId = await startAttempt(repository, world);
+      const first = await repository.submitObjectiveAttempt(
+        world.scope,
+        submissionFor(world, firstAttemptId),
+      );
+      expect(first.ok).toBe(true);
+      if (!first.ok) return;
+
+      const snapshot = async (): Promise<unknown> => {
+        const result = await pool.query(
+          `SELECT to_jsonb(a) AS attempt,to_jsonb(s) AS submission,to_jsonb(o) AS outcome,
+                  to_jsonb(v) AS assertion
+             FROM app.attempts a
+             JOIN app.attempt_submissions s ON s.attempt_id=a.id
+             JOIN app.objective_outcomes o ON o.submission_id=s.id
+             JOIN app.evidence_observations e ON e.attempt_id=a.id
+             JOIN app.validity_assertions v ON v.id=e.current_assertion_id
+            WHERE a.id=$1`,
+          [firstAttemptId],
+        );
+        return result.rows[0];
+      };
+      const before = await snapshot();
+
+      const replacementManifest = await insertServingManifest(pool, world.chain, world.itemIds);
+      const replacementId = await startAttempt(repository, {
+        ...world,
+        servingManifestId: replacementManifest,
+      });
+      const replacement = await repository.submitObjectiveAttempt(
+        world.scope,
+        submissionFor({ ...world, servingManifestId: replacementManifest }, replacementId, {
+          contentStatus: "quarantined_after_pin",
+        }),
+      );
+      expect(replacement.ok).toBe(true);
+      if (!replacement.ok) return;
+      expect(replacement.value.submission.validity.state).toBe("pending");
+
+      // The replacement is a separate attempt: the earlier row, submission, outcome and assertion
+      // are byte-identical, and the earlier attempt is terminal and refuses every arrow.
+      expect(await snapshot()).toEqual(before);
+      expect(
+        await repository.transitionAttempt(world.scope, {
+          attemptId: appId<"attempt">(firstAttemptId),
+          to: "in_progress",
+          expectedVersion: first.value.submission.attempt.resourceVersion,
+        }),
+      ).toEqual({ ok: false, error: "illegal_transition" });
+      expect(await countRows(pool, "app.attempts", world.chain.learnerScopeId)).toBe(2);
+      expect(await countRows(pool, "app.validity_assertions", world.chain.learnerScopeId)).toBe(2);
 
       await pool.end();
     });
