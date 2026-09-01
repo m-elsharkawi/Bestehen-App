@@ -872,7 +872,10 @@ function stableUuid(identity: string): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
 
-async function loadPostgresCatalogue(client: SeedSqlClient): Promise<SeedCatalogueState> {
+async function loadPostgresCatalogue(
+  client: SeedSqlClient,
+  requestedReleaseIdentity: string,
+): Promise<SeedCatalogueState> {
   const [revisionRows, releaseRows] = await Promise.all([
     client.query(
       `SELECT cr.id AS revision_id,cr.family_id,cf.family_key AS seed_key,cr.predecessor_id,cr.digest,cr.approval_state
@@ -896,13 +899,17 @@ async function loadPostgresCatalogue(client: SeedSqlClient): Promise<SeedCatalog
       .filter((revision) => ["candidate", "approved"].includes(revision.approvalState))
       .map((revision) => revision.revisionId),
   );
+  const revisionById = new Map(
+    revisionFacts.map((revision) => [revision.revisionId, revision] as const),
+  );
   const supersededRevisionIds = new Set(
     revisionFacts
       .filter(
         (revision) =>
           revision.predecessorRevisionId !== null &&
           eligibleRevisionIds.has(revision.revisionId) &&
-          eligibleRevisionIds.has(revision.predecessorRevisionId),
+          eligibleRevisionIds.has(revision.predecessorRevisionId) &&
+          revisionById.get(revision.predecessorRevisionId)?.familyId === revision.familyId,
       )
       .map((revision) => revision.predecessorRevisionId as string),
   );
@@ -937,13 +944,16 @@ async function loadPostgresCatalogue(client: SeedSqlClient): Promise<SeedCatalog
       .filter((release) => ["candidate", "active"].includes(release.databaseState))
       .map((release) => release.releaseId),
   );
+  const releaseById = new Map(releaseFacts.map((release) => [release.releaseId, release] as const));
   const supersededReleaseIds = new Set(
     releaseFacts
       .filter(
         (release) =>
           release.predecessorReleaseId !== null &&
           eligibleReleaseIds.has(release.releaseId) &&
-          eligibleReleaseIds.has(release.predecessorReleaseId),
+          eligibleReleaseIds.has(release.predecessorReleaseId) &&
+          releaseById.get(release.predecessorReleaseId)?.releaseIdentity ===
+            release.releaseIdentity,
       )
       .map((release) => release.predecessorReleaseId as string),
   );
@@ -959,7 +969,9 @@ async function loadPostgresCatalogue(client: SeedSqlClient): Promise<SeedCatalog
           : ("retired" as const),
     }))
     .sort((left, right) => left.releaseId.localeCompare(right.releaseId));
-  const currentReleases = releases.filter((release) => release.state === "active");
+  const currentReleases = releases.filter(
+    (release) => release.releaseIdentity === requestedReleaseIdentity && release.state === "active",
+  );
   return {
     schema: "bestehen-seed-catalogue/v1",
     activeReleaseId: currentReleases.length === 1 ? (currentReleases[0]?.releaseId ?? null) : null,
@@ -1590,7 +1602,11 @@ async function reconstructPostgresReport(
       return reportFor(
         entry,
         action,
-        action === "create" ? null : (entry.predecessorRevisionId ?? entry.revisionId),
+        action === "create"
+          ? null
+          : action === "supersede"
+            ? entry.predecessorRevisionId
+            : entry.revisionId,
       );
     });
     if (recordedActions.rows.length !== serving.length)
@@ -1651,7 +1667,7 @@ export async function executePostgresSeedCommand(
       "SELECT target_digest,target_class,action,release,recorded_at FROM app.security_audit_events WHERE id=$1 AND target_class='content_seed_operation'",
       [receiptId],
     );
-    const catalogue = await loadPostgresCatalogue(client);
+    const catalogue = await loadPostgresCatalogue(client, request.release.releaseIdentity);
     const transactionTime = await client.query("SELECT transaction_timestamp() AS occurred_at");
     const occurredAt = String(
       receipt.rows[0]?.recorded_at ?? transactionTime.rows[0]?.occurred_at ?? request.occurredAt,

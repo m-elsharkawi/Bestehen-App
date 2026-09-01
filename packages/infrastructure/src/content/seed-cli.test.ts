@@ -505,11 +505,19 @@ describe("P05-SEED-001 seed CLI planner", () => {
       predecessorRevisionId: predecessor.revisionId,
       digest: "e".repeat(64),
     };
+    const unchangedSuccessor = {
+      ...unchanged,
+      predecessorRevisionId: "ca761dd5-2754-5e15-aebe-8374e51b3d6f",
+    };
     const mixedRelease: SeedReleaseDocument = {
       ...release,
       releaseId: "f58591d5-b4f4-5a72-a0c7-d68bba677f14",
       entries: release.entries.map((entry) =>
-        entry.revisionId === predecessor.revisionId ? successor : entry,
+        entry.revisionId === predecessor.revisionId
+          ? successor
+          : entry.revisionId === unchanged.revisionId
+            ? unchangedSuccessor
+            : entry,
       ),
     };
     const priorReleaseId = "prior-stage-05-content";
@@ -530,7 +538,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
           seedKey: unchanged.seedKey,
           familyId: unchanged.familyId,
           revisionId: unchanged.revisionId,
-          predecessorRevisionId: unchanged.predecessorRevisionId,
+          predecessorRevisionId: unchangedSuccessor.predecessorRevisionId,
           digest: unchanged.digest,
           state: "active",
         },
@@ -553,6 +561,14 @@ describe("P05-SEED-001 seed CLI planner", () => {
       superseded: 1,
       unchanged: 1,
       hardFailures: 0,
+    });
+    const expectedByRevisionId = new Map(
+      expectedPlan.report.revisions.map((revision) => [revision.revisionId, revision]),
+    );
+    expect(expectedByRevisionId.get(unchangedSuccessor.revisionId)).toMatchObject({
+      action: "unchanged",
+      currentRevisionId: unchangedSuccessor.revisionId,
+      predecessorRevisionId: unchangedSuccessor.predecessorRevisionId,
     });
     const payloadDigest = expectedPlan.nextState.receipts.find(
       (receipt) => receipt.operationId === operationId,
@@ -661,8 +677,32 @@ describe("P05-SEED-001 seed CLI planner", () => {
         approval_state: "candidate",
       },
     ];
-    for (const rows of [revisionRows, [...revisionRows].reverse()]) {
+    for (const [order, rows] of [revisionRows, [...revisionRows].reverse()].entries()) {
       const calls: { text: string; values: unknown[] }[] = [];
+      const releaseRows = [
+        {
+          id: successorRelease.releaseId,
+          release_identity: successorRelease.releaseIdentity,
+          digest: "a".repeat(64),
+          predecessor_id: release.releaseId,
+          state: "candidate",
+        },
+        {
+          id: release.releaseId,
+          release_identity: release.releaseIdentity,
+          digest: "b".repeat(64),
+          predecessor_id: null,
+          state: "candidate",
+        },
+        {
+          id: "unrelated-active-release",
+          release_identity: "unrelated-content-line",
+          digest: "c".repeat(64),
+          predecessor_id: null,
+          state: "active",
+        },
+      ];
+      if (order === 1) releaseRows.reverse();
       const client: SeedSqlClient = {
         async query(text, values = []) {
           calls.push({ text, values });
@@ -670,25 +710,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
           if (text.includes("FROM app.content_revisions cr"))
             return { rows, rowCount: rows.length };
           if (text.includes("FROM app.content_releases"))
-            return {
-              rows: [
-                {
-                  id: successorRelease.releaseId,
-                  release_identity: successorRelease.releaseIdentity,
-                  digest: "a".repeat(64),
-                  predecessor_id: release.releaseId,
-                  state: "candidate",
-                },
-                {
-                  id: release.releaseId,
-                  release_identity: release.releaseIdentity,
-                  digest: "b".repeat(64),
-                  predecessor_id: null,
-                  state: "candidate",
-                },
-              ],
-              rowCount: 2,
-            };
+            return { rows: releaseRows, rowCount: releaseRows.length };
           if (text.includes("transaction_timestamp() AS occurred_at"))
             return { rows: [{ occurred_at: occurredAt }], rowCount: 1 };
           if (text.includes("SELECT id FROM app.approval_decisions"))
@@ -715,6 +737,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
         },
       );
       expect(report.summary).toMatchObject({ quarantined: 1, hardFailures: 0 });
+      expect(report.release.priorActiveReleaseId).toBe(successorRelease.releaseId);
       const reportsByRevisionId = new Map(
         report.revisions.map((revision) => [revision.revisionId, revision]),
       );
