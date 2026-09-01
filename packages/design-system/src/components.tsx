@@ -1281,13 +1281,14 @@ function listeningStatus(state: ListeningRegionContract["state"]): string {
 }
 
 export function ListeningRegion({ listening }: { readonly listening?: ListeningRegionContract }) {
+  const titleId = useId();
   if (listening) {
     const transportDisabled = listening.state === "preflight" || listening.state === "unavailable";
     const canPlay = listening.remainingPlays > 0 && !transportDisabled;
     const transcriptAvailable = listening.transcript.phase === "available";
     return (
-      <section aria-labelledby="listening-region-title" className="listening-region">
-        <h2 id="listening-region-title">{listening.title ?? "Listening"}</h2>
+      <section aria-labelledby={titleId} className="listening-region">
+        <h2 id={titleId}>{listening.title ?? "Listening"}</h2>
         {/* biome-ignore lint/a11y/useMediaCaption: target transcripts are separate authorized objects */}
         <audio
           aria-label={listening.audio.label}
