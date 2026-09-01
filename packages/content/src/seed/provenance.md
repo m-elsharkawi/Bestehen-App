@@ -19,8 +19,8 @@ The typed source contains two fresh-equivalent families for each task definition
 - H2: one connected dialogue and five questions per family, with two allowed plays
 - H3: five short functional scripts per family, with two allowed plays per text
 
-The release also contains one ambiguous SB1 fixture whose blind-validation result disagrees with
-the proposed key. It exists only to prove quarantine. A second App-original SB1 fixture has a
+The release also contains one deliberately ambiguous SB1 fixture with quarantine intent and a
+key-level disagreement sentinel. It exists only to prove quarantine. A second App-original SB1 fixture has a
 withdrawn rights envelope and exists only to prove future-serving withdrawal. Neither fixture is a
 serving candidate.
 
@@ -41,9 +41,10 @@ media tests. The fake manifests here pin scripts and fixture bytes without takin
   speech bytes happened.
 - `OWNER-05-B` remains unclaimed. No complete P4 form or final media set received P4 sign-off.
 - `OWNER-05-C` remains unclaimed. No independent person solved every key blind to the proposed
-  answers. The deterministic structural re-derivation in `builders.ts` is not a substitute for that
-  review. Its validator reference is `system:deterministic-key-derivation`, never an owner or human
-  validator reference.
+  answers. Deterministic structural checks are not a substitute for that review. The key schema has
+  no `not_run` state, so draft keys fail closed with `agreedWithProposedKey: false` and validator
+  reference `unclaimed:OWNER-05-C`.
 
-The serving seeds therefore request Training approval only. No artifact in this directory claims
-Independent-B1, Readiness/P4, or Gold approval.
+Architecture 09's separate launch human review has not happened either. The authored candidates
+therefore remain drafts without approval commands or publication freezes. No artifact in this
+directory claims Training, Independent-B1, Readiness/P4, or Gold approval.

@@ -1,13 +1,15 @@
 # Content seed operations
 
-The Stage 05 seed tool validates and plans the typed C3 release without importing the content
+The Stage 05 seed tool validates and applies the typed C3 draft corpus without importing the content
 package into infrastructure. `packages/content/src/seed/release.json` is the package-neutral handoff.
-The CLI checks publication results, rights, accessibility, immutable identities, successors, and
-release pointers.
+It contains the complete family, revision, learner payload, item, server-only key, rights,
+accessibility, recorded-gate and audio-fixture graph. The CLI validates the nested graph before it
+plans or writes anything.
 
-The current CLI applies plans to an explicit catalogue state file. This is the deterministic local
-and CI path for `P05-SEED-001`. It does not claim that rows were written to PostgreSQL. A database
-adapter may consume the same plan later, but it must preserve the report and identity rules below.
+No seed in this release has completed independent key validation or launch human review. The
+sixteen authored candidates therefore remain `draft`/database `candidate` rows and are not eligible
+for Training selection. The release records no approval command. Structural derivation proves
+associations and cardinalities; it is not a reviewer.
 
 Use the pinned repository toolchain for every command:
 
@@ -56,6 +58,29 @@ The report schema is `bestehen-seed-validation-report/v1`. It contains:
 - counts for created, superseded, unchanged, withdrawn, quarantined, rolled back, and hard failures
 - failures with a stable code, exact identity, and detail
 
+## Apply to PostgreSQL
+
+Use the migrator database credential convention. The URL may be passed explicitly or supplied as
+`BESTEHEN_MIGRATOR_DATABASE_URL` (with `DATABASE_URL` as a local fallback):
+
+```sh
+pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
+  --database-url "$BESTEHEN_MIGRATOR_DATABASE_URL" \
+  --report .local/content-seed/apply-report.json \
+  --operation-id seed-apply-20260901 \
+  --occurred-at 2026-09-01T12:05:00.000Z
+```
+
+The PostgreSQL adapter uses one transaction and parameterized statements to write rights envelopes,
+accessibility manifests, content families and revisions, items, key revisions, recorded gate
+results, the candidate release, and its entries. It does not write audio-provider rows; T5 owns the
+media schema adapter and playback path. A database apply requires the Stage 05 migrations.
+
+The adapter records an immutable operation receipt. Repeating the same operation ID with the same
+canonical command returns the original committed report without another mutation. Reusing it with
+a different release, selector, reason, or recorded time returns `idempotency_conflict` and changes
+nothing. Keep operation IDs stable across transport retries.
+
 ## Apply and replay locally
 
 Remove `--dry-run` to commit a successful plan to the catalogue state file:
@@ -68,8 +93,9 @@ pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
   --occurred-at 2026-09-01T12:05:00.000Z
 ```
 
-Run the same release again with a new operation ID. The report must say `0 created`,
-`0 superseded`, and `16 unchanged`. The catalogue content remains unchanged.
+The state-file adapter exists for deterministic local and CI tests. It has the same operation-receipt
+rules as PostgreSQL. Repeating the exact command with the same operation ID returns the first
+committed report; a new operation ID produces the current-state plan (normally 16 unchanged).
 
 ## Change a published artifact
 
@@ -92,7 +118,8 @@ with `immutable_release_changed`. A new family revision that omits the active pr
 ## Withdraw or quarantine
 
 Both commands require an exact active family, revision, or seed-key selector and a reason. The
-selector must resolve to one active revision.
+selector must resolve to one active revision. Replace `--state ...` with `--database-url ...` to
+operate on PostgreSQL.
 
 ```sh
 pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
@@ -139,7 +166,8 @@ older runtime cannot verify the Stage 05 migration set.
 
 ## Fake audio limitation
 
-The listening seed stores reviewed German scripts and deterministic PCM WAV fixture manifests.
+The listening seed stores authored, unreviewed German draft scripts and deterministic PCM WAV
+fixture manifests.
 The fake renderer emits a short integer waveform. It is not speech. Do not play it to learners and
 do not promote it to Independent-B1, Readiness/P4, or Gold. T5 owns the final media model, object
 authorization, playback routes, and final media tests.
@@ -154,5 +182,7 @@ These gates remain open:
 - `OWNER-05-B`: human sign-off for a complete P4 form and its final assets
 - `OWNER-05-C`: independent blind solution and key validation by a distinct reviewer
 
-Until those records exist, the serving seed requests Training approval only. The tool must not
-promote a seed merely because its automated gates pass.
+There is also a separate launch human-review requirement from Architecture 09 §5.1. It is not an
+owner claim and has not happened. Until independent key validation and launch review are recorded,
+the corpus stays draft/candidate and the tool refuses a Training-bearing release. OWNER-05-A,
+OWNER-05-B and OWNER-05-C remain unclaimed.
