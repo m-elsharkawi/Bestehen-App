@@ -234,7 +234,6 @@ function requestPayloadDigest(request: SeedPlanRequest): string {
         command: request.command,
         selector: request.selector,
         reason: request.reason,
-        occurredAt: request.occurredAt,
         dryRun: request.dryRun,
         releaseDigest: seedDocumentDigest(request.release),
       }),
@@ -318,8 +317,15 @@ function planApply(
       });
     }
     if (sameIdentity) {
-      if (sameIdentity.digest === entry.digest) action = "unchanged";
-      else {
+      if (sameIdentity.digest === entry.digest) {
+        action = "unchanged";
+        if (sameIdentity.state !== "active")
+          failures.push({
+            code: "revision_not_active",
+            identity: entry.revisionId,
+            detail: "A retired or quarantined revision cannot be reactivated by re-applying bytes.",
+          });
+      } else {
         action = "unchanged";
         failures.push({
           code: "immutable_revision_changed",
@@ -339,7 +345,15 @@ function planApply(
         action = "supersede";
       }
     }
-    revisions.push(reportFor(entry, action, current?.revisionId ?? null));
+    revisions.push(
+      reportFor(
+        entry,
+        action,
+        action === "unchanged" && sameIdentity
+          ? sameIdentity.revisionId
+          : (current?.revisionId ?? null),
+      ),
+    );
     if (action === "create") {
       next.push({
         seedKey: entry.seedKey,
@@ -469,11 +483,15 @@ export function planSeedCommand(request: SeedPlanRequest): SeedPlan {
       nextActiveReleaseId = request.release.releaseId;
     }
   } else if (request.command === "withdraw" || request.command === "quarantine") {
-    if (!request.reason)
+    const expectedReason =
+      request.command === "withdraw"
+        ? "VALIDITY.RIGHTS_COMPATIBILITY"
+        : "UNCERTAINTY.KEY_VALIDATOR_DISAGREEMENT";
+    if (request.reason !== expectedReason)
       failures.push({
-        code: "reason_required",
+        code: "reason_code_invalid",
         identity: request.selector ?? "missing",
-        detail: `${request.command} requires --reason.`,
+        detail: `${request.command} requires the frozen reason-registry code ${expectedReason}.`,
       });
     const selected = selectOne(request, failures);
     if (selected) {
@@ -854,7 +872,9 @@ async function loadPostgresCatalogue(client: SeedSqlClient): Promise<SeedCatalog
         ? "quarantined"
         : row.approval_state === "retired"
           ? "withdrawn"
-          : "active",
+          : row.approval_state === "candidate" || row.approval_state === "approved"
+            ? "active"
+            : "quarantined",
   }));
   const releases: SeedCatalogueRelease[] = releaseRows.rows.map((row) => ({
     releaseId: String(row.id),
@@ -877,12 +897,46 @@ function json(value: unknown): string {
   return canonicalize(value);
 }
 
+async function insertImmutable(
+  client: SeedSqlClient,
+  sql: string,
+  values: unknown[],
+  identity: string,
+  entity: string,
+  verification: {
+    readonly sql: string;
+    readonly values: unknown[];
+    readonly expected: Readonly<Record<string, unknown>>;
+  },
+): Promise<void> {
+  const comparable = (value: unknown): unknown => {
+    if (value instanceof Date) return value.toISOString();
+    if (Array.isArray(value)) return value.map(comparable);
+    if (value !== null && typeof value === "object")
+      return Object.fromEntries(
+        Object.entries(value).map(([key, child]) => [key, comparable(child)]),
+      );
+    return value;
+  };
+  const matches = (row: Readonly<Record<string, unknown>> | undefined): boolean =>
+    row !== undefined &&
+    canonicalize(comparable(row)) === canonicalize(comparable(verification.expected));
+  const prior = await client.query(verification.sql, verification.values);
+  if (prior.rows[0]) {
+    if (!matches(prior.rows[0])) throw new SeedDatabaseConflict(identity, entity);
+    return;
+  }
+  const result = await client.query(sql, values);
+  if (result.rows[0]) return;
+  const raced = await client.query(verification.sql, verification.values);
+  if (!matches(raced.rows[0])) throw new SeedDatabaseConflict(identity, entity);
+}
+
 async function insertReleaseGraph(
   client: SeedSqlClient,
   release: SeedReleaseDocument,
   report: SeedValidationReport,
 ): Promise<void> {
-  const reportByRevisionId = new Map(report.revisions.map((entry) => [entry.revisionId, entry]));
   for (const entry of release.entries) {
     const family = entry.family;
     const revision = entry.revision;
@@ -891,9 +945,11 @@ async function insertReleaseGraph(
     const accessibility = entry.accessibility;
     const rightsDigest = createHash("sha256").update(json(rights)).digest("hex");
     const accessibilityDigest = createHash("sha256").update(json(accessibility)).digest("hex");
-    await client.query(
+    await insertImmutable(
+      client,
       `INSERT INTO app.rights_envelopes(id,envelope_key,state,envelope,digest,predecessor_id,effective_at)
-       VALUES($1,$2,$3,$4::jsonb,$5,$6,$7) ON CONFLICT(id) DO NOTHING`,
+       VALUES($1,$2,$3,$4::jsonb,$5,$6,$7)
+       ON CONFLICT(id) DO NOTHING RETURNING id`,
       [
         entry.rightsEnvelopeId,
         entry.seedKey,
@@ -903,11 +959,28 @@ async function insertReleaseGraph(
         rightsIdentity.predecessorRightsEnvelopeId ?? null,
         rightsIdentity.effectiveFrom ?? null,
       ],
+      entry.rightsEnvelopeId,
+      "rights_envelope",
+      {
+        sql: `SELECT envelope_key,state,envelope,digest,predecessor_id,effective_at
+                FROM app.rights_envelopes WHERE id=$1`,
+        values: [entry.rightsEnvelopeId],
+        expected: {
+          envelope_key: entry.seedKey,
+          state: entry.rightsState,
+          envelope: rights,
+          digest: rightsDigest,
+          predecessor_id: rightsIdentity.predecessorRightsEnvelopeId ?? null,
+          effective_at: rightsIdentity.effectiveFrom ?? null,
+        },
+      },
     );
     const accessibilityStatus = entry.accessibilityGate.status === "pass" ? "pass" : "blocked";
-    await client.query(
+    await insertImmutable(
+      client,
       `INSERT INTO app.accessibility_manifests(id,manifest,language_tag,gate_status,digest)
-       VALUES($1,$2::jsonb,$3,$4,$5) ON CONFLICT(id) DO NOTHING`,
+       VALUES($1,$2::jsonb,$3,$4,$5)
+       ON CONFLICT(id) DO NOTHING RETURNING id`,
       [
         entry.accessibilityManifestId,
         json(accessibility),
@@ -915,20 +988,54 @@ async function insertReleaseGraph(
         accessibilityStatus,
         accessibilityDigest,
       ],
+      entry.accessibilityManifestId,
+      "accessibility_manifest",
+      {
+        sql: `SELECT manifest,language_tag,gate_status,digest
+                FROM app.accessibility_manifests WHERE id=$1`,
+        values: [entry.accessibilityManifestId],
+        expected: {
+          manifest: accessibility,
+          language_tag: accessibility.languageTag,
+          gate_status: accessibilityStatus,
+          digest: accessibilityDigest,
+        },
+      },
     );
-    await client.query(
+    const taskDefinition = recordAt(family.taskDefinition, "family/taskDefinition");
+    const assignmentBasis = {
+      basis: family.assignmentBasis,
+      sourceReviewState: family.reviewState,
+    };
+    await insertImmutable(
+      client,
       `INSERT INTO app.content_families(id,family_key,task_definition_id,task_definition_revision,task_family_kind,assignment_basis,review_state)
-       VALUES($1,$2,$3,$4,$5,$6::jsonb,'unresolved') ON CONFLICT(id) DO NOTHING`,
+       VALUES($1,$2,$3,$4,$5,$6::jsonb,'unresolved')
+       ON CONFLICT(id) DO NOTHING RETURNING id`,
       [
         entry.familyId,
         entry.seedKey,
-        recordAt(family.taskDefinition, "family/taskDefinition").id,
-        recordAt(family.taskDefinition, "family/taskDefinition").revision,
+        taskDefinition.id,
+        taskDefinition.revision,
         entry.taskFamily,
-        json({ basis: family.assignmentBasis, sourceReviewState: family.reviewState }),
+        json(assignmentBasis),
       ],
+      entry.familyId,
+      "content_family",
+      {
+        sql: `SELECT family_key,task_definition_id,task_definition_revision,task_family_kind,assignment_basis,review_state
+                FROM app.content_families WHERE id=$1`,
+        values: [entry.familyId],
+        expected: {
+          family_key: entry.seedKey,
+          task_definition_id: taskDefinition.id,
+          task_definition_revision: taskDefinition.revision,
+          task_family_kind: entry.taskFamily,
+          assignment_basis: assignmentBasis,
+          review_state: "unresolved",
+        },
+      },
     );
-    const reportEntry = reportByRevisionId.get(entry.revisionId);
     const approvalState =
       entry.intent === "quarantine_fixture"
         ? "quarantined"
@@ -936,14 +1043,15 @@ async function insertReleaseGraph(
           ? "retired"
           : "candidate";
     const rightsState = entry.rightsState === "current" ? "eligible" : "withdrawn";
-    await client.query(
+    await insertImmutable(
+      client,
       `INSERT INTO app.content_revisions(
          id,family_id,revision,role,approval_state,rights_state,compatibility_state,digest,predecessor_id,
          content_class,task_definition_id,task_definition_revision,generation_brief_id,generation_brief_revision,
          target_blueprint_release,taxonomy_release,capability_refs,progression_profile,intended_evidence_roles,
          instruction,learner_payload,rights_envelope_id,accessibility_manifest_id,current_approval_decision_id,frozen_at)
        VALUES($1,$2,$3,'learning_practice',$4,$5,'compatible',$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::jsonb,$16,$17::jsonb,$18::jsonb,$19::jsonb,$20,$21,NULL,NULL)
-       ON CONFLICT(id) DO NOTHING`,
+       ON CONFLICT(id) DO NOTHING RETURNING id`,
       [
         entry.revisionId,
         entry.familyId,
@@ -967,13 +1075,50 @@ async function insertReleaseGraph(
         entry.rightsEnvelopeId,
         entry.accessibilityManifestId,
       ],
+      entry.revisionId,
+      "content_revision",
+      {
+        sql: `SELECT family_id,revision,role,compatibility_state,digest,predecessor_id,content_class,
+                     task_definition_id,task_definition_revision,generation_brief_id,
+                     generation_brief_revision,corpus_bundle_id,corpus_bundle_revision,
+                     target_blueprint_release,taxonomy_release,capability_refs,progression_profile,
+                     intended_evidence_roles,instruction,learner_payload
+                FROM app.content_revisions WHERE id=$1`,
+        values: [entry.revisionId],
+        expected: {
+          family_id: entry.familyId,
+          revision: entry.seedKey,
+          role: "learning_practice",
+          compatibility_state: "compatible",
+          digest: entry.digest,
+          predecessor_id: entry.predecessorRevisionId,
+          content_class: entry.contentClass,
+          task_definition_id: recordAt(revision.taskDefinition, "revision/taskDefinition").id,
+          task_definition_revision: recordAt(revision.taskDefinition, "revision/taskDefinition")
+            .revision,
+          generation_brief_id: recordAt(revision.generationBrief, "revision/generationBrief").id,
+          generation_brief_revision: recordAt(revision.generationBrief, "revision/generationBrief")
+            .revision,
+          corpus_bundle_id: null,
+          corpus_bundle_revision: null,
+          target_blueprint_release: revision.targetBlueprintRelease,
+          taxonomy_release: revision.taxonomyRelease,
+          capability_refs: revision.capabilityRefs,
+          progression_profile: revision.progressionProfile,
+          intended_evidence_roles: revision.intendedEvidenceRoles,
+          instruction: revision.instruction,
+          learner_payload: revision.learnerPayload,
+        },
+      },
     );
     for (const rawItem of entry.revision.items) {
       const item = recordAt(rawItem, "revision/item");
       const scorable = recordAt(item.scorable, "revision/item/scorable");
-      await client.query(
+      await insertImmutable(
+        client,
         `INSERT INTO app.content_items(id,content_revision_id,predecessor_item_id,ordinal,response_kind,binding,scorable)
-         VALUES($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb) ON CONFLICT(id) DO NOTHING`,
+         VALUES($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb)
+         ON CONFLICT(id) DO NOTHING RETURNING id`,
         [
           item.contentItemId,
           entry.revisionId,
@@ -983,14 +1128,32 @@ async function insertReleaseGraph(
           json(item.binding),
           json(scorable),
         ],
+        String(item.contentItemId),
+        "content_item",
+        {
+          sql: `SELECT content_revision_id,predecessor_item_id,ordinal,response_kind,binding,scorable
+                  FROM app.content_items WHERE id=$1`,
+          values: [item.contentItemId],
+          expected: {
+            content_revision_id: entry.revisionId,
+            predecessor_item_id: item.predecessorItemId ?? null,
+            ordinal: item.ordinal,
+            response_kind: scorable.responseKind,
+            binding: item.binding,
+            scorable,
+          },
+        },
       );
     }
     for (const rawKey of entry.keys) {
       const key = recordAt(rawKey, "key");
       const cardinality = recordAt(key.responseCardinality, "key/responseCardinality");
-      await client.query(
+      const keyDigest = createHash("sha256").update(json(key)).digest("hex");
+      await insertImmutable(
+        client,
         `INSERT INTO app.key_revisions(id,content_revision_id,content_item_id,predecessor_id,accepted_response_set,response_cardinality_min,response_cardinality_max,scoring_policy_ref,decisive_evidence,distractor_rationale,intended_cause_mapping,independent_validation,digest)
-         VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9::jsonb,$10::jsonb,$11::jsonb,$12::jsonb,$13) ON CONFLICT(id) DO NOTHING`,
+         VALUES($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9::jsonb,$10::jsonb,$11::jsonb,$12::jsonb,$13)
+         ON CONFLICT(id) DO NOTHING RETURNING id`,
         [
           key.keyRevisionId,
           entry.revisionId,
@@ -1004,8 +1167,21 @@ async function insertReleaseGraph(
           json(key.distractorRationales),
           json(key.intendedCauseMappings),
           json(key.independentValidatorResult),
-          createHash("sha256").update(json(key)).digest("hex"),
+          keyDigest,
         ],
+        String(key.keyRevisionId),
+        "key_revision",
+        {
+          sql: `SELECT content_revision_id,content_item_id,predecessor_id,digest
+                  FROM app.key_revisions WHERE id=$1`,
+          values: [key.keyRevisionId],
+          expected: {
+            content_revision_id: entry.revisionId,
+            content_item_id: key.itemId,
+            predecessor_id: key.predecessorKeyRevisionId ?? null,
+            digest: keyDigest,
+          },
+        },
       );
     }
     for (const rawGate of entry.recordedGateResults) {
@@ -1024,11 +1200,14 @@ async function insertReleaseGraph(
           "approval_publish",
           "post_publication_loop",
         ].indexOf(String(gate.gate)) + 1;
-      await client.query(
+      const gateId = stableUuid(`seed-gate/${entry.revisionId}/${String(gate.gate)}`);
+      await insertImmutable(
+        client,
         `INSERT INTO app.content_gate_results(id,content_revision_id,gate,ordinal,status,gate_version,reviewer_ref,method_version,findings,material_defect,recorded_at)
-         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11) ON CONFLICT(id) DO NOTHING`,
+         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11)
+         ON CONFLICT(id) DO NOTHING RETURNING id`,
         [
-          stableUuid(`seed-gate/${entry.revisionId}/${String(gate.gate)}`),
+          gateId,
           entry.revisionId,
           gate.gate,
           ordinal,
@@ -1044,28 +1223,73 @@ async function insertReleaseGraph(
           gate.materialDefect === true,
           gate.recordedAt,
         ],
+        gateId,
+        "content_gate_result",
+        {
+          sql: `SELECT content_revision_id,gate,ordinal,status,gate_version,reviewer_ref,method_version,
+                       findings,material_defect,recorded_at
+                  FROM app.content_gate_results WHERE id=$1`,
+          values: [gateId],
+          expected: {
+            content_revision_id: entry.revisionId,
+            gate: gate.gate,
+            ordinal,
+            status:
+              gate.outcome === "passed"
+                ? "pass"
+                : gate.outcome === "failed"
+                  ? "blocked"
+                  : "not_evaluated",
+            gate_version: gate.methodVersion,
+            reviewer_ref: gate.reviewerRef,
+            method_version: gate.methodVersion,
+            findings: gate.detail ? [{ detail: gate.detail }] : [],
+            material_defect: gate.materialDefect === true,
+            recorded_at: gate.recordedAt,
+          },
+        },
       );
     }
-    if (reportEntry?.action === "supersede" && reportEntry.currentRevisionId)
-      await client.query("UPDATE app.content_revisions SET approval_state='retired' WHERE id=$1", [
-        reportEntry.currentRevisionId,
-      ]);
   }
-  await client.query(
+  const releaseDigest = seedDocumentDigest(release);
+  await insertImmutable(
+    client,
     `INSERT INTO app.content_releases(id,release_identity,state,digest,predecessor_id)
-     VALUES($1,$2,'candidate',$3,$4) ON CONFLICT(id) DO NOTHING`,
+     VALUES($1,$2,'candidate',$3,$4)
+     ON CONFLICT(id) DO NOTHING RETURNING id`,
     [
       release.releaseId,
       release.releaseIdentity,
-      seedDocumentDigest(release),
+      releaseDigest,
       report.release.priorActiveReleaseId,
     ],
+    release.releaseId,
+    "content_release",
+    {
+      sql: "SELECT release_identity,digest,predecessor_id FROM app.content_releases WHERE id=$1",
+      values: [release.releaseId],
+      expected: {
+        release_identity: release.releaseIdentity,
+        digest: releaseDigest,
+        predecessor_id: report.release.priorActiveReleaseId,
+      },
+    },
   );
   for (const entry of release.entries)
-    await client.query(
+    await insertImmutable(
+      client,
       `INSERT INTO app.content_release_entries(release_id,content_revision_id,form_id)
-       VALUES($1,$2,NULL) ON CONFLICT(release_id,content_revision_id) DO NOTHING`,
+       VALUES($1,$2,NULL)
+       ON CONFLICT(release_id,content_revision_id) DO NOTHING RETURNING content_revision_id AS id`,
       [release.releaseId, entry.revisionId],
+      `${release.releaseId}/${entry.revisionId}`,
+      "content_release_entry",
+      {
+        sql: `SELECT form_id FROM app.content_release_entries
+               WHERE release_id=$1 AND content_revision_id=$2`,
+        values: [release.releaseId, entry.revisionId],
+        expected: { form_id: null },
+      },
     );
 }
 
@@ -1077,19 +1301,64 @@ async function mutatePostgres(
   if (request.command === "apply") return insertReleaseGraph(client, request.release, report);
   const revisionId = report.revisions[0]?.revisionId;
   if (request.command === "withdraw" && revisionId) {
-    await client.query(
-      "UPDATE app.content_revisions SET approval_state='retired',rights_state='withdrawn' WHERE id=$1",
-      [revisionId],
+    const entry = request.release.entries.find((candidate) => candidate.revisionId === revisionId);
+    if (!entry) throw new Error("Withdrawal release entry is missing.");
+    const successorRightsId = stableUuid(`content-seed-rights/${request.operationId}`);
+    const originalIdentity = recordAt(entry.rights.identity, "withdraw/rights/identity");
+    const successorRights = {
+      ...entry.rights,
+      identity: {
+        ...originalIdentity,
+        rightsEnvelopeId: successorRightsId,
+        revision: Number(originalIdentity.revision) + 1,
+        state: "withdrawn",
+        effectiveFrom: request.occurredAt,
+      },
+      incidentDisposition: {
+        reason: request.reason,
+        purgeOrTombstoneConstraint:
+          "Serving is withdrawn; immutable history remains resolvable and no validity fact changes.",
+        successorRef: null,
+        affectedArtifactSelectors: [revisionId],
+        reviewOwner: "owner:approver",
+      },
+    };
+    const rightsDigest = createHash("sha256").update(json(successorRights)).digest("hex");
+    const rightsInsert = await client.query(
+      `INSERT INTO app.rights_envelopes(id,envelope_key,state,envelope,digest,predecessor_id,effective_at)
+       VALUES($1,$2,'withdrawn',$3::jsonb,$4,$5,$6)
+       RETURNING id`,
+      [
+        successorRightsId,
+        entry.seedKey,
+        json(successorRights),
+        rightsDigest,
+        entry.rightsEnvelopeId,
+        request.occurredAt,
+      ],
     );
-    await client.query("UPDATE app.rights_envelopes SET state='withdrawn' WHERE id=$1", [
-      report.revisions[0]?.rights.envelopeId,
-    ]);
+    if (!rightsInsert.rows[0]) throw new SeedDatabaseConflict(successorRightsId, "rights_envelope");
+    await appendLifecycleDecisionAndImpact(client, request, entry, "retired", {
+      causeKind: "rights_takedown",
+      evidenceRefs: [successorRightsId],
+    });
+    await client.query(
+      "UPDATE app.content_revisions SET rights_envelope_id=$2,rights_state='withdrawn' WHERE id=$1",
+      [revisionId, successorRightsId],
+    );
   } else if (request.command === "quarantine" && revisionId) {
-    await client.query(
-      "UPDATE app.content_revisions SET approval_state='quarantined' WHERE id=$1",
-      [revisionId],
-    );
+    const entry = request.release.entries.find((candidate) => candidate.revisionId === revisionId);
+    if (!entry) throw new Error("Quarantine release entry is missing.");
+    await appendLifecycleDecisionAndImpact(client, request, entry, "quarantine", {
+      causeKind: "content_defect",
+      evidenceRefs: entry.keyRevisionIds,
+    });
   } else if (request.command === "rollback" && request.selector) {
+    const target = await client.query("SELECT state FROM app.content_releases WHERE id=$1", [
+      request.selector,
+    ]);
+    if (!target.rows[0] || !["active", "retired"].includes(String(target.rows[0].state)))
+      throw new SeedDatabaseConflict(request.selector, "approved_content_release");
     await client.query(
       "UPDATE app.content_releases SET state=CASE WHEN id=$1 THEN 'active' ELSE 'retired' END,activated_at=CASE WHEN id=$1 THEN transaction_timestamp() ELSE activated_at END,retired_at=CASE WHEN id=$1 THEN NULL ELSE transaction_timestamp() END WHERE release_identity=$2",
       [request.selector, request.release.releaseIdentity],
@@ -1097,25 +1366,213 @@ async function mutatePostgres(
   }
 }
 
+class SeedDatabaseConflict extends Error {
+  public constructor(
+    readonly identity: string,
+    readonly entity: string,
+  ) {
+    super(`Immutable ${entity} ${identity} conflicts with the seed release.`);
+  }
+}
+
+async function appendLifecycleDecisionAndImpact(
+  client: SeedSqlClient,
+  request: SeedPlanRequest,
+  entry: SeedReleaseEntryDocument,
+  level: "retired" | "quarantine",
+  impact: {
+    readonly causeKind: "rights_takedown" | "content_defect";
+    readonly evidenceRefs: readonly string[];
+  },
+): Promise<void> {
+  const decisionId = stableUuid(`content-seed-approval/${request.operationId}`);
+  const impactAssertionId = stableUuid(`content-seed-impact/${request.operationId}`);
+  const head = await client.query(
+    `SELECT id FROM app.approval_decisions
+      WHERE subject_kind='content_revision' AND subject_id=$1 AND outcome='granted'
+      ORDER BY decided_at DESC,recorded_at DESC LIMIT 1`,
+    [entry.revisionId],
+  );
+  const decision = await client.query(
+    `INSERT INTO app.approval_decisions(id,subject_kind,subject_id,content_class,level,outcome,
+       author_ref,validator_ref,approver_ref,method_version,reason_registry_id,reason_code,
+       evidence_ref,predecessor_id,decided_at)
+     VALUES($1,'content_revision',$2,'C3',$3,'granted','author:stage-05-seed',
+       'operator:content-lifecycle-validator','operator:content-lifecycle-approver',
+       'content-lifecycle/v1','reason-registry/v1.1',$4,$5,$6,$7)
+     RETURNING id`,
+    [
+      decisionId,
+      entry.revisionId,
+      level,
+      request.reason,
+      `content-impact:${impactAssertionId}`,
+      head.rows[0]?.id ?? null,
+      request.occurredAt,
+    ],
+  );
+  if (!decision.rows[0]) throw new SeedDatabaseConflict(decisionId, "approval_decision");
+  const assertion = {
+    incidentId: `content-seed/${request.operationId}`,
+    ownerContext: "Content & Publication",
+    actorRef: "operator:content-lifecycle-approver",
+    authorizationVersion: "authorization/v1",
+    causeKind: impact.causeKind,
+    impactMode: "serving_only",
+    requestedValidity: null,
+    selectors: { contentRevisionIds: [entry.revisionId] },
+    declaredCardinality: 0,
+    affectedScope: [],
+    unaffectedScope: [],
+    reasonRegistryId: "reason-registry/v1.1",
+    reasonCode: request.reason,
+    evidenceRefs: [...impact.evidenceRefs, decisionId],
+    policyAndContractVersions: {
+      canonicalizationVersion: "canonical-json/v1",
+      contentRelease: request.release.releaseId,
+    },
+    effectiveAt: request.occurredAt,
+  };
+  const assertionDigest = createHash("sha256").update(json(assertion)).digest("hex");
+  const appended = await client.query(
+    `INSERT INTO app.content_impact_assertions(id,incident_id,owner_context,actor_ref,
+       authorization_version,cause_kind,impact_mode,requested_validity,selectors,
+       declared_cardinality,affected_scope,unaffected_scope,reason_registry_id,reason_code,
+       evidence_refs,policy_and_contract_versions,effective_at,digest)
+     VALUES($1,$2,$3,$4,$5,$6,'serving_only',NULL,$7::jsonb,$8,$9::jsonb,$10::jsonb,$11,$12,$13::jsonb,$14::jsonb,$15,$16)
+     RETURNING id`,
+    [
+      impactAssertionId,
+      assertion.incidentId,
+      assertion.ownerContext,
+      assertion.actorRef,
+      assertion.authorizationVersion,
+      assertion.causeKind,
+      json(assertion.selectors),
+      assertion.declaredCardinality,
+      json(assertion.affectedScope),
+      json(assertion.unaffectedScope),
+      assertion.reasonRegistryId,
+      assertion.reasonCode,
+      json(assertion.evidenceRefs),
+      json(assertion.policyAndContractVersions),
+      assertion.effectiveAt,
+      assertionDigest,
+    ],
+  );
+  if (!appended.rows[0])
+    throw new SeedDatabaseConflict(impactAssertionId, "content_impact_assertion");
+  await client.query(
+    "UPDATE app.content_revisions SET current_approval_decision_id=$2,approval_state=$3 WHERE id=$1",
+    [entry.revisionId, decisionId, level === "retired" ? "retired" : "quarantined"],
+  );
+}
+
+function auditReasonCode(command: SeedCommand, reason: string | null): string {
+  if (command === "withdraw" || command === "quarantine")
+    return reason ?? "VALIDITY.CONTENT_APPROVAL";
+  return command === "rollback" ? "FALLBACK.CONTENT_UPDATE_REQUIRED" : "VALIDITY.CONTENT_APPROVAL";
+}
+
+async function reconstructPostgresReport(
+  client: SeedSqlClient,
+  request: SeedPlanRequest,
+  receipt: Readonly<Record<string, unknown>>,
+): Promise<SeedValidationReport> {
+  const priorActiveReleaseId = String(receipt.action).endsWith("_without_active_release")
+    ? null
+    : String(receipt.release);
+  let revisions: SeedRevisionReport[] = [];
+  if (request.command === "apply") {
+    const serving = request.release.entries.filter((entry) => entry.intent === "serving");
+    const stored = await client.query(
+      "SELECT id,recorded_at FROM app.content_revisions WHERE id=ANY($1::uuid[])",
+      [serving.map((entry) => entry.revisionId)],
+    );
+    const recordedAtById = new Map(
+      stored.rows.map((row) => [String(row.id), new Date(String(row.recorded_at)).getTime()]),
+    );
+    const receiptTime = new Date(String(receipt.recorded_at)).getTime();
+    revisions = serving.map((entry) => {
+      const insertedByOperation = recordedAtById.get(entry.revisionId) === receiptTime;
+      const action: SeedDiffAction = insertedByOperation
+        ? entry.predecessorRevisionId
+          ? "supersede"
+          : "create"
+        : "unchanged";
+      return reportFor(
+        entry,
+        action,
+        action === "create" ? null : (entry.predecessorRevisionId ?? entry.revisionId),
+      );
+    });
+  } else if (request.command === "withdraw" || request.command === "quarantine") {
+    const entry = request.release.entries.find(
+      (candidate) =>
+        candidate.seedKey === request.selector ||
+        candidate.familyId === request.selector ||
+        candidate.revisionId === request.selector,
+    );
+    if (!entry) throw new Error("Committed seed receipt refers to an absent release entry.");
+    revisions = [reportFor(entry, request.command, entry.revisionId)];
+  }
+  const failures: SeedValidationReport["failures"] = [];
+  return {
+    schema: "bestehen-seed-validation-report/v1",
+    command: request.command,
+    dryRun: false,
+    operationId: request.operationId,
+    occurredAt: String(receipt.recorded_at),
+    release: {
+      id: request.release.releaseId,
+      identity: request.release.releaseIdentity,
+      documentDigest: seedDocumentDigest(request.release),
+      priorActiveReleaseId,
+    },
+    revisions,
+    summary: {
+      created: count(revisions, "create"),
+      superseded: count(revisions, "supersede"),
+      unchanged: count(revisions, "unchanged"),
+      withdrawn: count(revisions, "withdraw"),
+      quarantined: count(revisions, "quarantine"),
+      rolledBack: request.command === "rollback" ? 1 : 0,
+      hardFailures: 0,
+    },
+    failures,
+  };
+}
+
 export async function executePostgresSeedCommand(
   pool: SeedSqlPool,
   request: Omit<SeedPlanRequest, "catalogue">,
 ): Promise<SeedValidationReport> {
+  // `app.operation_receipts` is deliberately learner-scoped, so content seed operations may not
+  // borrow it by inventing a learner. The security audit row below remains audit-shaped: it stores
+  // a real target class, action, reason code, payload digest, release reference and recorded time.
+  // The original report is reconstructed from those fields plus immutable content facts; no report
+  // body is hidden in `target_class` or another classification column.
   const client = await pool.connect();
   const receiptId = stableUuid(`content-seed-operation/${request.operationId}`);
+  let attemptedReport: SeedValidationReport | null = null;
   try {
     await client.query("BEGIN");
     await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [request.operationId]);
     const receipt = await client.query(
-      "SELECT target_digest,target_class FROM app.security_audit_events WHERE id=$1 AND reason_code='content_seed_receipt_v1'",
+      "SELECT target_digest,target_class,action,release,recorded_at FROM app.security_audit_events WHERE id=$1 AND target_class='content_seed_operation'",
       [receiptId],
     );
     const catalogue = await loadPostgresCatalogue(client);
-    const fullRequest: SeedPlanRequest = { ...request, catalogue };
+    const transactionTime = await client.query("SELECT transaction_timestamp() AS occurred_at");
+    const occurredAt = String(
+      receipt.rows[0]?.recorded_at ?? transactionTime.rows[0]?.occurred_at ?? request.occurredAt,
+    );
+    const fullRequest: SeedPlanRequest = { ...request, occurredAt, catalogue };
     const payloadDigest = requestPayloadDigest(fullRequest);
     const prior = receipt.rows[0];
     if (prior) {
       if (prior.target_digest !== payloadDigest) {
+        const attempted = planSeedCommand(fullRequest).report;
         const conflict = planSeedCommand({
           ...fullRequest,
           catalogue: {
@@ -1124,7 +1581,7 @@ export async function executePostgresSeedCommand(
               {
                 operationId: request.operationId,
                 payloadDigest: String(prior.target_digest),
-                report: JSON.parse(String(prior.target_class)) as SeedValidationReport,
+                report: attempted,
               },
             ],
           },
@@ -1132,10 +1589,12 @@ export async function executePostgresSeedCommand(
         await client.query("ROLLBACK");
         return conflict.report;
       }
+      const replay = await reconstructPostgresReport(client, fullRequest, prior);
       await client.query("COMMIT");
-      return JSON.parse(String(prior.target_class)) as SeedValidationReport;
+      return replay;
     }
     const plan = planSeedCommand(fullRequest);
+    attemptedReport = plan.report;
     if (request.dryRun || plan.report.summary.hardFailures > 0) {
       await client.query("ROLLBACK");
       return plan.report;
@@ -1143,19 +1602,40 @@ export async function executePostgresSeedCommand(
     await mutatePostgres(client, fullRequest, plan.report);
     await client.query(
       `INSERT INTO app.security_audit_events(id,actor_scope,action,target_class,target_digest,outcome,reason_code,request_id,trace_id,release,retention_class)
-       VALUES($1,'content-seed-cli',$2,$3,$4,'allowed','content_seed_receipt_v1',$1,$1,$5,'semantic_until_deletion')`,
+       VALUES($1,'content-seed-cli',$2,'content_seed_operation',$3,'allowed',$4,$1,$1,$5,'semantic_until_deletion')`,
       [
         receiptId,
-        `content_seed_${request.command}`,
-        JSON.stringify(plan.report),
+        `content_seed_${request.command}_${plan.report.release.priorActiveReleaseId ? "with_active_release" : "without_active_release"}`,
         payloadDigest,
-        request.release.releaseId,
+        auditReasonCode(request.command, request.reason),
+        plan.report.release.priorActiveReleaseId ?? request.release.releaseId,
       ],
     );
     await client.query("COMMIT");
     return plan.report;
   } catch (error) {
     await client.query("ROLLBACK");
+    if (error instanceof SeedDatabaseConflict && attemptedReport) {
+      return {
+        ...attemptedReport,
+        summary: {
+          created: 0,
+          superseded: 0,
+          unchanged: 0,
+          withdrawn: 0,
+          quarantined: 0,
+          rolledBack: 0,
+          hardFailures: 1,
+        },
+        failures: [
+          {
+            code: "immutable_database_conflict",
+            identity: error.identity,
+            detail: error.message,
+          },
+        ],
+      };
+    }
     throw error;
   } finally {
     client.release?.();
