@@ -200,3 +200,76 @@ because the absence of a live Corpus host is not proof of a policy.
 `OWNER-05-F` (re-run integration on the pinned 18.6) was raised and then **retired**
 — the orchestrator ran it locally once registry access returned. It must not appear
 in the handoff.
+
+## Continuation acceptance — T6 seed corpus and operations
+
+T6 was salvaged from the six untracked seed sources and accepted at
+`332559aa9a13d004fd097110eae96cab9a2a835b` after four corrective returns. The
+accepted slice is eleven additive commits from `ac2960f` through `332559a`:
+
+- 16 serving draft families plus two negative lifecycle fixtures;
+- 18 immutable revision graphs, 106 items and server-only key revisions, 108
+  recorded gate facts, rights/accessibility facts and 22 deterministic fake-audio
+  manifests;
+- the package-neutral generated `release.json`;
+- local and PostgreSQL seed adapters with dry-run/report/apply, withdrawal,
+  quarantine, rollback and immutable operation receipts;
+- `pnpm --filter @bestehen/infrastructure content:seed` and the operations runbook.
+
+No seed claims independent key validation or launch human review. All serving
+entries remain `draft`/database `candidate`; OWNER-05-A/B/C remain unclaimed.
+
+### Defects rejected before T6 acceptance
+
+1. The first pass marked generated keys publishable and named a system process as
+   reviewer even though Architecture 09 requires independent validation and launch
+   human review. The corpus was returned to honest draft/candidate state.
+2. The first CLI only planned a local catalogue and emitted an incomplete release
+   document. It did not apply the complete graph to PostgreSQL.
+3. Withdrawal/quarantine/rollback were not idempotent and rewrote rights/revision
+   state directly. They now append successor rights, approval decisions and impact
+   assertions, then update only current projection pointers.
+4. `ON CONFLICT DO NOTHING` accepted immutable identity conflicts, operation time
+   contaminated the semantic idempotency digest, and a whole report was hidden in
+   `security_audit_events.target_class`. Exact entity comparisons and audit-shaped
+   receipts replaced those shortcuts.
+5. The replay query selected nonexistent `app.content_revisions.recorded_at`; the
+   fake SQL client invented the column. Exact mixed replay now uses one real
+   `content_revision` audit fact per apply action.
+6. Candidate selection depended on unordered query rows and mixed unrelated
+   `release_identity` leaves. Current revisions/releases now derive from scoped
+   predecessor leaves with cardinality failures.
+7. Exact replay named a predecessor as `currentRevisionId` for an unchanged
+   successor. Action-specific reconstruction and a whole-report regression fixed it.
+8. The first real PostgreSQL withdrawal failed with SQLSTATE 22023 because
+   `String(Date)` produced `GMT+0200`, which PostgreSQL rejected as `timestamptz`.
+   Database timestamps are now normalized to canonical ISO instants before reports
+   or lifecycle bindings.
+
+### Independent evidence at `332559a`
+
+- Targeted seed tests: **26/26**.
+- `format:check`, `lint`, `typecheck`, `check:boundaries`, `check:assets`,
+  `check:lock`, `check:secrets`, `check:providers`, `test:release`, `build`,
+  `check:web-budget`, `check:generated`: **PASS** with Node 24.19.0. The generated
+  release is over Biome's 1 MiB scan limit and produces a warning, not a failure.
+- `test:unit`: **1 failed / 677 passed (678)**, exactly the known coverage-parity
+  failure.
+- Protected first-load budget: **196,549 B gzip**, 8,251 B below the 204,800 B
+  ceiling.
+- `test:integration`: **19/19 three consecutive independent runs** on the pinned
+  PostgreSQL 18.6 image.
+- Fresh migrated database exercise: apply created 16 serving drafts; two apply
+  replays were byte-identical; withdrawal and quarantine each succeeded and
+  replayed byte-identically. SQL inspection found 18 families/revisions, 106
+  items/keys, 108 gate results, one candidate release and 18 release entries.
+- Append-only proof: the original rights row remained `current`; its linked
+  successor was `withdrawn`; granted `retired`/`quarantine` decisions and
+  `serving_only` impacts were appended; revision projections pointed to those new
+  facts; `validity_assertions=0` and `content_impact_targets=0`.
+
+The two disposable verification databases and temporary report directory were
+removed after inspection. The compose PostgreSQL service remains healthy for the
+remaining Stage 05 gates. `apps/web/.next` was removed and the tree was clean at
+the T6 acceptance boundary. Local `main` was 63 commits ahead of stale
+`origin/main`; nothing was pushed and no pull request was opened.
