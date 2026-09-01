@@ -44,15 +44,15 @@ import {
 } from "@bestehen/application";
 import {
   type AppId,
-  appId,
-  type AttemptId,
-  type AttemptRuntimeState,
   type AssistanceKind,
   type AssistancePhase,
+  type AttemptId,
+  type AttemptRuntimeState,
   type AuthorizedScope,
-  canTransitionAttemptRuntime,
+  appId,
   type ContentItemId,
   type ContentRevisionId,
+  canTransitionAttemptRuntime,
   type EvidenceObservationId,
   type EvidenceValidityState,
   type ExposureClass,
@@ -64,8 +64,8 @@ import {
   type ObjectiveUnitOutcomeKind,
   type OperationId,
   type ReasonCode,
-  reasonRegistryRelease,
   type Result,
+  reasonRegistryRelease,
   type ServingManifestId,
   type SubmissionId,
   type ValidityAssertionId,
@@ -158,6 +158,7 @@ export interface AttemptStateRecord {
   readonly resourceVersion: number;
   /** The highest checkpoint sequence accepted on any stream. `0` when none was ever accepted. */
   readonly acknowledgedCheckpointSequence: number;
+  readonly occurredAt?: Date;
 }
 
 export interface AttemptCheckpointRecord {
@@ -212,6 +213,12 @@ export interface CommittedObjectiveSubmission {
   readonly scoredAt: Date;
   readonly checksum: string;
   readonly responseDigest: string;
+  readonly canonicalResponse: unknown;
+  readonly conditions: unknown;
+  readonly algorithmVersion: string;
+  readonly scoringPolicyRef: string;
+  readonly taskRollups: unknown;
+  readonly rawOfficialConversion?: unknown;
   readonly unitOutcomes: readonly ObjectiveUnitOutcomeRecord[];
   readonly validity: InitialValidityRecord;
   readonly learnerSequence: number;
@@ -232,6 +239,33 @@ export interface DecisiveEvidenceRecord {
   readonly issueCode?: string;
   readonly decisiveEvidence: unknown;
   readonly distractorRationale: unknown;
+  readonly intendedCauseMapping: unknown;
+  readonly scorable: unknown;
+}
+
+export interface AttemptContextRecord {
+  readonly sessionId: AppId<"session">;
+  readonly activityOccurrenceId: AppId<"activity_occurrence">;
+  readonly episodeId: AppId<"episode">;
+}
+
+export interface CanonicalCheckpointRecord {
+  readonly sequence: number;
+  readonly stream: string;
+  readonly operations: unknown;
+  readonly canonicalResponse: unknown;
+  readonly responseDigest: string;
+}
+
+export interface RecordedAttemptConditions {
+  readonly assistance: readonly {
+    readonly kind: AssistanceKind;
+    readonly phase: AssistancePhase;
+    readonly answerBearing: "yes" | "no" | "uncertain";
+    readonly affectedScope: readonly string[];
+    readonly testedCapabilityEffect: "equivalent" | "altering" | "unverified" | "not_applicable";
+  }[];
+  readonly exposureClass?: ExposureClass;
 }
 
 /* ------------------------------------------------------------------------------------------------
@@ -380,6 +414,7 @@ function attemptFromRow(row: Row): AttemptStateRecord {
     state: row.state as AttemptRuntimeState,
     resourceVersion: Number(row.resource_version),
     acknowledgedCheckpointSequence: Number(row.acknowledged_sequence ?? 0),
+    ...(row.occurred_at ? { occurredAt: new Date(String(row.occurred_at)) } : {}),
   };
 }
 
@@ -392,7 +427,7 @@ function attemptFromRow(row: Row): AttemptStateRecord {
  * has more than one checkpoint.
  */
 const attemptProjection = `SELECT a.id,a.learner_scope_id,a.operation_id,a.serving_manifest_id,
-    a.content_revision_id,a.modality,a.direct_lane,a.state,a.resource_version,
+    a.content_revision_id,a.modality,a.direct_lane,a.state,a.resource_version,a.occurred_at,
     COALESCE((SELECT MAX(c.sequence) FROM app.attempt_checkpoints c
                WHERE c.attempt_id=a.id AND c.learner_scope_id=a.learner_scope_id),0) AS acknowledged_sequence
    FROM app.attempts a`;
@@ -474,6 +509,101 @@ export class PostgresAttemptRepository {
     return result.rows[0] ? attemptFromRow(result.rows[0]) : undefined;
   }
 
+  /** Resolves the scoped session/activity/episode chain required to create an attempt. */
+  public async readAttemptContext(
+    scope: AuthorizedScope,
+    activityOccurrenceId: AppId<"activity_occurrence">,
+  ): Promise<AttemptContextRecord | undefined> {
+    const result = await this.pool.query(
+      `SELECT activity.id AS activity_occurrence_id,activity.session_id,episode.id AS episode_id
+         FROM app.activity_occurrences activity
+         JOIN app.coaching_episodes episode
+           ON episode.learner_scope_id=activity.learner_scope_id
+          AND episode.activity_occurrence_id=activity.id
+        WHERE activity.learner_scope_id=$1 AND activity.id=$2
+          AND activity.state IN ('offered','active','partially_completed')
+          AND episode.state IN ('offered','active','partially_completed')
+        ORDER BY episode.id`,
+      [scope.learnerScopeId, activityOccurrenceId],
+    );
+    if (result.rows.length !== 1) return undefined;
+    const row = result.rows[0];
+    return {
+      sessionId: appId<"session">(String(row.session_id)),
+      activityOccurrenceId: appId<"activity_occurrence">(String(row.activity_occurrence_id)),
+      episodeId: appId<"episode">(String(row.episode_id)),
+    };
+  }
+
+  /**
+   * Reads the exact canonical checkpoint selected by sequence and digest. A divergent branch at the
+   * same sequence is therefore never chosen by row order.
+   */
+  public async readCanonicalCheckpoint(
+    scope: AuthorizedScope,
+    attemptId: AttemptId,
+    sequence: number,
+    responseDigest: string,
+  ): Promise<CanonicalCheckpointRecord | undefined> {
+    const result = await this.pool.query(
+      `SELECT envelope
+         FROM app.response_facts
+        WHERE learner_scope_id=$1 AND attempt_id=$2
+          AND fact_type='objective_response_checkpoint_v1'
+          AND envelope->>'sequence'=$3 AND digest=$4
+        ORDER BY learner_sequence`,
+      [scope.learnerScopeId, attemptId, String(sequence), responseDigest],
+    );
+    if (result.rows.length !== 1) return undefined;
+    const envelope = result.rows[0]?.envelope as Record<string, unknown> | undefined;
+    if (!envelope) return undefined;
+    return {
+      sequence,
+      stream: String(envelope.stream ?? ""),
+      operations: envelope.operations,
+      canonicalResponse: envelope.canonicalResponse,
+      responseDigest,
+    };
+  }
+
+  /** Server-recorded assistance and exposure facts used to derive submission conditions. */
+  public async readRecordedAttemptConditions(
+    scope: AuthorizedScope,
+    attemptId: AttemptId,
+  ): Promise<RecordedAttemptConditions | undefined> {
+    if (!(await this.readAttempt(scope, attemptId))) return undefined;
+    const assistance = await this.pool.query(
+      `SELECT kind,phase,answer_bearing,affected_scope,tested_capability_effect
+         FROM app.assistance_events
+        WHERE learner_scope_id=$1 AND attempt_id=$2 AND state='used'
+        ORDER BY recorded_at,id`,
+      [scope.learnerScopeId, attemptId],
+    );
+    const exposure = await this.pool.query(
+      `SELECT envelope->>'exposureClass' AS exposure_class
+         FROM app.exposure_facts
+        WHERE learner_scope_id=$1 AND attempt_id=$2
+          AND fact_type='objective_exposure_v1'
+        ORDER BY learner_sequence DESC LIMIT 1`,
+      [scope.learnerScopeId, attemptId],
+    );
+    const exposureClass = exposure.rows[0]?.exposure_class;
+    return {
+      assistance: assistance.rows.map((row) => ({
+        kind: row.kind as AssistanceKind,
+        phase: row.phase as AssistancePhase,
+        answerBearing: row.answer_bearing as "yes" | "no" | "uncertain",
+        affectedScope: textArray(row.affected_scope),
+        testedCapabilityEffect: row.tested_capability_effect as
+          | "equivalent"
+          | "altering"
+          | "unverified"
+          | "not_applicable",
+      })),
+      ...(exposureClass ? { exposureClass: exposureClass as ExposureClass } : {}),
+    };
+  }
+
   public async readCheckpoints(
     scope: AuthorizedScope,
     attemptId: AttemptId,
@@ -535,8 +665,9 @@ export class PostgresAttemptRepository {
     attemptId: AttemptId,
   ): Promise<CommittedObjectiveSubmission | undefined> {
     const head = await client.query(
-      `SELECT s.id AS submission_id,s.attempt_id,s.response_digest,
-              o.id AS outcome_id,o.checksum,o.scored_at,
+      `SELECT s.id AS submission_id,s.attempt_id,s.response_digest,s.canonical_response,s.conditions,
+              o.id AS outcome_id,o.checksum,o.scored_at,o.algorithm_version,o.scoring_policy_ref,
+              o.task_rollups,o.raw_official_conversion,
               e.id AS observation_id,e.learner_sequence,
               v.id AS assertion_id,v.state,v.affected_scope,v.unaffected_scope,
               v.reason_code,v.reason_registry_id
@@ -581,6 +712,14 @@ export class PostgresAttemptRepository {
       scoredAt: new Date(String(row.scored_at)),
       checksum: String(row.checksum),
       responseDigest: String(row.response_digest),
+      canonicalResponse: row.canonical_response,
+      conditions: row.conditions,
+      algorithmVersion: String(row.algorithm_version),
+      scoringPolicyRef: String(row.scoring_policy_ref),
+      taskRollups: row.task_rollups,
+      ...(row.raw_official_conversion === null || row.raw_official_conversion === undefined
+        ? {}
+        : { rawOfficialConversion: row.raw_official_conversion }),
       unitOutcomes: units.rows.map((unit) => ({
         contentItemId: appId<"content_item">(String(unit.content_item_id)),
         kind: unit.kind as ObjectiveUnitOutcomeKind,
@@ -620,11 +759,13 @@ export class PostgresAttemptRepository {
       return { ok: false, error: "not_available" };
     }
     const result = await this.pool.query(
-      `SELECT u.content_item_id,u.kind,u.issue_code,k.decisive_evidence,k.distractor_rationale
+      `SELECT u.content_item_id,u.kind,u.issue_code,k.decisive_evidence,k.distractor_rationale,
+              k.intended_cause_mapping,i.scorable
          FROM app.objective_unit_outcomes u
          JOIN app.objective_outcomes o
            ON o.learner_scope_id=u.learner_scope_id AND o.id=u.outcome_id
          JOIN app.key_revisions k ON k.id=u.key_revision_id
+         JOIN app.content_items i ON i.id=u.content_item_id
         WHERE u.learner_scope_id=$1 AND o.attempt_id=$2
         ORDER BY u.content_item_id`,
       [scope.learnerScopeId, attemptId],
@@ -637,6 +778,8 @@ export class PostgresAttemptRepository {
         ...(row.issue_code ? { issueCode: String(row.issue_code) } : {}),
         decisiveEvidence: row.decisive_evidence,
         distractorRationale: row.distractor_rationale,
+        intendedCauseMapping: row.intended_cause_mapping,
+        scorable: row.scorable,
       })),
     };
   }
@@ -1421,6 +1564,17 @@ export class PostgresAttemptRepository {
               scoredAt,
               checksum: input.outcome.checksum,
               responseDigest: input.responseDigest,
+              canonicalResponse: input.canonicalResponse,
+              conditions: {
+                ...input.conditions,
+                ...(input.exposureClass ? { exposureClass: input.exposureClass } : {}),
+              },
+              algorithmVersion: input.outcome.algorithmVersion,
+              scoringPolicyRef: input.outcome.scoringPolicyRef,
+              taskRollups: input.outcome.taskRollups,
+              ...(input.outcome.rawOfficialConversion === undefined
+                ? {}
+                : { rawOfficialConversion: input.outcome.rawOfficialConversion }),
               unitOutcomes: sortedUnitOutcomes(input.outcome.unitOutcomes),
               validity: {
                 assertionId: input.assertionId,

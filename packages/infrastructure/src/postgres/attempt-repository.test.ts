@@ -25,8 +25,8 @@
 
 import type { AttemptConditionSummary } from "@bestehen/application";
 import {
-  appId,
   type AuthorizedScope,
+  appId,
   assistanceKinds,
   reasonRegistryRelease,
 } from "@bestehen/domain";
@@ -952,6 +952,71 @@ describe("P05-IDEMPOTENCY-001 checkpoints", () => {
     expect(projection?.text).toMatch(/SELECT MAX\(c\.sequence\) FROM app\.attempt_checkpoints c/);
     // A LEFT JOIN would return one row per checkpoint and make the answer depend on row order.
     expect(projection?.text).not.toMatch(/JOIN/);
+  });
+});
+
+describe("exact runtime composition reads", () => {
+  it("selects a checkpoint by scope, attempt, sequence and digest instead of row order", async () => {
+    const envelope = {
+      sequence: 5,
+      stream: "primary",
+      operations: [{ kind: "set_selection", itemId: itemAlpha, optionId: "option-a" }],
+      canonicalResponse: { selections: { [itemAlpha]: ["option-a"] } },
+    };
+    const { repository, recorder } = repositoryOn([
+      { when: /^SELECT envelope/, rows: [{ envelope }] },
+    ]);
+
+    const checkpoint = await repository.readCanonicalCheckpoint(
+      scope,
+      appId<"attempt">(attemptId),
+      5,
+      responseDigest,
+    );
+
+    expect(checkpoint?.operations).toEqual(envelope.operations);
+    const read = recorder.only(/^SELECT envelope/);
+    expect(read.text).toContain("envelope->>'sequence'=$3 AND digest=$4");
+    expect(read.values).toEqual([scopeId, attemptId, "5", responseDigest]);
+  });
+
+  it("rejects an ambiguous checkpoint instead of choosing a positional winner", async () => {
+    const { repository } = repositoryOn([
+      {
+        when: /^SELECT envelope/,
+        rows: [{ envelope: {} }, { envelope: {} }],
+      },
+    ]);
+
+    await expect(
+      repository.readCanonicalCheckpoint(scope, appId<"attempt">(attemptId), 5, responseDigest),
+    ).resolves.toBeUndefined();
+  });
+
+  it("resolves an attempt context only when one scoped activity and episode match", async () => {
+    const { repository, recorder } = repositoryOn([
+      {
+        when: /^SELECT activity\.id AS activity_occurrence_id/,
+        rows: [
+          {
+            activity_occurrence_id: activityOccurrenceId,
+            session_id: sessionId,
+            episode_id: episodeId,
+          },
+        ],
+      },
+    ]);
+
+    const context = await repository.readAttemptContext(
+      scope,
+      appId<"activity_occurrence">(activityOccurrenceId),
+    );
+
+    expect(context).toEqual({ sessionId, activityOccurrenceId, episodeId });
+    expect(recorder.only(/^SELECT activity\.id AS activity_occurrence_id/).values).toEqual([
+      scopeId,
+      activityOccurrenceId,
+    ]);
   });
 });
 

@@ -20,8 +20,8 @@
  */
 
 import {
-  appId,
   type AuthorizedScope,
+  appId,
   type ContentApprovalLevel,
   contentApprovalLevels,
   exposureClasses,
@@ -33,8 +33,8 @@ import {
   type ContentJobInput,
   type ContentReleasePublication,
   PostgresContentRepository,
-  servableApprovalLevels,
   type ServingManifestIssueRequest,
+  servableApprovalLevels,
 } from "./content-repository.js";
 
 /* ------------------------------------------------------------------------------------------------
@@ -120,6 +120,8 @@ const decisionId = "77777777-7777-4777-8777-777777777777";
 const impactId = "88888888-8888-4888-8888-888888888888";
 const observationId = "99999999-9999-4999-8999-999999999999";
 const jobId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const contentItemId = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+const keyRevisionId = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
 
 const digest = (seed: string): string => seed.repeat(64).slice(0, 64);
 const keyDigest = digest("a1b2c3d4e5f6");
@@ -922,6 +924,116 @@ describe("revocation stops serving without touching history", () => {
     const head = recorder.matching(/^SELECT \* FROM app\.serving_manifests/)[0];
     expect(head?.text).toContain("learner_scope_id=$1");
     expect(head?.values[0]).toBe(otherScopeId);
+  });
+
+  it("resolves pinned learner material without issuing a key-bearing query", async () => {
+    const entriesWithItem: Route = {
+      when: /^SELECT ordinal,content_revision_id/,
+      rows: [
+        {
+          ordinal: 1,
+          content_revision_id: revisionId,
+          content_item_id: contentItemId,
+          media_revision_id: null,
+        },
+      ],
+    };
+    const { repository, recorder } = repositoryOn([
+      manifestHeadRoute,
+      entriesWithItem,
+      {
+        when: /^SELECT DISTINCT cr\.id AS content_revision_id/,
+        rows: [
+          {
+            content_revision_id: revisionId,
+            family_id: familyId,
+            instruction: { safeContentNodes: [] },
+            learner_payload: { kind: "R2DetailedSelect", questions: [] },
+            progression_profile: "P2",
+            task_family_kind: "R2DetailedSelect",
+          },
+        ],
+      },
+    ]);
+
+    const material = await repository.readPinnedLearnerMaterial(
+      scope,
+      appId<"serving_manifest">(manifestId),
+    );
+
+    expect(material?.contentRevisionId).toBe(revisionId);
+    expect(material?.itemIds).toEqual([contentItemId]);
+    expect(recorder.statements.some((statement) => statement.includes("app.key_revisions"))).toBe(
+      false,
+    );
+    expect(recorder.matching(/^SELECT DISTINCT cr\.id AS content_revision_id/)[0]?.values).toEqual([
+      scopeId,
+      manifestId,
+    ]);
+  });
+
+  it("reads scoring material only through exact manifest-pinned key digests", async () => {
+    const { repository, recorder } = repositoryOn([
+      {
+        when: /^SELECT item\.id AS content_item_id/,
+        rows: [
+          {
+            content_item_id: contentItemId,
+            content_revision_id: revisionId,
+            binding: { kind: "select", questionId: "question-1" },
+            scorable: {
+              responseKind: "single_select",
+              responseCardinality: { min: 1, max: 1 },
+              keyRevisionId,
+              scoringPolicyRef: "objective-scoring/v1",
+            },
+            key_revision_id: keyRevisionId,
+            accepted_response_set: [{ kind: "option", optionId: "option-a" }],
+            response_cardinality_min: 1,
+            response_cardinality_max: 1,
+            scoring_policy_ref: "objective-scoring/v1",
+          },
+        ],
+      },
+      { when: /^SELECT count\(\*\)::int AS total/, rows: [{ total: 1 }] },
+    ]);
+
+    const units = await repository.readPinnedScoringUnits(
+      scope,
+      appId<"serving_manifest">(manifestId),
+    );
+
+    expect(units?.[0]?.keyRevisionId).toBe(keyRevisionId);
+    const keyRead = recorder.matching(/^SELECT item\.id AS content_item_id/)[0];
+    expect(keyRead?.text).toContain("sm.key_revision_digests ? key.digest");
+    expect(keyRead?.text).not.toMatch(/ORDER BY key\.(?:created_at|recorded_at).*DESC/);
+    expect(keyRead?.values).toEqual([scopeId, manifestId]);
+  });
+
+  it("rejects an incomplete pinned key set instead of scoring a partial form", async () => {
+    const { repository } = repositoryOn([
+      {
+        when: /^SELECT item\.id AS content_item_id/,
+        rows: [
+          {
+            content_item_id: contentItemId,
+            content_revision_id: revisionId,
+            binding: {},
+            scorable: {},
+            key_revision_id: keyRevisionId,
+            accepted_response_set: [],
+            response_cardinality_min: 1,
+            response_cardinality_max: 1,
+            scoring_policy_ref: "objective-scoring/v1",
+          },
+        ],
+      },
+      { when: /^SELECT count\(\*\)::int AS total/, rows: [{ total: 2 }] },
+    ]);
+
+    await expect(
+      repository.readPinnedScoringUnits(scope, appId<"serving_manifest">(manifestId)),
+    ).resolves.toBeUndefined();
   });
 });
 

@@ -1,4 +1,5 @@
 import type {
+  AppId,
   AuthorizedScope,
   ContentApprovalLevel,
   ContentClass,
@@ -21,9 +22,9 @@ import {
   appId,
   canHoldApprovalLevel,
   canTransitionContentApproval,
-  exposureClasses,
   type EvidenceValidityState,
   type ExposureClass,
+  exposureClasses,
   reasonRegistryRelease,
 } from "@bestehen/domain";
 import type { Pool, PoolClient } from "pg";
@@ -174,13 +175,61 @@ export interface ServingManifestRecord {
   readonly approvalRole: ContentApprovalLevel;
   readonly entries: readonly ServingManifestEntryInput[];
   readonly keyRevisionDigests: readonly string[];
+  readonly allowedConditions: unknown;
   readonly learnerSafePayloadDigest: string;
   readonly freshnessDecision: FreshnessDecision;
+  readonly comparedFamilyRefs: readonly string[];
+  readonly authorizationVersion: string;
   readonly contentReleaseIdentity: string;
   readonly issuedAt: Date;
   readonly expiresAt: Date;
   readonly revocationState: "active" | "revoked_before_start" | "revoked_after_pin";
   readonly digest: string;
+}
+
+/**
+ * The exact learner-facing revision pinned by a serving manifest. Values authored in the content
+ * package remain `unknown` here because the infrastructure package may not depend on content. The
+ * web composition boundary validates them before rendering. This read never names the key table.
+ */
+export interface PinnedLearnerMaterialRecord {
+  readonly manifest: ServingManifestRecord;
+  readonly contentFamilyId: ContentFamilyId;
+  readonly taskFamilyKind: string;
+  readonly contentRevisionId: ContentRevisionId;
+  readonly instruction: unknown;
+  readonly learnerPayload: unknown;
+  readonly progressionProfile: string;
+  readonly itemIds: readonly ContentItemId[];
+}
+
+/** One publishable revision selected before a manifest is issued. Key bytes never cross this read. */
+export interface EligibleServingRevisionRecord {
+  readonly contentFamilyId: ContentFamilyId;
+  readonly taskFamilyKind: string;
+  readonly contentRevisionId: ContentRevisionId;
+  readonly contentClass: ContentClass;
+  readonly approvalRole: ContentApprovalLevel;
+  readonly contentReleaseIdentity: string;
+  readonly instruction: unknown;
+  readonly learnerPayload: unknown;
+  readonly progressionProfile: string;
+  readonly itemIds: readonly ContentItemId[];
+  readonly mediaRevisionIds: readonly MediaRevisionId[];
+  readonly keyRevisionDigests: readonly string[];
+  readonly priorExposureClass?: ExposureClass;
+}
+
+/** Exact server-only scoring input selected by the manifest's pinned key digests. */
+export interface PinnedScoringUnitRecord {
+  readonly contentItemId: ContentItemId;
+  readonly contentRevisionId: ContentRevisionId;
+  readonly binding: unknown;
+  readonly scorable: unknown;
+  readonly keyRevisionId: AppId<"key_revision">;
+  readonly acceptedResponseSet: unknown;
+  readonly responseCardinality: { readonly min: number; readonly max: number };
+  readonly scoringPolicyRef: string;
 }
 
 export const exposureTriggerValues = [
@@ -743,8 +792,13 @@ export class PostgresContentRepository {
           : {}),
       })),
       keyRevisionDigests: row.key_revision_digests as readonly string[],
+      allowedConditions: row.allowed_conditions,
       learnerSafePayloadDigest: String(row.learner_safe_payload_digest),
       freshnessDecision: row.freshness_decision as FreshnessDecision,
+      comparedFamilyRefs: Array.isArray(row.compared_family_refs)
+        ? row.compared_family_refs.map((entry: unknown) => String(entry))
+        : [],
+      authorizationVersion: String(row.authorization_version),
       contentReleaseIdentity: String(row.content_release_identity),
       issuedAt: new Date(String(row.issued_at)),
       expiresAt: new Date(String(row.expires_at)),
@@ -763,6 +817,187 @@ export class PostgresContentRepository {
     servingManifestId: ServingManifestId,
   ): Promise<ServingManifestRecord | undefined> {
     return this.readManifest(this.pool, scope.learnerScopeId, servingManifestId);
+  }
+
+  /**
+   * Selects one eligible revision deterministically for a new lease. Prior exposure ranks after an
+   * unseen family; identifiers break ties, so PostgreSQL row order never changes the assignment.
+   * The query returns key digests only. Actual key material is read solely by
+   * {@link readPinnedScoringUnits} after a shaped submit command.
+   */
+  public async findEligibleServingRevision(
+    scope: AuthorizedScope,
+    taskFamilyKind: string,
+    progressionProfile: string,
+  ): Promise<EligibleServingRevisionRecord | undefined> {
+    const head = await this.pool.query(
+      `SELECT cr.id AS content_revision_id,cr.content_class,cr.instruction,cr.learner_payload,
+              cr.progression_profile,cf.id AS content_family_id,cf.task_family_kind,
+              ad.level AS approval_role,rel.release_identity,cei.exposure_class
+         FROM app.content_revisions cr
+         JOIN app.content_families cf ON cf.id=cr.family_id
+         JOIN app.approval_decisions ad ON ad.id=cr.current_approval_decision_id
+         JOIN app.rights_envelopes rights ON rights.id=cr.rights_envelope_id
+         JOIN app.accessibility_manifests accessibility ON accessibility.id=cr.accessibility_manifest_id
+         JOIN app.content_release_entries release_entry ON release_entry.content_revision_id=cr.id
+         JOIN app.content_releases rel ON rel.id=release_entry.release_id
+         LEFT JOIN app.content_exposure_index cei
+           ON cei.learner_scope_id=$1 AND cei.content_family_id=cf.id
+        WHERE cf.task_family_kind=$2 AND cr.progression_profile=$3
+          AND rel.state='active' AND ad.outcome='granted'
+          AND ad.level=ANY($4::text[]) AND rights.state='current'
+          AND accessibility.gate_status='pass'
+        ORDER BY (cei.content_family_id IS NOT NULL),cf.family_key,cr.id
+        LIMIT 1`,
+      [scope.learnerScopeId, taskFamilyKind, progressionProfile, servableApprovalLevels],
+    );
+    const row = head.rows[0];
+    if (!row) return undefined;
+    const contentRevisionId = appId<"content_revision">(String(row.content_revision_id));
+    const items = await this.pool.query(
+      "SELECT id FROM app.content_items WHERE content_revision_id=$1 ORDER BY ordinal,id",
+      [contentRevisionId],
+    );
+    const media = await this.pool.query(
+      `SELECT DISTINCT mr.id
+         FROM app.media_revisions mr
+         JOIN app.media_assets ma ON ma.id=mr.asset_id
+        WHERE ma.content_family_id=$1 AND ma.status='current' ORDER BY mr.id`,
+      [String(row.content_family_id)],
+    );
+    const keys = await this.pool.query(
+      `SELECT k.digest
+         FROM app.key_revisions k
+         JOIN app.content_items i ON i.id=k.content_item_id
+        WHERE i.content_revision_id=$1 ORDER BY i.ordinal,k.id`,
+      [contentRevisionId],
+    );
+    return {
+      contentFamilyId: appId<"content_family">(String(row.content_family_id)),
+      taskFamilyKind: String(row.task_family_kind),
+      contentRevisionId,
+      contentClass: row.content_class as ContentClass,
+      approvalRole: row.approval_role as ContentApprovalLevel,
+      contentReleaseIdentity: String(row.release_identity),
+      instruction: row.instruction,
+      learnerPayload: row.learner_payload,
+      progressionProfile: String(row.progression_profile),
+      itemIds: items.rows.map((item) => appId<"content_item">(String(item.id))),
+      mediaRevisionIds: media.rows.map((entry) => appId<"media_revision">(String(entry.id))),
+      keyRevisionDigests: keys.rows.map((entry) => String(entry.digest)),
+      ...(row.exposure_class ? { priorExposureClass: row.exposure_class as ExposureClass } : {}),
+    };
+  }
+
+  /**
+   * Loads the pinned learner payload without joining `app.key_revisions`. The manifest scope is in
+   * the first predicate, so a guessed manifest id and a cross-scope id have the same answer.
+   */
+  public async readPinnedLearnerMaterial(
+    scope: AuthorizedScope,
+    servingManifestId: ServingManifestId,
+  ): Promise<PinnedLearnerMaterialRecord | undefined> {
+    const manifest = await this.readServingManifest(scope, servingManifestId);
+    if (!manifest) return undefined;
+    const revisions = await this.pool.query(
+      `SELECT DISTINCT cr.id AS content_revision_id,cr.family_id,cr.instruction,cr.learner_payload,
+              cr.progression_profile,cf.task_family_kind
+         FROM app.serving_manifest_entries entry
+         JOIN app.serving_manifests sm
+           ON sm.id=entry.serving_manifest_id AND sm.learner_scope_id=entry.learner_scope_id
+         JOIN app.content_revisions cr ON cr.id=entry.content_revision_id
+         JOIN app.content_families cf ON cf.id=cr.family_id
+        WHERE sm.learner_scope_id=$1 AND sm.id=$2
+        ORDER BY cr.id`,
+      [scope.learnerScopeId, servingManifestId],
+    );
+    if (revisions.rows.length !== 1) return undefined;
+    const row = revisions.rows[0];
+    return {
+      manifest,
+      contentFamilyId: appId<"content_family">(String(row.family_id)),
+      taskFamilyKind: String(row.task_family_kind),
+      contentRevisionId: appId<"content_revision">(String(row.content_revision_id)),
+      instruction: row.instruction,
+      learnerPayload: row.learner_payload,
+      progressionProfile: String(row.progression_profile),
+      itemIds: manifest.entries.flatMap((entry) =>
+        entry.contentItemId ? [entry.contentItemId] : [],
+      ),
+    };
+  }
+
+  /**
+   * Reads exact key revisions by the digests pinned on the manifest. No "latest key" query exists
+   * here. Cardinality must match one key per pinned item or the caller receives no bundle.
+   */
+  public async readPinnedScoringUnits(
+    scope: AuthorizedScope,
+    servingManifestId: ServingManifestId,
+  ): Promise<readonly PinnedScoringUnitRecord[] | undefined> {
+    const result = await this.pool.query(
+      `SELECT item.id AS content_item_id,item.content_revision_id,item.binding,item.scorable,
+              key.id AS key_revision_id,key.accepted_response_set,
+              key.response_cardinality_min,key.response_cardinality_max,key.scoring_policy_ref
+         FROM app.serving_manifests sm
+         JOIN app.serving_manifest_entries entry
+           ON entry.learner_scope_id=sm.learner_scope_id AND entry.serving_manifest_id=sm.id
+         JOIN app.content_items item ON item.id=entry.content_item_id
+         JOIN app.key_revisions key
+           ON key.content_item_id=item.id
+          AND sm.key_revision_digests ? key.digest
+        WHERE sm.learner_scope_id=$1 AND sm.id=$2
+        ORDER BY entry.ordinal,item.id`,
+      [scope.learnerScopeId, servingManifestId],
+    );
+    const expected = await this.pool.query(
+      `SELECT count(*)::int AS total
+         FROM app.serving_manifest_entries
+        WHERE learner_scope_id=$1 AND serving_manifest_id=$2 AND content_item_id IS NOT NULL`,
+      [scope.learnerScopeId, servingManifestId],
+    );
+    if (result.rows.length === 0 || result.rows.length !== Number(expected.rows[0]?.total)) {
+      return undefined;
+    }
+    return result.rows.map((row) => ({
+      contentItemId: appId<"content_item">(String(row.content_item_id)),
+      contentRevisionId: appId<"content_revision">(String(row.content_revision_id)),
+      binding: row.binding,
+      scorable: row.scorable,
+      keyRevisionId: appId<"key_revision">(String(row.key_revision_id)),
+      acceptedResponseSet: row.accepted_response_set,
+      responseCardinality: {
+        min: Number(row.response_cardinality_min),
+        max: Number(row.response_cardinality_max),
+      },
+      scoringPolicyRef: String(row.scoring_policy_ref),
+    }));
+  }
+
+  /** Current interpretation of already-pinned content. It never changes the immutable outcome. */
+  public async readPinnedContentStatus(
+    scope: AuthorizedScope,
+    servingManifestId: ServingManifestId,
+  ): Promise<
+    "published" | "quarantined_after_pin" | "withdrawn_after_pin" | "under_review" | undefined
+  > {
+    const result = await this.pool.query(
+      `SELECT cr.approval_state,rights.state AS rights_state
+         FROM app.serving_manifests sm
+         JOIN app.serving_manifest_entries entry
+           ON entry.learner_scope_id=sm.learner_scope_id AND entry.serving_manifest_id=sm.id
+         JOIN app.content_revisions cr ON cr.id=entry.content_revision_id
+         JOIN app.rights_envelopes rights ON rights.id=cr.rights_envelope_id
+        WHERE sm.learner_scope_id=$1 AND sm.id=$2`,
+      [scope.learnerScopeId, servingManifestId],
+    );
+    if (result.rows.length === 0) return undefined;
+    if (result.rows.some((row) => row.rights_state !== "current")) return "withdrawn_after_pin";
+    if (result.rows.some((row) => row.approval_state === "quarantined")) {
+      return "quarantined_after_pin";
+    }
+    if (result.rows.some((row) => row.approval_state !== "approved")) return "under_review";
+    return "published";
   }
 
   /**
