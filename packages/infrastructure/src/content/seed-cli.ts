@@ -872,6 +872,13 @@ function stableUuid(identity: string): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
 
+function canonicalInstant(value: unknown, field: string): string {
+  const instant = value instanceof Date ? value : new Date(String(value));
+  if (Number.isNaN(instant.getTime()))
+    throw new Error(`Invalid PostgreSQL timestamp for ${field}.`);
+  return instant.toISOString();
+}
+
 async function loadPostgresCatalogue(
   client: SeedSqlClient,
   requestedReleaseIdentity: string,
@@ -1627,7 +1634,7 @@ async function reconstructPostgresReport(
     command: request.command,
     dryRun: false,
     operationId: request.operationId,
-    occurredAt: String(receipt.recorded_at),
+    occurredAt: canonicalInstant(receipt.recorded_at, "security_audit_events.recorded_at"),
     release: {
       id: request.release.releaseId,
       identity: request.release.releaseIdentity,
@@ -1669,8 +1676,9 @@ export async function executePostgresSeedCommand(
     );
     const catalogue = await loadPostgresCatalogue(client, request.release.releaseIdentity);
     const transactionTime = await client.query("SELECT transaction_timestamp() AS occurred_at");
-    const occurredAt = String(
+    const occurredAt = canonicalInstant(
       receipt.rows[0]?.recorded_at ?? transactionTime.rows[0]?.occurred_at ?? request.occurredAt,
+      receipt.rows[0]?.recorded_at ? "security_audit_events.recorded_at" : "transaction_timestamp",
     );
     const fullRequest: SeedPlanRequest = { ...request, occurredAt, catalogue };
     const payloadDigest = requestPayloadDigest(fullRequest);

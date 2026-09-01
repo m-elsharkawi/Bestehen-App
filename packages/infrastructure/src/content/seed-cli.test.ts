@@ -380,7 +380,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
         target_class: string;
         action: string;
         release: string;
-        recorded_at: string;
+        recorded_at: Date;
       }
     >();
     const revisionAudit: {
@@ -403,7 +403,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
         if (text.includes("FROM app.content_revisions cr")) return { rows: [], rowCount: 0 };
         if (text.includes("FROM app.content_releases")) return { rows: [], rowCount: 0 };
         if (text.includes("transaction_timestamp() AS occurred_at"))
-          return { rows: [{ occurred_at: occurredAt }], rowCount: 1 };
+          return { rows: [{ occurred_at: new Date(occurredAt) }], rowCount: 1 };
         if (text.includes("SELECT digest FROM app.")) return { rows: [], rowCount: 0 };
         if (text.includes("INSERT INTO app.security_audit_events")) {
           if (text.includes("'content_revision'")) {
@@ -419,7 +419,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
               target_digest: String(values[2]),
               action: String(values[1]),
               release: String(values[4]),
-              recorded_at: occurredAt,
+              recorded_at: new Date(occurredAt),
             });
           }
         }
@@ -712,7 +712,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
           if (text.includes("FROM app.content_releases"))
             return { rows: releaseRows, rowCount: releaseRows.length };
           if (text.includes("transaction_timestamp() AS occurred_at"))
-            return { rows: [{ occurred_at: occurredAt }], rowCount: 1 };
+            return { rows: [{ occurred_at: new Date(occurredAt) }], rowCount: 1 };
           if (text.includes("SELECT id FROM app.approval_decisions"))
             return { rows: [], rowCount: 0 };
           if (text.includes("RETURNING")) return { rows: [{ id: String(values[0]) }], rowCount: 1 };
@@ -969,7 +969,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
               rowCount: 1,
             };
           if (text.includes("transaction_timestamp() AS occurred_at"))
-            return { rows: [{ occurred_at: occurredAt }], rowCount: 1 };
+            return { rows: [{ occurred_at: new Date(occurredAt) }], rowCount: 1 };
           if (text.includes("SELECT id FROM app.approval_decisions"))
             return { rows: [], rowCount: 0 };
           if (text.includes("RETURNING")) return { rows: [{ id: String(values[0]) }], rowCount: 1 };
@@ -994,12 +994,14 @@ describe("P05-SEED-001 seed CLI planner", () => {
         },
       );
       expect(report.summary.hardFailures).toBe(0);
+      expect(report.occurredAt).toBe(occurredAt);
       const approval = calls.find((call) =>
         call.text.includes("INSERT INTO app.approval_decisions"),
       );
       expect(approval?.values[1]).toBe(target.revisionId);
       expect(approval?.values[2]).toBe(scenario.approvalLevel);
       expect(approval?.values[3]).toBe(scenario.reason);
+      expect(approval?.values[6]).toBe(occurredAt);
       const impact = calls.find((call) =>
         call.text.includes("INSERT INTO app.content_impact_assertions"),
       );
@@ -1009,6 +1011,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
       });
       expect(impact?.values[7]).toBe(0);
       expect(impact?.values[11]).toBe(scenario.reason);
+      expect(impact?.values[14]).toBe(occurredAt);
       expect(calls.some((call) => call.text.includes("INSERT INTO app.validity_assertions"))).toBe(
         false,
       );
@@ -1019,6 +1022,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
       if (scenario.command === "withdraw") {
         const rights = calls.find((call) => call.text.includes("INSERT INTO app.rights_envelopes"));
         expect(rights?.values[4]).toBe(target.rightsEnvelopeId);
+        expect(rights?.values[5]).toBe(occurredAt);
       }
     }
   });
