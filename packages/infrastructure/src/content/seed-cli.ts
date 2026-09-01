@@ -278,11 +278,14 @@ function planApply(
   request: SeedPlanRequest,
   failures: SeedValidationReport["failures"][number][],
 ): { readonly revisions: SeedRevisionReport[]; readonly nextRevisions: SeedCatalogueRevision[] } {
-  const currentByFamily = new Map(
-    request.catalogue.revisions
-      .filter((revision) => revision.state === "active")
-      .map((revision) => [revision.familyId, revision] as const),
-  );
+  const currentByFamily = new Map<string, SeedCatalogueRevision[]>();
+  for (const revision of request.catalogue.revisions.filter(
+    (candidate) => candidate.state === "active",
+  )) {
+    const family = currentByFamily.get(revision.familyId) ?? [];
+    family.push(revision);
+    currentByFamily.set(revision.familyId, family);
+  }
   const byRevisionId = new Map(
     request.catalogue.revisions.map((revision) => [revision.revisionId, revision] as const),
   );
@@ -291,9 +294,17 @@ function planApply(
 
   for (const entry of request.release.entries) {
     if (entry.intent !== "serving") continue;
-    const current = currentByFamily.get(entry.familyId);
+    const currentCandidates = currentByFamily.get(entry.familyId) ?? [];
+    const current = currentCandidates.length === 1 ? currentCandidates[0] : undefined;
     const sameIdentity = byRevisionId.get(entry.revisionId);
     let action: SeedDiffAction = "create";
+    if (currentCandidates.length > 1) {
+      failures.push({
+        code: "current_family_cardinality",
+        identity: entry.familyId,
+        detail: `Expected at most one current revision, found ${currentCandidates.length}.`,
+      });
+    }
     if (entry.requestedLevel !== "draft" || entry.approvalCommand !== null) {
       failures.push({
         code: "unearned_seed_approval",
@@ -453,6 +464,17 @@ export function planSeedCommand(request: SeedPlanRequest): SeedPlan {
   const documentDigest = seedDocumentDigest(request.release);
 
   if (request.command === "apply") {
+    const currentReleaseCandidates = request.catalogue.releases.filter(
+      (release) =>
+        release.releaseIdentity === request.release.releaseIdentity && release.state === "active",
+    );
+    if (currentReleaseCandidates.length > 1) {
+      failures.push({
+        code: "current_release_cardinality",
+        identity: request.release.releaseIdentity,
+        detail: `Expected at most one current release, found ${currentReleaseCandidates.length}.`,
+      });
+    }
     const planned = planApply(request, failures);
     revisionReports = planned.revisions;
     nextRevisions = planned.nextRevisions;
@@ -861,31 +883,86 @@ async function loadPostgresCatalogue(client: SeedSqlClient): Promise<SeedCatalog
          FROM app.content_releases`,
     ),
   ]);
-  const revisions: SeedCatalogueRevision[] = revisionRows.rows.map((row) => ({
+  const revisionFacts = revisionRows.rows.map((row) => ({
     seedKey: String(row.seed_key),
     familyId: String(row.family_id),
     revisionId: String(row.revision_id),
     predecessorRevisionId: row.predecessor_id === null ? null : String(row.predecessor_id),
     digest: String(row.digest),
-    state:
-      row.approval_state === "quarantined"
-        ? "quarantined"
-        : row.approval_state === "retired"
-          ? "withdrawn"
-          : row.approval_state === "candidate" || row.approval_state === "approved"
-            ? "active"
-            : "quarantined",
+    approvalState: String(row.approval_state),
   }));
-  const releases: SeedCatalogueRelease[] = releaseRows.rows.map((row) => ({
+  const eligibleRevisionIds = new Set(
+    revisionFacts
+      .filter((revision) => ["candidate", "approved"].includes(revision.approvalState))
+      .map((revision) => revision.revisionId),
+  );
+  const supersededRevisionIds = new Set(
+    revisionFacts
+      .filter(
+        (revision) =>
+          revision.predecessorRevisionId !== null &&
+          eligibleRevisionIds.has(revision.revisionId) &&
+          eligibleRevisionIds.has(revision.predecessorRevisionId),
+      )
+      .map((revision) => revision.predecessorRevisionId as string),
+  );
+  const revisions: SeedCatalogueRevision[] = revisionFacts
+    .map((revision) => ({
+      seedKey: revision.seedKey,
+      familyId: revision.familyId,
+      revisionId: revision.revisionId,
+      predecessorRevisionId: revision.predecessorRevisionId,
+      digest: revision.digest,
+      state:
+        revision.approvalState === "quarantined"
+          ? ("quarantined" as const)
+          : revision.approvalState === "retired"
+            ? ("withdrawn" as const)
+            : eligibleRevisionIds.has(revision.revisionId)
+              ? supersededRevisionIds.has(revision.revisionId)
+                ? ("superseded" as const)
+                : ("active" as const)
+              : ("quarantined" as const),
+    }))
+    .sort((left, right) => left.revisionId.localeCompare(right.revisionId));
+  const releaseFacts = releaseRows.rows.map((row) => ({
     releaseId: String(row.id),
     releaseIdentity: String(row.release_identity),
     documentDigest: String(row.digest),
     predecessorReleaseId: row.predecessor_id === null ? null : String(row.predecessor_id),
-    state: row.state === "active" ? "active" : "retired",
+    databaseState: String(row.state),
   }));
+  const eligibleReleaseIds = new Set(
+    releaseFacts
+      .filter((release) => ["candidate", "active"].includes(release.databaseState))
+      .map((release) => release.releaseId),
+  );
+  const supersededReleaseIds = new Set(
+    releaseFacts
+      .filter(
+        (release) =>
+          release.predecessorReleaseId !== null &&
+          eligibleReleaseIds.has(release.releaseId) &&
+          eligibleReleaseIds.has(release.predecessorReleaseId),
+      )
+      .map((release) => release.predecessorReleaseId as string),
+  );
+  const releases: SeedCatalogueRelease[] = releaseFacts
+    .map((release) => ({
+      releaseId: release.releaseId,
+      releaseIdentity: release.releaseIdentity,
+      documentDigest: release.documentDigest,
+      predecessorReleaseId: release.predecessorReleaseId,
+      state:
+        eligibleReleaseIds.has(release.releaseId) && !supersededReleaseIds.has(release.releaseId)
+          ? ("active" as const)
+          : ("retired" as const),
+    }))
+    .sort((left, right) => left.releaseId.localeCompare(right.releaseId));
+  const currentReleases = releases.filter((release) => release.state === "active");
   return {
     schema: "bestehen-seed-catalogue/v1",
-    activeReleaseId: releases.find((release) => release.state === "active")?.releaseId ?? null,
+    activeReleaseId: currentReleases.length === 1 ? (currentReleases[0]?.releaseId ?? null) : null,
     revisions,
     releases,
     audit: [],
@@ -1485,27 +1562,39 @@ async function reconstructPostgresReport(
   let revisions: SeedRevisionReport[] = [];
   if (request.command === "apply") {
     const serving = request.release.entries.filter((entry) => entry.intent === "serving");
-    const stored = await client.query(
-      "SELECT id,recorded_at FROM app.content_revisions WHERE id=ANY($1::uuid[])",
-      [serving.map((entry) => entry.revisionId)],
+    const recordedActions = await client.query(
+      `SELECT action,target_digest,release
+         FROM app.security_audit_events
+        WHERE request_id=$1 AND target_class='content_revision'`,
+      [stableUuid(`content-seed-operation/${request.operationId}`)],
     );
-    const recordedAtById = new Map(
-      stored.rows.map((row) => [String(row.id), new Date(String(row.recorded_at)).getTime()]),
+    const actionByDigest = new Map(
+      recordedActions.rows.map((row) => [String(row.target_digest), String(row.action)]),
     );
-    const receiptTime = new Date(String(receipt.recorded_at)).getTime();
     revisions = serving.map((entry) => {
-      const insertedByOperation = recordedAtById.get(entry.revisionId) === receiptTime;
-      const action: SeedDiffAction = insertedByOperation
-        ? entry.predecessorRevisionId
-          ? "supersede"
-          : "create"
-        : "unchanged";
+      const recordedAction = actionByDigest.get(entry.digest);
+      const action = recordedAction?.replace("content_seed_apply_", "") as
+        | SeedDiffAction
+        | undefined;
+      if (
+        !action ||
+        !["create", "supersede", "unchanged"].includes(action) ||
+        recordedActions.rows.find(
+          (row) =>
+            String(row.target_digest) === entry.digest &&
+            String(row.release) !== request.release.releaseId,
+        )
+      ) {
+        throw new SeedDatabaseConflict(entry.revisionId, "content_seed_apply_audit");
+      }
       return reportFor(
         entry,
         action,
         action === "create" ? null : (entry.predecessorRevisionId ?? entry.revisionId),
       );
     });
+    if (recordedActions.rows.length !== serving.length)
+      throw new SeedDatabaseConflict(request.operationId, "content_seed_apply_audit_cardinality");
   } else if (request.command === "withdraw" || request.command === "quarantine") {
     const entry = request.release.entries.find(
       (candidate) =>
@@ -1550,8 +1639,8 @@ export async function executePostgresSeedCommand(
   // `app.operation_receipts` is deliberately learner-scoped, so content seed operations may not
   // borrow it by inventing a learner. The security audit row below remains audit-shaped: it stores
   // a real target class, action, reason code, payload digest, release reference and recorded time.
-  // The original report is reconstructed from those fields plus immutable content facts; no report
-  // body is hidden in `target_class` or another classification column.
+  // Apply also records one audit-shaped action per content revision. Those facts reconstruct mixed
+  // reports exactly; no report body is hidden in `target_class` or another classification column.
   const client = await pool.connect();
   const receiptId = stableUuid(`content-seed-operation/${request.operationId}`);
   let attemptedReport: SeedValidationReport | null = null;
@@ -1600,6 +1689,23 @@ export async function executePostgresSeedCommand(
       return plan.report;
     }
     await mutatePostgres(client, fullRequest, plan.report);
+    if (request.command === "apply") {
+      for (const revision of plan.report.revisions) {
+        await client.query(
+          `INSERT INTO app.security_audit_events(id,actor_scope,action,target_class,target_digest,
+             outcome,reason_code,request_id,trace_id,release,retention_class)
+           VALUES($1,'content-seed-cli',$2,'content_revision',$3,'allowed',
+             'VALIDITY.CONTENT_APPROVAL',$4,$4,$5,'semantic_until_deletion')`,
+          [
+            stableUuid(`content-seed-operation/${request.operationId}/${revision.revisionId}`),
+            `content_seed_apply_${revision.action}`,
+            revision.digest,
+            receiptId,
+            request.release.releaseId,
+          ],
+        );
+      }
+    }
     await client.query(
       `INSERT INTO app.security_audit_events(id,actor_scope,action,target_class,target_digest,outcome,reason_code,request_id,trace_id,release,retention_class)
        VALUES($1,'content-seed-cli',$2,'content_seed_operation',$3,'allowed',$4,$1,$1,$5,'semantic_until_deletion')`,

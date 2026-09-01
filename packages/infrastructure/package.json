@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
+    "content:seed": "tsx src/content/seed-cli.ts",
     "db:migrate": "tsx src/postgres/migrate-cli.ts",
     "identity:bootstrap-owner": "tsx src/identity/bootstrap-owner-cli.ts"
   },
