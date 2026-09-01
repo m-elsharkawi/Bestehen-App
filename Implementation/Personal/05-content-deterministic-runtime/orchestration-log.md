@@ -273,3 +273,62 @@ removed after inspection. The compose PostgreSQL service remains healthy for the
 remaining Stage 05 gates. `apps/web/.next` was removed and the tree was clean at
 the T6 acceptance boundary. Local `main` was 63 commits ahead of stale
 `origin/main`; nothing was pushed and no pull request was opened.
+
+## Continuation acceptance — T9 deterministic learning design primitives
+
+T9 was accepted at `c3af7375f56945c55ddd56dc898729a40ddd493c` after one
+corrective return. The accepted slice is three commits:
+
+- `cd23b55` — additive runtime contracts and controls for answer choice,
+  select-then-place matching, SB2 shared-bank cloze, decisive evidence and
+  listening presentation;
+- `7cd9f23` — unique accessible labels for multiple listening regions;
+- `c3af737` — contrast assertions bound to the shipped CSS roles, complete SB2
+  placement coverage and prohibited-copy coverage.
+
+The five-file single-writer boundary remained intact. Existing no-prop call sites
+retain byte-equivalent DOM, cards remain flat, transcript content is rendered only
+when the server contract supplies an available transcript, and the runtime
+controls use native fieldsets, radios and buttons with named state.
+
+### Defects rejected before T9 acceptance
+
+1. The first contrast test asserted a detached hard-coded palette rather than the
+   component roles in `styles.css`. Numerically checking the actual dark surface
+   found unselected control boundaries at only 1.317–1.826:1, below the 3:1
+   non-text requirement. Component-owned light/dark fill, label and boundary pairs
+   replaced the wrong roles; the test now parses the shipped CSS and includes a
+   mutation guard that makes a real boundary fail.
+2. The first pass left SB2 gap 4 as the legacy free-input control, so a shared-bank
+   item mixed two response models. The shared contract now reaches all four
+   rendered gaps, and the test proves the SB2 path contains no text input while the
+   legacy fixture remains byte-equivalent.
+3. One history mark was rendered without a matching state, and prohibited-copy
+   coverage checked selected components rather than the shipped UI source. Both
+   were corrected before acceptance.
+
+### Independent evidence at `c3af737`
+
+- `tokens.test.ts` plus `index.test.tsx`: **28/28**.
+- Actual light/dark role ratios: unselected control text **15.974/14.062** and
+  boundary **7.352/7.720**; selected/transport text **14.092/16.796** and boundary
+  **15.974/14.062**; match/history text **9.494/7.343** and boundary
+  **11.249/11.051**. All exceed 4.5:1 text and 3:1 non-text.
+- `format:check`, `lint`, `typecheck`, `check:boundaries`, `test:release`, `build`
+  and `check:generated`: **PASS**. The existing generated-release Biome warning
+  remains non-failing.
+- `test:unit`: **1 failed / 686 passed (687)**, exactly the known
+  coverage-parity failure.
+- Protected first-load budget: **198,062 B gzip**, 6,738 B below the 204,800 B
+  ceiling.
+- Disposable rendered gallery inspected in the in-app browser at large and 390 px
+  compact widths in both light and dark themes. Selected/unselected choices,
+  matching, shared-bank cloze, available/unavailable listening, transcript gating
+  and decisive evidence were legible and structurally intact. A radio interaction
+  changed the controlled selection exactly once. No repository fixture or visual
+  snapshot was added or regenerated.
+
+The disposable preview, local server and `apps/web/.next` were removed after
+inspection. The committed tree was clean at the T9 acceptance boundary. Local
+`main` was 67 commits ahead of stale `origin/main`; nothing was pushed and no pull
+request was opened.
