@@ -829,6 +829,51 @@ describe("P05-IDEMPOTENCY-001 checkpoints", () => {
     expect(recorder.matching(/INSERT INTO app\.attempt_checkpoints/)).toHaveLength(1);
   });
 
+  it("commits the checkpoint coordinate and canonical response fact in one transaction", async () => {
+    const canonicalFact = {
+      factId: appId<"response_fact">(factId),
+      operations: [{ kind: "set_selection", itemId: itemAlpha, optionId: "option-a" }],
+      canonicalResponse: { selections: { [itemAlpha]: "option-a" } },
+    };
+    const { repository, recorder } = repositoryOn(checkpointRoutes());
+
+    const result = await repository.recordCheckpoint(scope, checkpointInput({ canonicalFact }));
+
+    expect(result.ok).toBe(true);
+    expect(recorder.matching(/INSERT INTO app\.attempt_checkpoints/)).toHaveLength(1);
+    const fact = recorder.only(/INSERT INTO app\.response_facts/);
+    expect(fact.values[0]).toBe(factId);
+    expect(fact.values[4]).toBe(payloadDigest);
+    expect(recorder.statements[0]).toBe("BEGIN");
+    expect(recorder.statements.at(-1)).toBe("COMMIT");
+  });
+
+  it("rolls back the checkpoint when the canonical response fact cannot commit", async () => {
+    const { repository, recorder } = repositoryOn(
+      checkpointRoutes([
+        {
+          when: /INSERT INTO app\.response_facts/,
+          throws: { code: "57014", message: "fact write cancelled" },
+        },
+      ]),
+    );
+
+    await expect(
+      repository.recordCheckpoint(
+        scope,
+        checkpointInput({
+          canonicalFact: {
+            factId: appId<"response_fact">(factId),
+            operations: [],
+            canonicalResponse: {},
+          },
+        }),
+      ),
+    ).rejects.toThrow("fact write cancelled");
+    expect(recorder.statements.at(-1)).toBe("ROLLBACK");
+    expect(recorder.matching(/UPDATE app\.attempts SET state/)).toHaveLength(0);
+  });
+
   it("replays the same operation without a second row or a second ordinal", async () => {
     const { repository, recorder } = repositoryOn(
       checkpointRoutes([
@@ -1016,6 +1061,35 @@ describe("exact runtime composition reads", () => {
     expect(recorder.only(/^SELECT activity\.id AS activity_occurrence_id/).values).toEqual([
       scopeId,
       activityOccurrenceId,
+    ]);
+  });
+
+  it("reads the exact server-recorded clock observation selected for submit", async () => {
+    const observation = {
+      monotonicElapsedMs: 42_000,
+      visibilityChanges: 1,
+      stallIntervals: [],
+      wallClockSkewMs: 0,
+      accessibilityEquivalence: "equivalent",
+    };
+    const { repository, recorder } = repositoryOn([
+      { when: /SELECT a\.id,a\.learner_scope_id/, rows: [attemptRow()] },
+      { when: /^SELECT kind,phase,answer_bearing/, rows: [] },
+      { when: /^SELECT envelope->>'exposureClass'/, rows: [] },
+      { when: /^SELECT envelope\s+FROM app\.condition_facts/, rows: [{ envelope: observation }] },
+    ]);
+
+    const conditions = await repository.readRecordedAttemptConditions(
+      scope,
+      appId<"attempt">(attemptId),
+      appId<"response_fact">(factId),
+    );
+
+    expect(conditions?.clockObservation).toEqual(observation);
+    expect(recorder.only(/^SELECT envelope\s+FROM app\.condition_facts/).values).toEqual([
+      scopeId,
+      attemptId,
+      factId,
     ]);
   });
 });

@@ -138,6 +138,14 @@ const identity: AttemptRuntimeIdentityFactory = (kind, seed) => {
   );
 };
 
+const clockObservation = {
+  monotonicElapsedMs: 600_000,
+  visibilityChanges: 0,
+  stallIntervals: [],
+  wallClockSkewMs: 0,
+  accessibilityEquivalence: "equivalent" as const,
+};
+
 function dependencies() {
   const operation = { kind: "set_selection", itemId, optionId: "option-monday" } as const;
   const canonical = canonicalizeResponse([operation]).response;
@@ -156,7 +164,12 @@ function dependencies() {
       canonicalResponse: canonical,
       responseDigest,
     })),
-    readRecordedAttemptConditions: vi.fn(async () => ({ assistance: [] })),
+    recordCheckpoint: vi.fn(),
+    recordAttemptFact: vi.fn(async () => ({
+      ok: true as const,
+      value: { disposition: "created" as const, learnerSequence: 1 },
+    })),
+    readRecordedAttemptConditions: vi.fn(async () => ({ assistance: [], clockObservation })),
     submitObjectiveAttempt: vi.fn(
       async (_scope: AuthorizedScope, input: ObjectiveSubmissionInput) => {
         captured = input;
@@ -189,6 +202,39 @@ describe("P05-SECURITY-001 active learner projection", () => {
   });
 });
 
+describe("P05-RECOVERY-001 atomic checkpoint composition", () => {
+  it("hands one canonical coordinate and response fact to the atomic repository method", async () => {
+    const fixture = dependencies();
+    fixture.attempts.recordCheckpoint.mockResolvedValue({
+      ok: true,
+      value: { disposition: "accepted", attempt },
+    });
+    const operations = [{ kind: "set_selection" as const, itemId, optionId: "option-monday" }];
+
+    const result = await fixture.service.checkpointObjective(scope, {
+      operationId,
+      attemptId,
+      expectedVersion: 3,
+      stream: "primary",
+      sequence: 1,
+      operations,
+      responseDigest: fixture.responseDigest,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(fixture.attempts.recordCheckpoint).toHaveBeenCalledWith(
+      scope,
+      expect.objectContaining({
+        operationId,
+        attemptId,
+        payloadDigest: fixture.responseDigest,
+        canonicalFact: expect.objectContaining({ operations }),
+      }),
+    );
+    expect(fixture.content.readPinnedScoringUnits).not.toHaveBeenCalled();
+  });
+});
+
 describe("P05-SCORE-001 deterministic attempt composition", () => {
   it("canonicalizes, resolves the pinned policy, scores, and proposes one transactional write", async () => {
     const fixture = dependencies();
@@ -197,13 +243,7 @@ describe("P05-SCORE-001 deterministic attempt composition", () => {
       attemptId,
       checkpointSequence: 1,
       responseDigest: fixture.responseDigest,
-      observedConditions: {
-        timerIntegrity: "in_context_trusted",
-        elapsedMs: 600_000,
-        progressionProfile: "P2",
-        timingMode: "practice",
-        accessibilityEquivalence: "equivalent",
-      },
+      clockObservation,
     });
 
     expect(result.ok).toBe(true);
@@ -217,6 +257,9 @@ describe("P05-SCORE-001 deterministic attempt composition", () => {
       timerIntegrity: "in_context_trusted",
       independenceClass: "first_attempt",
     });
+    expect(fixture.attempts.recordAttemptFact.mock.invocationCallOrder[0]).toBeLessThan(
+      fixture.content.readPinnedScoringUnits.mock.invocationCallOrder[0] ?? Number.MAX_SAFE_INTEGER,
+    );
   });
 
   it("rejects an unknown stored policy rather than guessing points", async () => {
@@ -238,16 +281,31 @@ describe("P05-SCORE-001 deterministic attempt composition", () => {
       attemptId,
       checkpointSequence: 1,
       responseDigest: fixture.responseDigest,
-      observedConditions: {
-        timerIntegrity: "in_context_trusted",
-        elapsedMs: 600_000,
-        progressionProfile: "P2",
-        timingMode: "practice",
-        accessibilityEquivalence: "equivalent",
-      },
+      clockObservation,
     });
     expect(result).toEqual({ ok: false, error: "unsupported_scoring_policy" });
     expect(fixture.attempts.submitObjectiveAttempt).not.toHaveBeenCalled();
+  });
+
+  it("cannot promote an inconsistent client clock observation to trusted timing", async () => {
+    const fixture = dependencies();
+    const inconsistent = { ...clockObservation, monotonicElapsedMs: 1_000 };
+    fixture.attempts.readRecordedAttemptConditions.mockResolvedValue({
+      assistance: [],
+      clockObservation: inconsistent,
+    });
+
+    const result = await fixture.service.submitObjective(scope, {
+      operationId,
+      attemptId,
+      checkpointSequence: 1,
+      responseDigest: fixture.responseDigest,
+      clockObservation: inconsistent,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(fixture.captured()?.conditions.timerIntegrity).toBe("inconsistent");
+    expect(fixture.captured()?.conditions.continuityLostScope).toEqual([itemId]);
   });
 });
 

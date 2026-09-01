@@ -266,6 +266,16 @@ export interface RecordedAttemptConditions {
     readonly testedCapabilityEffect: "equivalent" | "altering" | "unverified" | "not_applicable";
   }[];
   readonly exposureClass?: ExposureClass;
+  readonly clockObservation?: {
+    readonly monotonicElapsedMs: number;
+    readonly visibilityChanges: number;
+    readonly stallIntervals: readonly {
+      readonly startedAtMs: number;
+      readonly endedAtMs: number;
+    }[];
+    readonly wallClockSkewMs: number;
+    readonly accessibilityEquivalence: "equivalent" | "claim_narrowing" | "unknown";
+  };
 }
 
 /* ------------------------------------------------------------------------------------------------
@@ -294,6 +304,12 @@ export interface AttemptCheckpointInput {
   readonly sequence: number;
   readonly expectedAttemptVersion: number;
   readonly payloadDigest: string;
+  /** Committed atomically with the coordinate, so an accepted checkpoint is always submit-ready. */
+  readonly canonicalFact?: {
+    readonly factId: AppId<"response_fact">;
+    readonly operations: unknown;
+    readonly canonicalResponse: unknown;
+  };
 }
 
 export interface AssistanceEventInput {
@@ -570,6 +586,7 @@ export class PostgresAttemptRepository {
   public async readRecordedAttemptConditions(
     scope: AuthorizedScope,
     attemptId: AttemptId,
+    clockFactId?: AppId<"response_fact">,
   ): Promise<RecordedAttemptConditions | undefined> {
     if (!(await this.readAttempt(scope, attemptId))) return undefined;
     const assistance = await this.pool.query(
@@ -588,6 +605,20 @@ export class PostgresAttemptRepository {
       [scope.learnerScopeId, attemptId],
     );
     const exposureClass = exposure.rows[0]?.exposure_class;
+    const clock = clockFactId
+      ? await this.pool.query(
+          `SELECT envelope
+             FROM app.condition_facts
+            WHERE learner_scope_id=$1 AND attempt_id=$2 AND id=$3
+              AND fact_type='attempt_clock_observation_v1'`,
+          [scope.learnerScopeId, attemptId, clockFactId],
+        )
+      : undefined;
+    const clockEnvelope = clock?.rows[0]?.envelope;
+    const clockObservation =
+      clockEnvelope && typeof clockEnvelope === "object"
+        ? (clockEnvelope as NonNullable<RecordedAttemptConditions["clockObservation"]>)
+        : undefined;
     return {
       assistance: assistance.rows.map((row) => ({
         kind: row.kind as AssistanceKind,
@@ -601,6 +632,7 @@ export class PostgresAttemptRepository {
           | "not_applicable",
       })),
       ...(exposureClass ? { exposureClass: exposureClass as ExposureClass } : {}),
+      ...(clockObservation ? { clockObservation } : {}),
     };
   }
 
@@ -811,7 +843,8 @@ export class PostgresAttemptRepository {
       readonly attempt: AttemptStateRecord;
     }>(async () =>
       inTransaction(this.pool, async (client) => {
-        if (!(await lockActiveLearnerScope(client, scope.learnerScopeId))) {
+        const learner = await lockActiveLearnerScope(client, scope.learnerScopeId);
+        if (!learner) {
           return { ok: false as const, error: "not_available" as const };
         }
         const claimed = await client.query(
@@ -982,8 +1015,9 @@ export class PostgresAttemptRepository {
    *
    * Four dispositions, and only one of them writes:
    *
-   * - `replayed` — the same operation, or the same coordinate carrying the same digest. Nothing is
-   *   written, so a reconnect never creates a second checkpoint or a second ordinal.
+   * - `replayed` — the same operation, or the same coordinate carrying the same digest. A normal
+   *   reconnect writes nothing. A pre-atomic coordinate missing its canonical fact is repaired
+   *   under this same transaction, without creating a second checkpoint.
    * - `stale` — a sequence at or below the acknowledged one. Ignored, never applied backwards.
    * - `divergent` — the same coordinate carrying a **different** digest. This is a divergence, not a
    *   conflict: the stored branch is left exactly as it stands and both digests are returned so the
@@ -1000,7 +1034,8 @@ export class PostgresAttemptRepository {
     }
     return this.guarded<AttemptCheckpointResult>(async () =>
       inTransaction(this.pool, async (client) => {
-        if (!(await lockActiveLearnerScope(client, scope.learnerScopeId))) {
+        const learner = await lockActiveLearnerScope(client, scope.learnerScopeId);
+        if (!learner) {
           return { ok: false as const, error: "not_available" as const };
         }
         const attempt = await this.lockAttempt(client, scope.learnerScopeId, input.attemptId);
@@ -1023,6 +1058,15 @@ export class PostgresAttemptRepository {
             String(replay.payload_digest) !== input.payloadDigest ||
             Number(replay.expected_attempt_version) !== input.expectedAttemptVersion;
           if (mismatched) return { ok: false as const, error: "idempotency_conflict" as const };
+          if (input.canonicalFact) {
+            const fact = await client.query(
+              `SELECT id FROM app.response_facts
+                WHERE learner_scope_id=$1 AND attempt_id=$2
+                  AND fact_type='objective_response_checkpoint_v1' AND digest=$3`,
+              [scope.learnerScopeId, input.attemptId, input.payloadDigest],
+            );
+            if (fact.rows.length !== 1) return { ok: false as const, error: "conflict" as const };
+          }
           return {
             ok: true as const,
             value: {
@@ -1048,6 +1092,40 @@ export class PostgresAttemptRepository {
         const occupant = coordinate.rows[0];
         if (occupant) {
           const storedDigest = String(occupant.payload_digest);
+          if (storedDigest === input.payloadDigest && input.canonicalFact) {
+            const fact = await client.query(
+              `SELECT id FROM app.response_facts
+                WHERE learner_scope_id=$1 AND attempt_id=$2
+                  AND fact_type='objective_response_checkpoint_v1' AND digest=$3`,
+              [scope.learnerScopeId, input.attemptId, input.payloadDigest],
+            );
+            if (fact.rows.length === 0) {
+              await client.query(
+                `INSERT INTO app.response_facts(id,learner_scope_id,attempt_id,fact_type,
+                   schema_major,envelope,digest,learner_sequence)
+                 VALUES($1,$2,$3,'objective_response_checkpoint_v1',1,$4,$5,$6)`,
+                [
+                  input.canonicalFact.factId,
+                  scope.learnerScopeId,
+                  input.attemptId,
+                  JSON.stringify({
+                    sequence: input.sequence,
+                    stream: input.stream,
+                    operations: input.canonicalFact.operations,
+                    canonicalResponse: input.canonicalFact.canonicalResponse,
+                  }),
+                  input.payloadDigest,
+                  learner.nextSequence,
+                ],
+              );
+              await client.query(
+                "UPDATE app.learner_scopes SET next_sequence=$2,updated_at=transaction_timestamp() WHERE id=$1",
+                [scope.learnerScopeId, learner.nextSequence + 1],
+              );
+            } else if (fact.rows.length !== 1) {
+              return { ok: false as const, error: "conflict" as const };
+            }
+          }
           return {
             ok: true as const,
             value: {
@@ -1079,6 +1157,30 @@ export class PostgresAttemptRepository {
             input.payloadDigest,
           ],
         );
+        if (input.canonicalFact) {
+          await client.query(
+            `INSERT INTO app.response_facts(id,learner_scope_id,attempt_id,fact_type,schema_major,
+               envelope,digest,learner_sequence)
+             VALUES($1,$2,$3,'objective_response_checkpoint_v1',1,$4,$5,$6)`,
+            [
+              input.canonicalFact.factId,
+              scope.learnerScopeId,
+              input.attemptId,
+              JSON.stringify({
+                sequence: input.sequence,
+                stream: input.stream,
+                operations: input.canonicalFact.operations,
+                canonicalResponse: input.canonicalFact.canonicalResponse,
+              }),
+              input.payloadDigest,
+              learner.nextSequence,
+            ],
+          );
+          await client.query(
+            "UPDATE app.learner_scopes SET next_sequence=$2,updated_at=transaction_timestamp() WHERE id=$1",
+            [scope.learnerScopeId, learner.nextSequence + 1],
+          );
+        }
         await client.query(
           `UPDATE app.attempts SET state='checkpointed',resource_version=resource_version+1
             WHERE learner_scope_id=$1 AND id=$2`,

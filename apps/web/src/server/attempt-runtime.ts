@@ -28,6 +28,7 @@ import type {
   TimerIntegrityState,
 } from "@bestehen/domain";
 import type {
+  AttemptCheckpointResult,
   AttemptStateRecord,
   CanonicalCheckpointRecord,
   ObjectiveSubmissionInput,
@@ -79,6 +80,8 @@ export interface AttemptRuntimeRepositories {
     | "readAttempt"
     | "readCanonicalCheckpoint"
     | "readRecordedAttemptConditions"
+    | "recordCheckpoint"
+    | "recordAttemptFact"
     | "submitObjectiveAttempt"
   >;
   readonly content: Pick<
@@ -108,13 +111,27 @@ export interface SubmitObjectiveInput {
   readonly attemptId: AttemptId;
   readonly checkpointSequence: number;
   readonly responseDigest: string;
-  readonly observedConditions: {
-    readonly timerIntegrity: TimerIntegrityState;
-    readonly elapsedMs: number;
-    readonly progressionProfile: "P0" | "P1" | "P2" | "P3" | "P4";
-    readonly timingMode: "open" | "practice" | "exam";
+  /** Browser measurements are observations only. The service derives timer integrity. */
+  readonly clockObservation: {
+    readonly monotonicElapsedMs: number;
+    readonly visibilityChanges: number;
+    readonly stallIntervals: readonly {
+      readonly startedAtMs: number;
+      readonly endedAtMs: number;
+    }[];
+    readonly wallClockSkewMs: number;
     readonly accessibilityEquivalence: "equivalent" | "claim_narrowing" | "unknown";
   };
+}
+
+export interface CheckpointObjectiveInput {
+  readonly operationId: OperationId;
+  readonly attemptId: AttemptId;
+  readonly expectedVersion: number;
+  readonly stream: string;
+  readonly sequence: number;
+  readonly operations: readonly ResponseOperation[];
+  readonly responseDigest: string;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -246,26 +263,46 @@ function parseOperations(
 function actualTimerIntegrity(
   attempt: AttemptStateRecord,
   now: Date,
-  observed: SubmitObjectiveInput["observedConditions"],
+  observation: NonNullable<RecordedAttemptConditions["clockObservation"]> | undefined,
+  targetDurationMs: number | undefined,
 ): TimerIntegrityState {
-  if (!attempt.occurredAt) return "insufficient";
-  const serverElapsed = Math.max(0, now.getTime() - attempt.occurredAt.getTime());
-  const difference = Math.abs(serverElapsed - observed.elapsedMs);
-  if (difference > 30_000 && observed.timerIntegrity === "in_context_trusted") {
-    return "inconsistent";
+  if (
+    !attempt.occurredAt ||
+    !observation ||
+    !Number.isFinite(observation.monotonicElapsedMs) ||
+    observation.monotonicElapsedMs < 0 ||
+    !Number.isInteger(observation.visibilityChanges) ||
+    observation.visibilityChanges < 0 ||
+    !Array.isArray(observation.stallIntervals) ||
+    !Number.isFinite(observation.wallClockSkewMs)
+  ) {
+    return "insufficient";
   }
-  return observed.timerIntegrity;
+  const serverElapsed = Math.max(0, now.getTime() - attempt.occurredAt.getTime());
+  if (targetDurationMs !== undefined && serverElapsed > targetDurationMs) return "expired";
+  const difference = Math.abs(serverElapsed - observation.monotonicElapsedMs);
+  if (difference > 30_000 || Math.abs(observation.wallClockSkewMs) > 30_000) return "inconsistent";
+  if (observation.visibilityChanges > 0 || observation.stallIntervals.length > 0) {
+    return "cross_context_supported";
+  }
+  return "in_context_trusted";
 }
 
 function conditionsFor(
   attempt: AttemptStateRecord,
   now: Date,
-  observed: SubmitObjectiveInput["observedConditions"],
   recorded: RecordedAttemptConditions,
   scope: readonly string[],
+  targetDurationMs: number | undefined,
 ): AttemptConditionSummary {
-  const timerIntegrity = actualTimerIntegrity(attempt, now, observed);
-  const accessibilityNarrowed = observed.accessibilityEquivalence !== "equivalent";
+  const timerIntegrity = actualTimerIntegrity(
+    attempt,
+    now,
+    recorded.clockObservation,
+    targetDurationMs,
+  );
+  const accessibilityNarrowed =
+    recorded.clockObservation?.accessibilityEquivalence !== "equivalent";
   const answerBearingAssistance = recorded.assistance.flatMap((entry) =>
     entry.answerBearing === "yes" ? entry.affectedScope : [],
   );
@@ -297,6 +334,53 @@ export class DeterministicAttemptService {
     private readonly identity: AttemptRuntimeIdentityFactory,
     private readonly now: () => Date,
   ) {}
+
+  /** Canonicalizes and atomically records both the checkpoint coordinate and its operation fact. */
+  public async checkpointObjective(
+    scope: AuthorizedScope,
+    input: CheckpointObjectiveInput,
+  ): Promise<Result<AttemptCheckpointResult, AttemptRuntimeFailure>> {
+    const parsed = input.operations.map((operation) =>
+      responseOperationSchema.safeParse(operation),
+    );
+    if (parsed.some((entry) => !entry.success)) {
+      return { ok: false, error: "checkpoint_mismatch" };
+    }
+    const operations = parsed.map((entry) => entry.data as ResponseOperation);
+    const canonical = canonicalizeResponse(operations);
+    if (
+      canonical.issues.length > 0 ||
+      canonicalResponseDigest(canonical.response) !== input.responseDigest
+    ) {
+      return { ok: false, error: "checkpoint_mismatch" };
+    }
+    const recorded = await this.repositories.attempts.recordCheckpoint(scope, {
+      operationId: input.operationId,
+      checkpointId: this.identity("checkpoint", `${input.operationId}:checkpoint`),
+      attemptId: input.attemptId,
+      stream: input.stream,
+      sequence: input.sequence,
+      expectedAttemptVersion: input.expectedVersion,
+      payloadDigest: input.responseDigest,
+      canonicalFact: {
+        factId: this.identity("response_fact", `${input.operationId}:checkpoint-fact`),
+        operations,
+        canonicalResponse: canonical.response,
+      },
+    });
+    if (recorded.ok) return recorded;
+    return {
+      ok: false,
+      error:
+        recorded.error === "idempotency_conflict"
+          ? "idempotency_conflict"
+          : recorded.error === "conflict"
+            ? "conflict"
+            : recorded.error === "illegal_transition"
+              ? "illegal_transition"
+              : "not_available",
+    };
+  }
 
   /**
    * Active-attempt projection. This path calls only learner reads and asserts the serialized object
@@ -349,13 +433,6 @@ export class DeterministicAttemptService {
     const projection = await this.readLearnerAttempt(scope, input.attemptId);
     if (!projection.ok) return projection;
     const { attempt, material } = projection.value;
-    if (
-      input.observedConditions.progressionProfile !==
-        material.allowedConditions.progressionProfile ||
-      input.observedConditions.timingMode !== material.allowedConditions.timingMode
-    ) {
-      return { ok: false, error: "checkpoint_mismatch" };
-    }
     const checkpoint = await this.repositories.attempts.readCanonicalCheckpoint(
       scope,
       input.attemptId,
@@ -372,6 +449,28 @@ export class DeterministicAttemptService {
       canonicalDigest(checkpoint.canonicalResponse) !== canonicalDigest(canonical.response)
     ) {
       return { ok: false, error: "checkpoint_mismatch" };
+    }
+
+    const clockFactId = this.identity("response_fact", `${input.operationId}:clock-observation`);
+    const clockDigest = canonicalDigest(input.clockObservation);
+    const clockRecorded = await this.repositories.attempts.recordAttemptFact(
+      scope,
+      input.operationId,
+      {
+        kind: "condition",
+        factId: clockFactId,
+        attemptId: input.attemptId,
+        factType: "attempt_clock_observation_v1",
+        envelope: input.clockObservation,
+        digest: clockDigest,
+      },
+    );
+    if (!clockRecorded.ok) {
+      return {
+        ok: false,
+        error:
+          clockRecorded.error === "idempotency_conflict" ? "idempotency_conflict" : "not_available",
+      };
     }
 
     // This is the first key-bearing read on the path. It is deliberately below the committed
@@ -422,15 +521,16 @@ export class DeterministicAttemptService {
     const recorded = await this.repositories.attempts.readRecordedAttemptConditions(
       scope,
       input.attemptId,
+      clockFactId,
     );
     if (!recorded) return { ok: false, error: "not_available" };
     const now = this.now();
     const actualConditions = conditionsFor(
       attempt,
       now,
-      input.observedConditions,
       recorded,
       scored.value.supportedScope,
+      material.allowedConditions.targetDurationMs,
     );
     const contentStatus = await this.repositories.content.readPinnedContentStatus(
       scope,
@@ -508,7 +608,7 @@ export class DeterministicAttemptService {
         {
           ...factBase,
           kind: "condition",
-          factId: this.identity("condition_fact", `${input.operationId}:condition-fact`),
+          factId: this.identity("response_fact", `${input.operationId}:condition-fact`),
           factType: "objective_conditions_v1",
           envelope: {
             ...actualConditions,
@@ -526,7 +626,7 @@ export class DeterministicAttemptService {
         {
           ...factBase,
           kind: "exposure",
-          factId: this.identity("exposure_fact", `${input.operationId}:exposure-fact`),
+          factId: this.identity("response_fact", `${input.operationId}:exposure-fact`),
           factType: "objective_exposure_at_submission_v1",
           envelope: { exposureClass: recorded.exposureClass ?? "unseen" },
           digest: canonicalDigest({ exposureClass: recorded.exposureClass ?? "unseen" }),
