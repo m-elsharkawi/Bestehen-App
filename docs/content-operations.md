@@ -67,19 +67,24 @@ Use the migrator database credential convention. The URL may be passed explicitl
 pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
   --database-url "$BESTEHEN_MIGRATOR_DATABASE_URL" \
   --report .local/content-seed/apply-report.json \
-  --operation-id seed-apply-20260901 \
-  --occurred-at 2026-09-01T12:05:00.000Z
+  --operation-id seed-apply-20260901
 ```
+
+For PostgreSQL, the transaction timestamp is authoritative. `--occurred-at` exists only to make
+state-file fixtures deterministic; it cannot override the database-recorded lifecycle time.
 
 The PostgreSQL adapter uses one transaction and parameterized statements to write rights envelopes,
 accessibility manifests, content families and revisions, items, key revisions, recorded gate
 results, the candidate release, and its entries. It does not write audio-provider rows; T5 owns the
 media schema adapter and playback path. A database apply requires the Stage 05 migrations.
 
-The adapter records an immutable operation receipt. Repeating the same operation ID with the same
-canonical command returns the original committed report without another mutation. Reusing it with
-a different release, selector, reason, or recorded time returns `idempotency_conflict` and changes
-nothing. Keep operation IDs stable across transport retries.
+The adapter records a compact, audit-shaped immutable receipt: operation action, canonical payload
+digest, target class, reason-registry code, release reference and database-recorded time. It does not
+store a report body in an audit classification field. Replay reconstructs the original report from
+that receipt and the append-only content facts. Repeating the same operation ID with the same
+canonical command returns the original report without another mutation. Reusing it with a different
+release, selector or reason returns `idempotency_conflict` and changes nothing. A generated client
+timestamp is not semantic, so a transport retry need not repeat `--occurred-at`.
 
 ## Apply and replay locally
 
@@ -121,11 +126,15 @@ Both commands require an exact active family, revision, or seed-key selector and
 selector must resolve to one active revision. Replace `--state ...` with `--database-url ...` to
 operate on PostgreSQL.
 
+`--reason` is a frozen reason-registry code, not free-form notes. Withdrawal accepts
+`VALIDITY.RIGHTS_COMPATIBILITY`; quarantine accepts
+`UNCERTAINTY.KEY_VALIDATOR_DISAGREEMENT`.
+
 ```sh
 pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
   --state .local/content-seed/catalogue.json \
   --withdraw r1-family-id-from-the-report \
-  --reason "rights use withdrawn by recorded decision" \
+  --reason VALIDITY.RIGHTS_COMPATIBILITY \
   --operation-id seed-withdraw-20260901 \
   --occurred-at 2026-09-01T12:10:00.000Z \
   --report .local/content-seed/withdraw-report.json
@@ -135,15 +144,18 @@ pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
 pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
   --state .local/content-seed/catalogue.json \
   --quarantine revision-id-from-the-report \
-  --reason "confirmed ambiguity in one keyed item" \
+  --reason UNCERTAINTY.KEY_VALIDATOR_DISAGREEMENT \
   --operation-id seed-quarantine-20260901 \
   --occurred-at 2026-09-01T12:15:00.000Z \
   --report .local/content-seed/quarantine-report.json
 ```
 
-Withdrawal and quarantine stop future selection in the catalogue snapshot. They do not rewrite an
-attempt, score, key, or validity assertion. A rights-only withdrawal is a serving disposition. It
-does not turn past performance into negative evidence.
+Withdrawal appends a successor withdrawn rights envelope, a granted `retired` approval decision and
+a `serving_only`/`rights_takedown` impact assertion, then moves the revision's current projection
+pointers. Quarantine appends a granted `quarantine` decision and a scoped `serving_only` content
+impact assertion. Neither command rewrites the prior rights or approval facts. Draft content has no
+learner-scoped impact targets, and rights-only withdrawal appends no validity assertion. Past
+performance does not become negative evidence.
 
 ## Roll back a content release
 
@@ -163,6 +175,9 @@ pnpm exec tsx packages/infrastructure/src/content/seed-cli.ts \
 This is content rollback only. A Stage 05 application image rollback to Stage 04 also requires a
 database restore to the Stage 03 revision. An image-only rollback is not sufficient because the
 older runtime cannot verify the Stage 05 migration set.
+
+The PostgreSQL rollback path accepts only an active or retired approved release. It refuses a
+`candidate` seed release, so rollback cannot promote the unreviewed draft corpus.
 
 ## Fake audio limitation
 
