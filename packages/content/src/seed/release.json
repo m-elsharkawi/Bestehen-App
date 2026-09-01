@@ -1,0 +1,2762 @@
+{
+  "schema": "bestehen-seed-release/v1",
+  "releaseId": "b28e9969-f854-5f58-bac3-a08e5570d0ee",
+  "releaseIdentity": "stage-05-content-v1",
+  "generatedFrom": "typed-seed-source",
+  "entries": [
+    {
+      "seedKey": "r1-nachbarschaftszentrum",
+      "intent": "serving",
+      "familyId": "f796e12b-5d31-5d9f-b397-c712f5893bff",
+      "taskFamily": "R1HeadingMatching",
+      "revisionId": "7651db4d-352a-57ac-9ee0-090b4361c574",
+      "predecessorRevisionId": null,
+      "digest": "4b17236f9f7ba8df94bc9d7d73f9a360105646571955559645e2392c49d4104f",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "12c76588-5be3-5534-b019-6fde8717adf4",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-r1-nachbarschaftszentrum",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "be8ceed9-7f91-5011-ae4a-7fbbcb6d645d",
+        "569ff552-17c7-5592-bbd1-34ffe0267b06",
+        "98163835-0203-5af4-9529-9d2716a79d40",
+        "80fa0dcf-a883-5fe7-8a92-c0a91cf5eee8",
+        "78d81464-559d-5c9e-b5f7-07641ef14c98"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "r1-buerogebaeude",
+      "intent": "serving",
+      "familyId": "b177d04b-7cf4-50c1-8338-a6b081dbbf81",
+      "taskFamily": "R1HeadingMatching",
+      "revisionId": "396efb46-01c3-5689-96c2-409d424b6e5c",
+      "predecessorRevisionId": null,
+      "digest": "8b4a6f6d413a6b22977056258f283512696df5f90e2bbe3e2e83d48267ac44fd",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "e93c0303-623d-5b72-a6a1-1392156bd48f",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-r1-buerogebaeude",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "ac60877d-75be-527b-8956-79a17a4f04d8",
+        "7e035df0-3812-5666-9c75-3f3b2a4e00ba",
+        "2a1445db-df17-5f3b-bff6-72ef4d118166",
+        "00809bc8-8ada-5e9b-b149-01486ae87557",
+        "86811e82-78aa-50c9-aa1d-3f1cbd45ecad"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "r2-fahrgemeinschaft",
+      "intent": "serving",
+      "familyId": "1c140fbc-6d6c-51e7-89ce-b6f7071bd62e",
+      "taskFamily": "R2DetailedSelect",
+      "revisionId": "fd8b916c-bba7-5435-b6e2-86e1cdb8d8b8",
+      "predecessorRevisionId": null,
+      "digest": "995a5911fe06bca060d4187f3ca11c172e8cca579c53b0df7495ea749b689470",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "794038ef-2209-5d71-8e25-11324adb6847",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-r2-fahrgemeinschaft",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "4222cc22-f334-5d65-ab85-f41391458c8d",
+        "0ad03caf-cdcd-54ce-a09a-ab3d912499ff",
+        "f60e540c-a0c7-5ac4-b98c-dc1afd867993",
+        "15fbccf4-64be-52a8-9182-2dae09c8657b",
+        "4367f120-1822-5e4b-8424-1fef802bff18"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "r2-bibliothek",
+      "intent": "serving",
+      "familyId": "62bfaf12-39ce-5419-8684-d6d54a9f741c",
+      "taskFamily": "R2DetailedSelect",
+      "revisionId": "0e965d10-8f9c-5d7a-904f-f92a6aadda10",
+      "predecessorRevisionId": null,
+      "digest": "2860d982322737c8480fef63b5db9a609012a922fb835223c31aaee318c0a331",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "a1fa9ef0-ef3f-5591-bc09-f6f329055ed6",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-r2-bibliothek",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "938ac8c1-7a08-5f4b-9404-3beb17f6b6d0",
+        "52ef4c68-b6b6-5a79-b266-bfe1011feed4",
+        "09bcd108-1537-5d2e-bcac-a17ba7760667",
+        "cd0ac59b-8951-5d21-bdc5-e73b405711fa",
+        "274f0438-2021-586e-8aaa-363118d49f50"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "r3-stadtleben",
+      "intent": "serving",
+      "familyId": "ff3b6efd-cace-57e6-9a62-6fabb41bfc5c",
+      "taskFamily": "R3SituationNoticeMatching",
+      "revisionId": "ef43304e-bf8c-52bd-ba3d-953900bdd7d4",
+      "predecessorRevisionId": null,
+      "digest": "7921e7bd3c43f700549dd8ccaf0f7c69d43371309c6c9f8b4c8b3620bcc21a00",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "5142a914-0ea9-5cb5-8980-46a10045d03c",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-r3-stadtleben",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "a922c5fb-f5a6-5b24-a3d5-9abd0b0693ff",
+        "05c5b70f-716b-5399-9483-3d4a40c996c5",
+        "ae0be394-2af6-5b5d-99bd-8d0fadd7f22f",
+        "ebc8fb1a-405c-5144-8fbd-ea162723038d",
+        "645ba830-c489-5a0e-b86a-c7bbfc88eeb0",
+        "aa620afd-ad39-5244-897e-c1a3b42b6125",
+        "b48e581d-e8c3-51b7-9d75-097b6751465a",
+        "e5c07bb4-91bd-5a6a-8e1b-e7dfd626b2c0",
+        "34067645-c2b1-5f00-8f79-30931b65f1f6",
+        "dee4ce72-d0d0-5e8d-bfa4-0f035366388e"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "r3-landkreis",
+      "intent": "serving",
+      "familyId": "b042d92a-9eba-5175-bd0d-e9866e7f1774",
+      "taskFamily": "R3SituationNoticeMatching",
+      "revisionId": "9c46e09c-81f0-515c-8aef-c084381e98cb",
+      "predecessorRevisionId": null,
+      "digest": "116d98ef4f08a3e7231daf7efef64bd511e425bac0807a5bed7ba32366ee1804",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "04d1316f-55f5-52c9-beba-6138cd7004ad",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-r3-landkreis",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "b3c34078-582b-572e-a1c3-66cfca69541c",
+        "d4ef9486-d8ba-5377-b7aa-657e6af71669",
+        "e5025ffc-93f2-595d-9c45-725220876a06",
+        "ea4cfc62-09a2-5d1d-a987-079ed5321d44",
+        "02d17846-6a0c-51da-bd96-1fbd50698fda",
+        "fe086c6b-46fe-5934-bde2-dd792f391107",
+        "39ba0f8d-c2b2-5d29-a825-7119fa07a177",
+        "ae6cfd3d-d24b-5404-9447-dcdc93095457",
+        "a730d9de-c3e0-5201-b584-89158e6e90c5",
+        "f8b0f9b5-cb37-5cf4-a35d-312047befce7"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "sb1-wochenendbesuch",
+      "intent": "serving",
+      "familyId": "aa8b2b9d-6a5e-593b-a542-9727e374b7dc",
+      "taskFamily": "SB1ContextualGrammarCloze",
+      "revisionId": "c590d4a3-e744-5d93-be06-43cf076ec459",
+      "predecessorRevisionId": null,
+      "digest": "b60f74a0c4aabd68661682e37dce9540130bc76eebcc631a75c87f2ffec0f86f",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "4f6e6ddd-21cf-5c47-8b95-78b9baa56a54",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-sb1-wochenendbesuch",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "35e4b025-73f7-5977-b3e7-7c61fa0611d9",
+        "b77f0eb8-1b9f-5b0b-85cb-e120fba76739",
+        "434daf6f-fb98-584f-b591-b3e68598d045",
+        "94353d9b-942a-539c-9fb5-9b113f1bb3f4",
+        "4eaf114e-f9f1-54ea-8126-3576805d6ee2",
+        "9d2b7288-5800-5e10-8cd8-c61416981219"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "sb1-fotoclub",
+      "intent": "serving",
+      "familyId": "1d39ac55-acba-5482-b537-d2522e5a7610",
+      "taskFamily": "SB1ContextualGrammarCloze",
+      "revisionId": "e42318b6-57aa-5338-a6fa-a913e1e8b6fa",
+      "predecessorRevisionId": null,
+      "digest": "4aebd79b7b447ae9a4cf7dfca264e00dd26c6f5ef574967d980987cd6378514b",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "89d91c2b-b7ba-56d2-b6cd-1aff6a4cbb43",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-sb1-fotoclub",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "f1b872cf-ceb4-55f3-832e-3f2d66ed831c",
+        "e7caf59f-78eb-5855-a96b-99ea27fad055",
+        "bde9b6f3-4ac9-5f61-9650-4cd22c419d44",
+        "11d16e5a-ddb7-533b-94f4-7d862382502c",
+        "c072eb5f-54f2-5954-aef4-e0247b5fc0bf",
+        "748695f7-6d05-507a-bbff-802680cae64b"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "sb2-internetwerkstatt",
+      "intent": "serving",
+      "familyId": "39452ccd-1ac5-5bc2-a489-74599c688e9e",
+      "taskFamily": "SB2SharedBankLexicalCloze",
+      "revisionId": "e7f86999-d4d0-5851-b757-011106a37865",
+      "predecessorRevisionId": null,
+      "digest": "2c48e7892d23a4af0e5bb514588bf83aea78351b21cb8a963797ad567c20056f",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "66f5bda4-f4f1-5149-a480-6657a5ed148f",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-sb2-internetwerkstatt",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "cdee523e-d2ca-596e-b62e-211a87c2c82d",
+        "fc96c3fb-836c-5392-97aa-5d51b0ad2d16",
+        "eaf63169-dbaa-5608-a139-f1636ee516fb",
+        "1bcc8ed2-2e88-5618-9224-b86eed88b715",
+        "c5577cea-86ab-58b3-a7fc-a5be120e7f60",
+        "0c985c99-2b09-53e9-a61a-6ca3dcb2fe6f"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "sb2-nachbarschaftsgarten",
+      "intent": "serving",
+      "familyId": "d4718d9f-4b9c-5dba-ae9e-b473cd1aa7ca",
+      "taskFamily": "SB2SharedBankLexicalCloze",
+      "revisionId": "7dd48bfe-60c9-52b0-83c9-f56d96708a99",
+      "predecessorRevisionId": null,
+      "digest": "e607366ea718f0207e03033cb9b583a65aefe532974053df7ed5e7a971aedf72",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "19fa1418-5ed7-56fb-a8b6-1e9539a8440d",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-sb2-nachbarschaftsgarten",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "0b25075e-c576-54c0-9331-5c96fcda9efd",
+        "f7460cdc-a24b-5632-805e-40d8afc35ef8",
+        "a6dea2ed-7ef9-5725-b0cc-6bc31a1a0ef4",
+        "44cc52a4-7b9d-561c-b2ab-f8cea3e98b46",
+        "c6e075d3-7c15-5298-89f9-9cd91ef25b1f",
+        "41dbd552-dfa9-5725-a724-15196c45565b"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "h1-unterwegs",
+      "intent": "serving",
+      "familyId": "53d66fd9-f3b4-59e2-b2d7-edb99fd60ff8",
+      "taskFamily": "H1ShortAnnouncements",
+      "revisionId": "376fbb49-0b4d-58e4-82c7-5c21e98382ae",
+      "predecessorRevisionId": null,
+      "digest": "f9f7a4fbcef63154e81f84b01664b214f8f5711348a090c27b3dd8689087ccbf",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "7d28eb9c-0cad-594e-b519-7cdd4acad969",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-h1-unterwegs",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "52b97030-c561-5884-8955-353f6abc2fa1",
+        "d8c318a2-d8e2-5ab6-aa45-409c32d0c83d",
+        "4aa2f7a8-690b-5200-b8ef-fc0c538a0cbe",
+        "f1a73732-922b-5bd5-bfb4-8ba26a05750c",
+        "84c3626d-38d6-5630-97ac-6d9177712193"
+      ],
+      "mediaRevisionIds": [
+        "b52b88ae-e1d6-5be8-a273-926ce3480745",
+        "ae551707-e3ae-591c-8ad0-3d139175d08f",
+        "0190d72b-84c8-5af1-b309-3ed6f0488810",
+        "61b79bda-7e2b-5b1d-a868-8fe27dcbf901",
+        "fd6497ca-d720-50da-b7fd-d856ff76d02e"
+      ],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "h1-stadtleben",
+      "intent": "serving",
+      "familyId": "7213f0cd-7329-58ce-a74a-e3ac88a0b69a",
+      "taskFamily": "H1ShortAnnouncements",
+      "revisionId": "3c0ba69e-1566-5973-bdf8-ad8b929ceeb8",
+      "predecessorRevisionId": null,
+      "digest": "1e1ce015177e953b1e03d51e3367bb54f7c19d98a363f4c6da5f6258357f738d",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "5dbab3cc-f33e-53ee-b668-b3dfc5908aef",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-h1-stadtleben",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "ea225ddd-fdd7-526b-85e4-7104d7df4c9f",
+        "cad2fc1b-d821-5ee5-b202-884ad40fcff8",
+        "c0b6dcb3-391d-54b9-94aa-dda4ceacd451",
+        "43455ffd-9c36-5084-bba9-9ed25d98bee1",
+        "31a38435-2631-58dc-932a-7682a7c43355"
+      ],
+      "mediaRevisionIds": [
+        "297dfb91-d777-5888-9e9f-e2dda6461548",
+        "d5ba2597-14d8-5089-991f-9dc92612f928",
+        "91f251ea-2bf6-5f3c-9c35-ca3ef24cd775",
+        "e9dd07cc-a4f7-5821-87a8-04edf66f6a39",
+        "41eade3b-0d94-5d9a-a46b-cfe37cc3ad9f"
+      ],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "h2-fahrradwerkstatt",
+      "intent": "serving",
+      "familyId": "00eae296-bcac-53b3-bae9-f27ad0c2a345",
+      "taskFamily": "H2ConversationInterview",
+      "revisionId": "a0454809-0ca5-5203-b9f6-5f1213d5ffca",
+      "predecessorRevisionId": null,
+      "digest": "64d7b4f424df9ac2bd95a83630e1774113b4406279e2bc8dd64a56beb1d3c432",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "7918fd92-173c-5569-b2c1-066b71ecbbc0",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-h2-fahrradwerkstatt",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "f3d30d6b-0184-50f8-9a6c-ad4cce20b5b2",
+        "c7e19e30-22ec-50a5-821a-b8d655d94695",
+        "ab077d8c-24b5-5ed6-9364-b9d33d98347b",
+        "906f30c2-7a09-50dc-bf67-c3fbcedd9ca2",
+        "d695a296-8865-5944-82bf-5c83a4abb0c1"
+      ],
+      "mediaRevisionIds": ["a016dc99-1cd8-5854-8676-18588fc6648a"],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "h2-kochkurs",
+      "intent": "serving",
+      "familyId": "c3692950-4b92-5cd3-8105-cac00b062fb7",
+      "taskFamily": "H2ConversationInterview",
+      "revisionId": "f7c5f165-49ca-5fc2-be81-650ea635d848",
+      "predecessorRevisionId": null,
+      "digest": "e6f96597d3e0fb14fd8c4d5891d801088259d6a6b6010d4a28251ed68a03c025",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "0e5b5114-20b7-56bf-8b70-4c633c04a08d",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-h2-kochkurs",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "710e2ba7-4ceb-5825-a0aa-23b8df241ec5",
+        "275cce4b-5ff8-5e1e-ba08-e4335bb64416",
+        "ceb57cbf-ea5e-5ce2-9238-66f886f7458e",
+        "855933f1-100c-54be-84b1-03971df7b589",
+        "126a5a97-4dba-55ae-9bf7-947715f0e823"
+      ],
+      "mediaRevisionIds": ["38d12539-faa9-598b-9683-cfda7ab86438"],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "h3-nachrichten",
+      "intent": "serving",
+      "familyId": "3b21d047-e3e5-58cb-945d-caa352137887",
+      "taskFamily": "H3ShortFunctionalTexts",
+      "revisionId": "8716405d-afd4-5294-93bd-6a1a70f57097",
+      "predecessorRevisionId": null,
+      "digest": "08c65cb5dc7fb9793f8dbf42601c42ba8854bcbe59df5264d326bfb61a76e67c",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "69ad2035-9143-5b66-b24c-cc5b017a4df8",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-h3-nachrichten",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "1dceb983-6c57-52e6-9888-29a6e707ceaf",
+        "16c16f7f-06d9-5a1b-830e-5228e7c171ab",
+        "8a81ad68-ecb6-5866-a7ee-0ea23107ebc5",
+        "3c49a94b-cef5-5e9e-b1f4-a91e5f954e4d",
+        "7a73e0d5-0066-5d3c-bb2d-29a3eaade319"
+      ],
+      "mediaRevisionIds": [
+        "79e0626d-e87e-58f5-9ca0-19e6b4917922",
+        "1c2c079f-d94d-5158-8a20-37a23654d773",
+        "16bb9c20-6e6a-518a-982d-4186e0e3cfa5",
+        "f2148498-db57-5f9e-8701-3b7f936c62ca",
+        "3d1f8b2b-50d8-54a1-b100-57c36b36a57d"
+      ],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "h3-termine",
+      "intent": "serving",
+      "familyId": "b396fb80-206a-5506-957d-98e4aa2c2edb",
+      "taskFamily": "H3ShortFunctionalTexts",
+      "revisionId": "c94493ab-ad1a-55ef-9287-310a015df726",
+      "predecessorRevisionId": null,
+      "digest": "b28c5191f4e571bd08b8db7793c3ccc69ba83d10e8c03690e5e3b45c7aa2759e",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "1f80f819-f606-5459-a4f8-b1783ae7794d",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-h3-termine",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "92146339-c09d-5c45-9fbe-40030829883a",
+        "b31d8551-ac2b-5f09-83e4-c7b658f2b664",
+        "bb07eab9-b984-5ba8-9a47-55262621dd78",
+        "12dedfc4-706e-580a-9fd5-ccb95861a799",
+        "0ff6526c-7edf-5c25-b43c-6eeec0c9a7d3"
+      ],
+      "mediaRevisionIds": [
+        "33f53a4d-b549-5ba6-8496-300544f7c087",
+        "60ef14a1-3d0f-5a1f-917a-9889395e9096",
+        "8b07d824-1736-55c2-bd37-f298b24d6963",
+        "3e3782d8-ed8b-50e7-87e4-55cb41d3c46f",
+        "fc715204-6cea-5cb0-b652-c0bcfc41e916"
+      ],
+      "validation": {
+        "decision": "publishable",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "findings": []
+      }
+    },
+    {
+      "seedKey": "fixture-quarantine-ambiguous-sb1",
+      "intent": "quarantine_fixture",
+      "familyId": "679bc062-36e7-5ffe-8ec1-c11a3d308c7d",
+      "taskFamily": "SB1ContextualGrammarCloze",
+      "revisionId": "b2309d12-db5c-5985-95df-752fabf2951a",
+      "predecessorRevisionId": null,
+      "digest": "9f4b79d3f7a3aff361fae7a92226cffff7c4fae96af3cb33386e393eb06a0fc4",
+      "requestedLevel": "quarantine",
+      "contentClass": "C3",
+      "rightsState": "current",
+      "rightsEnvelopeId": "99b9b5e0-10e5-5df7-9da3-f1ccd77051f6",
+      "rightsActionEvaluation": {
+        "display": "allowed",
+        "cache": "allowed",
+        "downloadOffline": "allowed_with_conditions"
+      },
+      "accessibilityManifestId": "seed-a11y-fixture-quarantine-ambiguous-sb1",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "fdfe75d4-a678-5cd6-85c3-b89bb4439ffc",
+        "55a7182b-569b-5264-af09-a740be39e852",
+        "bfa4e75b-4733-5ea5-a368-a440c2de486b",
+        "dd3c5106-fbcd-50f2-8437-1e204d7eaa45",
+        "0c5e0670-6411-5611-a553-230781d8a0ac",
+        "e19958ad-eb6f-53d5-8c2e-9a84c312b52b"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "quarantine_required",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "pass",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "blocked",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": [
+              {
+                "code": "key_defect",
+                "pointer": "/items/57a450b3-f87d-530e-a890-add1638d873f/key/blind_validator_disagreement",
+                "detail": "The independent blind validator disagreed with the proposed key.",
+                "requiresQuarantine": true
+              }
+            ]
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "firstBlockingGate": "independent_key_validation",
+        "findings": [
+          {
+            "code": "key_defect",
+            "pointer": "/items/57a450b3-f87d-530e-a890-add1638d873f/key/blind_validator_disagreement",
+            "detail": "The independent blind validator disagreed with the proposed key.",
+            "requiresQuarantine": true
+          }
+        ]
+      }
+    },
+    {
+      "seedKey": "fixture-withdrawn-sb1",
+      "intent": "withdrawal_fixture",
+      "familyId": "cd23626a-8bde-56f8-838f-1872312bc4f2",
+      "taskFamily": "SB1ContextualGrammarCloze",
+      "revisionId": "f00643a9-e4d9-5138-8516-6f981402a85a",
+      "predecessorRevisionId": null,
+      "digest": "3fc1c85eb520a35a65c8483e109cbec4948a5c4eb91875b1a274ef4d8705ec0d",
+      "requestedLevel": "training",
+      "contentClass": "C3",
+      "rightsState": "withdrawn",
+      "rightsEnvelopeId": "0d6ba26c-e79b-51f2-80e1-ee5fb61a6b9b",
+      "rightsActionEvaluation": {
+        "display": "prohibited",
+        "cache": "prohibited",
+        "downloadOffline": "prohibited"
+      },
+      "accessibilityManifestId": "seed-a11y-fixture-withdrawn-sb1",
+      "accessibilityGate": {
+        "status": "pass",
+        "findings": [],
+        "narrowedClaims": []
+      },
+      "keyRevisionIds": [
+        "4c11bf13-0589-582d-82d4-7d30b352b143",
+        "9115ad4b-80dc-530a-9927-f9199038435f",
+        "75137e4e-82cd-5eb8-aca8-034e0fb87ab7",
+        "079a3bb7-52a8-5d2e-98bf-d377096e0c94",
+        "cb76af51-7743-5cf8-a2d5-f66429f83cba",
+        "32e016b7-f847-5326-816b-857e0389dad6"
+      ],
+      "mediaRevisionIds": [],
+      "validation": {
+        "decision": "blocked",
+        "requestedLevel": "training",
+        "gateResults": [
+          {
+            "gate": "eligibility_brief",
+            "ordinal": 1,
+            "status": "blocked",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": [
+              {
+                "code": "rights_not_eligible_for_display",
+                "pointer": "/rightsEnvelopeId",
+                "detail": "Least permission across components resolves `display` to `prohibited`.",
+                "requiresQuarantine": false
+              }
+            ]
+          },
+          {
+            "gate": "semantic_task_design",
+            "ordinal": 2,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "language_media_creation",
+            "ordinal": 3,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "deterministic_structure",
+            "ordinal": 4,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "independent_key_validation",
+            "ordinal": 5,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "naturalness_register",
+            "ordinal": 6,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "difficulty_target_fit",
+            "ordinal": 7,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "anti_copy_diversity",
+            "ordinal": 8,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "final_media_render_interaction",
+            "ordinal": 9,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "approval_publish",
+            "ordinal": 10,
+            "status": "not_evaluated",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          },
+          {
+            "gate": "post_publication_loop",
+            "ordinal": 11,
+            "status": "not_applicable",
+            "gateVersion": "content-qa-gates/v1",
+            "findings": []
+          }
+        ],
+        "firstBlockingGate": "eligibility_brief",
+        "findings": [
+          {
+            "code": "rights_not_eligible_for_display",
+            "pointer": "/rightsEnvelopeId",
+            "detail": "Least permission across components resolves `display` to `prohibited`.",
+            "requiresQuarantine": false
+          }
+        ]
+      }
+    }
+  ],
+  "audio": [
+    {
+      "assetId": "57fbde85-44ba-5859-a328-2cdd56ce6a3d",
+      "assetKey": "h1-unterwegs-h1a-platform",
+      "contentSeedKey": "h1-unterwegs",
+      "contentFamilySlug": "h1-family-public-transit-and-services",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-unterwegs-h1a-platform/v1",
+      "transcriptRevisionId": "seed-transcript/h1-unterwegs-h1a-platform/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Achtung am Gleis vier. Der Regionalzug nach Kassel fährt heute nicht um acht Uhr zwölf, sondern zwanzig Minuten später. Bitte bleiben Sie auf Gleis vier.",
+      "transcript": "Achtung am Gleis vier. Der Regionalzug nach Kassel fährt heute nicht um acht Uhr zwölf, sondern zwanzig Minuten später. Bitte bleiben Sie auf Gleis vier.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "b52b88ae-e1d6-5be8-a273-926ce3480745",
+        "objectKey": "seed/audio/h1-unterwegs-h1a-platform.wav",
+        "digest": "81529ce03991056f2ce5695f14724f0e8313a737587c4a2007d0eeffc07fec53",
+        "bytes": 6116,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1012
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "8881a2ce-d778-584c-b4da-dea180aab60e",
+      "assetKey": "h1-unterwegs-h1a-pool",
+      "contentSeedKey": "h1-unterwegs",
+      "contentFamilySlug": "h1-family-public-transit-and-services",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-unterwegs-h1a-pool/v1",
+      "transcriptRevisionId": "seed-transcript/h1-unterwegs-h1a-pool/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Liebe Badegäste, das Außenbecken schließt heute wegen eines Gewitters bereits um siebzehn Uhr. Das Hallenbad bleibt bis zwanzig Uhr geöffnet.",
+      "transcript": "Liebe Badegäste, das Außenbecken schließt heute wegen eines Gewitters bereits um siebzehn Uhr. Das Hallenbad bleibt bis zwanzig Uhr geöffnet.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "ae551707-e3ae-591c-8ad0-3d139175d08f",
+        "objectKey": "seed/audio/h1-unterwegs-h1a-pool.wav",
+        "digest": "cae5e395d52b56398454c4ac5ffb18acd032d00deffaf7c53700854c1783ef9f",
+        "bytes": 5828,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 964
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "cf4ec757-9c75-582e-81ce-25f0bea47a44",
+      "assetKey": "h1-unterwegs-h1a-store",
+      "contentSeedKey": "h1-unterwegs",
+      "contentFamilySlug": "h1-family-public-transit-and-services",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-unterwegs-h1a-store/v1",
+      "transcriptRevisionId": "seed-transcript/h1-unterwegs-h1a-store/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Eine Information für unsere Kundinnen und Kunden: Die Kasse im ersten Stock ist geschlossen. Bitte bezahlen Sie im Erdgeschoss.",
+      "transcript": "Eine Information für unsere Kundinnen und Kunden: Die Kasse im ersten Stock ist geschlossen. Bitte bezahlen Sie im Erdgeschoss.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "0190d72b-84c8-5af1-b309-3ed6f0488810",
+        "objectKey": "seed/audio/h1-unterwegs-h1a-store.wav",
+        "digest": "7ec319818e3e0f2951c385bda9dbd13c3b50cd224e582015469ed3e2bb36ebc5",
+        "bytes": 5492,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 908
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "c671028e-cf94-5b67-af6b-7affe7dd1da6",
+      "assetKey": "h1-unterwegs-h1a-clinic",
+      "contentSeedKey": "h1-unterwegs",
+      "contentFamilySlug": "h1-family-public-transit-and-services",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-unterwegs-h1a-clinic/v1",
+      "transcriptRevisionId": "seed-transcript/h1-unterwegs-h1a-clinic/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Frau Klose bitte in Behandlungsraum sieben. Nehmen Sie Ihre Versichertenkarte mit und melden Sie sich dort bei der Assistenz.",
+      "transcript": "Frau Klose bitte in Behandlungsraum sieben. Nehmen Sie Ihre Versichertenkarte mit und melden Sie sich dort bei der Assistenz.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "61b79bda-7e2b-5b1d-a868-8fe27dcbf901",
+        "objectKey": "seed/audio/h1-unterwegs-h1a-clinic.wav",
+        "digest": "c15f257eacc8d329c133c3e416246e4fdca4821453e3f261a69f296e8a02f070",
+        "bytes": 5444,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 900
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "20eb81b1-58d7-53c2-a03c-2eefd0577305",
+      "assetKey": "h1-unterwegs-h1a-museum",
+      "contentSeedKey": "h1-unterwegs",
+      "contentFamilySlug": "h1-family-public-transit-and-services",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-unterwegs-h1a-museum/v1",
+      "transcriptRevisionId": "seed-transcript/h1-unterwegs-h1a-museum/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Die Führung durch die Fotoausstellung beginnt in fünf Minuten am großen Fenster im Foyer. Sie dauert ungefähr vierzig Minuten.",
+      "transcript": "Die Führung durch die Fotoausstellung beginnt in fünf Minuten am großen Fenster im Foyer. Sie dauert ungefähr vierzig Minuten.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "fd6497ca-d720-50da-b7fd-d856ff76d02e",
+        "objectKey": "seed/audio/h1-unterwegs-h1a-museum.wav",
+        "digest": "65e36f02273e2e1f81fcf920858b28171ec193248ccb3e84f32aee1aa75d33e1",
+        "bytes": 5468,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 904
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "93801901-2026-574d-8375-d8cebfb52eaa",
+      "assetKey": "h1-stadtleben-h1b-library",
+      "contentSeedKey": "h1-stadtleben",
+      "contentFamilySlug": "h1-family-community-announcements",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-stadtleben-h1b-library/v1",
+      "transcriptRevisionId": "seed-transcript/h1-stadtleben-h1b-library/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Die Stadtbibliothek schließt heute ausnahmsweise um achtzehn Uhr. Bereits ausgeliehene Medien können Sie danach am Rückgabekasten abgeben.",
+      "transcript": "Die Stadtbibliothek schließt heute ausnahmsweise um achtzehn Uhr. Bereits ausgeliehene Medien können Sie danach am Rückgabekasten abgeben.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "297dfb91-d777-5888-9e9f-e2dda6461548",
+        "objectKey": "seed/audio/h1-stadtleben-h1b-library.wav",
+        "digest": "0738e87b705b15a147fa91b142b9aba8bd512bfd259672523e695d46f2e20564",
+        "bytes": 5756,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 952
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "3f8fd307-60af-593e-94a0-c8b5929856b8",
+      "assetKey": "h1-stadtleben-h1b-school",
+      "contentSeedKey": "h1-stadtleben",
+      "contentFamilySlug": "h1-family-community-announcements",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-stadtleben-h1b-school/v1",
+      "transcriptRevisionId": "seed-transcript/h1-stadtleben-h1b-school/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Wegen der Hitze endet der Unterricht morgen für alle Klassen nach der fünften Stunde. Die Nachmittagsbetreuung findet wie geplant statt.",
+      "transcript": "Wegen der Hitze endet der Unterricht morgen für alle Klassen nach der fünften Stunde. Die Nachmittagsbetreuung findet wie geplant statt.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "d5ba2597-14d8-5089-991f-9dc92612f928",
+        "objectKey": "seed/audio/h1-stadtleben-h1b-school.wav",
+        "digest": "2c0309ea310c08d430fd6c652e379e67d14b5188c73587f0a2d166c5663b22f1",
+        "bytes": 5708,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 944
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "e65f6848-fb88-5623-b940-c9191e580565",
+      "assetKey": "h1-stadtleben-h1b-market",
+      "contentSeedKey": "h1-stadtleben",
+      "contentFamilySlug": "h1-family-community-announcements",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-stadtleben-h1b-market/v1",
+      "transcriptRevisionId": "seed-transcript/h1-stadtleben-h1b-market/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Der Wochenmarkt zieht diesen Mittwoch vom Rathausplatz auf den Parkplatz an der Sporthalle. Die Öffnungszeit von acht bis dreizehn Uhr bleibt gleich.",
+      "transcript": "Der Wochenmarkt zieht diesen Mittwoch vom Rathausplatz auf den Parkplatz an der Sporthalle. Die Öffnungszeit von acht bis dreizehn Uhr bleibt gleich.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "91f251ea-2bf6-5f3c-9c35-ca3ef24cd775",
+        "objectKey": "seed/audio/h1-stadtleben-h1b-market.wav",
+        "digest": "ea30c03d0d9bf60a643cb25a56a45e81ecb8711a6703e817c5ff0a3b1e5a3c83",
+        "bytes": 6020,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 996
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "acf87477-a5f6-5ff9-8c43-32dda12ae204",
+      "assetKey": "h1-stadtleben-h1b-theatre",
+      "contentSeedKey": "h1-stadtleben",
+      "contentFamilySlug": "h1-family-community-announcements",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-stadtleben-h1b-theatre/v1",
+      "transcriptRevisionId": "seed-transcript/h1-stadtleben-h1b-theatre/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Die Vorstellung beginnt um neunzehn Uhr dreißig. Bitte geben Sie große Taschen vor dem Einlass kostenlos an der Garderobe ab.",
+      "transcript": "Die Vorstellung beginnt um neunzehn Uhr dreißig. Bitte geben Sie große Taschen vor dem Einlass kostenlos an der Garderobe ab.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "e9dd07cc-a4f7-5821-87a8-04edf66f6a39",
+        "objectKey": "seed/audio/h1-stadtleben-h1b-theatre.wav",
+        "digest": "a4990b8a974a22e2cbb186ffb8f2b7bcf25a5940dba69d4a524b37b14d288c6e",
+        "bytes": 5444,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 900
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "a854d6b5-f581-5413-8ca3-2f83873125fa",
+      "assetKey": "h1-stadtleben-h1b-park",
+      "contentSeedKey": "h1-stadtleben",
+      "contentFamilySlug": "h1-family-community-announcements",
+      "listeningFamily": "H1",
+      "scriptRevisionId": "seed-script/h1-stadtleben-h1b-park/v1",
+      "transcriptRevisionId": "seed-transcript/h1-stadtleben-h1b-park/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Der südliche Parkeingang ist bis Freitag gesperrt. Nutzen Sie bitte den Eingang an der Lindenstraße. Der Spielplatz bleibt geöffnet.",
+      "transcript": "Der südliche Parkeingang ist bis Freitag gesperrt. Nutzen Sie bitte den Eingang an der Lindenstraße. Der Spielplatz bleibt geöffnet.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "41eade3b-0d94-5d9a-a46b-cfe37cc3ad9f",
+        "objectKey": "seed/audio/h1-stadtleben-h1b-park.wav",
+        "digest": "d76cb5d948fa8be47461769e56eb6d406c77d358523980fa25ba3d32586480cb",
+        "bytes": 5612,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 928
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "544beeff-bcc2-59f1-ba51-e23645100589",
+      "assetKey": "h2-fahrradwerkstatt-dialogue",
+      "contentSeedKey": "h2-fahrradwerkstatt",
+      "contentFamilySlug": "h2-family-service-complaint-dialogue",
+      "listeningFamily": "H2",
+      "scriptRevisionId": "seed-script/h2-fahrradwerkstatt-dialogue/v1",
+      "transcriptRevisionId": "seed-transcript/h2-fahrradwerkstatt-dialogue/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Kundin: Guten Morgen. Mein Fahrrad war gestern zur Reparatur hier. Seitdem schleift die Bremse hinten. Mitarbeiter: Das tut mir leid. Haben Sie den Abholschein dabei? Kundin: Ja. Ich brauche das Rad allerdings heute Abend für den Weg zur Arbeit. Mitarbeiter: Wir sehen es uns sofort an. Wenn nur der Bremszug nachgestellt werden muss, dauert es etwa dreißig Minuten. Ein neues Teil müssten wir bestellen. Kundin: Kostet die Kontrolle noch einmal etwas? Mitarbeiter: Nein, die Nachkontrolle gehört zur gestrigen Reparatur. Setzen Sie sich gern ins Café nebenan. Ich rufe Sie an, sobald wir wissen, was fehlt. Kundin: Gut, meine Nummer steht auf dem Schein.",
+      "transcript": "Kundin: Guten Morgen. Mein Fahrrad war gestern zur Reparatur hier. Seitdem schleift die Bremse hinten. Mitarbeiter: Das tut mir leid. Haben Sie den Abholschein dabei? Kundin: Ja. Ich brauche das Rad allerdings heute Abend für den Weg zur Arbeit. Mitarbeiter: Wir sehen es uns sofort an. Wenn nur der Bremszug nachgestellt werden muss, dauert es etwa dreißig Minuten. Ein neues Teil müssten wir bestellen. Kundin: Kostet die Kontrolle noch einmal etwas? Mitarbeiter: Nein, die Nachkontrolle gehört zur gestrigen Reparatur. Setzen Sie sich gern ins Café nebenan. Ich rufe Sie an, sobald wir wissen, was fehlt. Kundin: Gut, meine Nummer steht auf dem Schein.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "a016dc99-1cd8-5854-8676-18588fc6648a",
+        "objectKey": "seed/audio/h2-fahrradwerkstatt-dialogue.wav",
+        "digest": "5d228211297cce430c7e6f94ef3674360287af043f20bdb44187263ff22a6a52",
+        "bytes": 7244,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1200
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "43b8282a-73fe-5af6-aab6-4eb755713c54",
+      "assetKey": "h2-kochkurs-dialogue",
+      "contentSeedKey": "h2-kochkurs",
+      "contentFamilySlug": "h2-family-local-radio-interview",
+      "listeningFamily": "H2",
+      "scriptRevisionId": "seed-script/h2-kochkurs-dialogue/v1",
+      "transcriptRevisionId": "seed-transcript/h2-kochkurs-dialogue/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Moderatorin: Herr Demir, Sie leiten seit einem Jahr einen Kochkurs im Jugendzentrum. Wer kommt zu Ihnen? Kursleiter: Vor allem Menschen, die nach der Arbeit schnell und günstig kochen möchten. Vorkenntnisse braucht niemand. Moderatorin: Was machen Sie heute? Kursleiter: Eine Gemüsesuppe und ein Fladenbrot. Das Brot bereiten wir zuerst vor, weil der Teig ruhen muss. Moderatorin: Müssen die Teilnehmenden etwas mitbringen? Kursleiter: Nur eine Dose für Reste. Zutaten und Schürzen sind im Preis von achtzehn Euro enthalten. Moderatorin: Der Kurs sollte ursprünglich um achtzehn Uhr beginnen. Kursleiter: Richtig, aber der Raum ist vorher belegt. Heute starten wir erst um halb sieben und enden gegen neun. Moderatorin: Gibt es noch Plätze? Kursleiter: Für heute nicht. Für den Termin nächsten Monat kann man sich ab Montag online anmelden.",
+      "transcript": "Moderatorin: Herr Demir, Sie leiten seit einem Jahr einen Kochkurs im Jugendzentrum. Wer kommt zu Ihnen? Kursleiter: Vor allem Menschen, die nach der Arbeit schnell und günstig kochen möchten. Vorkenntnisse braucht niemand. Moderatorin: Was machen Sie heute? Kursleiter: Eine Gemüsesuppe und ein Fladenbrot. Das Brot bereiten wir zuerst vor, weil der Teig ruhen muss. Moderatorin: Müssen die Teilnehmenden etwas mitbringen? Kursleiter: Nur eine Dose für Reste. Zutaten und Schürzen sind im Preis von achtzehn Euro enthalten. Moderatorin: Der Kurs sollte ursprünglich um achtzehn Uhr beginnen. Kursleiter: Richtig, aber der Raum ist vorher belegt. Heute starten wir erst um halb sieben und enden gegen neun. Moderatorin: Gibt es noch Plätze? Kursleiter: Für heute nicht. Für den Termin nächsten Monat kann man sich ab Montag online anmelden.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "38d12539-faa9-598b-9683-cfda7ab86438",
+        "objectKey": "seed/audio/h2-kochkurs-dialogue.wav",
+        "digest": "55419e200fdb2703689e4bb8e4bc0e51d53e4bffb8a7606993b9db29dc699a9d",
+        "bytes": 7244,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1200
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "a413abd4-960f-5858-ba74-c68ce2fb7ed1",
+      "assetKey": "h3-nachrichten-h3a-voicemail",
+      "contentSeedKey": "h3-nachrichten",
+      "contentFamilySlug": "h3-family-everyday-messages",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-nachrichten-h3a-voicemail/v1",
+      "transcriptRevisionId": "seed-transcript/h3-nachrichten-h3a-voicemail/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Hallo Daria, hier ist Ben. Unser Treffen morgen muss eine Stunde später beginnen, also um halb sieben. Der Ort bleibt das Café am Markt. Ruf bitte nur an, wenn die neue Zeit nicht passt.",
+      "transcript": "Hallo Daria, hier ist Ben. Unser Treffen morgen muss eine Stunde später beginnen, also um halb sieben. Der Ort bleibt das Café am Markt. Ruf bitte nur an, wenn die neue Zeit nicht passt.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "79e0626d-e87e-58f5-9ca0-19e6b4917922",
+        "objectKey": "seed/audio/h3-nachrichten-h3a-voicemail.wav",
+        "digest": "e5fe6d5472679d4a8be65d5d15f530c7d476e0b4ffb665970f4f932056ff9ff3",
+        "bytes": 6908,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1144
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "a5df41a9-658f-5dac-9341-50289d43a04b",
+      "assetKey": "h3-nachrichten-h3a-radio",
+      "contentSeedKey": "h3-nachrichten",
+      "contentFamilySlug": "h3-family-everyday-messages",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-nachrichten-h3a-radio/v1",
+      "transcriptRevisionId": "seed-transcript/h3-nachrichten-h3a-radio/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Am Wochenende bleibt es am Samstag trocken und mild. Erst am Sonntagmittag zieht von Westen Regen auf. Wer einen Ausflug plant, sollte deshalb den Samstag nutzen.",
+      "transcript": "Am Wochenende bleibt es am Samstag trocken und mild. Erst am Sonntagmittag zieht von Westen Regen auf. Wer einen Ausflug plant, sollte deshalb den Samstag nutzen.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "1c2c079f-d94d-5158-8a20-37a23654d773",
+        "objectKey": "seed/audio/h3-nachrichten-h3a-radio.wav",
+        "digest": "9df761f6481e09dfcc82fc5e2097a0855928b77c05a2e0368667b90db4df9fd1",
+        "bytes": 6332,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1048
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "5551f790-e720-5a02-8232-316fd6084799",
+      "assetKey": "h3-nachrichten-h3a-order",
+      "contentSeedKey": "h3-nachrichten",
+      "contentFamilySlug": "h3-family-everyday-messages",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-nachrichten-h3a-order/v1",
+      "transcriptRevisionId": "seed-transcript/h3-nachrichten-h3a-order/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Guten Tag, hier ist die Bäckerei Schmitt. Ihre bestellte Torte ist morgen ab elf Uhr fertig. Da wir am Nachmittag schließen, holen Sie sie bitte spätestens um vierzehn Uhr ab.",
+      "transcript": "Guten Tag, hier ist die Bäckerei Schmitt. Ihre bestellte Torte ist morgen ab elf Uhr fertig. Da wir am Nachmittag schließen, holen Sie sie bitte spätestens um vierzehn Uhr ab.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "16bb9c20-6e6a-518a-982d-4186e0e3cfa5",
+        "objectKey": "seed/audio/h3-nachrichten-h3a-order.wav",
+        "digest": "a52c1531c4c882ba4bc20a64bba06d89a2d68bacad7860ccbb5e6d42fb49f40f",
+        "bytes": 6644,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1100
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "be10582a-07f8-5585-ae35-1c71be58e6bb",
+      "assetKey": "h3-nachrichten-h3a-club",
+      "contentSeedKey": "h3-nachrichten",
+      "contentFamilySlug": "h3-family-everyday-messages",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-nachrichten-h3a-club/v1",
+      "transcriptRevisionId": "seed-transcript/h3-nachrichten-h3a-club/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Das heutige Lauftraining fällt wegen Glatteis aus. Der Theorieabend im Vereinsraum beginnt trotzdem wie geplant um neunzehn Uhr. Thema ist sicheres Training im Winter.",
+      "transcript": "Das heutige Lauftraining fällt wegen Glatteis aus. Der Theorieabend im Vereinsraum beginnt trotzdem wie geplant um neunzehn Uhr. Thema ist sicheres Training im Winter.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "f2148498-db57-5f9e-8701-3b7f936c62ca",
+        "objectKey": "seed/audio/h3-nachrichten-h3a-club.wav",
+        "digest": "5e2c111eead2693797d502268931f3c7d37385cee4af8977b08f11624878d9c6",
+        "bytes": 6452,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1068
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "cd5daf8f-3a6e-5033-910b-cb9512578ad6",
+      "assetKey": "h3-nachrichten-h3a-delivery",
+      "contentSeedKey": "h3-nachrichten",
+      "contentFamilySlug": "h3-family-everyday-messages",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-nachrichten-h3a-delivery/v1",
+      "transcriptRevisionId": "seed-transcript/h3-nachrichten-h3a-delivery/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Wir konnten Ihr Paket heute nicht zustellen. Es liegt ab morgen neun Uhr im Paketshop an der Bergstraße. Bitte bringen Sie zur Abholung einen Ausweis mit.",
+      "transcript": "Wir konnten Ihr Paket heute nicht zustellen. Es liegt ab morgen neun Uhr im Paketshop an der Bergstraße. Bitte bringen Sie zur Abholung einen Ausweis mit.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "3d1f8b2b-50d8-54a1-b100-57c36b36a57d",
+        "objectKey": "seed/audio/h3-nachrichten-h3a-delivery.wav",
+        "digest": "48b5d92aea91e1a780684b109a3d45895351ad1f642ec394e408141a6b65fa21",
+        "bytes": 6140,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1016
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "ab225fa1-14a0-5ff6-bf78-9e095d564b1c",
+      "assetKey": "h3-termine-h3b-dentist",
+      "contentSeedKey": "h3-termine",
+      "contentFamilySlug": "h3-family-appointment-information",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-termine-h3b-dentist/v1",
+      "transcriptRevisionId": "seed-transcript/h3-termine-h3b-dentist/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Guten Tag, Praxis Wagner. Ihr Termin am Dienstag um zehn Uhr muss wegen einer Fortbildung verschoben werden. Wir können Ihnen am selben Tag um fünfzehn Uhr oder am Donnerstag um neun Uhr einen Ersatz anbieten.",
+      "transcript": "Guten Tag, Praxis Wagner. Ihr Termin am Dienstag um zehn Uhr muss wegen einer Fortbildung verschoben werden. Wir können Ihnen am selben Tag um fünfzehn Uhr oder am Donnerstag um neun Uhr einen Ersatz anbieten.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "33f53a4d-b549-5ba6-8496-300544f7c087",
+        "objectKey": "seed/audio/h3-termine-h3b-dentist.wav",
+        "digest": "1344c53375fab020709aef40ab816ea6f57bebacbe1a5b14a7262659e7cee796",
+        "bytes": 7244,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1200
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "3ae606c3-b0e5-5120-804f-4cfc7a91e721",
+      "assetKey": "h3-termine-h3b-work",
+      "contentSeedKey": "h3-termine",
+      "contentFamilySlug": "h3-family-appointment-information",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-termine-h3b-work/v1",
+      "transcriptRevisionId": "seed-transcript/h3-termine-h3b-work/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Hallo Team, die Besprechung beginnt morgen schon um acht Uhr dreißig. Wir treffen uns nicht im großen Raum, sondern per Video, weil mehrere Kolleginnen im Homeoffice sind.",
+      "transcript": "Hallo Team, die Besprechung beginnt morgen schon um acht Uhr dreißig. Wir treffen uns nicht im großen Raum, sondern per Video, weil mehrere Kolleginnen im Homeoffice sind.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "60ef14a1-3d0f-5a1f-917a-9889395e9096",
+        "objectKey": "seed/audio/h3-termine-h3b-work.wav",
+        "digest": "1ea57fd846738372d92b9ce95a3b7a896bac74140f141b5a69bf4375f504505a",
+        "bytes": 6548,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1084
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "46d83a54-cd1e-529f-9d22-09acb915cab8",
+      "assetKey": "h3-termine-h3b-school",
+      "contentSeedKey": "h3-termine",
+      "contentFamilySlug": "h3-family-appointment-information",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-termine-h3b-school/v1",
+      "transcriptRevisionId": "seed-transcript/h3-termine-h3b-school/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Der Elternabend der Klasse sechs B findet am kommenden Montag statt. Beginn ist um neunzehn Uhr in Raum zwölf. Der Eingang am Schulhof ist abends geschlossen; benutzen Sie den Haupteingang.",
+      "transcript": "Der Elternabend der Klasse sechs B findet am kommenden Montag statt. Beginn ist um neunzehn Uhr in Raum zwölf. Der Eingang am Schulhof ist abends geschlossen; benutzen Sie den Haupteingang.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "8b07d824-1736-55c2-bd37-f298b24d6963",
+        "objectKey": "seed/audio/h3-termine-h3b-school.wav",
+        "digest": "3de0b4e66597f9655944fbe4661381501fff01cc0baf15903da52c0dc1fff75c",
+        "bytes": 6980,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1156
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "58938e8b-1397-57cc-a136-e179c091bda4",
+      "assetKey": "h3-termine-h3b-repair",
+      "contentSeedKey": "h3-termine",
+      "contentFamilySlug": "h3-family-appointment-information",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-termine-h3b-repair/v1",
+      "transcriptRevisionId": "seed-transcript/h3-termine-h3b-repair/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Hier ist Heizungsservice König. Das Ersatzteil ist heute angekommen. Unser Monteur kann morgen zwischen zwölf und vierzehn Uhr kommen. Bitte sorgen Sie dafür, dass der Keller zugänglich ist.",
+      "transcript": "Hier ist Heizungsservice König. Das Ersatzteil ist heute angekommen. Unser Monteur kann morgen zwischen zwölf und vierzehn Uhr kommen. Bitte sorgen Sie dafür, dass der Keller zugänglich ist.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "3e3782d8-ed8b-50e7-87e4-55cb41d3c46f",
+        "objectKey": "seed/audio/h3-termine-h3b-repair.wav",
+        "digest": "67f7e6632d58d9ab66de7cb63c7780be683cd30dccabd8adc1504bc7470bb3f5",
+        "bytes": 7004,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1160
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    },
+    {
+      "assetId": "58ce93b9-49cb-5cab-afed-15ac5990541a",
+      "assetKey": "h3-termine-h3b-course",
+      "contentSeedKey": "h3-termine",
+      "contentFamilySlug": "h3-family-appointment-information",
+      "listeningFamily": "H3",
+      "scriptRevisionId": "seed-script/h3-termine-h3b-course/v1",
+      "transcriptRevisionId": "seed-transcript/h3-termine-h3b-course/v1",
+      "language": "de",
+      "sourceRole": "deterministic_fake_training_fixture",
+      "rendererVersion": "fake-tts/v1",
+      "script": "Willkommen im Online-Seminar. Bitte schalten Sie Ihr Mikrofon zunächst aus. Fragen können Sie jederzeit in den Chat schreiben; wir besprechen sie jeweils am Ende eines Abschnitts.",
+      "transcript": "Willkommen im Online-Seminar. Bitte schalten Sie Ihr Mikrofon zunächst aus. Fragen können Sie jederzeit in den Chat schreiben; wir besprechen sie jeweils am Ende eines Abschnitts.",
+      "transcriptEarliestRevealPhase": "after_attempt",
+      "intendedApproval": "training",
+      "rendition": {
+        "mediaRevisionId": "fc715204-6cea-5cb0-b652-c0bcfc41e916",
+        "objectKey": "seed/audio/h3-termine-h3b-course.wav",
+        "digest": "46771cb3cd2eb9e086867257fe40ebde5668480d97ad1ac9fc5710e191e5c5e2",
+        "bytes": 6740,
+        "mime": "audio/wav",
+        "codec": "pcm_u8",
+        "container": "wav",
+        "durationMs": 1116
+      },
+      "limitations": ["not_speech", "not_p4_approved", "owner_05_a_unclaimed"]
+    }
+  ]
+}
