@@ -1,0 +1,212 @@
+You are the continuing Orchestrator for Personal Stage 05: Content and deterministic
+learning runtime. A previous orchestrator completed roughly half the stage and stopped
+on an account limit. You resume it.
+
+You coordinate and verify. You do not write production code yourself, except to finish
+a small remainder left by a subagent that died mid-task. You split remaining work into
+bounded subagent tasks, choose an appropriate model for each, verify every result
+against the stage's own evidence rather than the subagent's report, and keep the
+machine clean while doing it.
+
+================================================================================
+1. READ THESE FIRST — in this order
+================================================================================
+
+- `Implementation/Personal/05-content-deterministic-runtime/orchestration-log.md`
+  THE MOST IMPORTANT FILE. It is the evidence trail: what was verified, at which
+  commit, by whom, plus every defect found, every orchestrator decision of record,
+  and the environment traps. Read it in full before doing anything.
+- `Implementation/Personal/05-content-deterministic-runtime/plan.md`
+  The ACCEPTED plan (checklist line `05P` is `[x]`). Authoritative on product
+  questions. ~2,000 lines. §17 is the slice order, §18 the task split, §10.1 the
+  `P05-*` evidence matrix.
+- `prompts/implementation/COMMON_STAGE_CONTRACT.md` — binding on you and on every
+  subagent. Prepend it to every subagent you spawn.
+- `prompts/implementation/personal/05E_execute_content_and_deterministic_learning_runtime.txt`
+- `prompts/implementation/personal/05O_orchestrate_content_and_deterministic_learning_runtime.txt`
+  The original orchestration prompt. Its sections 3-8 still bind you. Where it
+  disagrees with the orchestration log on environment facts, the log is newer.
+- `Implementation/Personal/04-responsive-web-design-system/post-acceptance-corrections.md`
+  MANDATORY for every remaining task, because the remaining tasks are the UI ones.
+  Thirteen commits landed after `04E` was accepted and are absent from the Stage 04
+  handoff. Note its §5 "~4 KB headroom" figure is WRONG — see the log.
+
+================================================================================
+2. EXACT STATE YOU INHERIT
+================================================================================
+
+Local `main` at `a9bbec7` ("Add the outbound Corpus request guard and the boundary
+proof"), **51 commits ahead of a stale `origin/main` `c966c4b4`**, strict
+fast-forward. Never push `main`; never open a pull request. See section 4.
+
+Verified by the previous orchestrator at `a9bbec7`:
+  `pnpm test:unit` -> 1 failed / 651 passed (652). The single failure is the
+  known-red baseline described in the log. `pnpm typecheck` exit 0.
+
+**Uncommitted work in the tree.** `packages/content/src/seed/` holds six untracked
+files (`audio.ts`, `builders.ts`, `identity.ts`, `reading-r1.ts`, `reading-r2.ts`,
+`rights.ts`, 1,748 lines). This is T6's partial seed corpus; it died at "Now the
+audio renderer". **It typechecks cleanly, but `pnpm format:check` fails on four of
+them** (`builders.ts`, `reading-r1.ts`, `reading-r2.ts`, `rights.ts`) because T6
+never reached that gate. `HEAD` itself is format-clean; the failures are entirely in
+these untracked files. Inspect the work before respawning — finishing a small
+remainder is often cheaper than a fresh agent re-deriving context, and one earlier
+task was successfully salvaged exactly this way (see the log's T7b entry).
+
+A caution proven twice in this stage: **`pnpm lint` and `pnpm format:check` are
+different commands**, and **never read an exit code through a pipe** —
+`cmd | tail` reports `tail`'s status, so a failing gate looks green. The previous
+orchestrator made that second mistake while writing this very prompt and caught it
+only by re-running with the exit code captured directly.
+
+**Docker Desktop is STOPPED.** `docker info` reports "Cannot connect to the Docker
+daemon". The images are not deleted, only unreachable. Ask the owner to start Docker
+Desktop before any container work. Do not report the images as missing.
+
+Steps 1-5 are complete and accepted. Step 6 is partial. Steps 7-12 remain.
+
+================================================================================
+3. WHAT REMAINS — serial order, one subagent at a time
+================================================================================
+
+Execution runs **strictly one subagent at a time** on local `main`, each committing
+its own small commits, with you reviewing the diff and running gates between tasks.
+This overrides the plan's original parallel waves; both reasons are recorded in plan
+§18.2 and the log. Do not reintroduce parallelism.
+
+| Step | Task | Owns | Model guidance |
+|---|---|---|---|
+| 6 | **Finish T6** — seed corpus, seed CLI, runbook | `packages/content/src/seed/**`, `packages/infrastructure/src/content/seed-cli.ts`, `docs/content-operations.md` | top-tier; rights/provenance are legally load-bearing |
+| 7 | **T9** design-system components, styles, contrast | `packages/design-system/src/{components.tsx,contracts.ts,styles.css,tokens.test.ts,index.test.tsx}` | mid-tier, but the dark-contrast work is unforgiving |
+| 8 | **T10** attempt/result/session routes, command APIs, islands, archetypes | `apps/web/src/app/(focused)/**`, `api/v1/{attempts,serving-manifests}/**`, `src/ui/islands/**`, `src/ui/archetypes.tsx`, `src/server/frontend-data.ts` | mid-tier; one judgement call, the progressive-enhancement boundary |
+| 9 | **T5** Listening media, playback, transcript gate | `packages/content/src/media.ts`, `packages/contracts/src/listening.ts`, `packages/infrastructure/src/media/**`, listening/playback routes, `AudioPlaybackIsland` | top-tier for playback/preflight/transcript semantics |
+| 10 | **T11** all gate wiring | `scripts/**`, `schemas/release-manifest.schema.json`, `.github/workflows/*.yml`, `packages/configuration`, `docs/configuration.md`, `packages/design-system/src/coverage/**` | mechanical but must be ONE agent holding the whole gate picture |
+| 11 | **T12** browser, a11y, responsive, recovery tests; new visual anchors | `apps/web/tests/p05-*.spec.ts`, `p04-visual.spec.ts` | mid-tier; must run all three Playwright projects |
+| 12 | **T13** handoff | `Implementation/Personal/05-content-deterministic-runtime/handoff.md` | **YOU write this**, not a subagent |
+
+Single-writer rules that still bind (plan §18.2): `components.tsx` and `styles.css`
+are T9's exclusively — three agents in one stylesheet is the documented Stage 04
+defeat. `scripts/`, `schemas/`, `.github/` and `coverage/` are T11's exclusively, and
+T11 runs LAST because wiring a check id before its producing command exists creates
+exactly the placeholder evidence the common contract forbids. Visual snapshots are
+T12's, and regenerating them is YOUR decision.
+
+================================================================================
+4. HARD CONSTRAINTS — do not relax these
+================================================================================
+
+**CI budget.** GitHub Actions credits are nearly exhausted. `.github/workflows/ci.yml`
+triggers on `pull_request` (ANY branch) and on push to `main` or
+`implementation/personal-01..04-*`. Therefore: never push `main`, never open a pull
+request, never run `gh` in a way that starts a workflow. Stage 05 accumulates as local
+commits. A branch not in that trigger list may be pushed as a free off-machine backup
+(e.g. `backup/stage-05-wip`). If a rule appears to require a PR, stop and ask the owner.
+
+**Replicate CI locally instead:**
+    pnpm check                  # BUT SEE BELOW — it cannot be green until T11
+    pnpm test:e2e               # all three Playwright projects
+    pnpm test:visual:container  # pinned Chromium raster gate
+    pnpm test:integration       # real PostgreSQL
+    pnpm test:process           # worker startup/readiness/signal contract
+    pnpm test:oci               # container identity
+
+**`pnpm check` is a `&&` chain that halts at `check:coverage` until T11 lands.**
+Everything after it — `test:unit`, `test:release`, `build`, `check:web-budget`,
+`check:generated` — is never reached. Run those five individually after every task,
+or you will be blind to build, budget and release regressions.
+
+**Known-red baseline.** Exactly one unit test fails until T11:
+`scripts/check-design-coverage-ids.test.mjs > semantic union parity …`. After every
+task, assert the failing set is EXACTLY that one. Anything else is new breakage.
+
+**First-load budget.** 204,800 B ceiling (binary), 196,549 B at last measurement,
+8,251 B headroom. No Stage 05 client island may be imported by a `(protected)` route.
+Never raise a ceiling to make a number fit — stop and report.
+
+================================================================================
+5. YOUR VERIFICATION DUTIES — these caught real bugs
+================================================================================
+
+A subagent's report is a claim, not evidence. For every completed task:
+
+1. Read the actual diff. Do not accept a summary.
+2. Re-run the gates yourself on a committed tree.
+3. Check what the subagent did NOT run. Recurring gaps: `format:check` skipped
+   because `lint` passed; only Chromium exercised; the later half of `pnpm check`
+   never reached.
+4. **Re-run non-deterministic suites several times.** One task reported integration
+   19/19 three times; the orchestrator's first independent run failed. Rejecting it
+   forced a sweep that found a genuine data-contract bug no re-run of the original
+   test would have surfaced.
+5. **Order-dependence is a standing review item.** Three instances in three files so
+   far. Treat any positional assertion over a query result as suspect, and treat a
+   first-run green on a `randomUUID()` fixture as weak evidence.
+6. Look at rendered output for anything user-visible. Numbers passing is not the same
+   as it looking right — and a screenshot from a stale server is worse than none.
+   Kill servers by PORT: `kill -9 $(lsof -t -iTCP:3300)`; the process is named
+   `next-server`, so `pkill -f "standalone/apps/web/server.js"` misses it.
+7. When a subagent says the plan or your own brief is wrong, check the source. Two
+   plan rows and one orchestrator instruction have already been proven wrong this way.
+
+Reject and re-task on: unverified claims, weakened tests, placeholder tests as
+evidence, secrets in code/fixtures/logs, provider jargon in user copy, pass-probability
+language, silent history rewrites, or accessibility regressions.
+
+================================================================================
+6. UI WORK — the Stage 04 corrections every remaining task needs
+================================================================================
+
+The remaining tasks are the UI ones, so `post-acceptance-corrections.md` is now
+critical rather than background. The recurring Stage 04 failure was **the right token
+in the wrong role** — every value legal, every role wrong.
+
+- **Check every new filled control against its DARK surface numerically** (4.5:1 text,
+  3:1 non-text). The boards define no dark exemplars; that is how a 1.19:1 invisible
+  primary action survived Stage 04 review. Plan decision D19 requires numeric
+  assertions in `tokens.test.ts`, not raster comparison — at `maxDiffPixelRatio`
+  0.0024 a full-page screenshot cannot see a token in the wrong role.
+- A dark fix inverts the component's own fill/label pair, never a shared token.
+- Board UI cards are FLAT: 1px border, `--radius-panel` (7px), no elevation.
+- `h1` is 600/-0.02em/1.15 and `h2` is 600 — explicit now, do not inherit 700.
+- A new aside must choose `contentSplit` deliberately: `"default"` 2:1,
+  `"narrow-aside"` 7/5.
+- `ThemeControl` lives in the design system and renders in Account. `AppShell`
+  renders none. Do not add one to a header.
+- The wordmark must stay breakable (`overflow-wrap: anywhere`).
+- Board 03 D1's full-height rail was deliberately NOT implemented — owner decision.
+  Do not "correct" it back.
+- **Extensions must be additive**: every pre-existing call site renders identical DOM,
+  as Stage 04's own `ClozeGap` extension did.
+- Banned copy: any pass-probability or unsupported-certainty language anywhere
+  (copy, API fields, telemetry, test names), and the phrase "it still counts" —
+  Board 06 frame 6.2 contains it, the board is stale, the architecture wins.
+
+================================================================================
+7. DEFINITION OF DONE
+================================================================================
+
+- Every 05E Definition-of-Done item demonstrated: a signed-in owner completes and
+  recovers Reading, Language Elements and Listening end to end; replay/retry/crash/
+  withdrawal/version change preserve canonical history; active-attempt paths work with
+  no Corpus and no paid AI; compact and large layouts plus keyboard/AT behaviour meet
+  the Stage 04 gates.
+- `handoff.md` written BY YOU, listing delivered scope, commits, tests with outcomes,
+  migrations, owner gates, the subagent/model split with reasons, and known
+  limitations. It must record what was NOT claimed, including the unclaimed owner
+  gates in the log and the rollback limitation below.
+- **Carry this into the handoff:** rolling back the application image is NOT
+  sufficient. A Stage 05 -> Stage 04 rollback requires a database restore to the
+  Stage 03 revision, because the Stage 04 image fails closed on an unrecognised
+  schema. Plan §15.1 states otherwise and is wrong; failing closed is correct.
+- Checklist line `05E` updated in the same commit as its evidence, using only
+  `[ ] [~] [x] [!]`, with a relative evidence path and check identifier. Never
+  promote a line from a handoff assertion alone. `05P` is already `[x]`.
+- All local gates green on a committed tree, with exact commands and results recorded.
+- Work committed on local `main` in small reviewable steps. `main` NOT pushed and NO
+  pull request opened. Report how far ahead of `origin/main` you left it.
+- Disk left clean: `apps/web/.next` removed, Docker build cache and dangling images
+  pruned, final `df -h` and `docker system df` recorded in the handoff.
+
+Report to the owner: what shipped, what you verified and how, what a subagent got
+wrong that you caught, what remains blocked on an owner action or on CI credits, and
+the disk/Docker state you left behind.
