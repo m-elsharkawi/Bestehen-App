@@ -78,13 +78,15 @@ accessibility manifests, content families and revisions, items, key revisions, r
 results, the candidate release, and its entries. It does not write audio-provider rows; T5 owns the
 media schema adapter and playback path. A database apply requires the Stage 05 migrations.
 
-The adapter records a compact, audit-shaped immutable receipt: operation action, canonical payload
-digest, target class, reason-registry code, release reference and database-recorded time. It does not
-store a report body in an audit classification field. Replay reconstructs the original report from
-that receipt and the append-only content facts. Repeating the same operation ID with the same
-canonical command returns the original report without another mutation. Reusing it with a different
-release, selector or reason returns `idempotency_conflict` and changes nothing. A generated client
-timestamp is not semantic, so a transport retry need not repeat `--occurred-at`.
+The adapter records compact, audit-shaped immutable facts: one operation receipt plus one
+`content_revision` action event for every apply result. The events carry canonical digests, real
+target classes, reason-registry codes, release references and the database-recorded time. They do
+not store a report body in an audit classification field. Replay uses the recorded per-revision
+actions to reproduce mixed create, supersede and unchanged reports exactly. Repeating the same
+operation ID with the same canonical command returns the original report without another mutation.
+Reusing it with a different release, selector or reason returns `idempotency_conflict` and changes
+nothing. A generated client timestamp is not semantic, so a transport retry need not repeat
+`--occurred-at`.
 
 ## Apply and replay locally
 
