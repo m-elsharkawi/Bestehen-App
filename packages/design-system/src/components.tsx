@@ -1,6 +1,14 @@
 import type { ReactNode } from "react";
 import { useId } from "react";
-import { isSupportedProjectionCard, type ProjectionCardContract } from "./contracts.js";
+import {
+  isSupportedProjectionCard,
+  type AnswerChoiceContract,
+  type DecisiveEvidenceContract,
+  type ListeningRegionContract,
+  type MatchingPairContract,
+  type ProjectionCardContract,
+  type SharedBankContract,
+} from "./contracts.js";
 import { componentFamilies } from "./coverage/source-anchors.js";
 import { Icon } from "./icons.js";
 import { Overlay } from "./overlay.js";
@@ -161,10 +169,16 @@ export type AnswerChoiceVariant = "single" | "multiple" | "revealed";
 export function AnswerChoice({
   legend = "Choose the answer",
   variant = "single",
+  response,
 }: {
   readonly legend?: string;
   readonly variant?: AnswerChoiceVariant;
+  /** Omitted by the accepted Stage 04 fixtures. A supplied response enables the real primitive. */
+  readonly response?: AnswerChoiceContract;
 }) {
+  if (response) {
+    return <RuntimeAnswerChoice response={response} variant={variant} />;
+  }
   return (
     <>
       <BinaryChoice legend={legend} variant={variant === "multiple" ? "checkbox" : "radio"} />
@@ -172,7 +186,100 @@ export function AnswerChoice({
     </>
   );
 }
-export function MatchingPair() {
+function RuntimeAnswerChoice({
+  response,
+  variant,
+}: {
+  readonly response: AnswerChoiceContract;
+  readonly variant: AnswerChoiceVariant;
+}) {
+  const groupName = useId();
+  const multiple = variant === "multiple";
+  const selected = new Set(response.selectedIds ?? []);
+  return (
+    <fieldset className="answer-choice" disabled={response.disabled}>
+      <legend>{response.itemLabel}</legend>
+      {response.options.map((option) => (
+        <label data-selected={selected.has(option.id) || undefined} key={option.id}>
+          <input
+            checked={selected.has(option.id)}
+            disabled={option.disabled}
+            name={groupName}
+            onChange={() => response.onSelect?.(option.id)}
+            type={multiple ? "checkbox" : "radio"}
+            value={option.id}
+          />
+          <span>{option.label}</span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+export function MatchingPair({ matching }: { readonly matching?: MatchingPairContract }) {
+  if (matching) {
+    const matches = matching.matches ?? {};
+    const selectedPrompt = matching.prompts.find(
+      (prompt) => prompt.id === matching.selectedPromptId,
+    );
+    return (
+      <fieldset className="matching-pair" disabled={matching.disabled}>
+        <legend>{matching.itemLabel}</legend>
+        <p>Choose an item, then place it in a named destination.</p>
+        <div className="matching-pair-grid">
+          <fieldset className="matching-group">
+            <legend>Items to match</legend>
+            {matching.prompts.map((prompt) => (
+              <button
+                aria-pressed={matching.selectedPromptId === prompt.id}
+                data-selected={matching.selectedPromptId === prompt.id || undefined}
+                disabled={prompt.disabled}
+                key={prompt.id}
+                onClick={() => matching.onSelectPrompt?.(prompt.id)}
+                type="button"
+              >
+                {prompt.label}
+              </button>
+            ))}
+          </fieldset>
+          <fieldset className="matching-group">
+            <legend>Match destinations</legend>
+            {matching.destinations.map((destination) => {
+              const prompt = matching.prompts.find(
+                (candidate) => matches[candidate.id] === destination.id,
+              );
+              const canPlace = Boolean(selectedPrompt) && !prompt;
+              return (
+                <div className="matching-destination" key={destination.id}>
+                  <button
+                    aria-label={`${destination.label}${prompt ? `, matched with ${prompt.label}` : ", empty"}`}
+                    disabled={destination.disabled || !canPlace}
+                    onClick={() => {
+                      if (selectedPrompt) matching.onPlace?.(selectedPrompt.id, destination.id);
+                    }}
+                    type="button"
+                  >
+                    {destination.label}
+                  </button>
+                  {prompt ? (
+                    <span className="match-pill">
+                      {prompt.label}
+                      <button
+                        aria-label={`Remove ${prompt.label} from ${destination.label}`}
+                        onClick={() => matching.onClear?.(prompt.id)}
+                        type="button"
+                      >
+                        Remove
+                      </button>
+                    </span>
+                  ) : null}
+                </div>
+              );
+            })}
+          </fieldset>
+        </div>
+      </fieldset>
+    );
+  }
   return (
     <fieldset disabled>
       <legend>Match each item</legend>
@@ -196,6 +303,8 @@ export function ClozeGap({
   status = "active",
   options,
   word,
+  sharedBank,
+  gapId,
 }: {
   readonly number?: number;
   readonly state?: ClozeGapState;
@@ -206,8 +315,44 @@ export function ClozeGap({
   /** The word already chosen for this gap, shown inline so the learner reads
    *  their own sentence back (Design 06 · 6.7). */
   readonly word?: string;
+  /** Optional SB2 contract. Its candidate identities are shared across gaps. */
+  readonly sharedBank?: SharedBankContract;
+  readonly gapId?: string;
 }) {
+  const sharedCandidate = sharedBank?.candidates.find(
+    (candidate) => candidate.id === sharedBank.selectedCandidateId,
+  );
+  const placedCandidateId = gapId ? sharedBank?.placements?.[gapId] : undefined;
+  const placedCandidate = sharedBank?.candidates.find(
+    (candidate) => candidate.id === placedCandidateId,
+  );
   if (state === "options") {
+    if (sharedBank) {
+      const usedCandidateIds = new Set(Object.values(sharedBank.placements ?? {}));
+      return (
+        <fieldset className="cloze-gap cloze-gap-options cloze-shared-bank">
+          <legend>{sharedBank.itemLabel}</legend>
+          {sharedBank.candidates.map((candidate) => {
+            const unavailable =
+              candidate.disabled ||
+              (sharedBank.reusePolicy === "at_most_once" && usedCandidateIds.has(candidate.id));
+            return (
+              <button
+                aria-pressed={sharedBank.selectedCandidateId === candidate.id}
+                data-selected={sharedBank.selectedCandidateId === candidate.id || undefined}
+                disabled={unavailable}
+                key={candidate.id}
+                onClick={() => sharedBank.onSelectCandidate?.(candidate.id)}
+                type="button"
+              >
+                {candidate.label}
+                {unavailable ? <span className="visually-hidden">, already placed</span> : null}
+              </button>
+            );
+          })}
+        </fieldset>
+      );
+    }
     const choices = options ?? ["weil", "dass"];
     // Assertion hook: identifies the cloze gap in the component gallery.
     return (
@@ -230,6 +375,38 @@ export function ClozeGap({
     <span className="cloze-gap" data-cloze-status={state === "result" ? undefined : status}>
       {state === "result" ? (
         <>Gap {number}: because</>
+      ) : sharedBank && gapId ? (
+        <>
+          <span className="cloze-gap-word">Gap </span>
+          <span className="cloze-gap-number">{number}</span>
+          {placedCandidate ? (
+            <span className="cloze-placement">
+              {placedCandidate.label}
+              <button
+                aria-label={`Remove ${placedCandidate.label} from gap ${number}`}
+                onClick={() => sharedBank.onRemoveCandidate?.(gapId)}
+                type="button"
+              >
+                Remove
+              </button>
+            </span>
+          ) : (
+            <button
+              aria-label={
+                sharedCandidate
+                  ? `Place ${sharedCandidate.label} in gap ${number}`
+                  : `Choose a candidate before placing it in gap ${number}`
+              }
+              disabled={!sharedCandidate}
+              onClick={() => {
+                if (sharedCandidate) sharedBank.onPlaceCandidate?.(gapId, sharedCandidate.id);
+              }}
+              type="button"
+            >
+              {sharedCandidate ? `Place ${sharedCandidate.label}` : "Choose a candidate"}
+            </button>
+          )}
+        </>
       ) : (
         <label>
           <span className="cloze-gap-word">{"Gap "}</span>
@@ -493,7 +670,24 @@ export function ResultCard({ projection }: { readonly projection: ResultCardCont
     </section>
   );
 }
-export function DecisiveEvidence() {
+export function DecisiveEvidence({ evidence }: { readonly evidence?: DecisiveEvidenceContract }) {
+  if (evidence) {
+    return (
+      <SemanticCard title="Decisive evidence">
+        <blockquote lang={evidence.language ?? "de"}>{evidence.excerpt}</blockquote>
+        <dl>
+          <dt>Relation</dt>
+          <dd>{evidence.relation}</dd>
+          <dt>Condition</dt>
+          <dd>{evidence.condition}</dd>
+          <dt>Recorded</dt>
+          <dd>
+            <time dateTime={evidence.recordedAt.dateTime}>{evidence.recordedAt.label}</time>
+          </dd>
+        </dl>
+      </SemanticCard>
+    );
+  }
   return (
     <SemanticCard title="Decisive evidence">
       <blockquote lang="de">Vielen Dank für die Einladung.</blockquote>
@@ -941,7 +1135,13 @@ function clozeIndexStatus(number: number): ClozeGapStatus {
 /** The gap grid of Design 06 · 6.7 and 6.8. It is a persistent index, never a
  *  heat map and never a percentage, and every cell names its state in words. It
  *  carries no tab stop of its own — the passage gaps remain the tab order. */
-function ClozeGapIndex({ variant = "input" }: { readonly variant?: LanguageElementsVariant }) {
+function ClozeGapIndex({
+  variant = "input",
+  sharedBank,
+}: {
+  readonly variant?: LanguageElementsVariant;
+  readonly sharedBank?: SharedBankContract;
+}) {
   const numbers = Array.from({ length: CLOZE_GAP_TOTAL }, (_, index) => index + 1);
   return (
     <ol
@@ -952,6 +1152,10 @@ function ClozeGapIndex({ variant = "input" }: { readonly variant?: LanguageEleme
       {numbers.map((number) => {
         const status = clozeIndexStatus(number);
         const outcome = CLOZE_WRONG_GAPS.includes(number) ? "wrong" : "right";
+        const placement = sharedBank?.placements?.[`gap-${number}`];
+        const placedCandidate = sharedBank?.candidates.find(
+          (candidate) => candidate.id === placement,
+        );
         const label =
           variant === "result"
             ? `Gap ${number}, ${outcome}`
@@ -959,7 +1163,9 @@ function ClozeGapIndex({ variant = "input" }: { readonly variant?: LanguageEleme
               ? `Gap ${number}, being answered now`
               : status === "filled"
                 ? `Gap ${number}, answered`
-                : `Gap ${number}, not visited`;
+                : placedCandidate
+                  ? `Gap ${number}, placed ${placedCandidate.label}`
+                  : `Gap ${number}, not visited`;
         return (
           <li
             data-cloze-outcome={variant === "result" ? outcome : undefined}
@@ -977,8 +1183,11 @@ function ClozeGapIndex({ variant = "input" }: { readonly variant?: LanguageEleme
 
 export function LanguageElementsRegion({
   variant = "input",
+  sharedBank,
 }: {
   readonly variant?: LanguageElementsVariant;
+  /** T10 may pass SB2 state without changing the accepted SB1 gallery fixture. */
+  readonly sharedBank?: SharedBankContract;
 }) {
   if (variant === "result") {
     return (
@@ -1012,12 +1221,33 @@ export function LanguageElementsRegion({
         </div>
         <p className="cloze-passage">
           Sehr geehrte Frau Berger, ich habe Ihre Anzeige{" "}
-          <ClozeGap number={1} state="input" status="filled" word="in" />
+          <ClozeGap
+            gapId="gap-1"
+            number={1}
+            {...(sharedBank ? { sharedBank } : {})}
+            state="input"
+            status="filled"
+            word="in"
+          />
           der Zeitung gelesen und{" "}
-          <ClozeGap number={2} state="input" status="filled" word="interessiere" />
+          <ClozeGap
+            gapId="gap-2"
+            number={2}
+            {...(sharedBank ? { sharedBank } : {})}
+            state="input"
+            status="filled"
+            word="interessiere"
+          />
           mich für den Kurs. Leider kann ich am Montag nicht{" "}
-          <ClozeGap number={CLOZE_ACTIVE_GAP} state="input" status="active" />, weil ich bis 18 Uhr
-          arbeite. Könnten Sie mir <ClozeGap number={4} state="input" status="unvisited" />
+          <ClozeGap
+            gapId={`gap-${CLOZE_ACTIVE_GAP}`}
+            number={CLOZE_ACTIVE_GAP}
+            {...(sharedBank ? { sharedBank } : {})}
+            state="input"
+            status="active"
+          />
+          , weil ich bis 18 Uhr arbeite. Könnten Sie mir{" "}
+          <ClozeGap number={4} state="input" status="unvisited" />
           mitteilen, ob es einen späteren Termin gibt?
         </p>
       </div>
@@ -1025,16 +1255,87 @@ export function LanguageElementsRegion({
         <ClozeGap
           number={CLOZE_ACTIVE_GAP}
           options={CLOZE_GAP_OPTIONS}
+          {...(sharedBank ? { sharedBank } : {})}
           state="options"
           status="active"
         />
-        <ClozeGapIndex />
+        <ClozeGapIndex {...(sharedBank ? { sharedBank } : {})} />
         <p className="cloze-note cloze-saved">Saved 7:31</p>
       </div>
     </article>
   );
 }
-export function ListeningRegion() {
+function listeningStatus(state: ListeningRegionContract["state"]): string {
+  switch (state) {
+    case "preflight":
+      return "Checking audio before playback.";
+    case "ready":
+      return "Audio is ready to play.";
+    case "playing":
+      return "Audio is playing.";
+    case "paused":
+      return "Audio is paused.";
+    case "unavailable":
+      return "Audio is unavailable for this activity.";
+  }
+}
+
+export function ListeningRegion({ listening }: { readonly listening?: ListeningRegionContract }) {
+  if (listening) {
+    const transportDisabled = listening.state === "preflight" || listening.state === "unavailable";
+    const canPlay = listening.remainingPlays > 0 && !transportDisabled;
+    const transcriptAvailable = listening.transcript.phase === "available";
+    return (
+      <section aria-labelledby="listening-region-title" className="listening-region">
+        <h2 id="listening-region-title">{listening.title ?? "Listening"}</h2>
+        {/* biome-ignore lint/a11y/useMediaCaption: target transcripts are separate authorized objects */}
+        <audio
+          aria-label={listening.audio.label}
+          lang={listening.audio.language ?? "de"}
+          preload="none"
+          src={listening.audio.src}
+        />
+        <p>{listening.audio.label}</p>
+        <fieldset className="listening-transport">
+          <legend>Audio transport</legend>
+          <button disabled={!canPlay} onClick={() => listening.onTransport?.("play")} type="button">
+            Play
+          </button>
+          <button
+            disabled={listening.state !== "playing"}
+            onClick={() => listening.onTransport?.("pause")}
+            type="button"
+          >
+            Pause
+          </button>
+          <button
+            disabled={!canPlay}
+            onClick={() => listening.onTransport?.("replay")}
+            type="button"
+          >
+            Replay
+          </button>
+        </fieldset>
+        <p>Plays remaining: {listening.remainingPlays}.</p>
+        <p aria-atomic="true" aria-live="polite" className="listening-status" role="status">
+          {listeningStatus(listening.state)}
+        </p>
+        {listening.state === "unavailable" ? (
+          <p>
+            {listening.unavailableReason ?? "This was a system problem, not a result about you."}
+          </p>
+        ) : null}
+        {transcriptAvailable ? (
+          <details className="listening-transcript">
+            <summary>{listening.transcript.label}</summary>
+            <p lang={listening.transcript.language ?? "de"}>{listening.transcript.text}</p>
+          </details>
+        ) : (
+          <p className="listening-transcript-gate">{listening.transcript.reason}</p>
+        )}
+      </section>
+    );
+  }
   return (
     <section>
       <h2>Hören</h2>

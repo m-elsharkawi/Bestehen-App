@@ -36,6 +36,80 @@ export interface SemanticCardContract {
   readonly headingLevel?: 2 | 3;
 }
 
+/** A learner-safe option. Its ID is semantic identity, never a presentation position. */
+export interface ObjectiveOptionContract {
+  readonly id: string;
+  readonly label: string;
+  readonly disabled?: boolean;
+}
+
+/** Server-owned selection state rendered by the native answer-choice control. */
+export interface AnswerChoiceContract {
+  readonly itemLabel: string;
+  readonly options: readonly ObjectiveOptionContract[];
+  readonly selectedIds?: readonly string[];
+  readonly disabled?: boolean;
+  readonly onSelect?: (optionId: string) => void;
+}
+
+/** The semantic identities and current response for one select-then-place match set. */
+export interface MatchingPairContract {
+  readonly itemLabel: string;
+  readonly prompts: readonly ObjectiveOptionContract[];
+  readonly destinations: readonly ObjectiveOptionContract[];
+  readonly selectedPromptId?: string;
+  readonly matches?: Readonly<Record<string, string>>;
+  readonly disabled?: boolean;
+  readonly onSelectPrompt?: (promptId: string) => void;
+  readonly onPlace?: (promptId: string, destinationId: string) => void;
+  readonly onClear?: (promptId: string) => void;
+}
+
+/** Shared-bank state for SB2. A used candidate remains named, but cannot be placed twice. */
+export interface SharedBankContract {
+  readonly itemLabel: string;
+  readonly candidates: readonly ObjectiveOptionContract[];
+  readonly selectedCandidateId?: string;
+  readonly placements?: Readonly<Record<string, string>>;
+  readonly reusePolicy: "at_most_once" | "unrestricted";
+  readonly onSelectCandidate?: (candidateId: string) => void;
+  readonly onPlaceCandidate?: (gapId: string, candidateId: string) => void;
+  readonly onRemoveCandidate?: (gapId: string) => void;
+}
+
+export interface DecisiveEvidenceContract {
+  readonly excerpt: string;
+  readonly language?: string;
+  readonly relation: string;
+  readonly condition: string;
+  readonly recordedAt: { readonly dateTime: string; readonly label: string };
+}
+
+export type ListeningPresentationState =
+  | "preflight"
+  | "ready"
+  | "playing"
+  | "paused"
+  | "unavailable";
+
+/** Presentation contract only. The media island owns playback and the server owns authorization. */
+export interface ListeningRegionContract {
+  readonly title?: string;
+  readonly audio: { readonly src: string; readonly language?: string; readonly label: string };
+  readonly state: ListeningPresentationState;
+  readonly remainingPlays: number;
+  readonly unavailableReason?: string;
+  readonly transcript:
+    | { readonly phase: "unavailable"; readonly reason: string }
+    | {
+        readonly phase: "available";
+        readonly label: string;
+        readonly text: string;
+        readonly language?: string;
+      };
+  readonly onTransport?: (action: "play" | "pause" | "replay") => void;
+}
+
 export const consequentialProjectionStates = [
   "valid",
   "partially_valid",

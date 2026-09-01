@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   AppShell,
+  AnswerChoice,
   BinaryChoice,
   ComponentGallery,
   componentGalleryFixtureCases,
@@ -11,6 +13,7 @@ import {
   componentFixtureRegistry,
   componentFamilies,
   DraftConflict,
+  DecisiveEvidence,
   EvidenceLabel,
   Field,
   Icon,
@@ -24,6 +27,8 @@ import {
   SessionNotice,
   UploadStatus,
   PendingBanner,
+  ClozeGap,
+  ListeningRegion,
 } from "./index.js";
 
 afterEach(cleanup);
@@ -370,5 +375,227 @@ describe("P04-COMPONENT-001 design system", () => {
     const durationChoices = screen.getAllByRole("radio");
     expect(durationChoices).toHaveLength(3);
     for (const choice of durationChoices) expect(choice).toBeEnabled();
+  });
+});
+
+describe("P05-COMPONENT-001 deterministic learning primitives", () => {
+  it("keeps the accepted no-prop markup at every extended call site", () => {
+    const cases = [
+      ["answer", <AnswerChoice key="answer" />],
+      ["matching", <MatchingPair key="matching" />],
+      ["cloze", <ClozeGap key="cloze" />],
+      ["evidence", <DecisiveEvidence key="evidence" />],
+      ["listening", <ListeningRegion key="listening" />],
+    ] as const;
+    const expected = new Map<string, string>([
+      [
+        "answer",
+        '<fieldset><legend>Choose the answer</legend><label><input type="radio" name="_r_0_"> Yes</label><label><input type="radio" name="_r_0_"> No</label></fieldset>',
+      ],
+      [
+        "matching",
+        '<fieldset disabled=""><legend>Match each item</legend><p>Select an item, then choose its numbered position.</p><p>Matching controls are unavailable in this static preview.</p><button type="button">Select item A</button><button type="button">Place in position 1</button><button type="button">Reset matches</button></fieldset>',
+      ],
+      [
+        "cloze",
+        '<span class="cloze-gap" data-cloze-status="active"><label><span class="cloze-gap-word">Gap </span><span class="cloze-gap-number">1</span><input aria-label="Answer for gap 1"></label></span>',
+      ],
+      [
+        "evidence",
+        '<section class="card" data-status="neutral"><h2>Decisive evidence</h2><blockquote lang="de">Vielen Dank für die Einladung.</blockquote><dl><dt>Condition</dt><dd>No answer-bearing help</dd><dt>Recorded</dt><dd><time datetime="2026-08-26">26 August 2026</time></dd></dl></section>',
+      ],
+      [
+        "listening",
+        '<section><h2>Hören</h2><audio preload="none"></audio><p>Audio controls are unavailable in this static preview.</p><p>Replay limit: two. No transcript is available during this task.</p></section>',
+      ],
+    ]);
+    for (const [name, element] of cases) {
+      const { container, unmount } = render(element);
+      expect(container.innerHTML.replace(/_r_[a-z0-9]+_/g, "_r_0_"), name).toBe(expected.get(name));
+      unmount();
+    }
+  });
+
+  it("provides native selection and named select-then-place matching without drag", () => {
+    const selected: string[] = [];
+    const selectedPrompt: string[] = [];
+    const placements: Array<readonly [string, string]> = [];
+    render(
+      <>
+        <AnswerChoice
+          response={{
+            itemLabel: "Choose the notice",
+            onSelect: (id) => selected.push(id),
+            options: [
+              { id: "notice-a", label: "Notice A" },
+              { id: "notice-b", label: "Notice B" },
+            ],
+            selectedIds: ["notice-a"],
+          }}
+        />
+        <MatchingPair
+          matching={{
+            itemLabel: "Match situations to notices",
+            destinations: [{ id: "notice-a", label: "Notice A" }],
+            onPlace: (promptId, destinationId) => placements.push([promptId, destinationId]),
+            onSelectPrompt: (promptId) => selectedPrompt.push(promptId),
+            prompts: [{ id: "situation-a", label: "Situation A" }],
+            selectedPromptId: "situation-a",
+          }}
+        />
+      </>,
+    );
+    const answer = screen.getByRole("radio", { name: "Notice A" });
+    expect(answer).toBeChecked();
+    fireEvent.click(screen.getByRole("radio", { name: "Notice B" }));
+    expect(selected).toEqual(["notice-b"]);
+    const prompt = screen.getByRole("button", { name: "Situation A" });
+    expect(prompt).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(prompt);
+    fireEvent.click(screen.getByRole("button", { name: "Notice A, empty" }));
+    expect(selectedPrompt).toEqual(["situation-a"]);
+    expect(placements).toEqual([["situation-a", "notice-a"]]);
+  });
+
+  it("keeps an SB2 candidate unavailable after placement and gives each gap a named placement path", () => {
+    const placements: Array<readonly [string, string]> = [];
+    render(
+      <>
+        <ClozeGap
+          number={1}
+          sharedBank={{
+            candidates: [
+              { id: "candidate-a", label: "kommen" },
+              { id: "candidate-b", label: "gekommen" },
+            ],
+            itemLabel: "Shared candidate bank",
+            onPlaceCandidate: (gapId, candidateId) => placements.push([gapId, candidateId]),
+            placements: { "gap-2": "candidate-b" },
+            reusePolicy: "at_most_once",
+            selectedCandidateId: "candidate-a",
+          }}
+          gapId="gap-1"
+        />
+        <ClozeGap
+          number={2}
+          sharedBank={{
+            candidates: [
+              { id: "candidate-a", label: "kommen" },
+              { id: "candidate-b", label: "gekommen" },
+            ],
+            itemLabel: "Shared candidate bank",
+            placements: { "gap-2": "candidate-b" },
+            reusePolicy: "at_most_once",
+            selectedCandidateId: "candidate-a",
+          }}
+          state="options"
+        />
+      </>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Place kommen in gap 1" }));
+    expect(placements).toEqual([["gap-1", "candidate-a"]]);
+    expect(screen.getByRole("button", { name: /gekommen, already placed/i })).toBeDisabled();
+  });
+
+  it("renders server-provided decisive evidence and phase-gated listening state", () => {
+    const { container } = render(
+      <>
+        <DecisiveEvidence
+          evidence={{
+            condition: "No answer-bearing help",
+            excerpt: "Der Kurs beginnt um acht Uhr.",
+            recordedAt: { dateTime: "2026-09-02", label: "2 September 2026" },
+            relation: "The start time rules out the later notice.",
+          }}
+        />
+        <ListeningRegion
+          listening={{
+            audio: { label: "German announcement", src: "/media/announcement.mp3" },
+            remainingPlays: 1,
+            state: "ready",
+            transcript: { phase: "unavailable", reason: "Transcript available after submission." },
+          }}
+        />
+      </>,
+    );
+    expect(screen.getByText("Der Kurs beginnt um acht Uhr.")).toBeInTheDocument();
+    expect(screen.getByText("The start time rules out the later notice.")).toBeInTheDocument();
+    expect(screen.getByText("Plays remaining: 1.")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Audio is ready to play.");
+    expect(screen.getByText(/Der Kurs beginnt/)).toBeInTheDocument();
+    expect(container.querySelector(".listening-transcript")).toBeNull();
+    expect(screen.getByText("Transcript available after submission.")).toBeInTheDocument();
+  });
+
+  it("keeps unavailable audio out of transport and only renders an authorized transcript payload", () => {
+    const { rerender } = render(
+      <ListeningRegion
+        listening={{
+          audio: { label: "German announcement", src: "/media/announcement.mp3" },
+          remainingPlays: 0,
+          state: "unavailable",
+          transcript: {
+            phase: "unavailable",
+            reason: "Transcript is not authorized in this phase.",
+          },
+        }}
+      />,
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("Audio is unavailable for this activity.");
+    expect(
+      screen.getByText("This was a system problem, not a result about you."),
+    ).toBeInTheDocument();
+    for (const button of screen.getAllByRole("button")) expect(button).toBeDisabled();
+    expect(screen.queryByText("Der Kurs beginnt um acht Uhr.")).not.toBeInTheDocument();
+
+    rerender(
+      <ListeningRegion
+        listening={{
+          audio: { label: "German announcement", src: "/media/announcement.mp3" },
+          remainingPlays: 0,
+          state: "paused",
+          transcript: {
+            label: "Read transcript",
+            phase: "available",
+            text: "Der Kurs beginnt um acht Uhr.",
+          },
+        }}
+      />,
+    );
+    expect(screen.getByRole("group", { name: "Audio transport" })).toBeInTheDocument();
+    expect(screen.getByText("Der Kurs beginnt um acht Uhr.")).toBeInTheDocument();
+  });
+});
+
+describe("P05-COPY-001 learner-facing copy", () => {
+  it("keeps shipped component strings and API fields free of unsupported certainty and implementation jargon", () => {
+    const components = readFileSync("packages/design-system/src/components.tsx", "utf8");
+    const contracts = readFileSync("packages/design-system/src/contracts.ts", "utf8");
+    const source = [
+      components.slice(
+        components.indexOf("export function AnswerChoice"),
+        components.indexOf("export function ReorderList"),
+      ),
+      components.slice(
+        components.indexOf("export function DecisiveEvidence"),
+        components.indexOf("export function RepairCard"),
+      ),
+      components.slice(
+        components.indexOf("function listeningStatus"),
+        components.indexOf("export type WritingRegionVariant"),
+      ),
+      contracts.slice(
+        contracts.indexOf("/** A learner-safe option"),
+        contracts.indexOf("export const consequentialProjectionStates"),
+      ),
+    ].join("\n");
+    const banned = [
+      /pass\s+(?:probability|chance|likelihood)/i,
+      /guaranteed\s+(?:pass|result|outcome)/i,
+      new RegExp(["it", "still", "counts"].join("\\s+"), "i"),
+      new RegExp(["pro", "vider"].join(""), "i"),
+      /credential|signed URL|infrastructure/i,
+    ];
+    for (const pattern of banned) expect(source).not.toMatch(pattern);
   });
 });

@@ -709,6 +709,173 @@ input[type="checkbox"] {
   overflow-wrap: anywhere;
   padding: var(--space-2) var(--space-3);
 }
+.answer-choice,
+.matching-pair,
+.cloze-shared-bank,
+.listening-region {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-panel);
+  margin: 0;
+  padding: var(--space-4);
+}
+.answer-choice {
+  display: grid;
+  gap: var(--space-2);
+}
+.answer-choice label {
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-panel);
+  display: flex;
+  gap: var(--space-3);
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+}
+/* Component-owned fill/label pairs stay legible on both supplied card surfaces. */
+.answer-choice label[data-selected="true"],
+.cloze-shared-bank button[data-selected="true"],
+.matching-pair button[data-selected="true"],
+.listening-transport button {
+  background: #14213d;
+  border: 1px solid #14213d;
+  color: #edf1f7;
+}
+.matching-pair-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+.matching-group {
+  border: 0;
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+.matching-group legend,
+.listening-transport legend {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  padding: 0;
+}
+.matching-pair button,
+.matching-destination > button,
+.cloze-shared-bank button,
+.listening-transport button,
+.cloze-placement button {
+  border-radius: var(--radius-panel);
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+}
+.matching-pair button,
+.matching-destination > button,
+.cloze-shared-bank button {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  text-align: left;
+}
+.matching-destination {
+  display: grid;
+  gap: var(--space-2);
+}
+.match-pill {
+  align-items: center;
+  background: #e8ecf3;
+  border: 1px solid #2c3a5c;
+  border-radius: var(--radius-panel);
+  color: #2c3a5c;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+}
+.match-pill button,
+.cloze-placement button {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+}
+.cloze-shared-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.cloze-shared-bank legend {
+  float: none;
+  width: 100%;
+}
+.cloze-placement {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-1);
+}
+.listening-region {
+  display: grid;
+  gap: var(--space-3);
+}
+.listening-region h2,
+.listening-region p {
+  margin: 0;
+}
+.listening-transport {
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+}
+.listening-transport button:disabled,
+.cloze-shared-bank button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+.listening-status,
+.listening-transcript-gate {
+  color: var(--text-secondary);
+}
+.listening-transcript {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-panel);
+  padding: var(--space-3);
+}
+@media (min-width: 768px) {
+  .matching-pair-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .answer-choice label[data-selected="true"],
+  :root:not([data-theme="light"]) .cloze-shared-bank button[data-selected="true"],
+  :root:not([data-theme="light"]) .matching-pair button[data-selected="true"],
+  :root:not([data-theme="light"]) .listening-transport button {
+    background: #e9eef5;
+    border-color: #e9eef5;
+    color: #070c15;
+  }
+  :root:not([data-theme="light"]) .match-pill {
+    background: #303e4f;
+    border-color: #cbd5e2;
+    color: #cbd5e2;
+  }
+}
+:root[data-theme="dark"] .answer-choice label[data-selected="true"],
+:root[data-theme="dark"] .cloze-shared-bank button[data-selected="true"],
+:root[data-theme="dark"] .matching-pair button[data-selected="true"],
+:root[data-theme="dark"] .listening-transport button {
+  background: #e9eef5;
+  border-color: #e9eef5;
+  color: #070c15;
+}
+:root[data-theme="dark"] .match-pill {
+  background: #303e4f;
+  border-color: #cbd5e2;
+  color: #cbd5e2;
+}
 .cloze-option-key {
   color: var(--text-muted);
   font-family: var(--font-mono);

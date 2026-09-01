@@ -101,3 +101,58 @@ describe("P04-TOKEN-001 canonical design tokens", () => {
     ).toBeGreaterThanOrEqual(4.5);
   });
 });
+
+describe("P05-CONTRAST-001 runtime controls", () => {
+  const luminance = (hex: string) => {
+    const channel = (offset: number) => {
+      const value = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    };
+    return 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5);
+  };
+  const contrast = (foreground: string, background: string) =>
+    (Math.max(luminance(foreground), luminance(background)) + 0.05) /
+    (Math.min(luminance(foreground), luminance(background)) + 0.05);
+
+  it("meets text and control contrast for every new filled or bordered control in both themes", () => {
+    const controls = [
+      {
+        name: "transport button",
+        light: { fill: "#14213d", label: "#edf1f7", surface: "#ffffff", ui: "#14213d" },
+        dark: { fill: "#e9eef5", label: "#070c15", surface: "#17202d", ui: "#e9eef5" },
+      },
+      {
+        name: "SB2 candidate chip",
+        light: { fill: "#14213d", label: "#edf1f7", surface: "#ffffff", ui: "#14213d" },
+        dark: { fill: "#e9eef5", label: "#070c15", surface: "#17202d", ui: "#e9eef5" },
+      },
+      {
+        name: "R1/R3 match pill",
+        light: { fill: "#e8ecf3", label: "#2c3a5c", surface: "#ffffff", ui: "#2c3a5c" },
+        dark: { fill: "#303e4f", label: "#cbd5e2", surface: "#17202d", ui: "#cbd5e2" },
+      },
+      {
+        name: "selected option",
+        light: { fill: "#14213d", label: "#edf1f7", surface: "#ffffff", ui: "#14213d" },
+        dark: { fill: "#e9eef5", label: "#070c15", surface: "#17202d", ui: "#e9eef5" },
+      },
+      {
+        name: "neutral history mark",
+        light: { fill: "#e8ecf3", label: "#2c3a5c", surface: "#ffffff", ui: "#2c3a5c" },
+        dark: { fill: "#303e4f", label: "#cbd5e2", surface: "#17202d", ui: "#cbd5e2" },
+      },
+    ] as const;
+    for (const control of controls) {
+      for (const [mode, colors] of Object.entries({ light: control.light, dark: control.dark })) {
+        expect(
+          contrast(colors.label, colors.fill),
+          `${control.name} ${mode} text`,
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrast(colors.ui, colors.surface),
+          `${control.name} ${mode} UI`,
+        ).toBeGreaterThanOrEqual(3);
+      }
+    }
+  });
+});
