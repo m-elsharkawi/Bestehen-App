@@ -131,7 +131,7 @@ export function AccountView({ data = false }: { readonly data?: boolean }) {
     </AppShell>
   );
 }
-export function SessionView() {
+export function SessionView({ sessionId = "synthetic" }: { readonly sessionId?: string }) {
   return (
     <AppShell backHref="/coach" kind="focused" title="Five-skill foundation">
       <Sequence
@@ -142,16 +142,20 @@ export function SessionView() {
         Your checkpoint keeps completed parts. A partial probe contributes evidence building, not a
         placement claim.
       </p>
-      <Action href="/attempt/synthetic-reading" label="Continue" />
+      <Action href={`/attempt/${sessionId}`} label="Continue" />
     </AppShell>
   );
 }
 export function AttemptView({
   kind = "reading",
   writingVariant = "editor",
+  attemptId,
+  state,
 }: {
   readonly kind?: "reading" | "language" | "writing";
   readonly writingVariant?: WritingRegionVariant;
+  readonly attemptId?: string;
+  readonly state?: "in_progress" | "checkpointed" | "submission_unknown" | "result_available";
 }) {
   const region: ReactNode =
     kind === "language" ? (
@@ -163,7 +167,13 @@ export function AttemptView({
     );
   return (
     <AttemptShell
-      action={<Action label="Submit answer" />}
+      action={
+        state === "result_available" && attemptId ? (
+          <Action href={`/attempt/${attemptId}/result`} label="Review result" />
+        ) : (
+          <Action label="Submit answer" />
+        )
+      }
       conditions={["Practice timing", "No answer-bearing help", "Server decides validity"]}
       title={kind === "language" ? "Language Elements" : kind === "writing" ? "Writing" : "Reading"}
     >
@@ -171,13 +181,28 @@ export function AttemptView({
     </AttemptShell>
   );
 }
-export function ResultView() {
+export function ResultView({
+  validity = "valid",
+  decisiveEvidence = [],
+}: {
+  readonly validity?: "valid" | "partially_valid" | "invalid" | "pending";
+  readonly decisiveEvidence?: readonly { readonly relation: string; readonly text: string }[];
+}) {
   return (
     <AppShell backHref="/coach" kind="focused" title="Result">
-      <EvidenceLabel reason="The task completed under the recorded conditions." validity="valid" />
+      <EvidenceLabel reason="The recorded conditions determine this result." validity={validity} />
       <SemanticCard title="What this shows">
         <p>One Reading pattern is stable. It does not set an overall level or pass claim.</p>
       </SemanticCard>
+      {decisiveEvidence.length > 0 ? (
+        <SemanticCard title="Decisive evidence">
+          <ul>
+            {decisiveEvidence.map((entry) => (
+              <li key={entry.relation}>{entry.text}</li>
+            ))}
+          </ul>
+        </SemanticCard>
+      ) : null}
       <SemanticCard title="Repair">
         <p>Check the connector in the second paragraph, then try one fresh item.</p>
       </SemanticCard>
