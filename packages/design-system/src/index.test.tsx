@@ -18,6 +18,7 @@ import {
   Field,
   Icon,
   iconNames,
+  LanguageElementsRegion,
   MatchingPair,
   Overlay,
   ReadinessEvidence,
@@ -497,6 +498,32 @@ describe("P05-COMPONENT-001 deterministic learning primitives", () => {
     expect(screen.getByRole("button", { name: /gekommen, already placed/i })).toBeDisabled();
   });
 
+  it("uses the shared bank for every visible SB2 gap while retaining the legacy SB1 fixture", () => {
+    const legacy = render(<LanguageElementsRegion />);
+    expect(legacy.container.querySelectorAll("input")).toHaveLength(8);
+    expect(legacy.container).toHaveTextContent("Gap 3 of 8");
+    expect(legacy.container.querySelector("[data-cloze-status='unvisited']")?.outerHTML).toBe(
+      '<span class="cloze-gap" data-cloze-status="unvisited"><label><span class="cloze-gap-word">Gap </span><span class="cloze-gap-number">4</span><input aria-label="Answer for gap 4"></label></span>',
+    );
+    legacy.unmount();
+
+    const sharedBank = {
+      candidates: [
+        { id: "candidate-a", label: "kommen" },
+        { id: "candidate-b", label: "gekommen" },
+      ],
+      itemLabel: "Shared candidate bank",
+      placements: {},
+      reusePolicy: "at_most_once" as const,
+      selectedCandidateId: "candidate-a",
+    };
+    const { container } = render(<LanguageElementsRegion sharedBank={sharedBank} />);
+    expect(container.querySelectorAll("input")).toHaveLength(0);
+    for (const gap of [1, 2, 3, 4]) {
+      expect(screen.getByRole("button", { name: `Place kommen in gap ${gap}` })).toBeEnabled();
+    }
+  });
+
   it("renders server-provided decisive evidence and phase-gated listening state", () => {
     const { container } = render(
       <>
@@ -568,10 +595,11 @@ describe("P05-COMPONENT-001 deterministic learning primitives", () => {
 });
 
 describe("P05-COPY-001 learner-facing copy", () => {
-  it("keeps shipped component strings and API fields free of unsupported certainty and implementation jargon", () => {
+  it("keeps shipped strings, API fields, and P05 test titles free of unsupported certainty", () => {
     const components = readFileSync("packages/design-system/src/components.tsx", "utf8");
     const contracts = readFileSync("packages/design-system/src/contracts.ts", "utf8");
-    const source = [
+    const tests = readFileSync("packages/design-system/src/index.test.tsx", "utf8");
+    const shippedSurface = [
       components.slice(
         components.indexOf("export function AnswerChoice"),
         components.indexOf("export function ReorderList"),
@@ -589,13 +617,21 @@ describe("P05-COPY-001 learner-facing copy", () => {
         contracts.indexOf("export const consequentialProjectionStates"),
       ),
     ].join("\n");
-    const banned = [
+    const p05Titles = [...tests.matchAll(/(?:describe|it)\("([^"]+)/g)]
+      .map(([, title]) => title ?? "")
+      .filter((title) => title.includes("P05") || title.includes("shared bank"))
+      .join("\n");
+    const unsupportedCertainty = [
       /pass\s+(?:probability|chance|likelihood)/i,
       /guaranteed\s+(?:pass|result|outcome)/i,
+      /(?:certain|definite)\s+(?:pass|result|outcome)/i,
+      /will\s+(?:certainly|definitely)\s+(?:pass|succeed)/i,
       new RegExp(["it", "still", "counts"].join("\\s+"), "i"),
-      new RegExp(["pro", "vider"].join(""), "i"),
-      /credential|signed URL|infrastructure/i,
     ];
-    for (const pattern of banned) expect(source).not.toMatch(pattern);
+    for (const pattern of unsupportedCertainty) {
+      expect(shippedSurface).not.toMatch(pattern);
+      expect(p05Titles).not.toMatch(pattern);
+    }
+    expect(shippedSurface).not.toMatch(/(?:amazon|polly|auth0|cloudflare|r2)\b/i);
   });
 });

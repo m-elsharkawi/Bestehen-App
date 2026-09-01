@@ -372,7 +372,10 @@ export function ClozeGap({
   }
   // Assertion hook: identifies the cloze gap in the component gallery.
   return (
-    <span className="cloze-gap" data-cloze-status={state === "result" ? undefined : status}>
+    <span
+      className={sharedBank && gapId ? "cloze-gap cloze-shared-placement" : "cloze-gap"}
+      data-cloze-status={state === "result" ? undefined : status}
+    >
       {state === "result" ? (
         <>Gap {number}: because</>
       ) : sharedBank && gapId ? (
@@ -1247,7 +1250,13 @@ export function LanguageElementsRegion({
             status="active"
           />
           , weil ich bis 18 Uhr arbeite. Könnten Sie mir{" "}
-          <ClozeGap number={4} state="input" status="unvisited" />
+          <ClozeGap
+            gapId="gap-4"
+            number={4}
+            {...(sharedBank ? { sharedBank } : {})}
+            state="input"
+            status="unvisited"
+          />
           mitteilen, ob es einen späteren Termin gibt?
         </p>
       </div>

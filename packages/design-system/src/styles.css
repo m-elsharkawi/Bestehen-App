@@ -331,7 +331,12 @@ summary,
   color: var(--status-risk-text);
 }
 .status-word[data-status="system"] {
-  color: var(--text-secondary);
+  --learning-history-boundary: #2c3a5c;
+  --learning-history-fill: #e8ecf3;
+  --learning-history-label: #2c3a5c;
+  background: var(--learning-history-fill);
+  border: 1px solid var(--learning-history-boundary);
+  color: var(--learning-history-label);
 }
 .action {
   align-items: center;
@@ -712,9 +717,18 @@ input[type="checkbox"] {
 .answer-choice,
 .matching-pair,
 .cloze-shared-bank,
+.cloze-shared-placement,
 .listening-region {
+  --learning-control-fill: #14213d;
+  --learning-control-label: #edf1f7;
+  --learning-control-neutral-boundary: #2c3a5c;
+  --learning-control-neutral-fill: #e8ecf3;
+  --learning-control-neutral-label: #2c3a5c;
+  --learning-control-rest-boundary: #4a5670;
+  --learning-control-rest-fill: var(--surface-raised);
+  --learning-control-rest-label: var(--text-primary);
   background: var(--surface-raised);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--learning-control-rest-boundary);
   border-radius: var(--radius-panel);
   margin: 0;
   padding: var(--space-4);
@@ -725,8 +739,10 @@ input[type="checkbox"] {
 }
 .answer-choice label {
   align-items: center;
-  border: 1px solid var(--border-strong);
+  background: var(--learning-control-rest-fill);
+  border: 1px solid var(--learning-control-rest-boundary);
   border-radius: var(--radius-panel);
+  color: var(--learning-control-rest-label);
   display: flex;
   gap: var(--space-3);
   min-height: var(--target-min);
@@ -737,9 +753,9 @@ input[type="checkbox"] {
 .cloze-shared-bank button[data-selected="true"],
 .matching-pair button[data-selected="true"],
 .listening-transport button {
-  background: #14213d;
-  border: 1px solid #14213d;
-  color: #edf1f7;
+  background: var(--learning-control-fill);
+  border: 1px solid var(--learning-control-fill);
+  color: var(--learning-control-label);
 }
 .matching-pair-grid {
   display: grid;
@@ -772,9 +788,9 @@ input[type="checkbox"] {
 .matching-pair button,
 .matching-destination > button,
 .cloze-shared-bank button {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-strong);
-  color: var(--text-primary);
+  background: var(--learning-control-rest-fill);
+  border: 1px solid var(--learning-control-rest-boundary);
+  color: var(--learning-control-rest-label);
   text-align: left;
 }
 .matching-destination {
@@ -783,10 +799,10 @@ input[type="checkbox"] {
 }
 .match-pill {
   align-items: center;
-  background: #e8ecf3;
-  border: 1px solid #2c3a5c;
+  background: var(--learning-control-neutral-fill);
+  border: 1px solid var(--learning-control-neutral-boundary);
   border-radius: var(--radius-panel);
-  color: #2c3a5c;
+  color: var(--learning-control-neutral-label);
   display: flex;
   gap: var(--space-2);
   justify-content: space-between;
@@ -795,9 +811,9 @@ input[type="checkbox"] {
 }
 .match-pill button,
 .cloze-placement button {
-  background: transparent;
-  border: 1px solid currentColor;
-  color: inherit;
+  background: var(--learning-control-rest-fill);
+  border: 1px solid var(--learning-control-rest-boundary);
+  color: var(--learning-control-rest-label);
 }
 .cloze-shared-bank {
   display: flex;
@@ -839,8 +855,10 @@ input[type="checkbox"] {
   color: var(--text-secondary);
 }
 .listening-transcript {
-  border: 1px solid var(--border-strong);
+  background: var(--learning-control-rest-fill);
+  border: 1px solid var(--learning-control-rest-boundary);
   border-radius: var(--radius-panel);
+  color: var(--learning-control-rest-label);
   padding: var(--space-3);
 }
 @media (min-width: 768px) {
@@ -849,32 +867,56 @@ input[type="checkbox"] {
   }
 }
 @media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .answer-choice,
+  :root:not([data-theme="light"]) .matching-pair,
+  :root:not([data-theme="light"]) .cloze-shared-bank,
+  :root:not([data-theme="light"]) .cloze-shared-placement,
+  :root:not([data-theme="light"]) .listening-region {
+    --learning-control-fill: #e9eef5;
+    --learning-control-label: #070c15;
+    --learning-control-neutral-boundary: #cbd5e2;
+    --learning-control-neutral-fill: #303e4f;
+    --learning-control-neutral-label: #cbd5e2;
+    --learning-control-rest-boundary: #a7b3c4;
+  }
+  :root:not([data-theme="light"]) .status-word[data-status="system"] {
+    --learning-history-boundary: #cbd5e2;
+    --learning-history-fill: #303e4f;
+    --learning-history-label: #cbd5e2;
+  }
   :root:not([data-theme="light"]) .answer-choice label[data-selected="true"],
   :root:not([data-theme="light"]) .cloze-shared-bank button[data-selected="true"],
   :root:not([data-theme="light"]) .matching-pair button[data-selected="true"],
   :root:not([data-theme="light"]) .listening-transport button {
-    background: #e9eef5;
-    border-color: #e9eef5;
-    color: #070c15;
+    background: var(--learning-control-fill);
+    border-color: var(--learning-control-fill);
+    color: var(--learning-control-label);
   }
-  :root:not([data-theme="light"]) .match-pill {
-    background: #303e4f;
-    border-color: #cbd5e2;
-    color: #cbd5e2;
-  }
+}
+:root[data-theme="dark"] .answer-choice,
+:root[data-theme="dark"] .matching-pair,
+:root[data-theme="dark"] .cloze-shared-bank,
+:root[data-theme="dark"] .cloze-shared-placement,
+:root[data-theme="dark"] .listening-region {
+  --learning-control-fill: #e9eef5;
+  --learning-control-label: #070c15;
+  --learning-control-neutral-boundary: #cbd5e2;
+  --learning-control-neutral-fill: #303e4f;
+  --learning-control-neutral-label: #cbd5e2;
+  --learning-control-rest-boundary: #a7b3c4;
+}
+:root[data-theme="dark"] .status-word[data-status="system"] {
+  --learning-history-boundary: #cbd5e2;
+  --learning-history-fill: #303e4f;
+  --learning-history-label: #cbd5e2;
 }
 :root[data-theme="dark"] .answer-choice label[data-selected="true"],
 :root[data-theme="dark"] .cloze-shared-bank button[data-selected="true"],
 :root[data-theme="dark"] .matching-pair button[data-selected="true"],
 :root[data-theme="dark"] .listening-transport button {
-  background: #e9eef5;
-  border-color: #e9eef5;
-  color: #070c15;
-}
-:root[data-theme="dark"] .match-pill {
-  background: #303e4f;
-  border-color: #cbd5e2;
-  color: #cbd5e2;
+  background: var(--learning-control-fill);
+  border-color: var(--learning-control-fill);
+  color: var(--learning-control-label);
 }
 .cloze-option-key {
   color: var(--text-muted);
