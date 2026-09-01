@@ -15,8 +15,8 @@
  *    output is not stable across versions; a fake that needed a stable encoder would have swapped
  *    one determinism problem for another.
  *
- * What this is *not*: speech. It is a short, byte-stable placeholder standing in for a reviewed
- * rendition, at Training approval only. Live synthesis, voice audition and P4 audio sign-off remain
+ * What this is *not*: speech. It is a short, byte-stable placeholder for an unreviewed draft
+ * rendition. Live synthesis, voice audition and P4 audio sign-off remain
  * the unclaimed owner gate `OWNER-05-A`, and nothing here may be read as satisfying it.
  */
 

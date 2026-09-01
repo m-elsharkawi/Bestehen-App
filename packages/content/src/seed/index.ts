@@ -58,8 +58,8 @@ function publicationValidation(artifact: SeedArtifact): PublicationValidation {
     ...(artifact.revision.learnerPayload.kind.startsWith("H")
       ? {
           mediaRenderRecord: {
-            renderedAt: artifact.revision.frozenAt ?? "2026-09-01T00:00:00.000Z",
-            afterSemanticAndLanguagePass: true,
+            renderedAt: "2026-09-01T00:00:00.000Z",
+            afterSemanticAndLanguagePass: false,
           },
         }
       : {}),
@@ -177,21 +177,31 @@ export function validateSeedRelease(): SeedReleaseValidation {
     findings.push(...cardinalityFindings(artifact));
     const validation = publicationValidation(artifact);
     publicationByRevisionId[artifact.revision.contentRevisionId] = validation;
-    if (validation.decision !== "publishable")
+    if (
+      artifact.requestedLevel !== "draft" ||
+      artifact.revision.currentApprovalDecisionId !== undefined ||
+      validation.decision === "publishable"
+    )
       findings.push({
-        code: "serving_seed_not_publishable",
+        code: "seed_review_state_invalid",
         identity: artifact.seedKey,
-        detail: `${validation.firstBlockingGate ?? "unknown"}: ${validation.findings.map((entry) => entry.code).join(", ")}`,
+        detail: "An unreviewed seed must remain a blocked draft without an approval decision.",
       });
   }
   const quarantineValidation = publicationValidation(ambiguousQuarantineFixture);
   publicationByRevisionId[ambiguousQuarantineFixture.revision.contentRevisionId] =
     quarantineValidation;
-  if (quarantineValidation.decision !== "quarantine_required")
+  if (
+    ambiguousQuarantineFixture.intent !== "quarantine_fixture" ||
+    ambiguousQuarantineFixture.keys.every(
+      (key) => key.independentValidatorResult.agreedWithProposedKey,
+    )
+  )
     findings.push({
       code: "quarantine_fixture_not_quarantined",
       identity: ambiguousQuarantineFixture.seedKey,
-      detail: "The blind-validator disagreement must require quarantine.",
+      detail:
+        "The deliberate ambiguous fixture must carry a disagreeing key and quarantine intent.",
     });
   const withdrawalValidation = publicationValidation(withdrawalFixture);
   publicationByRevisionId[withdrawalFixture.revision.contentRevisionId] = withdrawalValidation;
@@ -274,6 +284,19 @@ export interface SeedReleaseDocumentEntry {
   readonly keyRevisionIds: readonly string[];
   readonly mediaRevisionIds: readonly string[];
   readonly validation: PublicationValidation;
+  /** Complete typed graph consumed by the package-neutral database adapter. */
+  readonly family: SeedArtifact["family"];
+  readonly revision: SeedArtifact["revision"];
+  readonly keys: SeedArtifact["keys"];
+  readonly rights: SeedArtifact["rights"];
+  readonly accessibility: SeedArtifact["accessibility"];
+  readonly recordedGateResults: SeedArtifact["recordedResults"];
+  /** Null until an authorised human approval command has been recorded. */
+  readonly approvalCommand: null;
+  readonly reviewRequirements: readonly [
+    "independent_key_validation:OWNER-05-C",
+    "launch_human_review",
+  ];
 }
 
 export interface SeedReleaseDocument {
@@ -310,6 +333,14 @@ function releaseEntry(artifact: SeedArtifact): SeedReleaseDocumentEntry {
     validation: seedReleaseValidation.publicationByRevisionId[
       artifact.revision.contentRevisionId
     ] as PublicationValidation,
+    family: artifact.family,
+    revision: artifact.revision,
+    keys: artifact.keys,
+    rights: artifact.rights,
+    accessibility: artifact.accessibility,
+    recordedGateResults: artifact.recordedResults,
+    approvalCommand: null,
+    reviewRequirements: ["independent_key_validation:OWNER-05-C", "launch_human_review"],
   };
 }
 

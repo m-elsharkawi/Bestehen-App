@@ -42,7 +42,12 @@ describe("P05-SEED-001 typed C3 release", () => {
         const artifact = bySeedKey.get(seedKey);
         expect(artifact?.revision.learnerPayload.kind).toBe(kind);
         expect(artifact?.revision.contentClass).toBe("C3");
-        expect(artifact?.requestedLevel).toBe("training");
+        expect(artifact?.requestedLevel).toBe("draft");
+        expect(artifact?.family).toMatchObject({
+          assignmentBasis: "automated_proposal",
+          reviewState: "proposed",
+        });
+        expect(artifact?.revision.currentApprovalDecisionId).toBeUndefined();
       }
     }
   });
@@ -56,9 +61,10 @@ describe("P05-SEED-001 typed C3 release", () => {
       for (const [itemId, item] of itemsById) {
         const key = keysById.get(item.scorable.keyRevisionId);
         expect(key?.itemId).toBe(itemId);
-        expect(key?.independentValidatorResult.validatorRef).toBe(
-          "system:deterministic-key-derivation",
-        );
+        expect(key?.independentValidatorResult).toMatchObject({
+          validatorRef: "unclaimed:OWNER-05-C",
+          agreedWithProposedKey: false,
+        });
         const offered = new Set(offeredByItemId.get(itemId));
         for (const response of key?.acceptedResponseSet ?? []) {
           if (response.kind === "option") expect(offered.has(response.optionId)).toBe(true);
@@ -99,10 +105,10 @@ describe("P05-SEED-001 typed C3 release", () => {
     expect(negativeSeedFixtures.quarantine.seedKey).toBe("fixture-quarantine-ambiguous-sb1");
     expect(ambiguousQuarantineFixture.intent).toBe("quarantine_fixture");
     expect(
-      seedReleaseValidation.publicationByRevisionId[
-        ambiguousQuarantineFixture.revision.contentRevisionId
-      ]?.decision,
-    ).toBe("quarantine_required");
+      ambiguousQuarantineFixture.keys.some(
+        (key) => !key.independentValidatorResult.agreedWithProposedKey,
+      ),
+    ).toBe(true);
     expect(withdrawalFixture.intent).toBe("withdrawal_fixture");
     expect(withdrawalFixture.rights.identity.state).toBe("withdrawn");
     expect(withdrawalFixture.rights.incidentDisposition?.affectedArtifactSelectors).toEqual([
@@ -133,5 +139,18 @@ describe("P05-SEED-001 typed C3 release", () => {
       await readFile(new URL("./release.json", import.meta.url), "utf8"),
     ) as unknown;
     expect(generated).toEqual(contentSeedReleaseV1);
+    const entriesByRevisionId = new Map(
+      contentSeedReleaseV1.entries.map((entry) => [entry.revisionId, entry]),
+    );
+    for (const artifact of [...servingSeedArtifacts, ...Object.values(negativeSeedFixtures)]) {
+      const entry = entriesByRevisionId.get(artifact.revision.contentRevisionId);
+      expect(entry?.family).toEqual(artifact.family);
+      expect(entry?.revision).toEqual(artifact.revision);
+      expect(entry?.keys).toEqual(artifact.keys);
+      expect(entry?.rights).toEqual(artifact.rights);
+      expect(entry?.accessibility).toEqual(artifact.accessibility);
+      expect(entry?.recordedGateResults).toEqual(artifact.recordedResults);
+      expect(entry?.approvalCommand).toBeNull();
+    }
   });
 });

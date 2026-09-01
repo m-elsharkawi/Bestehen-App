@@ -1,4 +1,4 @@
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -6,9 +6,12 @@ import {
   emptySeedCatalogue,
   planSeedCommand,
   runSeedCli,
+  executePostgresSeedCommand,
   type SeedCatalogueState,
   type SeedPlanRequest,
   type SeedReleaseDocument,
+  type SeedSqlClient,
+  type SeedSqlPool,
 } from "./seed-cli.js";
 
 const occurredAt = "2026-09-01T12:00:00.000Z";
@@ -71,7 +74,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
         familyId: entry.familyId,
         digest: entry.digest,
         contentClass: "C3",
-        requestedLevel: "training",
+        requestedLevel: "draft",
         action: "create",
         rights: {
           envelopeId: entry.rightsEnvelopeId,
@@ -82,7 +85,7 @@ describe("P05-SEED-001 seed CLI planner", () => {
           manifestId: entry.accessibilityManifestId,
           status: "pass",
         },
-        validation: { decision: "publishable", firstBlockingGate: null },
+        validation: { decision: "blocked", firstBlockingGate: "eligibility_brief" },
       });
     }
   });
@@ -100,7 +103,10 @@ describe("P05-SEED-001 seed CLI planner", () => {
       unchanged: 16,
       hardFailures: 0,
     });
-    expect(second.nextState).toEqual(first.nextState);
+    expect(second.nextState.revisions).toEqual(first.nextState.revisions);
+    expect(second.nextState.releases).toEqual(first.nextState.releases);
+    expect(second.nextState.audit).toEqual(first.nextState.audit);
+    expect(second.nextState.receipts).toHaveLength(first.nextState.receipts.length + 1);
     const byRevisionId = new Map(
       second.nextState.revisions.map((revision) => [revision.revisionId, revision]),
     );
@@ -159,7 +165,9 @@ describe("P05-SEED-001 seed CLI planner", () => {
         entry.seedKey === "r1-buerogebaeude" ? { ...entry, digest: "c".repeat(64) } : entry,
       ),
     };
-    const plan = planSeedCommand(request(changed, first.nextState));
+    const plan = planSeedCommand(
+      request(changed, first.nextState, { operationId: "operation-immutable-change" }),
+    );
     expect(plan.report.summary.hardFailures).toBe(2);
     const failuresByCode = new Map(plan.report.failures.map((failure) => [failure.code, failure]));
     expect(failuresByCode.get("immutable_revision_changed")?.identity).toBe(
@@ -219,7 +227,9 @@ describe("P05-SEED-001 seed CLI planner", () => {
       ...release,
       releaseId: "7d99af67-a77c-5b1f-9d9d-38ae3512bf8f",
     };
-    const second = planSeedCommand(request(secondRelease, first.nextState));
+    const second = planSeedCommand(
+      request(secondRelease, first.nextState, { operationId: "operation-second-release" }),
+    );
     expect(second.nextState.activeReleaseId).toBe(secondRelease.releaseId);
     const rollback = planSeedCommand(
       request(secondRelease, second.nextState, {
@@ -253,5 +263,207 @@ describe("P05-SEED-001 seed CLI planner", () => {
     ]);
     expect(report.summary).toMatchObject({ created: 16, hardFailures: 0 });
     expect(JSON.parse(await readFile(reportPath, "utf8"))).toEqual(report);
+  });
+
+  it("replays and rejects conflicting operation IDs for every mutating command", async () => {
+    const release = await releaseDocument();
+    const applyRequest = request(release, emptySeedCatalogue, { operationId: "receipt-apply" });
+    const applied = planSeedCommand(applyRequest);
+    const replayedApply = planSeedCommand({ ...applyRequest, catalogue: applied.nextState });
+    expect(replayedApply.report).toEqual(applied.report);
+    expect(replayedApply.nextState).toBe(applied.nextState);
+    const applyConflict = planSeedCommand({
+      ...applyRequest,
+      catalogue: applied.nextState,
+      reason: "different canonical payload",
+    });
+    expect(applyConflict.report.failures[0]?.code).toBe("idempotency_conflict");
+    expect(applyConflict.nextState).toBe(applied.nextState);
+
+    const withdrawTarget = release.entries.find((entry) => entry.seedKey === "r1-buerogebaeude");
+    const withdrawRequest = request(release, applied.nextState, {
+      command: "withdraw",
+      selector: withdrawTarget?.revisionId ?? null,
+      reason: "rights decision",
+      operationId: "receipt-withdraw",
+    });
+    const withdrawn = planSeedCommand(withdrawRequest);
+    const replayedWithdraw = planSeedCommand({
+      ...withdrawRequest,
+      catalogue: withdrawn.nextState,
+    });
+    expect(replayedWithdraw.report).toEqual(withdrawn.report);
+    expect(replayedWithdraw.nextState.audit).toHaveLength(withdrawn.nextState.audit.length);
+    const withdrawConflict = planSeedCommand({
+      ...withdrawRequest,
+      catalogue: withdrawn.nextState,
+      reason: "different rights decision",
+    });
+    expect(withdrawConflict.report.failures[0]?.code).toBe("idempotency_conflict");
+    expect(withdrawConflict.nextState).toBe(withdrawn.nextState);
+
+    const quarantineTarget = release.entries.find((entry) => entry.seedKey === "r2-bibliothek");
+    const quarantineRequest = request(release, withdrawn.nextState, {
+      command: "quarantine",
+      selector: quarantineTarget?.revisionId ?? null,
+      reason: "ambiguity report",
+      operationId: "receipt-quarantine",
+    });
+    const quarantined = planSeedCommand(quarantineRequest);
+    const replayedQuarantine = planSeedCommand({
+      ...quarantineRequest,
+      catalogue: quarantined.nextState,
+    });
+    expect(replayedQuarantine.report).toEqual(quarantined.report);
+    expect(replayedQuarantine.nextState.audit).toHaveLength(quarantined.nextState.audit.length);
+    const quarantineConflict = planSeedCommand({
+      ...quarantineRequest,
+      catalogue: quarantined.nextState,
+      reason: "different ambiguity report",
+    });
+    expect(quarantineConflict.report.failures[0]?.code).toBe("idempotency_conflict");
+    expect(quarantineConflict.nextState).toBe(quarantined.nextState);
+
+    const secondRelease: SeedReleaseDocument = {
+      ...release,
+      releaseId: "7d99af67-a77c-5b1f-9d9d-38ae3512bf8f",
+    };
+    const second = planSeedCommand(
+      request(secondRelease, quarantined.nextState, { operationId: "receipt-second-release" }),
+    );
+    const rollbackRequest = request(secondRelease, second.nextState, {
+      command: "rollback",
+      selector: release.releaseId,
+      reason: "restore prior candidate",
+      operationId: "receipt-rollback",
+    });
+    const rolledBack = planSeedCommand(rollbackRequest);
+    const replayedRollback = planSeedCommand({
+      ...rollbackRequest,
+      catalogue: rolledBack.nextState,
+    });
+    expect(replayedRollback.report).toEqual(rolledBack.report);
+    expect(replayedRollback.nextState.audit).toHaveLength(rolledBack.nextState.audit.length);
+    const rollbackConflict = planSeedCommand({
+      ...rollbackRequest,
+      catalogue: rolledBack.nextState,
+      reason: "different rollback reason",
+    });
+    expect(rollbackConflict.report.failures[0]?.code).toBe("idempotency_conflict");
+    expect(rollbackConflict.nextState).toBe(rolledBack.nextState);
+  });
+
+  it("writes the complete draft graph through parameterized PostgreSQL statements", async () => {
+    const release = await releaseDocument();
+    const calls: { text: string; values: unknown[] }[] = [];
+    const receipts = new Map<string, { target_digest: string; target_class: string }>();
+    const client: SeedSqlClient = {
+      async query(text, values = []) {
+        calls.push({ text, values });
+        if (text.includes("FROM app.security_audit_events")) {
+          const receipt = receipts.get(String(values[0]));
+          return { rows: receipt ? [receipt] : [], rowCount: receipt ? 1 : 0 };
+        }
+        if (text.includes("FROM app.content_revisions cr")) return { rows: [], rowCount: 0 };
+        if (text.includes("FROM app.content_releases")) return { rows: [], rowCount: 0 };
+        if (text.includes("INSERT INTO app.security_audit_events")) {
+          receipts.set(String(values[0]), {
+            target_class: String(values[2]),
+            target_digest: String(values[3]),
+          });
+        }
+        return { rows: [], rowCount: 1 };
+      },
+    };
+    const pool: SeedSqlPool = {
+      async connect() {
+        return client;
+      },
+    };
+    const postgresRequest = {
+      release,
+      dryRun: false,
+      reportPath: null,
+      operationId: "postgres-apply",
+      occurredAt,
+      command: "apply" as const,
+      selector: null,
+      reason: null,
+    };
+    const report = await executePostgresSeedCommand(pool, postgresRequest);
+    expect(report.summary).toMatchObject({ created: 16, hardFailures: 0 });
+    const contentRevisionCalls = calls.filter((call) =>
+      call.text.includes("INSERT INTO app.content_revisions"),
+    );
+    const itemsCalls = calls.filter((call) => call.text.includes("INSERT INTO app.content_items"));
+    const keyCalls = calls.filter((call) => call.text.includes("INSERT INTO app.key_revisions"));
+    expect(contentRevisionCalls).toHaveLength(release.entries.length);
+    expect(itemsCalls).toHaveLength(
+      release.entries.reduce((total, entry) => total + entry.revision.items.length, 0),
+    );
+    expect(keyCalls).toHaveLength(
+      release.entries.reduce((total, entry) => total + entry.keys.length, 0),
+    );
+    const revisionCallById = new Map(
+      contentRevisionCalls.map((call) => [String(call.values[0]), call]),
+    );
+    for (const entry of release.entries) {
+      const call = revisionCallById.get(entry.revisionId);
+      expect(call?.values[1]).toBe(entry.familyId);
+      expect(call?.values[3]).toBe(
+        entry.intent === "quarantine_fixture"
+          ? "quarantined"
+          : entry.intent === "withdrawal_fixture"
+            ? "retired"
+            : "candidate",
+      );
+      expect(JSON.parse(String(call?.values[18]))).toEqual(entry.revision.learnerPayload);
+    }
+    const replay = await executePostgresSeedCommand(pool, postgresRequest);
+    expect(replay).toEqual(report);
+    const conflict = await executePostgresSeedCommand(pool, {
+      ...postgresRequest,
+      reason: "different payload",
+    });
+    expect(conflict.failures[0]?.code).toBe("idempotency_conflict");
+  });
+
+  it("fails closed when a nested release graph is malformed", async () => {
+    const release = await releaseDocument();
+    const directory = await mkdtemp(join(tmpdir(), "bestehen-seed-invalid-"));
+    const releasePath = join(directory, "release.json");
+    const target = release.entries.find((entry) => entry.seedKey === "r2-bibliothek");
+    const malformed = {
+      ...release,
+      entries: release.entries.map((entry) =>
+        entry.revisionId === target?.revisionId
+          ? { ...entry, revision: { ...entry.revision, learnerPayload: { kind: "wrong" } } }
+          : entry,
+      ),
+    };
+    await writeFile(releasePath, `${JSON.stringify(malformed)}\n`, "utf8");
+    await expect(
+      runSeedCli(["--dry-run", "--release", releasePath, "--operation-id", "invalid-release"]),
+    ).rejects.toThrow("learnerPayload/kind");
+  });
+
+  it("refuses Training promotion without a recorded human approval command", async () => {
+    const release = await releaseDocument();
+    const target = release.entries.find((entry) => entry.seedKey === "r1-nachbarschaftszentrum");
+    if (!target) throw new Error("The review-gate fixture is missing.");
+    const unearned: SeedReleaseDocument = {
+      ...release,
+      entries: release.entries.map((entry) =>
+        entry.revisionId === target.revisionId ? { ...entry, requestedLevel: "training" } : entry,
+      ),
+    };
+    const plan = planSeedCommand(
+      request(unearned, emptySeedCatalogue, { operationId: "unearned-training" }),
+    );
+    const failuresByIdentity = new Map(
+      plan.report.failures.map((failure) => [failure.identity, failure]),
+    );
+    expect(failuresByIdentity.get(target.revisionId)?.code).toBe("unearned_seed_approval");
+    expect(plan.nextState).toBe(emptySeedCatalogue);
   });
 });

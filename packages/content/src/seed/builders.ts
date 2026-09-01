@@ -65,12 +65,10 @@ export const seedTaxonomyRelease = "corpus-taxonomy/2026.06";
 export const seedScoringPolicyRef = "objective-scoring/v1";
 
 /**
- * Every seed artifact publishes at **Training** and no higher. `independent_b1`, `readiness_p4` and
- * `gold` each require a human review authority that the personal profile holds as an unclaimed owner
- * gate (`OWNER-05-B`, `OWNER-05-C`), and an automated promotion into one of them would be exactly
- * the unearned approval `Architecture/09-…` §5.1 forbids.
+ * Seed artifacts start as drafts. They are complete authoring candidates, but generator-derived
+ * structure is not independent key validation and does not satisfy the launch human-review gate.
  */
-export const seedApprovalLevel: ContentApprovalLevel = "training";
+export const seedApprovalLevel: ContentApprovalLevel = "draft";
 
 /**
  * The seed is authored against the P4 target so playback opportunity, counts and cardinality are
@@ -93,8 +91,8 @@ export const seedEvidenceRoles: readonly EvidenceRole[] = [
 ];
 
 export const seedAuthorRef = "author:stage-05-seed";
-export const seedValidatorRef = "system:deterministic-key-derivation";
-export const seedApproverRef = "intent:training-review-not-promoted";
+export const seedValidatorRef = "unclaimed:OWNER-05-C";
+export const seedApproverRef = "unclaimed:launch-human-review";
 export const seedReviewMethodVersion = "content-qa-gates/v1";
 export const seedRecordedAt = "2026-09-01T00:00:00.000Z";
 
@@ -248,13 +246,8 @@ export interface SeedArtifact {
 }
 
 /**
- * The six gates that are human or offline review. The other five are decided from the artifact by
- * `validateForPublication` itself, and recording a result for them would be a second, weaker copy of
- * a computation that already exists.
- *
- * A recorded `passed` here states that the named review ran at the named method version. The one
- * review this stage cannot record is a *second person* — `OWNER-05-C` — and `provenance.md` says so
- * rather than dressing a single-owner pass up as independent human agreement.
+ * Human/offline gates are intentionally recorded as not run. The typed corpus can prove structural
+ * consistency, but it cannot review its own German, difficulty, diversity or answer key.
  */
 export function seedRecordedResults(detail: string): readonly RecordedGateResult[] {
   const gates = [
@@ -267,8 +260,8 @@ export function seedRecordedResults(detail: string): readonly RecordedGateResult
   ] as const;
   return gates.map((gate) => ({
     gate,
-    outcome: "passed" as const,
-    reviewerRef: seedValidatorRef,
+    outcome: "not_run" as const,
+    reviewerRef: "unclaimed:launch-human-review",
     methodVersion: seedReviewMethodVersion,
     recordedAt: seedRecordedAt,
     detail,
@@ -292,32 +285,20 @@ function acceptedIdentifiers(accepted: readonly AcceptedResponse[]): readonly st
 }
 
 /**
- * The blind-validation result recorded on a seeded key.
- *
- * It is **computed**, not asserted. `agreedWithProposedKey` is true only when the key survives a
- * re-derivation that never reads the proposed answer: every accepted identity is one the payload
- * actually offers, every accepted identity resolves to an authored decisive-evidence relation, and
- * every unaccepted offered identity has an authored decisive mismatch. A key that fails any of those
- * is recorded as a disagreement and quarantines at gate 5, which is the behaviour that matters.
- *
- * What this is *not*: a person solving the task blind. That is `OWNER-05-C`, and it is unclaimed.
+ * The key model predates an explicit `not_run` state. Until OWNER-05-C completes a blind solve, the
+ * result uses `agreedWithProposedKey: false` with an unclaimed validator reference. This is a
+ * fail-closed pending-review sentinel, not a claimed disagreement or a system validation.
  */
-function blindValidation(
+function pendingIndependentValidation(
   spec: SeedItemSpec,
   offered: readonly string[],
   rationales: readonly DistractorRationale[],
-): { readonly agreed: boolean; readonly method: "blind_solve" | "blind_solve_with_rationale" } {
-  if (spec.validatorDisagrees === true) return { agreed: false, method: "blind_solve" };
-  const offeredSet = new Set(offered);
-  const accepted = acceptedIdentifiers(spec.accepted);
-  const everyAcceptedIsOffered = accepted.every((identifier) => offeredSet.has(identifier));
-  const everyAcceptedHasEvidence = spec.accepted.length > 0 && spec.decisiveEvidence.length > 0;
-  const everyDistractorHasMismatch = rationales.every(
-    (rationale) => rationale.decisiveMismatch.trim().length > 0,
-  );
+): { readonly agreed: false; readonly method: "blind_solve" | "blind_solve_with_rationale" } {
+  void offered;
+  void rationales;
   return {
-    agreed: everyAcceptedIsOffered && everyAcceptedHasEvidence && everyDistractorHasMismatch,
-    method: "blind_solve_with_rationale",
+    agreed: false,
+    method: spec.validatorDisagrees ? "blind_solve" : "blind_solve_with_rationale",
   };
 }
 
@@ -369,7 +350,7 @@ export function buildSeedArtifact(input: SeedArtifactInput): SeedArtifact {
       optionOrCandidateId: rationale.optionOrCandidateId,
       causeRef: spec.causeRef,
     }));
-    const validation = blindValidation(spec, offered, distractorRationales);
+    const validation = pendingIndependentValidation(spec, offered, distractorRationales);
 
     items.push({
       contentItemId,
@@ -433,8 +414,8 @@ export function buildSeedArtifact(input: SeedArtifactInput): SeedArtifact {
     scenarioConfigurationRef: input.scenarioConfigurationRef,
     decisiveRealizationRef: input.decisiveRealizationRef,
     answerPathRef: input.answerPathRef,
-    assignmentBasis: "human_review",
-    reviewState: "confirmed",
+    assignmentBasis: "automated_proposal",
+    reviewState: "proposed",
   };
 
   const withoutDigest = {
@@ -463,8 +444,7 @@ export function buildSeedArtifact(input: SeedArtifactInput): SeedArtifact {
     mediaRevisionIds: (input.mediaRevisionIds ?? []) as readonly AppId<"media_revision">[],
     rightsEnvelopeId: rights.identity.rightsEnvelopeId,
     accessibilityManifestId: accessibility.accessibilityManifestId,
-    currentApprovalDecisionId: approvalDecisionId,
-    frozenAt: seedRecordedAt,
+    // Draft candidates have neither an approval decision nor publication freeze.
   };
 
   const revision: ContentRevision = {
@@ -484,7 +464,7 @@ export function buildSeedArtifact(input: SeedArtifactInput): SeedArtifact {
     rights,
     accessibility,
     recordedResults: seedRecordedResults(
-      `Seed artifact ${input.seedKey}: original C3 practice reviewed against ${seedTargetBlueprintRelease}.`,
+      `Seed artifact ${input.seedKey}: original C3 draft candidate awaiting independent key validation and launch human review against ${seedTargetBlueprintRelease}.`,
     ),
     approvalDecisionId,
   };
