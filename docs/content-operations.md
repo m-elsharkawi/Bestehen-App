@@ -77,9 +77,11 @@ Never edit meaning behind an existing revision ID. For a material seed change:
 
 1. Give the successor a new `seedKey`.
 2. Set `predecessorSeedKey` to the prior seed key in the artifact builder.
-3. Regenerate `release.json`.
-4. Run a dry run against the current catalogue.
-5. Confirm that the exact family reports `supersede` and names the active revision in
+3. Bump `seedReleaseVersion` in `builders.ts` so the new document receives a new immutable release
+   ID.
+4. Regenerate `release.json`.
+5. Run a dry run against the current catalogue.
+6. Confirm that the exact family reports `supersede` and names the active revision in
    `currentRevisionId`.
 
 Reusing an existing revision ID with a different digest fails with

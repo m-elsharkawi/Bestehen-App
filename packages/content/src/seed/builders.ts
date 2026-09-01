@@ -92,11 +92,14 @@ export const seedEvidenceRoles: readonly EvidenceRole[] = [
   "independent_practice",
 ];
 
-export const seedAuthorRef = "owner:author";
-export const seedValidatorRef = "owner:blind-validator";
-export const seedApproverRef = "owner:approver";
+export const seedAuthorRef = "author:stage-05-seed";
+export const seedValidatorRef = "system:deterministic-key-derivation";
+export const seedApproverRef = "intent:training-review-not-promoted";
 export const seedReviewMethodVersion = "content-qa-gates/v1";
 export const seedRecordedAt = "2026-09-01T00:00:00.000Z";
+
+/** Bump when a successor seed release is authored. Release IDs never hide changed bytes. */
+export const seedReleaseVersion = "2026-09-01.1";
 
 /** Help offered on seeded practice. Assistance is recorded, never silently free. */
 export const seedHelpPolicy: HelpPolicy = {

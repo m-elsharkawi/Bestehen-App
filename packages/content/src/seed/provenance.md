@@ -42,7 +42,8 @@ media tests. The fake manifests here pin scripts and fixture bytes without takin
 - `OWNER-05-B` remains unclaimed. No complete P4 form or final media set received P4 sign-off.
 - `OWNER-05-C` remains unclaimed. No independent person solved every key blind to the proposed
   answers. The deterministic structural re-derivation in `builders.ts` is not a substitute for that
-  review.
+  review. Its validator reference is `system:deterministic-key-derivation`, never an owner or human
+  validator reference.
 
 The serving seeds therefore request Training approval only. No artifact in this directory claims
 Independent-B1, Readiness/P4, or Gold approval.

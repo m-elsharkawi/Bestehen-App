@@ -10,6 +10,7 @@ import {
   type SeedArtifact,
   seedApprovalLevel,
   seedReleaseIdentity,
+  seedReleaseVersion,
   seedTargetBlueprintRelease,
 } from "./builders.js";
 import { ambiguousQuarantineFixture, sb1SeedArtifacts, withdrawalFixture } from "./language-sb1.js";
@@ -314,7 +315,7 @@ function releaseEntry(artifact: SeedArtifact): SeedReleaseDocumentEntry {
 
 export const contentSeedReleaseV1: SeedReleaseDocument = {
   schema: "bestehen-seed-release/v1",
-  releaseId: seedUuid("content_release", seedReleaseIdentity),
+  releaseId: seedUuid("content_release", `${seedReleaseIdentity}/${seedReleaseVersion}`),
   releaseIdentity: seedReleaseIdentity,
   generatedFrom: "typed-seed-source",
   entries: [...servingSeedArtifacts, ambiguousQuarantineFixture, withdrawalFixture].map(

@@ -56,6 +56,9 @@ describe("P05-SEED-001 typed C3 release", () => {
       for (const [itemId, item] of itemsById) {
         const key = keysById.get(item.scorable.keyRevisionId);
         expect(key?.itemId).toBe(itemId);
+        expect(key?.independentValidatorResult.validatorRef).toBe(
+          "system:deterministic-key-derivation",
+        );
         const offered = new Set(offeredByItemId.get(itemId));
         for (const response of key?.acceptedResponseSet ?? []) {
           if (response.kind === "option") expect(offered.has(response.optionId)).toBe(true);
