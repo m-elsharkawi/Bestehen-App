@@ -332,3 +332,94 @@ The disposable preview, local server and `apps/web/.next` were removed after
 inspection. The committed tree was clean at the T9 acceptance boundary. Local
 `main` was 67 commits ahead of stale `origin/main`; nothing was pushed and no pull
 request was opened.
+
+## Continuation acceptance — T10 focused deterministic runtime
+
+T10 was accepted at `01bbae5d719adeb2430db0d20a08604f700b12d5` after replacing
+one incomplete mid-tier pass with a top-tier recovery and then returning the
+recovery once for rendered UI defects. The accepted slice is nine commits from
+`43a9251` through `01bbae5`:
+
+- scoped attempt and result projection reads, with learner-payload key-field
+  rejection at the App boundary;
+- a deterministic application composition service for exact pinned learner
+  material, canonical response checkpoints, server-derived attempt conditions,
+  deterministic scoring and the T8 atomic submission transaction;
+- versioned manifest, create, checkpoint, submit, assistance and exposure command
+  routes, including stable opaque-wire-operation-to-UUID mapping;
+- real focused Reading/Language Elements attempt and result routes with a plain
+  server-action form that remains usable without JavaScript;
+- focused-only objective-response and attempt-clock islands, with no import from a
+  `(protected)` route;
+- the resumable five-skill foundation route, fixed Reading → Language Elements →
+  Listening order, separate 65-year planning and official 60-year facts, append-only
+  target/access/progress facts, and honest Writing/Speaking unavailability.
+
+The plan exposed a missing seam rather than a missing table: T1 supplied wire
+contracts and T7/T8 supplied repositories, but neither composed a command into the
+exact pinned material, canonical operations, server-observed conditions, scoring
+policy and one-transaction submission. That application seam was added without a
+migration or state-union change. T10 narrowly extended the T8 content/attempt
+repositories with reads and the checkpoint transaction needed by that seam; this
+was accepted as the smallest correction to the plan's file split.
+
+### Defects rejected before T10 acceptance
+
+1. The initial mid-tier pass stopped after projection reads and reported root
+   `pnpm typecheck` green. Root references did not cover `apps/web`; an explicit
+   `tsc -p apps/web/tsconfig.json --noEmit` exposed five errors. The partial commit
+   remained in history and was corrected forward; no history was rewritten.
+2. The first recovery split checkpoint coordinates from their canonical response
+   fact across transactions. A crash could therefore acknowledge a checkpoint that
+   submission could not reconstruct. The repository now commits both together and
+   tests rollback, replay, divergence and bounded legacy repair.
+3. Browser timer observations were initially too authoritative. The server now
+   derives integrity from server elapsed time, target duration, monotonic elapsed,
+   skew, visibility and stall observations; missing or inconsistent evidence fails
+   to a narrower validity claim.
+4. A shared-archetype import would have charged focused islands to protected
+   routes. The runtime view moved to a focused-only module; the protected first-load
+   budget confirms the boundary.
+5. The manifest response omitted allowed digest-only key references and did not
+   parse the checked schema. It now validates the whole manifest while returning
+   only digests, never key payloads.
+6. Opaque non-UUID operation tokens would have reached PostgreSQL UUID columns and
+   failed with SQLSTATE 22P02. They now map deterministically to UUIDs; repeated
+   wire tokens map identically.
+7. Independent dark/390 px inspection found browser-default submit buttons,
+   collapsed access-preference labels, an overlapping save control and raw
+   `FALLBACK.CONTENT_UNAVAILABLE` syntax in learner copy. Existing
+   design-system `NativeButton`, `.field` and fieldset roles fixed the layout
+   without touching T9-exclusive files; the registry reason remains in the
+   projection but not in learner text.
+8. The recovery agent reported Docker Desktop stopped. Independent `docker info`
+   and a real pinned PostgreSQL container proved it was running, so the database
+   evidence was completed rather than deferred.
+
+### Independent evidence at `01bbae5`
+
+- T10 server/repository/rendered tests: **112/112** across the targeted set after
+  the corrective commit (the pre-correction set was 110/110).
+- `format:check`, `lint`, root `typecheck`, forced `apps/web` typecheck,
+  `check:boundaries`, `test:release`, `build`, `check:web-budget` and
+  `check:generated`: **PASS** with the pinned Node 24.19.0 toolchain. The existing
+  generated-release Biome warning remains non-failing.
+- `test:unit`: **1 failed / 717 passed (718)**, exactly the known coverage-parity
+  failure.
+- Protected first-load budget: **198,141 B gzip**, 6,659 B below the 204,800 B
+  ceiling; no ceiling changed. The 79 B increase from T9 is the corrected focused
+  action markup, not a protected-route island import.
+- `test:integration`: **19/19 three consecutive independent runs** on a disposable
+  PostgreSQL 18.6 container using the pinned toolchain. These runs are schema and
+  repository regression evidence; the full browser command walk remains assigned
+  to T12 and is not claimed here.
+- Independent rendered inspection of the corrected Foundation view at 390×844 in
+  dark mode found no horizontal overflow or console error, no raw fallback code,
+  four distinct 44 px preference rows, and three 44 px primary actions. The result
+  ordering was also inspected: validity → outcome → decisive evidence → rationale
+  → cause → repair.
+
+The disposable preview is recoverable from Trash. The disposable PostgreSQL
+container and `apps/web/.next` are removed after this log commit. Local `main` was
+77 commits ahead of stale `origin/main` at the T10 production boundary; nothing was
+pushed and no pull request was opened.
