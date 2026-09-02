@@ -1094,6 +1094,99 @@ describe("exact runtime composition reads", () => {
   });
 });
 
+describe("P05-FOUNDATION-001 scoped profile checkpoints", () => {
+  const profileInput = {
+    sessionId: appId<"session">(sessionId),
+    factId: appId<"profile_fact">(factId),
+    operationId: appId<"operation">(operationId),
+    factKind: "planning_horizon_v1" as const,
+    payload: { horizonYears: 65 },
+    effectiveAt: occurredAt,
+  };
+
+  it("reads only the scoped fixed-template route and resumes from identity-backed facts", async () => {
+    const { repository, recorder } = repositoryOn([
+      {
+        when: /^SELECT session\.id,session\.state,plan\.source_cut/,
+        rows: [{ id: sessionId, state: "active", source_cut: 7 }],
+      },
+      { when: /^SELECT id FROM app\.activity_occurrences/, rows: [{ id: activityOccurrenceId }] },
+      { when: /^SELECT DISTINCT modality/, rows: [{ modality: "reading" }] },
+      {
+        when: /^SELECT DISTINCT ON \(fact_kind\)/,
+        rows: [
+          {
+            fact_kind: "planning_horizon_v1",
+            payload: { horizonYears: 65 },
+            learner_sequence: 8,
+          },
+        ],
+      },
+    ]);
+
+    const route = await repository.readFoundationRoute(scope, appId<"session">(sessionId));
+
+    expect(route).toMatchObject({
+      sessionId,
+      sourceCut: 7,
+      activityOccurrenceId,
+      completedModalities: ["reading"],
+      profileFacts: {
+        planning_horizon_v1: { payload: { horizonYears: 65 }, sequence: 8 },
+      },
+    });
+    expect(recorder.only(/^SELECT session\.id,session\.state,plan\.source_cut/).values).toEqual([
+      scopeId,
+      sessionId,
+    ]);
+  });
+
+  it("makes an unknown or cross-scope session indistinguishable", async () => {
+    const { repository, recorder } = repositoryOn();
+
+    await expect(
+      repository.readFoundationRoute(scope, appId<"session">(sessionId)),
+    ).resolves.toBeUndefined();
+    expect(recorder.statements).toHaveLength(1);
+    expect(recorder.queries[0]?.values).toEqual([scopeId, sessionId]);
+  });
+
+  it("replays the exact profile operation without writing", async () => {
+    const { repository, recorder } = repositoryOn([
+      { when: /SELECT ls\.next_sequence/, rows: [{ next_sequence: 42 }] },
+      { when: /^SELECT 1\s+FROM app\.sessions/, rows: [{ "?column?": 1 }] },
+      {
+        when: /^SELECT id,learner_sequence,payload=/,
+        rows: [{ id: factId, learner_sequence: 41, same_payload: true }],
+      },
+    ]);
+
+    await expect(repository.recordFoundationProfileFact(scope, profileInput)).resolves.toEqual({
+      ok: true,
+      value: { disposition: "replayed", learnerSequence: 41 },
+    });
+    expect(recorder.matching(/INSERT INTO app\.profile_facts/)).toHaveLength(0);
+  });
+
+  it("appends a changed fact with a supersedes link and never mutates the prior row", async () => {
+    const predecessorId = "17171717-1717-4171-8171-171717171717";
+    const { repository, recorder } = repositoryOn([
+      { when: /SELECT ls\.next_sequence/, rows: [{ next_sequence: 42 }] },
+      { when: /^SELECT 1\s+FROM app\.sessions/, rows: [{ "?column?": 1 }] },
+      { when: /^SELECT id,learner_sequence,payload=/, rows: [] },
+      { when: /^SELECT id FROM app\.profile_facts/, rows: [{ id: predecessorId }] },
+    ]);
+
+    await expect(repository.recordFoundationProfileFact(scope, profileInput)).resolves.toEqual({
+      ok: true,
+      value: { disposition: "created", learnerSequence: 42 },
+    });
+    const insert = recorder.only(/INSERT INTO app\.profile_facts/);
+    expect(insert.values[7]).toBe(predecessorId);
+    expect(recorder.matching(/UPDATE app\.profile_facts/)).toHaveLength(0);
+  });
+});
+
 describe("P05-IDEMPOTENCY-001 assistance events", () => {
   const assistanceRoutes = (stored?: Row): readonly Route[] => [
     { when: /SELECT ls\.next_sequence/, rows: [{ next_sequence: 41 }] },

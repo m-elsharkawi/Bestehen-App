@@ -150,6 +150,7 @@ export interface AttemptStateRecord {
   readonly attemptId: AttemptId;
   readonly learnerScopeId: LearnerScopeId;
   readonly operationId: OperationId;
+  readonly sessionId?: AppId<"session">;
   readonly servingManifestId?: ServingManifestId;
   readonly contentRevisionId: ContentRevisionId;
   readonly modality: AttemptModality;
@@ -278,6 +279,27 @@ export interface RecordedAttemptConditions {
   };
 }
 
+export const foundationProfileFactKinds = [
+  "planning_horizon_v1",
+  "target_exam_context_v1",
+  "access_preferences_v1",
+  "foundation_route_progress_v1",
+] as const;
+export type FoundationProfileFactKind = (typeof foundationProfileFactKinds)[number];
+
+export interface FoundationRouteRecord {
+  readonly sessionId: AppId<"session">;
+  readonly state: string;
+  readonly sourceCut: number;
+  readonly activityOccurrenceId?: AppId<"activity_occurrence">;
+  readonly completedModalities: readonly AttemptModality[];
+  readonly profileFacts: Readonly<
+    Partial<
+      Record<FoundationProfileFactKind, { readonly payload: unknown; readonly sequence: number }>
+    >
+  >;
+}
+
 /* ------------------------------------------------------------------------------------------------
  * Inputs
  * ---------------------------------------------------------------------------------------------- */
@@ -294,6 +316,15 @@ export interface AttemptCreateInput {
   readonly directLane: string;
   readonly payloadDigest: string;
   readonly occurredAt: Date;
+}
+
+export interface FoundationProfileFactInput {
+  readonly sessionId: AppId<"session">;
+  readonly factId: AppId<"profile_fact">;
+  readonly operationId: OperationId;
+  readonly factKind: FoundationProfileFactKind;
+  readonly payload: unknown;
+  readonly effectiveAt: Date;
 }
 
 export interface AttemptCheckpointInput {
@@ -421,6 +452,7 @@ function attemptFromRow(row: Row): AttemptStateRecord {
     attemptId: appId<"attempt">(String(row.id)),
     learnerScopeId: appId<"learner_scope">(String(row.learner_scope_id)),
     operationId: appId<"operation">(String(row.operation_id)),
+    ...(row.session_id ? { sessionId: appId<"session">(String(row.session_id)) } : {}),
     ...(row.serving_manifest_id
       ? { servingManifestId: appId<"serving_manifest">(String(row.serving_manifest_id)) }
       : {}),
@@ -442,7 +474,7 @@ function attemptFromRow(row: Row): AttemptStateRecord {
  * answer depend on which row the planner emitted last — a defect that is invisible until an attempt
  * has more than one checkpoint.
  */
-const attemptProjection = `SELECT a.id,a.learner_scope_id,a.operation_id,a.serving_manifest_id,
+const attemptProjection = `SELECT a.id,a.learner_scope_id,a.operation_id,a.session_id,a.serving_manifest_id,
     a.content_revision_id,a.modality,a.direct_lane,a.state,a.resource_version,a.occurred_at,
     COALESCE((SELECT MAX(c.sequence) FROM app.attempt_checkpoints c
                WHERE c.attempt_id=a.id AND c.learner_scope_id=a.learner_scope_id),0) AS acknowledged_sequence
@@ -523,6 +555,64 @@ export class PostgresAttemptRepository {
       [scope.learnerScopeId, operationId],
     );
     return result.rows[0] ? attemptFromRow(result.rows[0]) : undefined;
+  }
+
+  /** Reads one scoped fixed-template foundation route and its latest resumable profile facts. */
+  public async readFoundationRoute(
+    scope: AuthorizedScope,
+    sessionId: AppId<"session">,
+  ): Promise<FoundationRouteRecord | undefined> {
+    const session = await this.pool.query(
+      `SELECT session.id,session.state,plan.source_cut
+         FROM app.sessions session
+         JOIN app.plan_revisions plan
+           ON plan.learner_scope_id=session.learner_scope_id AND plan.id=session.plan_revision_id
+        WHERE session.learner_scope_id=$1 AND session.id=$2
+          AND session.state IN ('offered','active','paused','partially_completed','completed')
+          AND plan.template_release='template/foundation'`,
+      [scope.learnerScopeId, sessionId],
+    );
+    if (session.rows.length !== 1) return undefined;
+    const activities = await this.pool.query(
+      `SELECT id FROM app.activity_occurrences
+        WHERE learner_scope_id=$1 AND session_id=$2
+          AND state IN ('offered','active','partially_completed')
+        ORDER BY id`,
+      [scope.learnerScopeId, sessionId],
+    );
+    const completed = await this.pool.query(
+      `SELECT DISTINCT modality FROM app.attempts
+        WHERE learner_scope_id=$1 AND session_id=$2 AND state='result_available'
+        ORDER BY modality`,
+      [scope.learnerScopeId, sessionId],
+    );
+    const facts = await this.pool.query(
+      `SELECT DISTINCT ON (fact_kind) fact_kind,payload,learner_sequence
+         FROM app.profile_facts
+        WHERE learner_scope_id=$1 AND fact_kind=ANY($2::text[])
+        ORDER BY fact_kind,learner_sequence DESC`,
+      [scope.learnerScopeId, foundationProfileFactKinds],
+    );
+    const profileFacts: Partial<
+      Record<FoundationProfileFactKind, { readonly payload: unknown; readonly sequence: number }>
+    > = {};
+    for (const row of facts.rows) {
+      const kind = row.fact_kind as FoundationProfileFactKind;
+      profileFacts[kind] = { payload: row.payload, sequence: Number(row.learner_sequence) };
+    }
+    const row = session.rows[0] as Record<string, unknown>;
+    return {
+      sessionId,
+      state: String(row.state),
+      sourceCut: Number(row.source_cut),
+      ...(activities.rows.length === 1
+        ? {
+            activityOccurrenceId: appId<"activity_occurrence">(String(activities.rows[0]?.id)),
+          }
+        : {}),
+      completedModalities: completed.rows.map((entry) => entry.modality as AttemptModality),
+      profileFacts,
+    };
   }
 
   /** Resolves the scoped session/activity/episode chain required to create an attempt. */
@@ -814,6 +904,95 @@ export class PostgresAttemptRepository {
         scorable: row.scorable,
       })),
     };
+  }
+
+  /** Appends one scoped foundation-route profile checkpoint with exact operation replay. */
+  public async recordFoundationProfileFact(
+    scope: AuthorizedScope,
+    input: FoundationProfileFactInput,
+  ): Promise<
+    Result<
+      { readonly disposition: CommitDisposition; readonly learnerSequence: number },
+      AttemptRepositoryError
+    >
+  > {
+    return this.guarded<{
+      readonly disposition: CommitDisposition;
+      readonly learnerSequence: number;
+    }>(async () =>
+      inTransaction(this.pool, async (client) => {
+        const learner = await lockActiveLearnerScope(client, scope.learnerScopeId);
+        if (!learner) return { ok: false as const, error: "not_available" as const };
+        const session = await client.query(
+          `SELECT 1
+             FROM app.sessions session
+             JOIN app.plan_revisions plan
+               ON plan.learner_scope_id=session.learner_scope_id
+              AND plan.id=session.plan_revision_id
+            WHERE session.learner_scope_id=$1 AND session.id=$2
+              AND session.state IN ('offered','active','paused','partially_completed','completed')
+              AND plan.template_release='template/foundation'`,
+          [scope.learnerScopeId, input.sessionId],
+        );
+        if (session.rows.length !== 1) {
+          return { ok: false as const, error: "not_available" as const };
+        }
+        const payload = JSON.stringify(input.payload);
+        const replay = await client.query(
+          `SELECT id,learner_sequence,payload=$4::jsonb AS same_payload
+             FROM app.profile_facts
+            WHERE learner_scope_id=$1 AND operation_id=$2 AND fact_kind=$3`,
+          [scope.learnerScopeId, input.operationId, input.factKind, payload],
+        );
+        if (replay.rows.length > 0) {
+          const row = replay.rows[0];
+          return row?.id === input.factId && row.same_payload === true
+            ? {
+                ok: true as const,
+                value: {
+                  disposition: "replayed" as const,
+                  learnerSequence: Number(row.learner_sequence),
+                },
+              }
+            : { ok: false as const, error: "idempotency_conflict" as const };
+        }
+        const predecessor = await client.query(
+          `SELECT id FROM app.profile_facts
+            WHERE learner_scope_id=$1 AND fact_kind=$2
+            ORDER BY learner_sequence DESC LIMIT 1`,
+          [scope.learnerScopeId, input.factKind],
+        );
+        await client.query(
+          `INSERT INTO app.profile_facts(
+             id,learner_scope_id,fact_kind,operation_id,learner_sequence,schema_major,payload,
+             effective_at,supersedes_id)
+           VALUES($1,$2,$3,$4,$5,1,$6,$7,$8)`,
+          [
+            input.factId,
+            scope.learnerScopeId,
+            input.factKind,
+            input.operationId,
+            learner.nextSequence,
+            payload,
+            input.effectiveAt,
+            predecessor.rows[0]?.id ?? null,
+          ],
+        );
+        await client.query(
+          `UPDATE app.learner_scopes
+              SET next_sequence=next_sequence+1,updated_at=transaction_timestamp()
+            WHERE id=$1 AND next_sequence=$2`,
+          [scope.learnerScopeId, learner.nextSequence],
+        );
+        return {
+          ok: true as const,
+          value: {
+            disposition: "created" as const,
+            learnerSequence: learner.nextSequence,
+          },
+        };
+      }),
+    );
   }
 
   /* ---------------------------------------------------------------------------------------------

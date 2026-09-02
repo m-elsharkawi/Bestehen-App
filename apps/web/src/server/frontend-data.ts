@@ -10,6 +10,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { stableId } from "./attempt-command-runtime";
 import { DeterministicAttemptService } from "./attempt-runtime";
+import { loadFoundationRoute, recordFoundationPreference } from "./foundation-runtime";
 import { getIdentityService } from "./identity";
 import { syntheticFixtureEnabled } from "./runtime";
 
@@ -31,6 +32,9 @@ const paths: Record<ProtectedRouteKind, string> = {
   settings: "/settings",
   "settings-data": "/settings/data",
 };
+
+const databaseAppIdPattern =
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 
 export function safeHeldDestination(value: string | string[] | undefined): string {
   if (typeof value !== "string") return "/coach";
@@ -91,6 +95,7 @@ function repositories() {
 
 export async function requireAttemptScope(attemptId: string, returnPath: string) {
   const scope = await requireAuthorizedScope(returnPath);
+  if (!databaseAppIdPattern.test(attemptId)) return undefined;
   const attempt = await repositories().attempts.readAttempt(scope, appId<"attempt">(attemptId));
   if (!attempt) return undefined;
   return { scope, attempt };
@@ -121,4 +126,30 @@ export async function loadResultProjection(attemptId: string, returnPath: string
   );
   if (!evidence.ok) return undefined;
   return { attempt: scoped.attempt, submission, evidence: evidence.value };
+}
+
+export async function loadFoundationProjection(sessionId: string, returnPath: string) {
+  const scope = await requireAuthorizedScope(returnPath);
+  if (!databaseAppIdPattern.test(sessionId)) return undefined;
+  const result = await loadFoundationRoute(repositories().attempts, scope, sessionId, new Date());
+  return result.ok ? result.value : undefined;
+}
+
+export async function saveFoundationPreference(
+  sessionId: string,
+  factKind: "target_exam_context_v1" | "access_preferences_v1",
+  payload: unknown,
+  returnPath: string,
+): Promise<boolean> {
+  const scope = await requireAuthorizedScope(returnPath);
+  if (!databaseAppIdPattern.test(sessionId)) return false;
+  const result = await recordFoundationPreference(
+    repositories().attempts,
+    scope,
+    sessionId,
+    factKind,
+    payload,
+    new Date(),
+  );
+  return result.ok;
 }

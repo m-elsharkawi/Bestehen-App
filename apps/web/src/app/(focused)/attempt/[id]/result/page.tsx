@@ -30,6 +30,9 @@ export default async function AttemptResultPage({
   };
   return (
     <ResultView
+      backHref={
+        projection.attempt.sessionId ? `/session/${projection.attempt.sessionId}` : "/coach"
+      }
       decisiveEvidence={projection.evidence.map((entry) => ({
         relation: `${entry.contentItemId}:${readable(entry.decisiveEvidence, "recorded")}`,
         text: readable(entry.decisiveEvidence, "Recorded evidence is available."),

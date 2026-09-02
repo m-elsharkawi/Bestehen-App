@@ -173,10 +173,12 @@ export function AttemptView({
   );
 }
 export function ResultView({
+  backHref = "/coach",
   validity = "valid",
   decisiveEvidence = [],
   details,
 }: {
+  readonly backHref?: string;
   readonly validity?: EvidenceValidityState;
   readonly decisiveEvidence?: readonly { readonly relation: string; readonly text: string }[];
   readonly details?: {
@@ -187,7 +189,7 @@ export function ResultView({
   };
 }) {
   return (
-    <AppShell backHref="/coach" kind="focused" title="Result">
+    <AppShell backHref={backHref} kind="focused" title="Result">
       <EvidenceLabel reason="The recorded conditions determine this result." validity={validity} />
       {details ? (
         <SemanticCard title="Recorded outcome">
