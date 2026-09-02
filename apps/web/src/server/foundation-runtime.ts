@@ -46,6 +46,28 @@ export interface FoundationRouteProjection {
   readonly unavailableSkills: typeof foundationUnavailableSkills;
 }
 
+export function parseTargetExamContext(
+  mode: string,
+  value: string,
+):
+  | { readonly mode: "no_date" | "target_month" | "booked_date"; readonly value?: string }
+  | undefined {
+  if (mode === "no_date") return { mode };
+  if (mode === "target_month" && /^\d{4}-(0[1-9]|1[0-2])$/.test(value)) {
+    return { mode, value };
+  }
+  if (mode !== "booked_date" || !/^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/.test(value)) {
+    return undefined;
+  }
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year ?? 0, (month ?? 1) - 1, day ?? 0));
+  return date.getUTCFullYear() === year &&
+    date.getUTCMonth() + 1 === month &&
+    date.getUTCDate() === day
+    ? { mode, value }
+    : undefined;
+}
+
 function sameValue(left: unknown, right: unknown): boolean {
   return canonicalDigest(left) === canonicalDigest(right);
 }

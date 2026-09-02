@@ -9,6 +9,7 @@ import {
   stableId,
 } from "../../../../server/attempt-command-runtime";
 import { handleCreateAttempt } from "../../../../server/attempt-commands";
+import { parseTargetExamContext } from "../../../../server/foundation-runtime";
 import {
   loadFoundationProjection,
   saveFoundationPreference,
@@ -84,15 +85,12 @@ export async function saveTargetContext(formData: FormData): Promise<void> {
   const returnPath = `/session/${sessionId}`;
   const mode = String(formData.get("mode") ?? "");
   const value = String(formData.get("value") ?? "");
-  const validValue =
-    mode === "no_date" ||
-    (mode === "target_month" && /^\d{4}-(0[1-9]|1[0-2])$/.test(value)) ||
-    (mode === "booked_date" && /^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/.test(value));
-  if (!validValue) redirect(`${returnPath}?status=target-invalid`);
+  const context = parseTargetExamContext(mode, value);
+  if (!context) redirect(`${returnPath}?status=target-invalid`);
   const saved = await saveFoundationPreference(
     sessionId,
     "target_exam_context_v1",
-    mode === "no_date" ? { mode } : { mode, value },
+    context,
     returnPath,
   );
   redirect(`${returnPath}${saved ? "" : "?status=save-retry"}`);

@@ -7,6 +7,12 @@ function objectValue(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
 }
 
+const skillLabels = {
+  reading: "Reading",
+  language_elements: "Language Elements",
+  listening: "Listening",
+} as const;
+
 export function FoundationRuntimeView({
   projection,
   saveAccess,
@@ -43,9 +49,7 @@ export function FoundationRuntimeView({
         {projection.nextSkill && projection.activityOccurrenceId ? (
           <form action={startAttempt}>
             <input name="sessionId" type="hidden" value={projection.sessionId} />
-            <button type="submit">
-              Continue with {projection.nextSkill.replace("language_elements", "Language Elements")}
-            </button>
+            <button type="submit">Continue with {skillLabels[projection.nextSkill]}</button>
           </form>
         ) : (
           <p>The available Reading, Language Elements, and Listening checkpoints are complete.</p>
@@ -73,7 +77,7 @@ export function FoundationRuntimeView({
             </select>
           </label>
           <label>
-            Month or date
+            Month (YYYY-MM) or date (YYYY-MM-DD)
             <input defaultValue={String(target.value ?? "")} name="value" type="text" />
           </label>
           <button type="submit">Save exam context</button>

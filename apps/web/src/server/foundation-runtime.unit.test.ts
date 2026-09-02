@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   foundationSkills,
   loadFoundationRoute,
+  parseTargetExamContext,
   recordFoundationPreference,
 } from "./foundation-runtime";
 
@@ -120,5 +121,18 @@ describe("P05-FOUNDATION-001 foundation route", () => {
       ),
     ).resolves.toEqual({ ok: true, value: undefined });
     expect(store.recordFoundationProfileFact).not.toHaveBeenCalled();
+  });
+
+  it("accepts only a real target month or calendar date", () => {
+    expect(parseTargetExamContext("no_date", "")).toEqual({ mode: "no_date" });
+    expect(parseTargetExamContext("target_month", "2027-09")).toEqual({
+      mode: "target_month",
+      value: "2027-09",
+    });
+    expect(parseTargetExamContext("booked_date", "2028-02-29")).toEqual({
+      mode: "booked_date",
+      value: "2028-02-29",
+    });
+    expect(parseTargetExamContext("booked_date", "2027-02-29")).toBeUndefined();
   });
 });
