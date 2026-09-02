@@ -307,6 +307,30 @@ describe("P05-SCORE-001 deterministic attempt composition", () => {
     expect(fixture.captured()?.conditions.timerIntegrity).toBe("inconsistent");
     expect(fixture.captured()?.conditions.continuityLostScope).toEqual([itemId]);
   });
+
+  it.each([
+    { unavailable: true },
+    { recoveredFromAnotherContext: true },
+    { contextStartedAt: "2026-09-02T08:09:00.000Z" },
+  ])("narrows timing when continuity is not established: %j", async (extra) => {
+    const fixture = dependencies();
+    const observation = { ...clockObservation, ...extra };
+    fixture.attempts.readRecordedAttemptConditions.mockResolvedValue({
+      assistance: [],
+      clockObservation: observation,
+    });
+    const result = await fixture.service.submitObjective(scope, {
+      operationId,
+      attemptId,
+      checkpointSequence: 1,
+      responseDigest: fixture.responseDigest,
+      clockObservation: observation,
+    });
+    expect(result.ok).toBe(true);
+    expect(fixture.captured()?.conditions.timerIntegrity).toBe("insufficient");
+    expect(fixture.captured()?.conditions.continuityLostScope).toEqual([itemId]);
+    expect(fixture.captured()?.outcome.unitOutcomes[0]?.kind).toBe("correct");
+  });
 });
 
 describe("closed scoring policy registry", () => {

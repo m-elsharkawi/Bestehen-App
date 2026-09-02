@@ -330,7 +330,7 @@ export const checkpointCommandSchema = z
     attemptId: opaqueAppIdSchema,
     stream: z.string().min(1).max(64),
     sequence: z.number().int().nonnegative(),
-    operations: z.array(responseOperationSchema).min(1).max(200),
+    operations: z.array(responseOperationSchema).max(200),
     responseDigest: digestSchema,
     observedAt: z.iso.datetime(),
   })
@@ -369,12 +369,35 @@ export const attemptConditionsSchema = z
   })
   .strict();
 
+/** Raw device observations, never a client integrity verdict. Absence is conservative. */
+export const attemptClockObservationSchema = z
+  .object({
+    monotonicElapsedMs: z.number().int().nonnegative(),
+    visibilityChanges: z.number().int().nonnegative(),
+    stallIntervals: z
+      .array(
+        z
+          .object({
+            startedAtMs: z.number().nonnegative(),
+            endedAtMs: z.number().nonnegative(),
+          })
+          .strict(),
+      )
+      .max(200),
+    wallClockSkewMs: z.number().finite(),
+    timeOrigin: z.number().nonnegative(),
+    contextStartedAt: z.iso.datetime(),
+    recoveredFromAnotherContext: z.boolean(),
+  })
+  .strict();
+
 export const submitObjectiveCommandSchema = z
   .object({
     attemptId: opaqueAppIdSchema,
     checkpointSequence: z.number().int().nonnegative(),
     responseDigest: digestSchema,
     conditions: attemptConditionsSchema,
+    clockObservation: attemptClockObservationSchema.optional(),
   })
   .strict();
 

@@ -35,9 +35,16 @@ function commandFailure(error: string) {
 }
 
 let dependencies: AttemptCommandDependencies | undefined;
-let servingDependencies: ServingManifestCommandDependencies | undefined;
+type ServingRuntimeDependencies = Omit<
+  ServingManifestCommandDependencies,
+  "attempts" | "content"
+> & {
+  readonly attempts: PostgresAttemptRepository;
+  readonly content: PostgresContentRepository;
+};
+let servingDependencies: ServingRuntimeDependencies | undefined;
 
-export function getServingManifestCommandDependencies(): ServingManifestCommandDependencies {
+export function getServingManifestCommandDependencies(): ServingRuntimeDependencies {
   if (servingDependencies) return servingDependencies;
   const environment = parseServerEnvironmentForService(process.env, "web");
   const pool = createPostgresPool(databaseUrlFor(environment, "web"));
@@ -59,11 +66,21 @@ export function getAttemptCommandDependencies(): AttemptCommandDependencies {
   const attempts = new PostgresAttemptRepository(pool);
   const content = new PostgresContentRepository(pool);
   const identity = new AppIdentityService(pool, environment, appSecuritySecret(environment));
-  const runtime = new DeterministicAttemptService(
-    { attempts, content },
-    stableId,
-    () => new Date(),
-  );
+  dependencies = {
+    authenticate: (token) => identity.authenticate(token),
+    commands: createAttemptCommandFunctions(attempts, content),
+    now: () => new Date(),
+  };
+  return dependencies;
+}
+
+/** The same composition is used by production transport and real-database contract tests. */
+export function createAttemptCommandFunctions(
+  attempts: PostgresAttemptRepository,
+  content: PostgresContentRepository,
+  now: () => Date = () => new Date(),
+): AttemptCommandFunctions {
+  const runtime = new DeterministicAttemptService({ attempts, content }, stableId, now);
 
   const commands: AttemptCommandFunctions = {
     create: async (scope, input) => {
@@ -96,9 +113,12 @@ export function getAttemptCommandDependencies(): AttemptCommandDependencies {
           servingManifestId: input.servingManifestId,
           activityOccurrenceId: input.activityOccurrenceId,
         }),
-        occurredAt: new Date(),
+        occurredAt: now(),
       });
       if (!created.ok) return { ok: false, error: commandFailure(created.error) };
+      if (created.value.disposition === "replayed" && created.value.attempt.state !== "ready") {
+        return { ok: true, value: { attemptId } };
+      }
       if (created.value.attempt.state === "ready") {
         const started = await attempts.transitionAttempt(scope, {
           attemptId,
@@ -174,10 +194,5 @@ export function getAttemptCommandDependencies(): AttemptCommandDependencies {
         : { ok: false, error: commandFailure(fact.error) };
     },
   };
-  dependencies = {
-    authenticate: (token) => identity.authenticate(token),
-    commands,
-    now: () => new Date(),
-  };
-  return dependencies;
+  return commands;
 }

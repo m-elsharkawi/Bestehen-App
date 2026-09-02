@@ -99,6 +99,29 @@ export type AttemptRepositoryError =
 /** How a checkpoint was disposed of. `divergent` never overwrites: last-write-wins is forbidden. */
 export type CheckpointDisposition = "accepted" | "replayed" | "stale" | "divergent";
 
+class AttemptTransactionRefusal extends Error {
+  public constructor(public readonly reason: AttemptRepositoryError) {
+    super(reason);
+  }
+}
+
+/** A domain refusal after a write must roll back just like a SQL exception. */
+async function inAttemptResultTransaction<T>(
+  pool: Pool,
+  work: (client: PoolClient) => Promise<Result<T, AttemptRepositoryError>>,
+): Promise<Result<T, AttemptRepositoryError>> {
+  try {
+    return await inTransaction(pool, async (client) => {
+      const result = await work(client);
+      if (!result.ok) throw new AttemptTransactionRefusal(result.error);
+      return result;
+    });
+  } catch (error) {
+    if (error instanceof AttemptTransactionRefusal) return { ok: false, error: error.reason };
+    throw error;
+  }
+}
+
 export const attemptModalities = [
   "reading",
   "language_elements",
@@ -276,6 +299,10 @@ export interface RecordedAttemptConditions {
     }[];
     readonly wallClockSkewMs: number;
     readonly accessibilityEquivalence: "equivalent" | "claim_narrowing" | "unknown";
+    readonly timeOrigin?: number;
+    readonly contextStartedAt?: string;
+    readonly recoveredFromAnotherContext?: boolean;
+    readonly unavailable?: boolean;
   };
 }
 
@@ -669,6 +696,49 @@ export class PostgresAttemptRepository {
       operations: envelope.operations,
       canonicalResponse: envelope.canonicalResponse,
       responseDigest,
+    };
+  }
+
+  /** Learner-only recovery facts. No key/outcome join is reachable before submission. */
+  public async readObjectiveRecovery(scope: AuthorizedScope, attemptId: AttemptId) {
+    const attempt = await this.readAttempt(scope, attemptId);
+    if (!attempt) return undefined;
+    const checkpoints = await this.pool.query(
+      `SELECT c.operation_id,c.sequence,c.stream,c.payload_digest,f.envelope
+         FROM app.attempt_checkpoints c
+         JOIN app.response_facts f ON f.learner_scope_id=c.learner_scope_id
+          AND f.attempt_id=c.attempt_id AND f.digest=c.payload_digest
+          AND f.fact_type='objective_response_checkpoint_v1'
+          AND f.envelope->>'sequence'=c.sequence::text
+          AND f.envelope->>'stream'=c.stream
+        WHERE c.learner_scope_id=$1 AND c.attempt_id=$2
+        ORDER BY c.sequence,c.stream`,
+      [scope.learnerScopeId, attemptId],
+    );
+    const submitted = await this.pool.query(
+      `SELECT id,operation_id,response_digest FROM app.attempt_submissions
+        WHERE learner_scope_id=$1 AND attempt_id=$2`,
+      [scope.learnerScopeId, attemptId],
+    );
+    return {
+      attemptId,
+      resourceVersion: attempt.resourceVersion,
+      state: attempt.state,
+      acknowledgedCheckpointSequence: attempt.acknowledgedCheckpointSequence,
+      checkpoints: checkpoints.rows.map((row) => ({
+        operationId: String(row.operation_id),
+        sequence: Number(row.sequence),
+        stream: String(row.stream),
+        responseDigest: String(row.payload_digest),
+        operations: (row.envelope as { operations: unknown }).operations,
+      })),
+      submission: submitted.rows[0]
+        ? {
+            submissionId: String(submitted.rows[0].id),
+            operationId: String(submitted.rows[0].operation_id),
+            responseDigest: String(submitted.rows[0].response_digest),
+          }
+        : null,
     };
   }
 
@@ -1241,8 +1311,15 @@ export class PostgresAttemptRepository {
             const fact = await client.query(
               `SELECT id FROM app.response_facts
                 WHERE learner_scope_id=$1 AND attempt_id=$2
-                  AND fact_type='objective_response_checkpoint_v1' AND digest=$3`,
-              [scope.learnerScopeId, input.attemptId, input.payloadDigest],
+                  AND fact_type='objective_response_checkpoint_v1' AND digest=$3
+                  AND envelope->>'sequence'=$4 AND envelope->>'stream'=$5`,
+              [
+                scope.learnerScopeId,
+                input.attemptId,
+                input.payloadDigest,
+                String(input.sequence),
+                input.stream,
+              ],
             );
             if (fact.rows.length !== 1) return { ok: false as const, error: "conflict" as const };
           }
@@ -1275,8 +1352,15 @@ export class PostgresAttemptRepository {
             const fact = await client.query(
               `SELECT id FROM app.response_facts
                 WHERE learner_scope_id=$1 AND attempt_id=$2
-                  AND fact_type='objective_response_checkpoint_v1' AND digest=$3`,
-              [scope.learnerScopeId, input.attemptId, input.payloadDigest],
+                  AND fact_type='objective_response_checkpoint_v1' AND digest=$3
+                  AND envelope->>'sequence'=$4 AND envelope->>'stream'=$5`,
+              [
+                scope.learnerScopeId,
+                input.attemptId,
+                input.payloadDigest,
+                String(input.sequence),
+                input.stream,
+              ],
             );
             if (fact.rows.length === 0) {
               await client.query(
@@ -1578,7 +1662,7 @@ export class PostgresAttemptRepository {
     input: ObjectiveSubmissionInput,
   ): Promise<Result<SubmissionCommit, AttemptRepositoryError>> {
     return this.guarded<SubmissionCommit>(async () =>
-      inTransaction(this.pool, async (client) => {
+      inAttemptResultTransaction(this.pool, async (client) => {
         const learner = await lockActiveLearnerScope(client, scope.learnerScopeId);
         if (!learner) return { ok: false as const, error: "not_available" as const };
 
@@ -1918,6 +2002,12 @@ export class PostgresAttemptRepository {
     from: AttemptRuntimeState,
   ): Promise<boolean> {
     let current = from;
+    // A saved checkpoint resumes the existing attempt before submission. The domain deliberately
+    // forbids the shortcut checkpointed -> submitted; keep both permitted arrows in this transaction.
+    if (current === "checkpointed") {
+      if (!canTransitionAttemptRuntime(current, "in_progress")) return false;
+      current = "in_progress";
+    }
     for (const next of submissionArc) {
       if (!canTransitionAttemptRuntime(current, next)) return false;
       current = next;

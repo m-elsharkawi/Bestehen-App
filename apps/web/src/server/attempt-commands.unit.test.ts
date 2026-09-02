@@ -96,7 +96,8 @@ describe("versioned attempt command boundary", () => {
       resourceId: operationId,
     });
     const submitted = fixture.commands.submit.mock.calls[0]?.[1];
-    expect(submitted?.clockObservation.monotonicElapsedMs).toBe(600_000);
+    expect(submitted?.clockObservation.monotonicElapsedMs).toBe(0);
+    expect(submitted?.clockObservation.unavailable).toBe(true);
     expect(submitted).not.toHaveProperty("timerIntegrity");
     expect(submitted?.clockObservation).not.toHaveProperty("timerIntegrity");
   });

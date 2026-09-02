@@ -187,7 +187,15 @@ export async function handleCheckpointAttempt(
     operations: payload.data.operations,
     responseDigest: payload.data.responseDigest,
   });
-  return result.ok ? completed(routeAttemptId) : refusal(result.error);
+  return result.ok
+    ? result.value.disposition === "divergent" || result.value.disposition === "stale"
+      ? problem(
+          409,
+          "precondition_failed",
+          "Another saved answer needs your review. Both answers are preserved.",
+        )
+      : completed(routeAttemptId)
+    : refusal(result.error);
 }
 
 export async function handleSubmitAttempt(
@@ -209,10 +217,13 @@ export async function handleSubmitAttempt(
     checkpointSequence: payload.data.checkpointSequence,
     responseDigest: payload.data.responseDigest,
     clockObservation: {
-      monotonicElapsedMs: payload.data.conditions.elapsedMs,
-      visibilityChanges: 0,
-      stallIntervals: [],
-      wallClockSkewMs: 0,
+      ...(payload.data.clockObservation ?? {
+        monotonicElapsedMs: 0,
+        visibilityChanges: 0,
+        stallIntervals: [],
+        wallClockSkewMs: 0,
+        unavailable: true,
+      }),
       accessibilityEquivalence: payload.data.conditions.accessibilityEquivalence,
     },
   });

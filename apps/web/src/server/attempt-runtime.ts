@@ -38,6 +38,7 @@ import type {
   RecordedAttemptConditions,
   SubmissionCommit,
 } from "@bestehen/infrastructure";
+import { responseFields, responseIssues, valuesFromOperations } from "../ui/objective-form";
 
 type AttemptConditionSummary = ObjectiveSubmissionInput["conditions"];
 
@@ -121,6 +122,10 @@ export interface SubmitObjectiveInput {
     }[];
     readonly wallClockSkewMs: number;
     readonly accessibilityEquivalence: "equivalent" | "claim_narrowing" | "unknown";
+    readonly timeOrigin?: number;
+    readonly contextStartedAt?: string;
+    readonly recoveredFromAnotherContext?: boolean;
+    readonly unavailable?: boolean;
   };
 }
 
@@ -269,6 +274,8 @@ function actualTimerIntegrity(
   if (
     !attempt.occurredAt ||
     !observation ||
+    observation.unavailable === true ||
+    observation.recoveredFromAnotherContext === true ||
     !Number.isFinite(observation.monotonicElapsedMs) ||
     observation.monotonicElapsedMs < 0 ||
     !Number.isInteger(observation.visibilityChanges) ||
@@ -279,6 +286,13 @@ function actualTimerIntegrity(
     return "insufficient";
   }
   const serverElapsed = Math.max(0, now.getTime() - attempt.occurredAt.getTime());
+  if (
+    observation.contextStartedAt &&
+    Math.abs(new Date(observation.contextStartedAt).getTime() - attempt.occurredAt.getTime()) >
+      30_000
+  ) {
+    return "insufficient";
+  }
   if (targetDurationMs !== undefined && serverElapsed > targetDurationMs) return "expired";
   const difference = Math.abs(serverElapsed - observation.monotonicElapsedMs);
   if (difference > 30_000 || Math.abs(observation.wallClockSkewMs) > 30_000) return "inconsistent";
@@ -347,6 +361,16 @@ export class DeterministicAttemptService {
       return { ok: false, error: "checkpoint_mismatch" };
     }
     const operations = parsed.map((entry) => entry.data as ResponseOperation);
+    const learner = await this.readLearnerAttempt(scope, input.attemptId);
+    if (!learner.ok) return learner;
+    const values = valuesFromOperations(operations);
+    const fields = responseFields(learner.value.material.learnerPayload);
+    if (
+      Object.keys(values).some((name) => !fields.includes(name)) ||
+      responseIssues(learner.value.material.learnerPayload, values).length
+    ) {
+      return { ok: false, error: "checkpoint_mismatch" };
+    }
     const canonical = canonicalizeResponse(operations);
     if (
       canonical.issues.length > 0 ||
