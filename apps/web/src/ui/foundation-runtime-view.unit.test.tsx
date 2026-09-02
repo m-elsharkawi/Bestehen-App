@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { FoundationRuntimeView } from "./foundation-runtime-view";
 
@@ -39,8 +39,32 @@ describe("P05-FOUNDATION-001 rendered foundation route", () => {
     expect(screen.getByText(/planning horizon is 65 years/i)).toBeInTheDocument();
     expect(screen.getByText(/official target reference remains 60/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue with Language Elements" })).toBeVisible();
-    expect(screen.getAllByText("FALLBACK.CONTENT_UNAVAILABLE")).toHaveLength(2);
+    expect(container).not.toHaveTextContent("FALLBACK.CONTENT_UNAVAILABLE");
+    expect(screen.getAllByText(/Unavailable in this release/)).toHaveLength(2);
     expect(container).toHaveTextContent("evidence building");
     expect(container).not.toHaveTextContent(/probability|placement claim|overall level/i);
+
+    for (const button of screen.getAllByRole("button")) {
+      expect(button).toHaveAttribute("type", "submit");
+      expect(button).toHaveClass("action", "action-primary");
+    }
+
+    expect(screen.getByLabelText("Date status")).toHaveAttribute("id", "foundation-target-mode");
+    expect(screen.getByLabelText(/Month \(YYYY-MM\)/)).toHaveAttribute(
+      "id",
+      "foundation-target-value",
+    );
+    const preferences = screen.getByRole("group", { name: "Preferences for this route" });
+    const preferenceLabels = [
+      "Prefer reduced motion",
+      "Use forced colors",
+      "Audio is available",
+      "Prefer captions",
+    ];
+    for (const label of preferenceLabels) {
+      const control = within(preferences).getByLabelText(label);
+      expect(control).toHaveAttribute("type", "checkbox");
+      expect(control.closest("label")).toBeTruthy();
+    }
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import type { SafeContentNode, TaskFamily } from "@bestehen/content";
+import { NativeButton } from "@bestehen/design-system";
 import type { ReactNode } from "react";
 import { useState } from "react";
 
@@ -235,7 +236,7 @@ export function ObjectiveResponseIsland({
           ))
         : null}
       <p aria-live="polite">{status}</p>
-      <button type="submit">Submit answer</button>
+      <NativeButton type="submit">Submit answer</NativeButton>
     </form>
   );
 }
