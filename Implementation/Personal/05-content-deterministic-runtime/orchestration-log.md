@@ -423,3 +423,24 @@ The disposable preview is recoverable from Trash. The disposable PostgreSQL
 container and `apps/web/.next` are removed after this log commit. Local `main` was
 77 commits ahead of stale `origin/main` at the T10 production boundary; nothing was
 pushed and no pull request was opened.
+
+### T10 acceptance reopened — recovery audit
+
+The T10 acceptance above was too broad and is reopened before T5 implementation.
+The orchestrator's deeper source/render audit found four missing obligations:
+
+- `ObjectiveResponseIsland` only changed a status string; it had no durable
+  checkpoint outbox, acknowledged response restoration or network-loss recovery.
+- `AttemptClockIsland` only displayed elapsed time; it did not report monotonic,
+  visibility, stall or wall-clock observations required by D09/D15.
+- `submitObjectiveForm` rejected zero operations and every choice was `required`,
+  so an intentional all-blank submission could not reach the scorer's valid blank
+  semantics.
+- `FoundationRuntimeView` passed `availableComplete + 1` to the zero-based
+  `Sequence` contract. With Reading complete, it falsely labelled Language
+  Elements complete and Listening current while offering Language Elements.
+
+T5 was paused before editing. The same T10 recovery agent is returned to these
+obligations before T5 resumes. Existing test/build/budget evidence above remains
+true, but it is not evidence of completed recovery behavior. T12 must verify the
+finished implementation; it must not become the owner of missing production code.
