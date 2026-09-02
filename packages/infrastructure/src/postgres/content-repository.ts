@@ -819,6 +819,20 @@ export class PostgresContentRepository {
     return this.readManifest(this.pool, scope.learnerScopeId, servingManifestId);
   }
 
+  public async readServingManifestByOperation(
+    scope: AuthorizedScope,
+    operationId: OperationId,
+  ): Promise<ServingManifestRecord | undefined> {
+    const result = await this.pool.query(
+      "SELECT id FROM app.serving_manifests WHERE learner_scope_id=$1 AND operation_id=$2",
+      [scope.learnerScopeId, operationId],
+    );
+    const id = result.rows[0]?.id;
+    return id
+      ? this.readManifest(this.pool, scope.learnerScopeId, appId<"serving_manifest">(String(id)))
+      : undefined;
+  }
+
   /**
    * Selects one eligible revision deterministically for a new lease. Prior exposure ranks after an
    * unseen family; identifiers break ties, so PostgreSQL row order never changes the assignment.

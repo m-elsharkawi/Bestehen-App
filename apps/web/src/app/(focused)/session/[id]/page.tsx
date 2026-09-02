@@ -1,4 +1,7 @@
-import { requirePersonalSession } from "../../../../server/frontend-data";
+import {
+  isSyntheticFixtureRequest,
+  requirePersonalSession,
+} from "../../../../server/frontend-data";
 import { SessionView } from "../../../../ui/archetypes";
 
 export default async function SessionPage({
@@ -8,5 +11,6 @@ export default async function SessionPage({
 }) {
   const { id } = await params;
   await requirePersonalSession(`/session/${id}`);
+  if (await isSyntheticFixtureRequest()) return <SessionView />;
   return <SessionView sessionId={id} />;
 }

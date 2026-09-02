@@ -1,15 +1,17 @@
 import { databaseUrlFor, parseServerEnvironmentForService } from "@bestehen/configuration";
-import { assertNoKeyBearingFields } from "@bestehen/content";
-import { appId, type AuthorizedScope } from "@bestehen/domain";
+import { type AuthorizedScope, appId } from "@bestehen/domain";
 import {
+  appSessionCookie,
   createPostgresPool,
   PostgresAttemptRepository,
   PostgresContentRepository,
 } from "@bestehen/infrastructure";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { syntheticFixtureEnabled } from "./runtime";
+import { stableId } from "./attempt-command-runtime";
+import { DeterministicAttemptService } from "./attempt-runtime";
 import { getIdentityService } from "./identity";
+import { syntheticFixtureEnabled } from "./runtime";
 
 export const protectedRouteKinds = [
   "coach",
@@ -41,6 +43,19 @@ export async function requirePersonalSession(returnPath: string): Promise<void> 
   await requireAuthorizedScope(returnPath);
 }
 
+const syntheticScope: AuthorizedScope = {
+  principalId: appId<"principal">("11111111-1111-4111-8111-111111111111"),
+  learnerScopeId: appId<"learner_scope">("22222222-2222-4222-8222-222222222222"),
+  actorKind: "owner",
+  capabilities: [],
+  authenticatedAt: new Date("2026-01-01T00:00:00.000Z"),
+};
+
+export async function isSyntheticFixtureRequest(): Promise<boolean> {
+  const requestHeaders = await headers();
+  return syntheticFixtureEnabled() && requestHeaders.get("x-bestehen-synthetic-auth") === "1";
+}
+
 /**
  * The route boundary returns the server-authorized learner scope rather than trusting an id in the
  * URL.  A missing, expired, or cross-scope attempt is deliberately indistinguishable to callers.
@@ -48,18 +63,13 @@ export async function requirePersonalSession(returnPath: string): Promise<void> 
 export async function requireAuthorizedScope(returnPath: string): Promise<AuthorizedScope> {
   const cookieStore = await cookies();
   const token = cookieStore.get(appSessionCookie.name)?.value;
-  const requestHeaders = await headers();
-  let authorized =
-    syntheticFixtureEnabled() && requestHeaders.get("x-bestehen-synthetic-auth") === "1";
-  if (!authorized) {
-    try {
-      authorized = Boolean(await getIdentityService().authenticate(token));
-    } catch {
-      authorized = false;
-    }
+  if (await isSyntheticFixtureRequest()) return syntheticScope;
+  let scope: AuthorizedScope | undefined;
+  try {
+    scope = await getIdentityService().authenticate(token);
+  } catch {
+    scope = undefined;
   }
-  if (!authorized) redirect(`/auth/login?returnTo=${encodeURIComponent(returnPath)}`);
-  const scope = await getIdentityService().authenticate(token);
   if (!scope) redirect(`/auth/login?returnTo=${encodeURIComponent(returnPath)}`);
   return scope;
 }
@@ -89,31 +99,12 @@ export async function requireAttemptScope(attemptId: string, returnPath: string)
 export async function loadAttemptProjection(attemptId: string, returnPath: string) {
   const scoped = await requireAttemptScope(attemptId, returnPath);
   if (!scoped) return undefined;
-  const manifest = scoped.attempt.servingManifestId
-    ? await repositories().content.readServingManifest(
-        scoped.scope,
-        scoped.attempt.servingManifestId,
-      )
-    : undefined;
-  if (!manifest) return undefined;
-  const projection = {
-    attempt: scoped.attempt,
-    manifest: {
-      servingManifestId: manifest.servingManifestId,
-      entries: manifest.entries.map((entry) => ({
-        ordinal: entry.ordinal,
-        contentRevisionId: entry.contentRevisionId,
-        ...(entry.contentItemId ? { contentItemId: entry.contentItemId } : {}),
-        ...(entry.mediaRevisionId ? { mediaRevisionId: entry.mediaRevisionId } : {}),
-      })),
-      allowedConditions: manifest.allowedConditions,
-      expiresAt: manifest.expiresAt.toISOString(),
-      revocationState: manifest.revocationState,
-    },
-  };
-  // This application boundary is intentionally here: web may import content, infrastructure may not.
-  assertNoKeyBearingFields(projection, "active-attempt learner projection");
-  return projection;
+  const loaded = await new DeterministicAttemptService(
+    repositories(),
+    stableId,
+    () => new Date(),
+  ).readLearnerAttempt(scoped.scope, scoped.attempt.attemptId);
+  return loaded.ok ? loaded.value : undefined;
 }
 
 export async function loadResultProjection(attemptId: string, returnPath: string) {

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { WritingRegionVariant } from "@bestehen/design-system";
 import {
   Action,
   AppShell,
@@ -19,7 +19,8 @@ import {
   UploadStatus,
   WritingRegion,
 } from "@bestehen/design-system";
-import type { WritingRegionVariant } from "@bestehen/design-system";
+import type { EvidenceValidityState } from "@bestehen/domain";
+import type { ReactNode } from "react";
 
 const gates = (["A", "B", "C", "D", "E", "F"] as const).map((id, index) => ({
   id,
@@ -149,13 +150,9 @@ export function SessionView({ sessionId = "synthetic" }: { readonly sessionId?: 
 export function AttemptView({
   kind = "reading",
   writingVariant = "editor",
-  attemptId,
-  state,
 }: {
   readonly kind?: "reading" | "language" | "writing";
   readonly writingVariant?: WritingRegionVariant;
-  readonly attemptId?: string;
-  readonly state?: "in_progress" | "checkpointed" | "submission_unknown" | "result_available";
 }) {
   const region: ReactNode =
     kind === "language" ? (
@@ -167,13 +164,7 @@ export function AttemptView({
     );
   return (
     <AttemptShell
-      action={
-        state === "result_available" && attemptId ? (
-          <Action href={`/attempt/${attemptId}/result`} label="Review result" />
-        ) : (
-          <Action label="Submit answer" />
-        )
-      }
+      action={<Action label="Submit answer" />}
       conditions={["Practice timing", "No answer-bearing help", "Server decides validity"]}
       title={kind === "language" ? "Language Elements" : kind === "writing" ? "Writing" : "Reading"}
     >
@@ -184,16 +175,33 @@ export function AttemptView({
 export function ResultView({
   validity = "valid",
   decisiveEvidence = [],
+  details,
 }: {
-  readonly validity?: "valid" | "partially_valid" | "invalid" | "pending";
+  readonly validity?: EvidenceValidityState;
   readonly decisiveEvidence?: readonly { readonly relation: string; readonly text: string }[];
+  readonly details?: {
+    readonly outcomes: readonly string[];
+    readonly rationales: readonly string[];
+    readonly causes: readonly string[];
+    readonly repair: string;
+  };
 }) {
   return (
     <AppShell backHref="/coach" kind="focused" title="Result">
       <EvidenceLabel reason="The recorded conditions determine this result." validity={validity} />
-      <SemanticCard title="What this shows">
-        <p>One Reading pattern is stable. It does not set an overall level or pass claim.</p>
-      </SemanticCard>
+      {details ? (
+        <SemanticCard title="Recorded outcome">
+          <ul>
+            {details.outcomes.map((outcome) => (
+              <li key={outcome}>{outcome}</li>
+            ))}
+          </ul>
+        </SemanticCard>
+      ) : (
+        <SemanticCard title="What this shows">
+          <p>One Reading pattern is stable. It does not set an overall level or pass claim.</p>
+        </SemanticCard>
+      )}
       {decisiveEvidence.length > 0 ? (
         <SemanticCard title="Decisive evidence">
           <ul>
@@ -203,8 +211,29 @@ export function ResultView({
           </ul>
         </SemanticCard>
       ) : null}
+      {details ? (
+        <>
+          <SemanticCard title="Why another answer does not fit">
+            <ul>
+              {details.rationales.map((rationale) => (
+                <li key={rationale}>{rationale}</li>
+              ))}
+            </ul>
+          </SemanticCard>
+          <SemanticCard title="Supported cause">
+            <ul>
+              {details.causes.map((cause) => (
+                <li key={cause}>{cause}</li>
+              ))}
+            </ul>
+          </SemanticCard>
+        </>
+      ) : null}
       <SemanticCard title="Repair">
-        <p>Check the connector in the second paragraph, then try one fresh item.</p>
+        <p>
+          {details?.repair ??
+            "Check the connector in the second paragraph, then try one fresh item."}
+        </p>
       </SemanticCard>
     </AppShell>
   );
