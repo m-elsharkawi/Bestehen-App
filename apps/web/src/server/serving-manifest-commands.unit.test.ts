@@ -1,3 +1,4 @@
+import { servingManifestSchema } from "@bestehen/contracts";
 import { type AuthorizedScope, appId } from "@bestehen/domain";
 import type { ServingManifestRecord } from "@bestehen/infrastructure";
 import { describe, expect, it, vi } from "vitest";
@@ -28,7 +29,13 @@ const manifest: ServingManifestRecord = {
     },
   ],
   keyRevisionDigests: ["a".repeat(64)],
-  allowedConditions: { progressionProfile: "P2" },
+  allowedConditions: {
+    progressionProfile: "P2",
+    timingMode: "practice",
+    targetDurationMs: 1_200_000,
+    transcriptPhase: "after_attempt",
+    offerableAssistanceKinds: ["strategy_cue"],
+  },
   learnerSafePayloadDigest: "b".repeat(64),
   freshnessDecision: "fresh",
   comparedFamilyRefs: [],
@@ -76,14 +83,15 @@ describe("serving-manifest command boundary", () => {
     expect(fixture.content.readServingManifestByOperation).not.toHaveBeenCalled();
   });
 
-  it("replays the exact operation without selecting again or returning key digests", async () => {
+  it("replays the exact operation without selecting again and returns only key digests", async () => {
     const fixture = dependencies(manifest);
     const response = await handleAcquireServingManifest(fixture, "token", request());
-    const body = await response.json();
+    const body = servingManifestSchema.parse(await response.json());
 
     expect(response.status).toBe(200);
-    expect(body.resourceId).toBe(manifest.servingManifestId);
-    expect(JSON.stringify(body)).not.toMatch(/keyRevision|correct|rationale/i);
+    expect(body.servingManifestId).toBe(manifest.servingManifestId);
+    expect(body.keyRevisionDigests).toEqual(manifest.keyRevisionDigests);
+    expect(JSON.stringify(body)).not.toMatch(/answerKey|correctOption|distractorRationale/i);
     expect(fixture.content.findEligibleServingRevision).not.toHaveBeenCalled();
     expect(fixture.content.issueServingManifest).not.toHaveBeenCalled();
   });

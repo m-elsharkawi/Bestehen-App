@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { authorize } from "@bestehen/application";
 import {
   assistanceCommandSchema,
@@ -23,6 +23,18 @@ type CommandFailure =
   | "idempotency_conflict"
   | "conflict"
   | "illegal_transition";
+
+/** Maps the contract's opaque operation token onto the UUID identity used by PostgreSQL. */
+export function wireOperationId(value: string): OperationId {
+  const hex = createHash("sha256").update(`wire-operation:${value}`, "utf8").digest("hex");
+  return appId<"operation">(
+    `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}`,
+  );
+}
+
+export function isDatabaseAppId(value: string): boolean {
+  return /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value);
+}
 
 export interface AttemptCommandFunctions {
   create(
@@ -90,9 +102,9 @@ function problem(
   );
 }
 
-function completed(resourceId: string, extra: Record<string, unknown> = {}): Response {
+function completed(resourceId: string): Response {
   return Response.json(
-    { status: "completed", resourceId, ...extra },
+    { status: "completed", resourceId },
     { status: 200, headers: { "cache-control": "no-store" } },
   );
 }
@@ -139,12 +151,14 @@ export async function handleCreateAttempt(
       (key) => key !== "servingManifestId" && key !== "activityOccurrenceId",
     ) ||
     !servingManifestId.success ||
-    !activityOccurrenceId.success
+    !activityOccurrenceId.success ||
+    !isDatabaseAppId(servingManifestId.data) ||
+    !isDatabaseAppId(activityOccurrenceId.data)
   ) {
     return problem(400, "malformed_request", "The attempt payload is invalid.");
   }
   const result = await dependencies.commands.create(command.scope, {
-    operationId: appId<"operation">(command.envelope.operationId),
+    operationId: wireOperationId(command.envelope.operationId),
     servingManifestId: servingManifestId.data,
     activityOccurrenceId: activityOccurrenceId.data,
   });
@@ -159,12 +173,13 @@ export async function handleCheckpointAttempt(
 ): Promise<Response> {
   const command = await authorizedEnvelope(dependencies, token, "attempt:checkpoint", raw);
   if (command instanceof Response) return command;
+  if (!isDatabaseAppId(routeAttemptId)) return unavailable();
   const payload = checkpointCommandSchema.safeParse(command.envelope.payload);
   if (!payload.success || payload.data.attemptId !== routeAttemptId) {
     return problem(400, "malformed_request", "The checkpoint payload is invalid.");
   }
   const result = await dependencies.commands.checkpoint(command.scope, {
-    operationId: appId<"operation">(command.envelope.operationId),
+    operationId: wireOperationId(command.envelope.operationId),
     attemptId: appId<"attempt">(routeAttemptId),
     expectedVersion: command.envelope.expectedVersion,
     stream: payload.data.stream,
@@ -172,9 +187,7 @@ export async function handleCheckpointAttempt(
     operations: payload.data.operations,
     responseDigest: payload.data.responseDigest,
   });
-  return result.ok
-    ? completed(routeAttemptId, { disposition: result.value.disposition })
-    : refusal(result.error);
+  return result.ok ? completed(routeAttemptId) : refusal(result.error);
 }
 
 export async function handleSubmitAttempt(
@@ -185,12 +198,13 @@ export async function handleSubmitAttempt(
 ): Promise<Response> {
   const command = await authorizedEnvelope(dependencies, token, "attempt:submit", raw);
   if (command instanceof Response) return command;
+  if (!isDatabaseAppId(routeAttemptId)) return unavailable();
   const payload = submitObjectiveCommandSchema.safeParse(command.envelope.payload);
   if (!payload.success || payload.data.attemptId !== routeAttemptId) {
     return problem(400, "malformed_request", "The submission payload is invalid.");
   }
   const result = await dependencies.commands.submit(command.scope, {
-    operationId: appId<"operation">(command.envelope.operationId),
+    operationId: wireOperationId(command.envelope.operationId),
     attemptId: appId<"attempt">(routeAttemptId),
     checkpointSequence: payload.data.checkpointSequence,
     responseDigest: payload.data.responseDigest,
@@ -214,12 +228,22 @@ async function handleAuxiliary(
 ): Promise<Response> {
   const command = await authorizedEnvelope(dependencies, token, "attempt:checkpoint", raw);
   if (command instanceof Response) return command;
+  if (!isDatabaseAppId(routeAttemptId)) return unavailable();
   const schema = kind === "assistance" ? assistanceCommandSchema : exposureCommandSchema;
   const payload = schema.safeParse(command.envelope.payload);
   if (!payload.success || payload.data.attemptId !== routeAttemptId) {
     return problem(400, "malformed_request", `The ${kind} payload is invalid.`);
   }
-  const operationId = appId<"operation">(command.envelope.operationId);
+  if (
+    !isDatabaseAppId(payload.data.attemptId) ||
+    !(kind === "assistance"
+      ? isDatabaseAppId((payload.data as AssistancePayload).assistanceEventId)
+      : isDatabaseAppId((payload.data as ExposurePayload).exposureEventId) &&
+        isDatabaseAppId((payload.data as ExposurePayload).contentFamilyId))
+  ) {
+    return unavailable();
+  }
+  const operationId = wireOperationId(command.envelope.operationId);
   const result =
     kind === "assistance"
       ? await dependencies.commands.assistance(

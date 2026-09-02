@@ -1,3 +1,4 @@
+import { domainResultSchema, problemSchema } from "@bestehen/contracts";
 import { type AuthorizedScope, appId } from "@bestehen/domain";
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -5,7 +6,7 @@ import {
   handleCheckpointAttempt,
   handleSubmitAttempt,
 } from "./attempt-commands";
-import type { SubmitObjectiveInput } from "./attempt-runtime";
+import type { CheckpointObjectiveInput, SubmitObjectiveInput } from "./attempt-runtime";
 
 const attemptId = "11111111-1111-4111-8111-111111111111";
 const operationId = "22222222-2222-4222-8222-222222222222";
@@ -23,7 +24,7 @@ function dependencies(authenticated = true) {
     now: () => new Date("2026-09-02T08:10:00.000Z"),
     commands: {
       create: vi.fn(),
-      checkpoint: vi.fn(async () => ({
+      checkpoint: vi.fn(async (_scope: AuthorizedScope, _input: CheckpointObjectiveInput) => ({
         ok: true as const,
         value: { disposition: "accepted" },
       })),
@@ -45,7 +46,8 @@ describe("versioned attempt command boundary", () => {
     });
 
     expect(response.status).toBe(404);
-    expect(await response.json()).toEqual({
+    const body = await response.json();
+    expect(domainResultSchema.parse(body)).toEqual({
       status: "unavailable",
       reasonCode: "FALLBACK.AUTHORIZATION_DENIED",
     });
@@ -62,7 +64,7 @@ describe("versioned attempt command boundary", () => {
 
     expect(response.status).toBe(400);
     expect(response.headers.get("content-type")).toContain("application/problem+json");
-    expect((await response.json()).code).toBe("unsupported_contract_major");
+    expect(problemSchema.parse(await response.json()).code).toBe("unsupported_contract_major");
   });
 
   it("treats wire timer integrity as non-authoritative and forwards measurements only", async () => {
@@ -89,9 +91,39 @@ describe("versioned attempt command boundary", () => {
     });
 
     expect(response.status).toBe(200);
+    expect(domainResultSchema.parse(await response.clone().json())).toEqual({
+      status: "completed",
+      resourceId: operationId,
+    });
     const submitted = fixture.commands.submit.mock.calls[0]?.[1];
     expect(submitted?.clockObservation.monotonicElapsedMs).toBe(600_000);
     expect(submitted).not.toHaveProperty("timerIntegrity");
     expect(submitted?.clockObservation).not.toHaveProperty("timerIntegrity");
+  });
+
+  it("maps an opaque wire operation token to a stable PostgreSQL UUID", async () => {
+    const fixture = dependencies();
+    const opaqueOperationId = "abc12345";
+    const command = {
+      contract: { major: 1, minor: 0 },
+      operationId: opaqueOperationId,
+      expectedVersion: 1,
+      payload: {
+        attemptId,
+        stream: "primary",
+        sequence: 1,
+        operations: [{ kind: "set_selection", itemId: attemptId, optionId: "option-a" }],
+        responseDigest: "d".repeat(64),
+        observedAt: "2026-09-02T08:10:00.000Z",
+      },
+    };
+
+    expect((await handleCheckpointAttempt(fixture, "token", attemptId, command)).status).toBe(200);
+    expect((await handleCheckpointAttempt(fixture, "token", attemptId, command)).status).toBe(200);
+    const first = fixture.commands.checkpoint.mock.calls[0]?.[1].operationId;
+    const second = fixture.commands.checkpoint.mock.calls[1]?.[1].operationId;
+    expect(first).toMatch(/^[a-f0-9]{8}-[a-f0-9]{4}-5[a-f0-9]{3}-a[a-f0-9]{3}-[a-f0-9]{12}$/);
+    expect(second).toBe(first);
+    expect(first).not.toBe(opaqueOperationId);
   });
 });

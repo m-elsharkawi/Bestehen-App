@@ -6,13 +6,14 @@ import {
   type TaskFamilyKind,
   taskFamilyKinds,
 } from "@bestehen/content";
-import { commandEnvelopeSchema } from "@bestehen/contracts";
+import { commandEnvelopeSchema, servingManifestSchema } from "@bestehen/contracts";
 import { type AppId, type AuthorizedScope, appId } from "@bestehen/domain";
 import type {
   PostgresAttemptRepository,
   PostgresContentRepository,
   ServingManifestRecord,
 } from "@bestehen/infrastructure";
+import { isDatabaseAppId, wireOperationId } from "./attempt-commands";
 
 export interface ServingManifestCommandDependencies {
   readonly authenticate: (token: string | undefined) => Promise<AuthorizedScope | undefined>;
@@ -46,36 +47,32 @@ function malformed(code: "malformed_request" | "unsupported_contract_major", tit
 }
 
 function responseFor(manifest: ServingManifestRecord, attemptId: string): Response {
-  const body = {
-    status: "completed",
-    resourceId: manifest.servingManifestId,
+  const learnerManifest = servingManifestSchema.parse({
+    servingManifestId: manifest.servingManifestId,
     attemptId,
-    manifest: {
-      servingManifestId: manifest.servingManifestId,
-      attemptId,
-      ...(manifest.formId ? { formId: manifest.formId } : {}),
-      contentRevisionIds: [...new Set(manifest.entries.map((entry) => entry.contentRevisionId))],
-      itemIds: manifest.entries.flatMap((entry) =>
-        entry.contentItemId ? [entry.contentItemId] : [],
-      ),
-      mediaRevisionIds: manifest.entries.flatMap((entry) =>
-        entry.mediaRevisionId ? [entry.mediaRevisionId] : [],
-      ),
-      contentClass: manifest.contentClass,
-      approvalRole: manifest.approvalRole,
-      allowedConditions: manifest.allowedConditions,
-      learnerSafePayloadDigest: manifest.learnerSafePayloadDigest,
-      freshnessDecision: manifest.freshnessDecision,
-      comparedFamilyRefs: manifest.comparedFamilyRefs,
-      authorizationVersion: manifest.authorizationVersion,
-      contentReleaseIdentity: manifest.contentReleaseIdentity,
-      issuedAt: manifest.issuedAt.toISOString(),
-      expiresAt: manifest.expiresAt.toISOString(),
-      revocationState: manifest.revocationState,
-    },
-  };
-  assertNoKeyBearingFields(body.manifest, "serving manifest response");
-  return Response.json(body, { headers: { "cache-control": "no-store" } });
+    ...(manifest.formId ? { formId: manifest.formId } : {}),
+    contentRevisionIds: [...new Set(manifest.entries.map((entry) => entry.contentRevisionId))],
+    itemIds: manifest.entries.flatMap((entry) =>
+      entry.contentItemId ? [entry.contentItemId] : [],
+    ),
+    mediaRevisionIds: manifest.entries.flatMap((entry) =>
+      entry.mediaRevisionId ? [entry.mediaRevisionId] : [],
+    ),
+    keyRevisionDigests: manifest.keyRevisionDigests,
+    contentClass: manifest.contentClass,
+    approvalRole: manifest.approvalRole,
+    allowedConditions: manifest.allowedConditions,
+    learnerSafePayloadDigest: manifest.learnerSafePayloadDigest,
+    freshnessDecision: manifest.freshnessDecision,
+    comparedFamilyRefs: manifest.comparedFamilyRefs,
+    authorizationVersion: manifest.authorizationVersion,
+    contentReleaseIdentity: manifest.contentReleaseIdentity,
+    issuedAt: manifest.issuedAt.toISOString(),
+    expiresAt: manifest.expiresAt.toISOString(),
+    revocationState: manifest.revocationState,
+  });
+  assertNoKeyBearingFields(learnerManifest, "serving manifest response");
+  return Response.json(learnerManifest, { headers: { "cache-control": "no-store" } });
 }
 
 export async function handleAcquireServingManifest(
@@ -110,7 +107,8 @@ export async function handleAcquireServingManifest(
   ) {
     return malformed("malformed_request", "The serving request is invalid.");
   }
-  const operationId = appId<"operation">(envelope.data.operationId);
+  if (!isDatabaseAppId(activityOccurrenceId)) return unavailable();
+  const operationId = wireOperationId(envelope.data.operationId);
   const replay = await dependencies.content.readServingManifestByOperation(
     authorized.value,
     operationId,
@@ -143,11 +141,18 @@ export async function handleAcquireServingManifest(
     transcriptPhase: "after_attempt",
     offerableAssistanceKinds: ["strategy_cue"],
   };
-  const entries = eligible.itemIds.map((contentItemId, index) => ({
-    ordinal: index + 1,
-    contentRevisionId: eligible.contentRevisionId,
-    contentItemId,
-  }));
+  const entries = [
+    ...eligible.itemIds.map((contentItemId, index) => ({
+      ordinal: index + 1,
+      contentRevisionId: eligible.contentRevisionId,
+      contentItemId,
+    })),
+    ...eligible.mediaRevisionIds.map((mediaRevisionId, index) => ({
+      ordinal: eligible.itemIds.length + index + 1,
+      contentRevisionId: eligible.contentRevisionId,
+      mediaRevisionId,
+    })),
+  ];
   const servingManifestId = dependencies.identity("serving_manifest", `${operationId}:manifest`);
   const basis = {
     servingManifestId,
