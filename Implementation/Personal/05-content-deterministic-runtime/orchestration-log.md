@@ -1223,3 +1223,37 @@ explicit predecessor reference. Original provenance and action facts may be
 carried forward for this App-original work; old records stay unchanged. No new
 third-party permission or approval is inferred. Import/admission must reject an
 old revision-scoped envelope used as coverage for a new revision.
+
+### Catalogue draft review and exact approval binding, 2026-09-04
+
+Root draft review returned three concrete issues before checkpoint verification:
+
+- H2 validation used `dialogue`, but the accepted payload field is `conversation`.
+- Rebuilding historical seed metadata from caller-provided script and identity
+  proved only self-consistency. A changed script could claim the same original
+  seed ID. Reconciliation must match the committed seed catalogue itself.
+- Looking up a cited granted media approval did not prove it was still current.
+  `appendApprovalDecision` does not update media asset status, so an appended
+  retirement can leave the old asset projection apparently current. Admission
+  must check the subject-scoped decision chain, with ambiguity refused, under
+  the same 420106 subject lock as the approval writer.
+
+Root also approved an additive `ListeningSeedFamily.authoredMediaBindings` field
+in `seed/listening-builders.ts`, derived from the already-authored question input.
+That input has the explicit stimulus identity which the previous return value
+discarded. The offline importer must not reconstruct this relationship from
+answer keys or query order. Existing artifact, payload, key and release bytes
+remain unchanged.
+
+Media approval will use the existing decision evidence reference to bind final
+bytes: `audio-manifest/sha256/<canonical aggregate digest>`. A decision ID is
+allocated before final manifest serialization, so the digest has no cycle.
+The operator reviews that exact digest before appending its approval decision;
+the importer does not manufacture the decision. A different aggregate cannot
+reuse the same approval ID. Subject, class, role and current chain still apply.
+This uses existing storage and adds no migration. Draft approvals remain null.
+
+The catalogue checkpoint may refuse rights with delivery obligations it cannot
+yet enforce, but must state that limitation and avoid creating a second rights
+policy. Later byte delivery/preflight work must implement any claimed lease,
+purge and attribution behavior before conditional content is admitted.
