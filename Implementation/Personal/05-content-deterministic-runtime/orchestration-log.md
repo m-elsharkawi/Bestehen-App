@@ -1211,3 +1211,15 @@ idempotency digest. Tests must reject malformed labels and conflicting reuse,
 apply a real successor with new items, replay it exactly and compare old rows.
 This is an additional correction to T6's real successor path, not a migration or
 permission to promote the candidate seeds.
+
+Root then checked `seed/builders.ts`: the original rights envelope is scoped to
+the exact original content revision, not the family. `seed-cli.ts` also uses the
+family seed key as `rights_envelopes.envelope_key`, which has a unique current-key
+index. The worker confirmed that reusing the old envelope would misstate coverage.
+Root authorized a second optional field, `rightsEnvelopeKey`, with the same
+legacy default and exact-retry protections. The offline successor must create a
+deterministic new key/UUID, scope it to the successor revision and retain an
+explicit predecessor reference. Original provenance and action facts may be
+carried forward for this App-original work; old records stay unchanged. No new
+third-party permission or approval is inferred. Import/admission must reject an
+old revision-scoped envelope used as coverage for a new revision.
