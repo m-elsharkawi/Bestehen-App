@@ -84,23 +84,26 @@ describe("P05-RESULT-001 pinned authored result projection", () => {
   it("joins shuffled outcome, evidence, and repeated option identities by item rather than position", () => {
     const result = projectLearnerResult(submission, evidence, payload);
     expect(result.validityScope.map((entry) => entry.text)).toEqual([
-      "Affected scope: Question 1: Frage A.",
-      "Unaffected scope: Question 2: Frage B.",
+      "Affected scope: Question 1.",
+      "Unaffected scope: Question 2.",
     ]);
     expect(result.outcomes.map((entry) => entry.text)).toEqual([
-      "Question 1: Frage A: the recorded response “Erste Bedeutung” fits.",
-      "Question 2: Frage B: the recorded response “Zweite Bedeutung” does not fit.",
+      "Question 1: the recorded response fits.",
+      "Question 2: the recorded response does not fit.",
     ]);
     expect(result.decisiveEvidence.map((entry) => entry.text)).toEqual([
-      "Beleg für A",
-      "Beleg für B",
+      "Question 1: decisive evidence.",
+      "Question 2: decisive evidence.",
     ]);
     expect(result.rationales.map((entry) => entry.text)).toEqual([
-      "Why this response fits: A passt genau zum Text.",
-      "This response can seem plausible: Das Wort klingt ähnlich. It does not fit because Der Text nennt eine andere Bedingung.",
+      "Question 1: Why this response fits.",
+      "Question 2: The selected response seems plausible at first, but does not fit.",
     ]);
     expect(new Set(result.decisiveEvidence.map((entry) => entry.id)).size).toBe(2);
     expect(result.causes[0]?.text).toContain("No supported diagnostic observation is recorded");
+    expect(result.outcomes[0]?.germanText).toBe("Frage A — Erste Bedeutung");
+    expect(result.rationales[1]?.germanText).toContain("Das Wort klingt ähnlich.");
+    expect(result.decisiveEvidence[0]?.germanText).toBe("Frage A — Beleg für A");
   });
 
   it("uses learner-safe fallbacks for malformed persisted fields", () => {
@@ -213,6 +216,7 @@ describe("P05-RESULT-001 pinned authored result projection", () => {
       [],
       sb1,
     );
-    expect(result.outcomes[0]?.text).toBe("Gap 1: the recorded response “passende Form” fits.");
+    expect(result.outcomes[0]?.text).toBe("Gap 1: the recorded response fits.");
+    expect(result.outcomes[0]?.germanText).toBe("passende Form");
   });
 });

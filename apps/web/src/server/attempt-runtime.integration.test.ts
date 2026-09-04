@@ -93,6 +93,14 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
                 },
               ],
             };
+            const instruction = {
+              instructionId: "synthetic-instruction",
+              locale: "de",
+              safeContentNodes: [{ kind: "inline_text", text: "Lesen Sie den Test." }],
+              responseMechanic: "single_select",
+              helpPolicy: { offerableAssistanceKinds: ["strategy_cue"] },
+              learnerFacingTimingLabel: "Übungszeit",
+            };
             // These are synthetic test-only pins, not a publication or human review of T6 content.
             await pool.query("INSERT INTO app.learner_scopes(id,state) VALUES($1,'active')", [
               scopeId,
@@ -107,8 +115,15 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
             );
             await pool.query(
               `INSERT INTO app.content_revisions(id,family_id,revision,role,approval_state,rights_state,compatibility_state,digest,content_class,rights_envelope_id,learner_payload,instruction,progression_profile)
-          VALUES($1,$2,'synthetic-v1','task','approved','eligible','compatible',$3,'C3',$4,$5,'{}','P2')`,
-              [revision, family, canonicalDigest(payload), rights, JSON.stringify(payload)],
+          VALUES($1,$2,'synthetic-v1','task','approved','eligible','compatible',$3,'C3',$4,$5,$6::jsonb,'P2')`,
+              [
+                revision,
+                family,
+                canonicalDigest(payload),
+                rights,
+                JSON.stringify(payload),
+                JSON.stringify(instruction),
+              ],
             );
             await pool.query(
               `INSERT INTO app.plan_revisions(id,learner_scope_id,source_cut,policy_release,reason_release,template_release,content_release,intents,reasons,checksum) VALUES($1,$2,1,'policy/foundation','reason-registry/v1','template/foundation','content/synthetic','[]','[]',$3)`,

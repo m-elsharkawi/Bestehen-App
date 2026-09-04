@@ -189,15 +189,45 @@ export function ResultView({
     readonly repair: string;
   };
   readonly projection?: {
-    readonly validityScope: readonly { readonly id: string; readonly text: string }[];
-    readonly decisiveEvidence: readonly { readonly id: string; readonly text: string }[];
-    readonly outcomes: readonly { readonly id: string; readonly text: string }[];
-    readonly rationales: readonly { readonly id: string; readonly text: string }[];
+    readonly validityScope: readonly {
+      readonly id: string;
+      readonly text: string;
+      readonly germanText?: string;
+    }[];
+    readonly decisiveEvidence: readonly {
+      readonly id: string;
+      readonly text: string;
+      readonly germanText?: string;
+    }[];
+    readonly outcomes: readonly {
+      readonly id: string;
+      readonly text: string;
+      readonly germanText?: string;
+    }[];
+    readonly rationales: readonly {
+      readonly id: string;
+      readonly text: string;
+      readonly germanText?: string;
+    }[];
     readonly causes: readonly { readonly id: string; readonly text: string }[];
     readonly repair: string;
   };
 }) {
   if (projection) {
+    const renderProjectionEntry = (entry: {
+      readonly text: string;
+      readonly germanText?: string;
+    }) => (
+      <>
+        <span>{entry.text}</span>
+        {entry.germanText ? (
+          <>
+            {" "}
+            <span lang="de">{entry.germanText}</span>
+          </>
+        ) : null}
+      </>
+    );
     return (
       <AppShell backHref={backHref} kind="focused" title="Result">
         <EvidenceLabel
@@ -206,27 +236,27 @@ export function ResultView({
         />
         <ul>
           {projection.validityScope.map((scope) => (
-            <li key={scope.id}>{scope.text}</li>
+            <li key={scope.id}>{renderProjectionEntry(scope)}</li>
           ))}
         </ul>
         <SemanticCard title="Recorded outcome">
           <ul>
             {projection.outcomes.map((outcome) => (
-              <li key={outcome.id}>{outcome.text}</li>
+              <li key={outcome.id}>{renderProjectionEntry(outcome)}</li>
             ))}
           </ul>
         </SemanticCard>
         <SemanticCard title="Decisive evidence">
           <ul>
             {projection.decisiveEvidence.map((entry) => (
-              <li key={entry.id}>{entry.text}</li>
+              <li key={entry.id}>{renderProjectionEntry(entry)}</li>
             ))}
           </ul>
         </SemanticCard>
         <SemanticCard title="Chosen response">
           <ul>
             {projection.rationales.map((rationale) => (
-              <li key={rationale.id}>{rationale.text}</li>
+              <li key={rationale.id}>{renderProjectionEntry(rationale)}</li>
             ))}
           </ul>
         </SemanticCard>

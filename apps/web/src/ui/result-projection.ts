@@ -1,5 +1,9 @@
 import { safeContentText, type SafeContentNode, type TaskFamily } from "@bestehen/content";
-type ResultEntry = { readonly id: string; readonly text: string };
+type ResultEntry = {
+  readonly id: string;
+  readonly text: string;
+  readonly germanText?: string;
+};
 
 export interface LearnerResultProjection {
   readonly validityScope: readonly ResultEntry[];
@@ -132,13 +136,18 @@ function selectedIdentifier(
 
 function presentationByItem(
   payload: TaskFamily | undefined,
-): Map<string, { label: string; order: number }> {
+): Map<string, { chrome: string; germanText?: string; order: number }> {
   if (!payload) return new Map();
   const entries =
     payload.kind === "R1HeadingMatching"
       ? payload.itemBindings.map((binding) => {
           const order = payload.texts.findIndex((text) => text.stimulusId === binding.leftId);
-          return [binding.itemRef, `Text ${order >= 0 ? order + 1 : "recorded"}`, order] as const;
+          return [
+            binding.itemRef,
+            `Text ${order >= 0 ? order + 1 : "recorded"}`,
+            undefined,
+            order,
+          ] as const;
         })
       : payload.kind === "R3SituationNoticeMatching"
         ? payload.itemBindings.map((binding) => {
@@ -148,7 +157,8 @@ function presentationByItem(
             const situation = payload.situations[order];
             return [
               binding.itemRef,
-              `Situation ${order >= 0 ? order + 1 : "recorded"}: ${safeContentText(situation?.safeContentNodes ?? [])}`,
+              `Situation ${order >= 0 ? order + 1 : "recorded"}`,
+              safeContentText(situation?.safeContentNodes ?? []) || undefined,
               order,
             ] as const;
           })
@@ -157,31 +167,45 @@ function presentationByItem(
               (question, order) =>
                 [
                   question.itemRef,
-                  `Question ${order + 1}: ${safeContentText(question.questionNodes)}`,
+                  `Question ${order + 1}`,
+                  safeContentText(question.questionNodes) || undefined,
                   order,
                 ] as const,
             )
           : "gaps" in payload
-            ? payload.gaps.map((gap, order) => [gap.itemRef, `Gap ${order + 1}`, order] as const)
+            ? payload.gaps.map(
+                (gap, order) => [gap.itemRef, `Gap ${order + 1}`, undefined, order] as const,
+              )
             : [];
-  return new Map(entries.map(([itemId, label, order]) => [itemId, { label, order }]));
+  return new Map(
+    entries.map(([itemId, chrome, germanText, order]) => [
+      itemId,
+      { chrome, order, ...(germanText ? { germanText } : {}) },
+    ]),
+  );
 }
 
 function scopeEntries(
   scope: "affected" | "unaffected",
   itemIds: readonly string[],
-  presentation: ReadonlyMap<string, { label: string; order: number }>,
+  presentation: ReadonlyMap<string, { chrome: string; germanText?: string; order: number }>,
 ): readonly ResultEntry[] {
   const prefix = scope === "affected" ? "Affected scope" : "Unaffected scope";
-  const labels = itemIds
-    .map((itemId) => presentation.get(itemId)?.label)
-    .filter((label): label is string => Boolean(label));
+  const labels = itemIds.map((itemId) => presentation.get(itemId)).filter(Boolean);
+  const unnamedCount = itemIds.length - labels.length;
   return [
     {
       id: `validity-${scope}`,
       text: labels.length
-        ? `${prefix}: ${labels.join("; ")}.`
-        : `${prefix}: no named learner-visible item.`,
+        ? `${prefix}: ${labels.map((label) => label?.chrome).join("; ")}${unnamedCount ? `; ${unnamedCount} unnamed recorded item${unnamedCount === 1 ? "" : "s"}` : ""}.`
+        : `${prefix}: ${unnamedCount} unnamed recorded item${unnamedCount === 1 ? "" : "s"}.`,
+      ...(labels.some((label) => label?.germanText)
+        ? {
+            germanText: labels
+              .flatMap((label) => (label?.germanText ? [label.germanText] : []))
+              .join("; "),
+          }
+        : {}),
     },
   ];
 }
@@ -233,7 +257,8 @@ export function projectLearnerResult(
     .map((outcome) => {
       const itemId = String(outcome.contentItemId);
       const selected = selectedIdentifier(response, itemId);
-      const itemLabel = presentation.get(itemId)?.label ?? "Recorded item";
+      const item = presentation.get(itemId);
+      const itemLabel = item?.chrome ?? "Recorded item";
       const label = learnerPayload ? responseLabel(learnerPayload, itemId, selected) : "";
       const evidenceForItem = byItem.get(itemId);
       const authored = decisiveEvidence(evidenceForItem?.decisiveEvidence);
@@ -241,26 +266,27 @@ export function projectLearnerResult(
       const itemKey = `item-${itemId}`;
       const outcomeText =
         outcome.kind === "correct"
-          ? `${itemLabel}: the recorded response${label ? ` “${label}”` : ""} fits.`
+          ? `${itemLabel}: the recorded response fits.`
           : outcome.kind === "incorrect"
-            ? `${itemLabel}: the recorded response${label ? ` “${label}”` : ""} does not fit.`
+            ? `${itemLabel}: the recorded response does not fit.`
             : outcome.kind === "blank"
               ? `${itemLabel}: no response was recorded.`
               : `${itemLabel}: the response could not be interpreted.`;
       const rationaleText =
         outcome.kind === "correct"
           ? authored.rationale
-            ? `Why this response fits: ${authored.rationale}`
+            ? "Why this response fits."
             : "The recorded response fits this item."
           : outcome.kind === "incorrect" && rationale?.whyPlausible && rationale.decisiveMismatch
-            ? `This response can seem plausible: ${rationale.whyPlausible} It does not fit because ${rationale.decisiveMismatch}`
+            ? "The selected response seems plausible at first, but does not fit."
             : outcome.kind === "blank"
               ? "No response was recorded, so there is no chosen-response rationale."
               : "The recorded response has no learner-safe rationale available for this item.";
       const evidenceText = authored.refs.length
         ? authored.refs.map((relation, relationIndex) => ({
             id: `${itemKey}-evidence-${relationIndex}`,
-            text: relation,
+            text: `${itemLabel}: decisive evidence.`,
+            germanText: [item?.germanText, relation].filter(Boolean).join(" — "),
           }))
         : [
             {
@@ -269,8 +295,22 @@ export function projectLearnerResult(
             },
           ];
       return {
-        outcome: { id: `${itemKey}-outcome`, text: outcomeText },
-        rationale: { id: `${itemKey}-rationale`, text: rationaleText },
+        outcome: {
+          id: `${itemKey}-outcome`,
+          text: outcomeText,
+          ...([item?.germanText, label].filter(Boolean).join(" — ")
+            ? { germanText: [item?.germanText, label].filter(Boolean).join(" — ") }
+            : {}),
+        },
+        rationale: {
+          id: `${itemKey}-rationale`,
+          text: `${itemLabel}: ${rationaleText}`,
+          ...(outcome.kind === "correct" && authored.rationale
+            ? { germanText: authored.rationale }
+            : outcome.kind === "incorrect" && rationale?.whyPlausible && rationale.decisiveMismatch
+              ? { germanText: `${rationale.whyPlausible} ${rationale.decisiveMismatch}` }
+              : {}),
+        },
         evidence: evidenceText,
       };
     });
