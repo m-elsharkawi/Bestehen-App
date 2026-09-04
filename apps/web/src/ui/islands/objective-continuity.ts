@@ -30,6 +30,8 @@ export interface LocalResponse {
   readonly major: 1;
   readonly updatedAt: number;
   readonly values: Readonly<Record<string, string>>;
+  /** Additive local revision. Older v1 records start at revision zero. */
+  readonly draftRevision?: number;
   readonly expectedVersion: number;
   readonly sequence: number;
   readonly pending: Intent | null;
@@ -127,11 +129,13 @@ export class ObjectiveContinuity {
     private readonly transport: typeof fetch,
     private readonly changed: () => void,
     initialValues: Readonly<Record<string, string>> = {},
+    private readonly digest: typeof formResponseDigest = formResponseDigest,
   ) {
     this.state = {
       key,
       major: 1,
       values: initialValues,
+      draftRevision: 0,
       expectedVersion: version,
       sequence,
       pending: null,
@@ -141,14 +145,31 @@ export class ObjectiveContinuity {
       updatedAt: Date.now(),
     };
   }
-  private async persist(patch: Partial<LocalResponse>) {
+  private revision(state = this.state) {
+    return state.draftRevision ?? 0;
+  }
+  private async persist(
+    update: Partial<LocalResponse> | ((current: LocalResponse) => Partial<LocalResponse> | null),
+  ) {
     const write = this.writes.then(async () => {
+      // Evaluate read/modify/write guards inside the same serialized local write slot.
+      const patch = typeof update === "function" ? update(this.state) : update;
+      if (!patch) return false;
       const next = { ...this.state, ...patch, updatedAt: Date.now() };
       await this.store.write(next);
       this.state = next;
+      return true;
     });
-    this.writes = write.catch(() => undefined);
-    await write;
+    this.writes = write.then(
+      () => undefined,
+      () => undefined,
+    );
+    return write;
+  }
+  private persistSnapshot(snapshot: LocalResponse, patch: Partial<LocalResponse>) {
+    return this.persist((current) =>
+      this.revision(current) === this.revision(snapshot) ? patch : null,
+    );
   }
   private run(work: () => Promise<void>) {
     this.queue = this.queue
@@ -175,7 +196,12 @@ export class ObjectiveContinuity {
     if (this.isSubmitting) return;
     try {
       // Local durability never waits for a network request. The pending intent retains its snapshot.
-      await this.persist({ values, acknowledged: false, captured: true });
+      await this.persist((current) => ({
+        values,
+        draftRevision: this.revision(current) + 1,
+        acknowledged: false,
+        captured: true,
+      }));
       this.status = "saved";
       this.changed();
     } catch {
@@ -221,26 +247,35 @@ export class ObjectiveContinuity {
   }
   public resolve(use: "local" | "server") {
     return this.run(async () => {
-      const remote = this.state.conflict;
+      await this.writes;
+      const snapshot = this.state;
+      const remote = snapshot.conflict;
       if (!remote) return;
       const latest = remote.checkpoints.find(
         (c) => c.sequence === remote.acknowledgedCheckpointSequence,
       );
       // Keep the conflict in a separate retained record before starting the explicitly chosen branch.
       await this.store.write({
-        ...this.state,
+        ...snapshot,
         key: `${this.state.key}:conflict:${crypto.randomUUID()}`,
       });
       if (remote.submission) {
         if (use === "server") {
-          this.status = "completed";
-          await this.persist({ pending: null, conflict: null, acknowledged: true });
+          if (
+            await this.persistSnapshot(snapshot, {
+              pending: null,
+              conflict: null,
+              acknowledged: true,
+            })
+          )
+            this.status = "completed";
         }
         return;
       }
-      await this.persist({
+      const resolved = await this.persistSnapshot(snapshot, {
         values:
-          use === "server" && latest ? valuesFromOperations(latest.operations) : this.state.values,
+          use === "server" && latest ? valuesFromOperations(latest.operations) : snapshot.values,
+        draftRevision: this.revision(snapshot) + 1,
         expectedVersion: remote.resourceVersion,
         sequence: remote.acknowledgedCheckpointSequence + 1,
         pending: null,
@@ -248,6 +283,7 @@ export class ObjectiveContinuity {
         acknowledged: false,
         submitRequested: undefined,
       });
+      if (!resolved) return;
       this.isSubmitting = false;
       await this.prepare(false);
       await this.reconcile();
@@ -294,21 +330,21 @@ export class ObjectiveContinuity {
       return;
     }
     const intent = this.state.pending;
+    const snapshot = this.state;
     if (remote.submission) {
       if (
         (intent && remote.submission.responseDigest !== intent.responseDigest) ||
         (!intent &&
-          this.state.captured &&
-          !this.state.acknowledged &&
+          snapshot.captured &&
+          !snapshot.acknowledged &&
           remote.submission.responseDigest !==
-            (await formResponseDigest(this.state.values, this.attemptId)))
+            (await formResponseDigest(snapshot.values, this.attemptId)))
       ) {
-        await this.persist({ conflict: remote });
-        this.status = "conflict";
+        if (await this.persistSnapshot(snapshot, { conflict: remote })) this.status = "conflict";
         return;
       }
-      await this.persist({ pending: null, acknowledged: true });
-      this.status = "completed";
+      if (await this.persistSnapshot(snapshot, { pending: null, acknowledged: true }))
+        this.status = "completed";
       return;
     }
     const latest = remote.checkpoints.find(
@@ -317,21 +353,26 @@ export class ObjectiveContinuity {
     if (!intent) {
       if (
         latest &&
-        !this.state.acknowledged &&
-        this.state.captured &&
-        latest.responseDigest !== (await formResponseDigest(this.state.values))
+        !snapshot.acknowledged &&
+        snapshot.captured &&
+        latest.responseDigest !== (await formResponseDigest(snapshot.values))
       ) {
-        await this.persist({ conflict: remote });
-        this.status = "conflict";
+        if (await this.persistSnapshot(snapshot, { conflict: remote })) this.status = "conflict";
         return;
       }
-      await this.persist({
-        ...(latest && !this.state.captured
-          ? { values: valuesFromOperations(latest.operations), captured: true, acknowledged: true }
+      const applied = await this.persistSnapshot(snapshot, {
+        ...(latest && !snapshot.captured
+          ? {
+              values: valuesFromOperations(latest.operations),
+              draftRevision: this.revision(snapshot) + 1,
+              captured: true,
+              acknowledged: true,
+            }
           : {}),
         expectedVersion: remote.resourceVersion,
         sequence: remote.acknowledgedCheckpointSequence + 1,
       });
+      if (!applied) return;
       this.status = this.state.conflict ? "conflict" : this.state.acknowledged ? "synced" : "ready";
       if (this.state.submitRequested) {
         await this.prepare(true, this.state.submitRequested.clockObservation);
@@ -363,15 +404,15 @@ export class ObjectiveContinuity {
       return;
     }
     if (!intent.submit) {
-      const acknowledged = intent.responseDigest === (await formResponseDigest(this.state.values));
-      await this.persist({
+      const acknowledged = intent.responseDigest === (await formResponseDigest(snapshot.values));
+      await this.persist((current) => ({
         pending: null,
         expectedVersion: remote.resourceVersion,
         sequence: remote.acknowledgedCheckpointSequence + 1,
-        acknowledged,
-      });
-      this.status = "synced";
-      if (!acknowledged) {
+        acknowledged: acknowledged && this.revision(current) === this.revision(snapshot),
+      }));
+      this.status = this.state.acknowledged ? "synced" : "saved";
+      if (!this.state.acknowledged) {
         await this.prepare(false);
         await this.reconcile();
         return;

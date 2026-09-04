@@ -1,7 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { canonicalizeResponse, canonicalResponseDigest } from "@bestehen/content";
 import { formOperations, formResponseDigest } from "../objective-form";
+import * as forms from "../objective-form";
 import { ObjectiveContinuity, type LocalResponse, type RecoveryView } from "./objective-continuity";
+
+afterEach(() => vi.restoreAllMocks());
+function deferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
 
 function fixture() {
   const rows = new Map<string, LocalResponse>();
@@ -89,6 +99,151 @@ function fixture() {
 }
 
 describe("P05-RECOVERY-001 durable response protocol", () => {
+  it.each(["deferred_digest", "queued_write"] as const)(
+    "acknowledges only the accepted draft revision across %s",
+    async (mode) => {
+      const f = fixture();
+      const digestStarted = deferred();
+      const digestReleased = deferred();
+      const digestFinished = deferred();
+      const writeStarted = deferred();
+      const writeReleased = deferred();
+      const secondPosted = deferred();
+      const secondAccepted = deferred();
+      const originalDigest = forms.formResponseDigest;
+      let hashes = 0;
+      vi.spyOn(forms, "formResponseDigest").mockImplementation(async (...args) => {
+        const ordinal = ++hashes;
+        if (ordinal === 2) {
+          digestStarted.resolve();
+          await digestReleased.promise;
+        }
+        const result = await originalDigest(...args);
+        if (ordinal === 2) digestFinished.resolve();
+        return result;
+      });
+      const history: LocalResponse[] = [];
+      let blockedWrite = false;
+      const store = {
+        read: f.store.read,
+        write: async (value: LocalResponse) => {
+          if (mode === "queued_write" && value.values["select:item"] === "b" && !blockedWrite) {
+            blockedWrite = true;
+            writeStarted.resolve();
+            await writeReleased.promise;
+          }
+          await f.store.write(value);
+          history.push(structuredClone(value));
+        },
+      };
+      const runtime = new ObjectiveContinuity(
+        "scope:attempt:branch",
+        "attempt-id",
+        2,
+        1,
+        store,
+        async (url, options) => {
+          if (options?.body && JSON.parse(String(options.body)).payload.sequence === 2) {
+            secondPosted.resolve();
+            await secondAccepted.promise;
+          }
+          return f.transport(url, options);
+        },
+        () => undefined,
+      );
+      const savingA = runtime.change({ "select:item": "a" });
+      await digestStarted.promise;
+      const savingB = runtime.change({ "select:item": "b" });
+      try {
+        if (mode === "queued_write") await writeStarted.promise;
+        else
+          await expect.poll(() => f.rows.get(runtime.state.key)?.values["select:item"]).toBe("b");
+        digestReleased.resolve();
+        await digestFinished.promise;
+        // The acknowledgement update must now wait behind the pending B write.
+        await Promise.resolve();
+        writeReleased.resolve();
+        await expect
+          .poll(
+            () =>
+              history.find((row) => row.values["select:item"] === "b" && row.pending === null)
+                ?.acknowledged,
+          )
+          .toBe(false);
+        await secondPosted.promise;
+        expect(runtime.state.values).toEqual({ "select:item": "b" });
+        expect(runtime.state.draftRevision).toBe(2);
+        expect(runtime.state.acknowledged).toBe(false);
+        expect(f.calls).toHaveLength(1);
+        secondAccepted.resolve();
+        await Promise.all([savingA, savingB]);
+        expect(runtime.state.acknowledged).toBe(true);
+        expect(runtime.state.sequence).toBe(3);
+        expect(
+          f.calls.map((call) => (call.body.payload as { operations: unknown }).operations),
+        ).toEqual([formOperations({ "select:item": "a" }), formOperations({ "select:item": "b" })]);
+      } finally {
+        digestReleased.resolve();
+        writeReleased.resolve();
+        secondAccepted.resolve();
+        await Promise.all([savingA, savingB]);
+      }
+    },
+  );
+  it("does not overwrite a newer draft with a recovery projection queued behind its device write", async () => {
+    const f = fixture();
+    f.setRemote({
+      contract: { major: 1 },
+      resourceVersion: 3,
+      acknowledgedCheckpointSequence: 1,
+      checkpoints: [
+        {
+          sequence: 1,
+          responseDigest: await formResponseDigest({ "select:item": "a" }),
+          operations: formOperations({ "select:item": "a" }),
+        },
+      ],
+      submission: null,
+    });
+    const writing = deferred();
+    const release = deferred();
+    let once = false;
+    let editing: Promise<void> | undefined;
+    const runtime = new ObjectiveContinuity(
+      "scope:attempt:branch",
+      "attempt-id",
+      2,
+      1,
+      {
+        read: f.store.read,
+        write: async (value) => {
+          if (!once && value.values["select:item"] === "b") {
+            once = true;
+            writing.resolve();
+            await release.promise;
+          }
+          await f.store.write(value);
+        },
+      },
+      async (url, options) => {
+        if (!once) editing = runtime.change({ "select:item": "b" });
+        return f.transport(url, options);
+      },
+      () => undefined,
+    );
+    const restoring = runtime.restore();
+    await writing.promise;
+    // Let the response be decoded and its snapshot update queue behind the blocked local write.
+    await new Promise<void>((done) => setTimeout(done, 0));
+    release.resolve();
+    await restoring;
+    await editing;
+    expect(runtime.state.values).toEqual({ "select:item": "b" });
+    expect(runtime.state.acknowledged).toBe(false);
+    expect(runtime.state.conflict?.checkpoints[0]?.operations).toEqual(
+      formOperations({ "select:item": "a" }),
+    );
+  });
   it("persists submit intent without waiting for a hung save and freezes its answer snapshot", async () => {
     const f = fixture();
     let release!: () => void;
