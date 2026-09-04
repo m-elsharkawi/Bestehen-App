@@ -697,3 +697,50 @@ stimulus and result disclosure safely, preserve immutable history, and deny
 wrong-family mutations. Listening acquisition/preflight must not itself record
 target exposure. Root will independently verify the resulting composition and
 real-database tests before accepting it or resuming T5.
+
+### Disclosure correction review at `440086b`, 2026-09-04
+
+The orchestrator reviewed `e2cd5cd` and `440086b`. Written server delivery now
+records a pinned disclosure atomically with its receipt and family index update.
+It captures the family index before the first disclosure, so two previously
+issued fresh leases cannot both become fresh attempts after one has been shown.
+Refreshing the first attempt preserves its original baseline. Result delivery
+records answer exposure without changing the committed outcome. Speculative
+prefetch and Listening instruction delivery do not record target exposure.
+
+Review required preserving `near_duplicate_exposed` as well as `answer_exposed`
+when merging index entries. It also required an early, validated submission
+receipt lookup: old committed submissions must replay without today's new
+disclosure-baseline requirement or another key read. New written submissions
+without that baseline fail closed. Synthetic approval records in the integration
+fixture do not approve or publish the seed corpus.
+
+Independent evidence on committed `440086b`:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+  `pnpm exec tsc -p apps/web/tsconfig.json --noEmit`, `pnpm check:boundaries`,
+  `pnpm test:release`: **PASS**.
+- `pnpm test:unit`: **1 failed / 779 passed (780)**. The sole failure is the
+  existing coverage semantic-union parity baseline.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **21/21 in
+  three consecutive independent runs**. The expanded composition tests exercise
+  real acquisition, display, refresh, result disclosure, rollback after the index
+  write, scope/family refusal and historical submission replay.
+- Fresh ignored styled preview: ready, conflict, repeated and result states pass
+  axe, keyboard/label activation and repeated 320/1280/320/390/320 reflow in all
+  three engines. At 320 px with 400% text, no horizontal overflow was observed.
+  The orchestrator inspected the repeated-practice screen at 390 px in dark mode.
+  This is supplemental evidence, not T12 authenticated browser completion.
+
+T10 remains open. Further source review found that an exact retry of the older
+standalone exposure command can create a second fact and index increment. The
+old command stored `attempt.exposure` and `attempt.fact.exposure` receipts with
+an `objective_exposure_v1` fact; the new path recognizes only the new disclosure
+receipt. The same Sol high worker confirmed this mismatch read-only and is
+adding a real-database regression before implementation. Complete old retries
+must return their original fact ID without changing history. Conflicts and
+partial old split writes must not produce another increment. T5 remains paused.
+Build, budget, generated-output, full browser, visual and process gates at this
+commit are deferred until that correction; their older results are not a pass
+for this tree. Local main is 98 commits ahead of stale origin/main at this
+production boundary. No push, pull request or remote workflow occurred.
