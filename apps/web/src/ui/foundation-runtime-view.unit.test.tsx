@@ -7,6 +7,49 @@ import { FoundationRuntimeView } from "./foundation-runtime-view";
 afterEach(cleanup);
 
 describe("P05-FOUNDATION-001 rendered foundation route", () => {
+  it.each([0, 1, 2, 3])(
+    "keeps sequence and Continue aligned after %i available checkpoints",
+    (count) => {
+      const skills = ["reading", "language_elements", "listening"] as const;
+      const labels = ["Reading", "Language Elements", "Listening"];
+      const next = skills[count];
+      const { container } = render(
+        <FoundationRuntimeView
+          projection={{
+            sessionId: "11111111-1111-4111-8111-111111111111",
+            planningHorizonYears: 65,
+            officialTargetYears: 60,
+            completedSkills: skills.slice(0, count),
+            ...(next ? { nextSkill: next } : {}),
+            activityOccurrenceId: "22222222-2222-4222-8222-222222222222",
+            unavailableSkills: [
+              { skill: "writing", reasonCode: "FALLBACK.CONTENT_UNAVAILABLE" },
+              { skill: "speaking", reasonCode: "FALLBACK.CONTENT_UNAVAILABLE" },
+            ],
+          }}
+          saveAccess={async () => undefined}
+          saveTarget={async () => undefined}
+          startAttempt={async () => undefined}
+        />,
+      );
+      const sequence = container.querySelector(".sequence");
+      expect(sequence?.querySelectorAll('[aria-current="step"]')).toHaveLength(next ? 1 : 0);
+      for (const label of labels.slice(0, count))
+        expect(sequence).toHaveTextContent(`Completed ${label}`);
+      if (next) {
+        expect(sequence?.querySelector('[aria-current="step"]')).toHaveTextContent(
+          `Current ${labels[count]}`,
+        );
+        expect(
+          screen.getByRole("button", { name: `Continue with ${labels[count]}` }),
+        ).toBeVisible();
+      } else {
+        expect(sequence).toHaveTextContent("Unavailable Writing");
+        expect(sequence).toHaveTextContent("Unavailable Speaking");
+        expect(screen.queryByRole("button", { name: /Continue with/ })).not.toBeInTheDocument();
+      }
+    },
+  );
   it("renders the fixed order, separate horizons, and honest unavailable blocks", () => {
     const action = async () => undefined;
     const { container } = render(

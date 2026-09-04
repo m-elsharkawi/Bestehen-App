@@ -31,10 +31,20 @@ export function FoundationRuntimeView({
   ).length;
   return (
     <AppShell backHref="/coach" kind="focused" title="Five-skill foundation">
-      <Sequence
-        current={Math.min(availableComplete + 1, 5)}
-        steps={["Reading", "Language Elements", "Listening", "Writing", "Speaking"]}
-      />
+      {availableComplete < 3 ? (
+        <Sequence
+          current={availableComplete}
+          steps={["Reading", "Language Elements", "Listening", "Writing", "Speaking"]}
+        />
+      ) : (
+        <ol className="sequence" aria-label="Foundation checkpoints">
+          {["Reading", "Language Elements", "Listening"].map((skill) => (
+            <li key={skill}>Completed {skill}</li>
+          ))}
+          <li>Unavailable Writing</li>
+          <li>Unavailable Speaking</li>
+        </ol>
+      )}
       <p>
         Completed parts stay recorded. Partial work adds evidence building and never assigns a
         placement or level.
