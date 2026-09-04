@@ -31,6 +31,19 @@ const payload: TaskFamily = {
     },
   ],
 };
+const instruction = {
+  instructionId: "instruction-one",
+  locale: "de" as const,
+  safeContentNodes: [
+    {
+      kind: "paragraph" as const,
+      children: [{ kind: "inline_text" as const, text: "Lesen Sie den Text." }],
+    },
+  ],
+  responseMechanic: "single_select" as const,
+  helpPolicy: { offerableAssistanceKinds: [] },
+  learnerFacingTimingLabel: "Übungszeit",
+};
 
 describe("P05-COMPONENT-001 rendered objective response", () => {
   it("uses the tested primary action role for progressive submission", () => {
@@ -39,6 +52,7 @@ describe("P05-COMPONENT-001 rendered objective response", () => {
         action={async (state) => state}
         attemptId="22222222-2222-4222-8222-222222222222"
         kind="reading"
+        instruction={instruction}
         learnerPayload={payload}
         nextSequence={1}
         resourceVersion={2}
@@ -52,5 +66,9 @@ describe("P05-COMPONENT-001 rendered objective response", () => {
       "action-primary",
     );
     expect(container.querySelector(".sticky-action")).toBeNull();
+    expect(screen.getByRole("region", { name: "Instructions" })).toHaveAttribute("lang", "de");
+    expect(screen.getByRole("region", { name: "Instructions" })).toHaveTextContent(
+      "Lesen Sie den Text.Übungszeit",
+    );
   });
 });

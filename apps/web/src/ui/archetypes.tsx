@@ -177,6 +177,7 @@ export function ResultView({
   validity = "valid",
   decisiveEvidence = [],
   details,
+  projection,
 }: {
   readonly backHref?: string;
   readonly validity?: EvidenceValidityState;
@@ -187,7 +188,61 @@ export function ResultView({
     readonly causes: readonly string[];
     readonly repair: string;
   };
+  readonly projection?: {
+    readonly validityScope: readonly { readonly id: string; readonly text: string }[];
+    readonly decisiveEvidence: readonly { readonly id: string; readonly text: string }[];
+    readonly outcomes: readonly { readonly id: string; readonly text: string }[];
+    readonly rationales: readonly { readonly id: string; readonly text: string }[];
+    readonly causes: readonly { readonly id: string; readonly text: string }[];
+    readonly repair: string;
+  };
 }) {
+  if (projection) {
+    return (
+      <AppShell backHref={backHref} kind="focused" title="Result">
+        <EvidenceLabel
+          reason="The recorded conditions determine this result."
+          validity={validity}
+        />
+        <ul>
+          {projection.validityScope.map((scope) => (
+            <li key={scope.id}>{scope.text}</li>
+          ))}
+        </ul>
+        <SemanticCard title="Recorded outcome">
+          <ul>
+            {projection.outcomes.map((outcome) => (
+              <li key={outcome.id}>{outcome.text}</li>
+            ))}
+          </ul>
+        </SemanticCard>
+        <SemanticCard title="Decisive evidence">
+          <ul>
+            {projection.decisiveEvidence.map((entry) => (
+              <li key={entry.id}>{entry.text}</li>
+            ))}
+          </ul>
+        </SemanticCard>
+        <SemanticCard title="Chosen response">
+          <ul>
+            {projection.rationales.map((rationale) => (
+              <li key={rationale.id}>{rationale.text}</li>
+            ))}
+          </ul>
+        </SemanticCard>
+        <SemanticCard title="Supported cause or clarifier">
+          <ul>
+            {projection.causes.map((cause) => (
+              <li key={cause.id}>{cause.text}</li>
+            ))}
+          </ul>
+        </SemanticCard>
+        <SemanticCard title="Repair">
+          <p>{projection.repair}</p>
+        </SemanticCard>
+      </AppShell>
+    );
+  }
   return (
     <AppShell backHref={backHref} kind="focused" title="Result">
       <EvidenceLabel reason="The recorded conditions determine this result." validity={validity} />

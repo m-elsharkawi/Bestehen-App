@@ -23,6 +23,14 @@ afterEach(() => {
   sessionStorage.clear();
 });
 const text = (value: string) => [{ kind: "inline_text" as const, text: value }];
+const instruction = {
+  instructionId: "synthetic-instruction",
+  locale: "de" as const,
+  safeContentNodes: [{ kind: "paragraph" as const, children: text("Lesen Sie sorgfältig.") }],
+  responseMechanic: "single_select" as const,
+  helpPolicy: { offerableAssistanceKinds: [] },
+  learnerFacingTimingLabel: "Übungszeit",
+};
 const options = [
   {
     optionId: "choice-z",
@@ -99,6 +107,7 @@ function view(payload: TaskFamily, continuityScope?: string) {
   return render(
     <ObjectiveResponseIsland
       payload={payload}
+      instruction={instruction}
       action={async (state) => state}
       attemptId="attempt"
       expectedVersion={2}
@@ -225,6 +234,7 @@ describe("P05-EQUIV-001 rendered canonical input identity", () => {
     const element = () => (
       <ObjectiveResponseIsland
         payload={families[4] as TaskFamily}
+        instruction={instruction}
         action={async (state) => state}
         attemptId="attempt"
         expectedVersion={3}

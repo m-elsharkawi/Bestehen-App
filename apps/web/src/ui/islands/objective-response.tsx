@@ -1,6 +1,11 @@
 "use client";
 
-import type { ResponseOperation, SafeContentNode, TaskFamily } from "@bestehen/content";
+import type {
+  Instruction,
+  ResponseOperation,
+  SafeContentNode,
+  TaskFamily,
+} from "@bestehen/content";
 import { NativeButton } from "@bestehen/design-system";
 import type { ReactNode } from "react";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -120,41 +125,62 @@ function LearnerMaterial({ payload }: { readonly payload: TaskFamily }) {
   switch (payload.kind) {
     case "R1HeadingMatching":
       return payload.texts.map((text) => (
-        <section key={text.stimulusId}>
+        <section key={text.stimulusId} lang={text.language}>
           <SafeNodes nodes={text.safeContentNodes} />
         </section>
       ));
     case "R2DetailedSelect":
-      return <SafeNodes nodes={payload.stimulus.safeContentNodes} />;
+      return (
+        <div lang={payload.stimulus.language}>
+          <SafeNodes nodes={payload.stimulus.safeContentNodes} />
+        </div>
+      );
     case "R3SituationNoticeMatching":
       return (
         <>
           {payload.situations.map((situation) => (
-            <SafeNodes key={situation.promptId} nodes={situation.safeContentNodes} />
+            <div key={situation.promptId} lang="de">
+              <SafeNodes nodes={situation.safeContentNodes} />
+            </div>
           ))}
           {payload.notices.map((notice) => (
-            <SafeNodes key={notice.stimulusId} nodes={notice.safeContentNodes} />
+            <div key={notice.stimulusId} lang={notice.language}>
+              <SafeNodes nodes={notice.safeContentNodes} />
+            </div>
           ))}
         </>
       );
     case "SB1ContextualGrammarCloze":
     case "SB2SharedBankLexicalCloze":
-      return <SafeNodes nodes={payload.connectedText.safeContentNodes} />;
+      return (
+        <div lang={payload.connectedText.language}>
+          <SafeNodes nodes={payload.connectedText.safeContentNodes} />
+        </div>
+      );
     case "H1ShortAnnouncements":
       return payload.announcements.map((announcement) => (
-        <SafeNodes key={announcement.stimulusId} nodes={announcement.writtenInstructionNodes} />
+        <div key={announcement.stimulusId} lang={announcement.language}>
+          <SafeNodes nodes={announcement.writtenInstructionNodes} />
+        </div>
       ));
     case "H2ConversationInterview":
-      return <SafeNodes nodes={payload.conversation.writtenInstructionNodes} />;
+      return (
+        <div lang={payload.conversation.language}>
+          <SafeNodes nodes={payload.conversation.writtenInstructionNodes} />
+        </div>
+      );
     case "H3ShortFunctionalTexts":
       return payload.texts.map((text) => (
-        <SafeNodes key={text.stimulusId} nodes={text.writtenInstructionNodes} />
+        <div key={text.stimulusId} lang={text.language}>
+          <SafeNodes nodes={text.writtenInstructionNodes} />
+        </div>
       ));
   }
 }
 
 export function ObjectiveResponseIsland({
   payload,
+  instruction,
   action,
   attemptId,
   expectedVersion,
@@ -164,6 +190,7 @@ export function ObjectiveResponseIsland({
   restoredOperations = noRestoredOperations,
 }: {
   readonly payload: TaskFamily;
+  readonly instruction: Instruction;
   readonly action: ObjectiveFormAction;
   readonly attemptId: string;
   readonly expectedVersion: number;
@@ -364,10 +391,21 @@ export function ObjectiveResponseIsland({
       <input name="sequence" type="hidden" value={sequence} />
       <input name="startedAt" type="hidden" value={startedAt} />
       <input name="capturedFields" type="hidden" value={JSON.stringify(responseFields(payload))} />
+      <section aria-label="Instructions" lang={instruction.locale}>
+        <SafeNodes nodes={instruction.safeContentNodes} />
+        {instruction.learnerFacingTimingLabel ? (
+          <p>{instruction.learnerFacingTimingLabel}</p>
+        ) : null}
+      </section>
+      {instruction.helpPolicy.offerableAssistanceKinds.length > 0 ? (
+        <p lang="en">Help is available when this activity permits it.</p>
+      ) : null}
       <LearnerMaterial payload={payload} />
       {selects.map((question) => (
         <fieldset key={question.itemRef} className="answer-choice">
-          <legend>{safeNodeText(question.questionNodes)}</legend>
+          <legend>
+            <span lang="de">{safeNodeText(question.questionNodes)}</span>
+          </legend>
           {question.options.map((option) => (
             <label
               key={option.optionId}
@@ -385,7 +423,7 @@ export function ObjectiveResponseIsland({
                 type="radio"
                 value={option.optionId}
               />
-              <span>
+              <span lang="de">
                 <SafeNodes nodes={option.learnerSafeLabel} />
               </span>
             </label>
@@ -414,7 +452,7 @@ export function ObjectiveResponseIsland({
               >
                 <option value="">Choose</option>
                 {gap.options.map((option) => (
-                  <option key={option.optionId} value={option.optionId}>
+                  <option key={option.optionId} lang="de" value={option.optionId}>
                     {safeNodeText(option.learnerSafeLabel)}
                   </option>
                 ))}
@@ -434,6 +472,7 @@ export function ObjectiveResponseIsland({
                 {payload.candidateBank.map((option) => (
                   <option
                     key={option.optionId}
+                    lang="de"
                     value={option.optionId}
                     disabled={unavailableChoice(
                       `candidate:${gap.itemRef}:${gap.gapId}`,
@@ -459,6 +498,7 @@ export function ObjectiveResponseIsland({
                 {payload.headings.map((option) => (
                   <option
                     key={option.optionId}
+                    lang="de"
                     value={option.optionId}
                     disabled={unavailableChoice(
                       `match:${binding.itemRef}:${binding.leftId}`,
@@ -484,6 +524,7 @@ export function ObjectiveResponseIsland({
                 {payload.notices.map((notice) => (
                   <option
                     key={notice.stimulusId}
+                    lang="de"
                     value={notice.stimulusId}
                     disabled={unavailableChoice(
                       `match:${binding.itemRef}:${binding.leftId}`,
@@ -535,17 +576,19 @@ export function ObjectiveResponseIsland({
               );
             })}
           </ol>
-          <NativeButton
-            disabled={Boolean(controller.current?.state.conflict?.submission)}
-            onClick={() => void controller.current?.resolve("local")}
-          >
-            Continue with this device's answers
-          </NativeButton>
-          <NativeButton onClick={() => void controller.current?.resolve("server")}>
-            {controller.current?.state.conflict?.submission
-              ? "View the recorded result"
-              : "Continue with the other saved answers"}
-          </NativeButton>
+          <div className="action-stack">
+            <NativeButton
+              disabled={Boolean(controller.current?.state.conflict?.submission)}
+              onClick={() => void controller.current?.resolve("local")}
+            >
+              Continue with this device's answers
+            </NativeButton>
+            <NativeButton onClick={() => void controller.current?.resolve("server")}>
+              {controller.current?.state.conflict?.submission
+                ? "View the recorded result"
+                : "Continue with the other saved answers"}
+            </NativeButton>
+          </div>
         </section>
       ) : null}
       <label className="field">

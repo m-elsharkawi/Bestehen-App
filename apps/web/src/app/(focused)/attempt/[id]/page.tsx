@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import {
   isSyntheticFixtureRequest,
   loadAttemptProjection,
+  attemptReturnPathForAuthentication,
   requirePersonalSession,
 } from "../../../../server/frontend-data";
 import { AttemptView } from "../../../../ui/archetypes";
@@ -11,15 +12,18 @@ import type { ResponseOperation } from "@bestehen/content";
 
 export default async function AttemptPage({
   params,
+  searchParams,
 }: {
   readonly params: Promise<{ id: string }>;
+  readonly searchParams: Promise<{ returnTo?: string | string[] }>;
 }) {
   const { id } = await params;
+  const returnPath = attemptReturnPathForAuthentication(id, (await searchParams).returnTo);
   if (await isSyntheticFixtureRequest()) {
-    await requirePersonalSession(`/attempt/${id}`);
+    await requirePersonalSession(returnPath);
     return <AttemptView />;
   }
-  const projection = await loadAttemptProjection(id, `/attempt/${id}`);
+  const projection = await loadAttemptProjection(id, returnPath);
   if (!projection) notFound();
   const kind = projection.attempt.modality === "language_elements" ? "language" : "reading";
   return (
@@ -27,6 +31,7 @@ export default async function AttemptPage({
       action={submitObjectiveForm}
       attemptId={id}
       kind={kind}
+      instruction={projection.material.instruction}
       learnerPayload={projection.material.learnerPayload}
       nextSequence={
         (projection.recovery?.acknowledgedCheckpointSequence ??

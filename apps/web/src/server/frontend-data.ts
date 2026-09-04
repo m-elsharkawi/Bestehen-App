@@ -37,6 +37,21 @@ const paths: Record<ProtectedRouteKind, string> = {
 const databaseAppIdPattern =
   /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 
+/**
+ * Stage 04's non-database fixture route held `/attempt/current` during sign-in.  Preserve only
+ * that exact legacy destination for a non-ID token; a real persisted attempt always resumes its
+ * own URL, and no arbitrary query value becomes an authentication destination.
+ */
+export function attemptReturnPathForAuthentication(
+  attemptId: string,
+  _requestedReturnTo: string | string[] | undefined,
+): string {
+  if (!databaseAppIdPattern.test(attemptId)) {
+    return "/attempt/current";
+  }
+  return `/attempt/${attemptId}`;
+}
+
 export function safeHeldDestination(value: string | string[] | undefined): string {
   if (typeof value !== "string") return "/coach";
   return (protectedRouteKinds as readonly string[]).includes(value)
@@ -137,7 +152,19 @@ export async function loadResultProjection(attemptId: string, returnPath: string
     scoped.attempt.attemptId,
   );
   if (!evidence.ok) return undefined;
-  return { attempt: scoped.attempt, submission, evidence: evidence.value };
+  const learner = await new DeterministicAttemptService(
+    repositories(),
+    stableId,
+    () => new Date(),
+  ).readLearnerAttempt(scoped.scope, scoped.attempt.attemptId);
+  return {
+    attempt: scoped.attempt,
+    submission,
+    evidence: evidence.value,
+    // A historical committed outcome remains available even if optional presentational material is
+    // malformed after a deployment. The result projector has learner-safe labels for that case.
+    learnerPayload: learner.ok ? learner.value.material.learnerPayload : undefined,
+  };
 }
 
 export async function loadFoundationProjection(sessionId: string, returnPath: string) {

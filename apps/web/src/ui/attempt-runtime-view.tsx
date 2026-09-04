@@ -1,4 +1,4 @@
-import type { TaskFamily } from "@bestehen/content";
+import type { Instruction, TaskFamily } from "@bestehen/content";
 import { AttemptShell } from "@bestehen/design-system";
 import type { AttemptRuntimeState } from "@bestehen/domain";
 import { AttemptClockIsland } from "./islands/attempt-clock";
@@ -10,6 +10,7 @@ export function RuntimeAttemptView({
   action,
   attemptId,
   kind,
+  instruction,
   learnerPayload,
   nextSequence,
   resourceVersion,
@@ -21,6 +22,7 @@ export function RuntimeAttemptView({
   readonly action: ObjectiveFormAction;
   readonly attemptId: string;
   readonly kind: "reading" | "language";
+  readonly instruction: Instruction;
   readonly learnerPayload: TaskFamily;
   readonly nextSequence: number;
   readonly resourceVersion: number;
@@ -46,6 +48,7 @@ export function RuntimeAttemptView({
         attemptId={attemptId}
         expectedVersion={resourceVersion}
         payload={learnerPayload}
+        instruction={instruction}
         sequence={nextSequence}
         startedAt={startedAt ?? new Date(0).toISOString()}
         {...(continuityScope ? { continuityScope } : {})}

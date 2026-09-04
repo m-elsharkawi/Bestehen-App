@@ -5,12 +5,14 @@ import {
   canonicalizeResponse,
   canonicalResponseDigest,
   collectSafeContentNodes,
+  type Instruction,
   type ItemBinding,
   offeredIdentifiersByItemRef,
   type PinnedKey,
   parseSafeContentTree,
   type ResponseKind,
   type ResponseOperation,
+  responseMechanics,
   type ScoredUnitDescriptor,
   type ScoringPolicy,
   scoreObjectiveSubmission,
@@ -27,6 +29,7 @@ import type {
   ServingManifestId,
   TimerIntegrityState,
 } from "@bestehen/domain";
+import { assistanceKinds } from "@bestehen/domain";
 import type {
   AttemptCheckpointResult,
   AttemptStateRecord,
@@ -98,7 +101,7 @@ export interface LearnerAttemptProjection {
     readonly contentRevisionId: AppId<"content_revision">;
     readonly contentFamilyId: AppId<"content_family">;
     readonly taskFamilyKind: TaskFamily["kind"];
-    readonly instruction: unknown;
+    readonly instruction: Instruction;
     readonly learnerPayload: TaskFamily;
     readonly allowedConditions: ReturnType<typeof allowedConditionsSchema.parse>;
     readonly contentReleaseIdentity: string;
@@ -153,6 +156,38 @@ function parseTaskFamily(value: unknown, expectedKind: string): TaskFamily | und
   } catch {
     return undefined;
   }
+}
+
+/**
+ * Pinned instructions travel alongside the learner payload, but come from a JSONB boundary.  Keep
+ * the validation here so the route never turns an unrecognised persisted shape into UI markup.
+ */
+function parseInstruction(value: unknown): Instruction | undefined {
+  if (!isRecord(value)) return undefined;
+  if (typeof value.instructionId !== "string" || value.instructionId.length === 0) return undefined;
+  if (value.locale !== "de" && value.locale !== "en") return undefined;
+  if (!Array.isArray(value.safeContentNodes)) return undefined;
+  if (!(responseMechanics as readonly string[]).includes(String(value.responseMechanic))) {
+    return undefined;
+  }
+  if (!isRecord(value.helpPolicy) || !Array.isArray(value.helpPolicy.offerableAssistanceKinds)) {
+    return undefined;
+  }
+  if (
+    value.helpPolicy.offerableAssistanceKinds.some(
+      (kind) => !(assistanceKinds as readonly string[]).includes(String(kind)),
+    )
+  ) {
+    return undefined;
+  }
+  if (
+    value.learnerFacingTimingLabel !== null &&
+    typeof value.learnerFacingTimingLabel !== "string"
+  ) {
+    return undefined;
+  }
+  const safe = parseSafeContentTree(value.safeContentNodes, "/instruction/safeContentNodes");
+  return safe.ok ? (value as unknown as Instruction) : undefined;
 }
 
 function parseBinding(value: unknown): ItemBinding | undefined {
@@ -422,8 +457,10 @@ export class DeterministicAttemptService {
     );
     if (!material) return { ok: false, error: "not_available" };
     const payload = parseTaskFamily(material.learnerPayload, material.taskFamilyKind);
+    const instruction = parseInstruction(material.instruction);
     const allowed = allowedConditionsSchema.safeParse(material.manifest.allowedConditions);
-    if (!payload || !allowed.success) return { ok: false, error: "malformed_pinned_content" };
+    if (!payload || !instruction || !allowed.success)
+      return { ok: false, error: "malformed_pinned_content" };
     if (modalityFor(payload.kind) !== attempt.modality) {
       return { ok: false, error: "malformed_pinned_content" };
     }
@@ -434,7 +471,7 @@ export class DeterministicAttemptService {
         contentRevisionId: material.contentRevisionId,
         contentFamilyId: material.contentFamilyId,
         taskFamilyKind: payload.kind,
-        instruction: material.instruction,
+        instruction,
         learnerPayload: payload,
         allowedConditions: allowed.data,
         contentReleaseIdentity: material.manifest.contentReleaseIdentity,
