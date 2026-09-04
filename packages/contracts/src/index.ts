@@ -18,6 +18,7 @@ import {
   timerIntegrityStates,
 } from "@bestehen/domain";
 import { z } from "zod";
+import { audioManifestPinsSchema } from "./listening.js";
 
 export * from "./ui-projections.js";
 export * from "./listening.js";
@@ -224,6 +225,7 @@ export const allowedConditionsSchema = z
       .max(24 * 60 * 60 * 1000)
       .optional(),
     allowedPlays: z.number().int().min(0).max(8).optional(),
+    audioManifestPins: audioManifestPinsSchema.optional(),
     transcriptPhase: z.enum(["never", "after_attempt", "after_block"]),
     offerableAssistanceKinds: z.array(z.enum(assistanceKinds)).max(assistanceKinds.length),
   })

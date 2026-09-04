@@ -7,6 +7,8 @@ import {
   planSeedCommand,
   runSeedCli,
   executePostgresSeedCommand,
+  validateSeedReleaseDocument,
+  seedDocumentDigest,
   type SeedCatalogueState,
   type SeedPlanRequest,
   type SeedReleaseDocument,
@@ -42,6 +44,32 @@ function request(
 }
 
 describe("P05-SEED-001 seed CLI planner", () => {
+  it("P05-IDEMPOTENCY-001 validates optional successor labels and includes them in the operation document digest", async () => {
+    const release = await releaseDocument();
+    const first = required(release.entries[0]);
+    const legacyDigest = seedDocumentDigest(release);
+    expect(validateSeedReleaseDocument(release).entries[0]?.revisionLabel).toBeUndefined();
+    expect(seedDocumentDigest(release)).toBe(legacyDigest);
+    for (const key of ["revisionLabel", "rightsEnvelopeKey"] as const) {
+      for (const value of ["", 4, null])
+        expect(() =>
+          validateSeedReleaseDocument({
+            ...release,
+            entries: release.entries.map((entry, index) =>
+              index === 0 ? { ...first, [key]: value } : entry,
+            ),
+          }),
+        ).toThrow(`/entries/0/${key}`);
+      const changed = {
+        ...release,
+        entries: release.entries.map((entry, index) =>
+          index === 0 ? { ...first, [key]: "explicit-successor/v1" } : entry,
+        ),
+      };
+      expect(validateSeedReleaseDocument(changed).entries[0]?.[key]).toBe("explicit-successor/v1");
+      expect(seedDocumentDigest(changed)).not.toBe(legacyDigest);
+    }
+  });
   it("produces the exact dry-run report and does not mutate state", async () => {
     const release = await releaseDocument();
     const plan = planSeedCommand(request(release, emptySeedCatalogue, { dryRun: true }));
@@ -1088,3 +1116,8 @@ describe("P05-SEED-001 seed CLI planner", () => {
     expect(plan.nextState).toBe(emptySeedCatalogue);
   });
 });
+
+function required<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) throw new Error("required_media_identity_missing");
+  return value;
+}

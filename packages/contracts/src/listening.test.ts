@@ -1,11 +1,46 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
+import { allowedConditionsSchema } from "./index.js";
 import {
   type ListeningPlan,
   listeningPlanSchema,
   mediaPreflightObservationSchema,
   playbackOccurrenceCommandSchema,
 } from "./listening.js";
+
+it("P05-LISTENING-001 admits optional exact audio pins without changing old conditions or permitting private carriers", () => {
+  const legacy = {
+    progressionProfile: "P4",
+    timingMode: "exam",
+    transcriptPhase: "after_block",
+    offerableAssistanceKinds: [],
+  };
+  expect(allowedConditionsSchema.parse(legacy)).toEqual(legacy);
+  const pin = {
+    assetId: randomUUID(),
+    manifestRevision: "manifest/v1",
+    digest: "a".repeat(64),
+    contentRevisionId: randomUUID(),
+    stimulusId: "conversation",
+    mediaRevisionIds: [randomUUID()],
+  };
+  expect(allowedConditionsSchema.parse({ ...legacy, audioManifestPins: [pin] })).toEqual({
+    ...legacy,
+    audioManifestPins: [pin],
+  });
+  for (const invalid of [
+    { ...pin, objectKey: "private/key" },
+    { ...pin, digest: "wrong" },
+    { ...pin, mediaRevisionIds: [] },
+    { ...pin, mediaRevisionIds: [pin.mediaRevisionIds[0], pin.mediaRevisionIds[0]] },
+  ])
+    expect(
+      allowedConditionsSchema.safeParse({ ...legacy, audioManifestPins: [invalid] }).success,
+    ).toBe(false);
+  expect(
+    allowedConditionsSchema.safeParse({ ...legacy, audioManifestPins: [pin, pin] }).success,
+  ).toBe(false);
+});
 
 function required<T>(value: T | undefined): T {
   if (value === undefined) throw new Error("missing synthetic fixture identity");

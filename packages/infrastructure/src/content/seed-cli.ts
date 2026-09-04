@@ -36,6 +36,9 @@ export interface SeedGateResult {
 
 export interface SeedReleaseEntryDocument {
   readonly seedKey: string;
+  /** Immutable revision label; omitted legacy documents retain their original seedKey label. */
+  readonly revisionLabel?: string;
+  readonly rightsEnvelopeKey?: string;
   readonly intent: "serving" | "quarantine_fixture" | "withdrawal_fixture";
   readonly familyId: string;
   readonly taskFamily: string;
@@ -675,6 +678,8 @@ export function validateSeedReleaseDocument(value: unknown): SeedReleaseDocument
     const path = `/entries/${index}`;
     const entry = recordAt(rawEntry, path);
     const seedKey = stringAt(entry, "seedKey", path);
+    if ("revisionLabel" in entry) stringAt(entry, "revisionLabel", path);
+    if ("rightsEnvelopeKey" in entry) stringAt(entry, "rightsEnvelopeKey", path);
     const familyId = stringAt(entry, "familyId", path);
     const revisionId = stringAt(entry, "revisionId", path);
     const taskFamily = stringAt(entry, "taskFamily", path);
@@ -1048,7 +1053,7 @@ async function insertReleaseGraph(
        ON CONFLICT(id) DO NOTHING RETURNING id`,
       [
         entry.rightsEnvelopeId,
-        entry.seedKey,
+        entry.rightsEnvelopeKey ?? entry.seedKey,
         entry.rightsState,
         json(rights),
         rightsDigest,
@@ -1062,7 +1067,7 @@ async function insertReleaseGraph(
                 FROM app.rights_envelopes WHERE id=$1`,
         values: [entry.rightsEnvelopeId],
         expected: {
-          envelope_key: entry.seedKey,
+          envelope_key: entry.rightsEnvelopeKey ?? entry.seedKey,
           state: entry.rightsState,
           envelope: rights,
           digest: rightsDigest,
@@ -1151,7 +1156,7 @@ async function insertReleaseGraph(
       [
         entry.revisionId,
         entry.familyId,
-        entry.seedKey,
+        entry.revisionLabel ?? entry.seedKey,
         approvalState,
         rightsState,
         entry.digest,
@@ -1183,7 +1188,7 @@ async function insertReleaseGraph(
         values: [entry.revisionId],
         expected: {
           family_id: entry.familyId,
-          revision: entry.seedKey,
+          revision: entry.revisionLabel ?? entry.seedKey,
           role: "learning_practice",
           compatibility_state: "compatible",
           digest: entry.digest,

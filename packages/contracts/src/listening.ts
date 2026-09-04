@@ -6,6 +6,28 @@ const digest = z.string().regex(/^[a-f0-9]{64}$/);
 const milliseconds = z.number().int().nonnegative();
 const instant = z.iso.datetime();
 
+/** Exact aggregate pins, sorted by assetId; candidate identifiers are sorted by identity. */
+export const audioManifestPinsSchema = z
+  .array(
+    z
+      .object({
+        assetId: id,
+        manifestRevision: ref,
+        digest,
+        contentRevisionId: id,
+        stimulusId: ref,
+        mediaRevisionIds: z
+          .array(id)
+          .min(1)
+          .max(8)
+          .refine((values) => new Set(values).size === values.length),
+      })
+      .strict(),
+  )
+  .min(1)
+  .max(100)
+  .refine((pins) => new Set(pins.map((pin) => pin.assetId)).size === pins.length);
+
 export const listeningCandidateSchema = z
   .object({
     assetId: id,

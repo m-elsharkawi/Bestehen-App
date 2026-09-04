@@ -28,6 +28,8 @@ import {
   validateValidityPartition,
 } from "@bestehen/domain";
 
+export * from "./media-catalogue.js";
+
 export interface Clock {
   now(): Date;
 }

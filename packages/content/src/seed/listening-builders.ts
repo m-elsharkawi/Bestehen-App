@@ -49,6 +49,11 @@ export interface ListeningArtifactInput {
 export interface ListeningSeedFamily {
   readonly artifact: SeedArtifact;
   readonly audio: readonly SeedAudioManifest[];
+  readonly authoredMediaBindings: readonly {
+    readonly contentItemId: string;
+    readonly questionId: string;
+    readonly stimulusId: string;
+  }[];
 }
 
 export function listeningQuestion(seedKey: string, question: ListeningQuestionSpec): SelectItem {
@@ -100,6 +105,11 @@ export function buildListeningArtifact(input: ListeningArtifactInput): Listening
     causeRef: "cause.listening.decisive_cue_not_integrated",
   }));
   return {
+    authoredMediaBindings: input.questions.map((question) => ({
+      contentItemId: seedItemId(input.seedKey, question.itemKey),
+      questionId: question.id,
+      stimulusId: question.stimulusId,
+    })),
     artifact: buildSeedArtifact({
       seedKey: input.seedKey,
       familySlug: input.familySlug,
