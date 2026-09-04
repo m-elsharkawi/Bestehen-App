@@ -1193,3 +1193,21 @@ audio island is wired, a small T9-owned additive policy input is required so the
 control honestly reflects that plan without faking player state or mutating its
 DOM imperatively. Existing call-site defaults must preserve the accepted DOM.
 T5 was told not to edit the design-system files or fold this into the importer.
+
+### Seed successor composition defect confirmed, 2026-09-04
+
+The importer worker reported a concrete blocker in the existing T6 PostgreSQL
+path. Root checked the source: `seed-cli.ts` writes `entry.seedKey` into both
+immutable `content_families.family_key` and `content_revisions.revision`.
+Keeping a family identity requires the old seed key, but a second revision with
+that key violates `UNIQUE(family_id,revision)`. A new family would hide the defect
+and break lineage; the schema constraint is correct.
+
+Root authorized only an optional `revisionLabel` in the seed entry document,
+validation and the revision insert/exact comparison, plus focused tests. Its
+absence must preserve `seedKey` behavior and leave every committed seed document
+and digest unchanged. A new label is part of the release document's semantic
+idempotency digest. Tests must reject malformed labels and conflicting reuse,
+apply a real successor with new items, replay it exactly and compare old rows.
+This is an additional correction to T6's real successor path, not a migration or
+permission to promote the candidate seeds.
