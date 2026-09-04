@@ -198,6 +198,22 @@ function scored(payload: TaskFamily, values: Record<string, string>) {
 }
 
 describe("P05-EQUIV-001 rendered canonical input identity", () => {
+  it("associates the confirmation checkbox with wrapping paragraph label text", () => {
+    const { container } = view(families[4] as TaskFamily);
+    const checkbox = screen.getByRole("checkbox", {
+      name: "I confirm these answers, including any blanks, for submission.",
+    });
+    const confirmationId = checkbox.getAttribute("id");
+    expect(confirmationId).toBeTruthy();
+    expect(checkbox.closest("label")).toHaveAttribute("for", confirmationId);
+    expect(container.querySelector(`p > label[for='${confirmationId}']`)).toHaveTextContent(
+      "I confirm these answers, including any blanks, for submission.",
+    );
+    fireEvent.click(
+      screen.getByText("I confirm these answers, including any blanks, for submission."),
+    );
+    expect(checkbox).toBeChecked();
+  });
   it("restores once across rerenders with omitted operations and cloned device records", async () => {
     let reads = 0;
     const saved = {

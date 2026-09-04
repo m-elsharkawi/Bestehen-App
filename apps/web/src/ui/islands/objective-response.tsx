@@ -8,7 +8,7 @@ import type {
 } from "@bestehen/content";
 import { NativeButton } from "@bestehen/design-system";
 import type { ReactNode } from "react";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { responseFields, responseIssues, valuesFromOperations } from "../objective-form";
 import { initialObjectiveFormState, type ObjectiveFormAction } from "../objective-form-state";
 import {
@@ -208,6 +208,7 @@ export function ObjectiveResponseIsland({
   const [invalid, setInvalid] = useState<readonly string[]>([]);
   const [conflict, setConflict] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const confirmationId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const controller = useRef<ObjectiveContinuity | null>(null);
@@ -591,10 +592,22 @@ export function ObjectiveResponseIsland({
           </div>
         </section>
       ) : null}
-      <label className="field">
-        <input type="checkbox" name="confirmBoundary" value={attemptId} required />I confirm these
-        answers, including any blanks, for submission.
-      </label>
+      <fieldset aria-label="Submission confirmation">
+        <label htmlFor={confirmationId}>
+          <input
+            id={confirmationId}
+            type="checkbox"
+            name="confirmBoundary"
+            value={attemptId}
+            required
+          />
+        </label>
+        <p>
+          <label htmlFor={confirmationId}>
+            I confirm these answers, including any blanks, for submission.
+          </label>
+        </p>
+      </fieldset>
       {["retry", "session_expired", "submission_unknown", "save_failed"].includes(status) ? (
         <NativeButton onClick={() => void controller.current?.retry()}>
           Retry saved work
