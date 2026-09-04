@@ -396,10 +396,17 @@ describe("content repository input guards", () => {
  * ---------------------------------------------------------------------------------------------- */
 
 describe("serving-manifest issuance rechecks servability", () => {
-  const issuanceRoutes = (servable: readonly Row[]): readonly Route[] => [
+  const issuanceRoutes = (
+    servable: readonly Row[],
+    listening: readonly Row[] = [],
+  ): readonly Route[] => [
     activeScopeRoute,
     { when: /^SELECT id,digest FROM app\.serving_manifests/, rows: [] },
-    { when: /^SELECT cr\.id/, rows: servable },
+    { when: /^SELECT cr\.id,\s+cr\.content_class/, rows: servable },
+    {
+      when: /^SELECT cr\.id FROM app\.content_revisions cr JOIN app\.content_families cf/,
+      rows: listening,
+    },
     manifestHeadRoute,
     manifestEntriesRoute,
   ];
@@ -417,6 +424,27 @@ describe("serving-manifest issuance rechecks servability", () => {
     expect(insert).toBeDefined();
     expect(JSON.parse(String(insert?.values[6]))).toEqual([keyDigest]);
     // No statement anywhere reads or writes the server-only key relation.
+    expect(recorder.statements.some((text) => text.includes("key_revisions"))).toBe(false);
+  });
+
+  it("P05-LISTENING-001 refuses an identified Listening revision without a media validator", async () => {
+    const { repository, recorder } = repositoryOn(
+      issuanceRoutes([servableRow()], [{ id: revisionId }]),
+    );
+    expect(await repository.issueServingManifest(scope, issueRequest())).toEqual({
+      ok: false,
+      error: "content_unavailable",
+    });
+    const lookup = recorder.matching(
+      /^SELECT cr\.id FROM app\.content_revisions cr JOIN app\.content_families cf/,
+    );
+    expect(lookup).toHaveLength(1);
+    expect(lookup[0]?.values).toEqual([
+      [revisionId],
+      ["H1ShortAnnouncements", "H2ConversationInterview", "H3ShortFunctionalTexts"],
+    ]);
+    expect(recorder.matching(/^INSERT INTO app\.serving_manifests\(/)).toEqual([]);
+    expect(recorder.matching(/^INSERT INTO app\.serving_manifest_entries\(/)).toEqual([]);
     expect(recorder.statements.some((text) => text.includes("key_revisions"))).toBe(false);
   });
 
