@@ -969,3 +969,41 @@ After all gate processes ended, `.next` was moved recoverably to Trash and port
 no image or container. Tagged images and volumes were not pruned. Main is a
 strict fast-forward **106 commits ahead of stale origin/main** at `fb8816d`.
 No remote action occurred.
+
+### T5 model review findings before the next checkpoint, 2026-09-04
+
+The worker restored both contract draft paths and dropped only its named stash;
+the orchestrator confirmed that `git stash list` is empty. T5 is narrowed to a
+model/contracts/offline-handoff checkpoint before persisted runtime work.
+
+Draft review found an immutable identity conflict: the proposed fixture adapter
+retained the seed rendition ID while replacing its `seed/audio/` object key with
+a `tmp/non-speech/` key. The existing seed importer already stores the original
+ID/key. The worker must publish an explicit successor rendition and require a
+successor content payload pin, not overwrite the old record or silently retarget
+its payload. Master, transcript and aggregate revision identities must likewise
+remain stable for exact retry and change when their immutable facts change.
+
+The orchestrator rendered the 22 committed seed manifests with the existing
+deterministic renderer and decoded each byte buffer through an actual
+`OfflineAudioContext` in Chromium, Firefox and WebKit. **22/22 in each engine**
+decoded with one channel and duration within 1 ms of the manifest. Output is
+`/tmp/p05-root-fixture-decode.log`. This establishes decoder compatibility only;
+it does not establish an audible output probe, speech quality, preflight
+admission, content approval or learner completion.
+
+A separate real-database diagnostic found that the inherited
+`transcript_revisions.digest UNIQUE` rule prevents a successor transcript with
+unchanged text bytes but changed reveal policy. In the isolated old-054-to-058
+database, inserting a fresh ID with the same digest and a different reveal phase
+failed with **23505 / transcript_revisions_digest_key**. The original row was
+compared afterwards and remained identical. Output is
+`/tmp/p05-root-transcript-successor-red.log`; the first diagnostic invocation
+failed to resolve the root-level `pg` package and was rerun through the existing
+infrastructure pool export before claiming any database result.
+
+This is pending correction, not a gate waiver. Byte digest is not semantic
+identity. Changing reveal policy, rights or a media association cannot mutate an
+old transcript revision merely because its text is unchanged. The worker must
+finish the current model checkpoint first; any storage correction requires a
+separate reviewed additive migration and keeps every committed source unchanged.
