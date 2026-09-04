@@ -19,6 +19,7 @@ import {
   migrationChecksums,
   migrationSources,
   reasonRegistryV1Frozen,
+  stage05BindingRevision,
   stage05MediaRevision,
   stage05Revision,
   stage05RuntimeRevision,
@@ -39,11 +40,13 @@ const stage05Revisions = [
   "20260904_055_listening_media",
   stage05MediaRevision,
   "20260904_057_listening_bindings",
+  stage05BindingRevision,
+  "20260904_059_transcript_lineage",
   stage05Revision,
 ] as const;
 
 /**
- * The ten inherited sources are immutable. `verifyMigrationChecksums` reads changes as drift
+ * The twelve inherited sources are immutable. `verifyMigrationChecksums` reads changes as drift
  * against every already-migrated database, so their digests are pinned here rather than merely
  * recomputed from whatever the file happens to say.
  */
@@ -63,6 +66,9 @@ const pinnedInheritedChecksums: Readonly<Record<string, string>> = {
   "20260904_055_listening_media":
     "1802231b3936d69745d67d377dd9ca92c888d4c9201322559366236def799baa",
   [stage05MediaRevision]: "c84c0284e31baeadd3ad012453f2b96bec715bb5725739bab785bcee650ff190",
+  "20260904_057_listening_bindings":
+    "17069b8b64ae92130c771c4beb1a294e6f549e8779032b06f2cc07c9f28fd44a",
+  [stage05BindingRevision]: "67751745126fd61feb0a300e222a865ee9c1f5d1ab5935332ffbaea8e5cb0b37",
 };
 
 function source(revision: string): string {
@@ -82,7 +88,7 @@ describe("Stage 05 migration registration", () => {
     expect(Object.keys(migrationChecksums)).toEqual(registered);
   });
 
-  it("P05-MEDIA-001 leaves all ten inherited migration sources byte-identical", () => {
+  it("P05-MEDIA-001 leaves all twelve inherited migration sources byte-identical", () => {
     for (const [revision, digest] of Object.entries(pinnedInheritedChecksums)) {
       expect(migrationChecksums[revision]).toBe(digest);
     }

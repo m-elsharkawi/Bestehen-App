@@ -38,6 +38,7 @@ import {
 } from "./index.js";
 import {
   foundationMigrations,
+  stage05BindingRevision,
   stage05MediaRevision,
   stage05RuntimeRevision,
 } from "./migrations.js";
@@ -1473,6 +1474,8 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 05 content and attempt ru
         "20260904_055_listening_media",
         stage05MediaRevision,
         "20260904_057_listening_bindings",
+        stage05BindingRevision,
+        "20260904_059_transcript_lineage",
         stage05Revision,
       ]);
 
