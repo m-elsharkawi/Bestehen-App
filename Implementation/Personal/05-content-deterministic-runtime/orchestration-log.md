@@ -22,9 +22,9 @@ request has been opened, because the owner is holding GitHub Actions spend.
 | 4b | T7b (died) + orchestrator salvage | Opus | **Accepted** | `d343647`,`4a0057c`,`1083bdf`,`37d6f6a` |
 | 4c | T7c repo tests, worker handlers, content routes | Opus | **Accepted** | `3e1e750`,`4eafb8c`,`8c321a5`,`a7c3fa0`,`f1d5401` |
 | 5 | T8 attempt repo + evidence transaction | Opus | **Accepted** after one rejection | `e8a4522`,`5e75745`,`d2590ce`,`7474ae7` |
-| 6 | T6 seed corpus + boundary | Opus | **PARTIAL** — boundary banked, seed uncommitted | `a9bbec7` |
-| 7 | T9 design-system components | — | not started | |
-| 8 | T10 routes + islands + archetypes | — | not started | |
+| 6 | T6 seed corpus + boundary | Opus + continuation worker | **Accepted implementation**, seed remains draft/candidate | `a9bbec7` through `332559a` |
+| 7 | T9 design-system components | continuation model not retained in this log | **Accepted** | `cd23b55`, `7cd9f23`, `c3af737` |
+| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, then Sol high recovery | **Reopened**, recovery review in progress | `43a9251` through `d7979b9` |
 | 9 | T5 Listening | — | not started | |
 | 10 | T11 gate wiring | — | not started | |
 | 11 | T12 browser/a11y/responsive tests | — | not started | |
@@ -398,8 +398,10 @@ was accepted as the smallest correction to the plan's file split.
 
 ### Independent evidence at `01bbae5`
 
-- T10 server/repository/rendered tests: **112/112** across the targeted set after
-  the corrective commit (the pre-correction set was 110/110).
+- T10 pre-correction targeted server/repository/rendered set: **110/110** at
+  `0a77660`. The corrected rendered tests were independently rerun **2/2** at
+  `01bbae5`. The earlier combined 112/112 claim double-counted an existing test
+  and is corrected here; it was not a separately observed combined run.
 - `format:check`, `lint`, root `typecheck`, forced `apps/web` typecheck,
   `check:boundaries`, `test:release`, `build`, `check:web-budget` and
   `check:generated`: **PASS** with the pinned Node 24.19.0 toolchain. The existing
@@ -407,8 +409,9 @@ was accepted as the smallest correction to the plan's file split.
 - `test:unit`: **1 failed / 717 passed (718)**, exactly the known coverage-parity
   failure.
 - Protected first-load budget: **198,141 B gzip**, 6,659 B below the 204,800 B
-  ceiling; no ceiling changed. The 79 B increase from T9 is the corrected focused
-  action markup, not a protected-route island import.
+  ceiling; no ceiling changed. This was measured after the control correction;
+  source review found no protected-route island import. The precise cause of the
+  79 B increase from T9 was not isolated.
 - `test:integration`: **19/19 three consecutive independent runs** on a disposable
   PostgreSQL 18.6 container using the pinned toolchain. These runs are schema and
   repository regression evidence; the full browser command walk remains assigned
@@ -444,3 +447,74 @@ T5 was paused before editing. The same T10 recovery agent is returned to these
 obligations before T5 resumes. Existing test/build/budget evidence above remains
 true, but it is not evidence of completed recovery behavior. T12 must verify the
 finished implementation; it must not become the owner of missing production code.
+
+### Recovery continuation review at `d7979b9`, 2026-09-04
+
+The continuing orchestrator inspected the inherited work before resuming one
+GPT-5.6 Sol high worker. The scope remained T10 recovery, not a fresh runtime.
+The following commits are banked, but T10 is not yet reaccepted:
+
+- `4a574ab`: real-database command composition proof, deliberate blank support,
+  recovery query, and transactional submission correction. The domain forbids
+  `checkpointed -> submitted`; submission now follows the permitted resume arc.
+  A logical refusal late in the transaction now rolls back inserted outcome,
+  evidence, receipt and job rows rather than committing a partial result.
+- `01ab4bd`: recovery version, checkpoint coordinates and submission are read in
+  one PostgreSQL statement. The orchestrator found that separate pool reads could
+  combine an old attempt version with newly committed response rows. A real-PG
+  interleaving regression proves the single-snapshot result.
+- `0cc2f75`: Foundation's displayed current step agrees with its Continue action.
+- `d7979b9`: durable local response and submission intents, raw clock observations,
+  explicit blank confirmation, preserved server-action failures, human-readable
+  branch comparison, and native/numeric input parity tests for all five written
+  families.
+
+The orchestrator returned further defects during review. Network reconciliation
+originally serialized local writes, so a hung request could prevent a later edit
+from reaching IndexedDB. Submission intent also needed durable capture independent
+of that request. Editing after a final intent now freezes that response snapshot.
+The first conflict comparison showed raw operation JSON and internal IDs; it now
+uses per-item learner labels and selects the acknowledged checkpoint by identity.
+Clock reporter tests exercise actual observation collection rather than only the
+server's interpretation of fabricated observations.
+
+Independent commands at clean `d7979b9`, using pinned Node 24.19.0/pnpm 11.23.0:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+  `pnpm exec tsc -p apps/web/tsconfig.json --noEmit`,
+  `pnpm check:boundaries`, `pnpm test:release`, `pnpm build`,
+  `pnpm check:web-budget`, `pnpm check:generated`: **PASS**. The existing oversized
+  generated seed JSON formatting/lint warning remains non-failing.
+- `pnpm test:unit`: **1 failed / 753 passed (754)**. The failing set is exactly
+  the known coverage semantic-union parity test.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **21/21** in
+  three consecutive independent runs. The two new command-composition tests use
+  synthetic pinned material and verify both answered and deliberate-blank paths,
+  exact retries, rollback after late refusal and no external calls. This is not
+  evidence of seed approval or live owner completion.
+- `pnpm exec vitest --run --config test-results/t10-recovery/vitest.config.ts`:
+  **1/1**. This ignored diagnostic exercises the actual island and IndexedDB in
+  Chromium against a fake HTTP server, including offline/session-expiry reload
+  and lost submit acknowledgement. It is not T12 cross-browser or no-JS evidence.
+- Protected first load **198,141 B gzip**, App-owned chunks **41,556 B gzip**,
+  CSS **5,031 B gzip**. No ceiling changed.
+- Independently rebuilt the temporary styled island preview and inspected its
+  390 px dark conflict screen. Fonts loaded and scroll width was exactly 390 px.
+  An empty `.sticky-action` bar overlaps the first conflict-choice button. This
+  remains a rendering defect to correct before acceptance.
+
+Two further review items remain open. The worker flagged an async digest/write
+interleaving in checkpoint acknowledgement; source inspection confirms a later
+draft can be marked acknowledged by an older digest comparison. A targeted
+regression is required. Separately, the result page's generic `readable()` helper
+does not consume the importer's actual `{ refs, rationale }` decisive-evidence
+object or rationale arrays. Authored feedback can fall back to generic text.
+That result-contract correction will be a separate bounded T10 follow-up.
+
+No full `pnpm check`, full browser suite, visual-container suite, process or OCI
+acceptance is claimed by this review. Docker is running. The orchestrator owns
+the disposable PostgreSQL container `bestehen-t10-orchestrator-0904` on port
+55435; the owner's existing database and other containers were not changed.
+The temporary preview on 3306 was stopped. `.next` remains for the next review
+gates and must be removed at task cleanup. Local main is 83 commits ahead of stale
+origin/main at this production boundary; no push or pull request occurred.
