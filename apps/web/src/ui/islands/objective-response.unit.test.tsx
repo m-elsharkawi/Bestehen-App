@@ -198,6 +198,14 @@ function scored(payload: TaskFamily, values: Record<string, string>) {
 }
 
 describe("P05-EQUIV-001 rendered canonical input identity", () => {
+  it("keeps the German question paragraph named and language-marked without changing option labels", () => {
+    const { container } = view(families[4] as TaskFamily);
+    const group = screen.getByRole("group", { name: "Question 1" });
+    expect(group.querySelector("p[lang='de']")).toHaveTextContent("Question 1");
+    expect(group).toHaveAttribute("aria-labelledby", group.querySelector("p")?.id);
+    expect(group.querySelector("input[type='radio']")).toHaveAttribute("type", "radio");
+    expect(container.querySelector("legend")).not.toBeInTheDocument();
+  });
   it("associates the confirmation checkbox with wrapping paragraph label text", () => {
     const { container } = view(families[4] as TaskFamily);
     const checkbox = screen.getByRole("checkbox", {

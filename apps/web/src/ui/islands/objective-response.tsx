@@ -209,6 +209,7 @@ export function ObjectiveResponseIsland({
   const [conflict, setConflict] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const confirmationId = useId();
+  const questionLabelPrefix = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const controller = useRef<ObjectiveContinuity | null>(null);
@@ -402,47 +403,54 @@ export function ObjectiveResponseIsland({
         <p lang="en">Help is available when this activity permits it.</p>
       ) : null}
       <LearnerMaterial payload={payload} />
-      {selects.map((question) => (
-        <fieldset key={question.itemRef} className="answer-choice">
-          <legend>
-            <span lang="de">{safeNodeText(question.questionNodes)}</span>
-          </legend>
-          {question.options.map((option) => (
-            <label
-              key={option.optionId}
-              data-selected={
-                displayed[`select:${question.itemRef}`] === option.optionId || undefined
-              }
-            >
+      {selects.map((question) => {
+        const questionLabelId = `${questionLabelPrefix}-${question.itemRef}`;
+        return (
+          <fieldset
+            key={question.itemRef}
+            aria-labelledby={questionLabelId}
+            className="answer-choice"
+          >
+            <p id={questionLabelId} lang="de">
+              {safeNodeText(question.questionNodes)}
+            </p>
+            {question.options.map((option) => (
+              <label
+                key={option.optionId}
+                data-selected={
+                  displayed[`select:${question.itemRef}`] === option.optionId || undefined
+                }
+              >
+                <input
+                  id={`select:${question.itemRef}:${option.optionId}`}
+                  disabled={submitting}
+                  name={`select:${question.itemRef}`}
+                  checked={displayed[`select:${question.itemRef}`] === option.optionId}
+                  onChange={() => undefined}
+                  aria-invalid={invalid.includes(`select:${question.itemRef}`) || undefined}
+                  type="radio"
+                  value={option.optionId}
+                />
+                <span lang="de">
+                  <SafeNodes nodes={option.learnerSafeLabel} />
+                </span>
+              </label>
+            ))}
+            <label data-selected={!displayed[`select:${question.itemRef}`] || undefined}>
               <input
-                id={`select:${question.itemRef}:${option.optionId}`}
+                id={`select:${question.itemRef}`}
                 disabled={submitting}
                 name={`select:${question.itemRef}`}
-                checked={displayed[`select:${question.itemRef}`] === option.optionId}
-                onChange={() => undefined}
-                aria-invalid={invalid.includes(`select:${question.itemRef}`) || undefined}
                 type="radio"
-                value={option.optionId}
+                value=""
+                checked={!displayed[`select:${question.itemRef}`]}
+                onChange={() => undefined}
               />
-              <span lang="de">
-                <SafeNodes nodes={option.learnerSafeLabel} />
-              </span>
+              <span>Leave blank</span>
             </label>
-          ))}
-          <label data-selected={!displayed[`select:${question.itemRef}`] || undefined}>
-            <input
-              id={`select:${question.itemRef}`}
-              disabled={submitting}
-              name={`select:${question.itemRef}`}
-              type="radio"
-              value=""
-              checked={!displayed[`select:${question.itemRef}`]}
-              onChange={() => undefined}
-            />
-            <span>Leave blank</span>
-          </label>
-        </fieldset>
-      ))}
+          </fieldset>
+        );
+      })}
       {payload.kind === "SB1ContextualGrammarCloze"
         ? payload.gaps.map((gap, index) => (
             <label key={gap.itemRef} className="field">
