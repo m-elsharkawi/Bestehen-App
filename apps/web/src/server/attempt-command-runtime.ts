@@ -160,6 +160,16 @@ export function createAttemptCommandFunctions(
         : { ok: false, error: commandFailure(result.error) };
     },
     exposure: async (scope, operationId, payload) => {
+      const legacy = await attempts.readLegacyExposureReceipt(scope, {
+        operationId,
+        attemptId: appId<"attempt">(payload.attemptId),
+        contentFamilyId: payload.contentFamilyId,
+        factId: payload.exposureEventId,
+        // Compare the original command bytes; legacy class/time claims never become new truth.
+        payloadDigest: canonicalDigest(payload),
+      });
+      if (!legacy.ok) return { ok: false, error: commandFailure(legacy.error) };
+      if (legacy.value) return { ok: true, value: { resourceId: legacy.value.factId } };
       // Transcript disclosure belongs to the Listening phase gate. The legacy command cannot
       // assert that bytes were authorized by supplying a phase/class/time of its own.
       if (payload.revealedKind === "transcript") return { ok: false, error: "not_available" };

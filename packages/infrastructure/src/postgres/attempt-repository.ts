@@ -832,6 +832,14 @@ export class PostgresAttemptRepository {
       inAttemptResultTransaction(this.pool, async (client) => {
         const learner = await lockActiveLearnerScope(client, scope.learnerScopeId);
         if (!learner) return { ok: false as const, error: "not_available" as const };
+        // A legacy writer may have committed between the compatibility read and this transaction.
+        // Never reuse its operation under a new kind; the next exact retry can read its old receipt.
+        const legacy = await client.query(
+          `SELECT 1 FROM app.operation_receipts WHERE learner_scope_id=$1 AND operation_id=$2
+            AND kind IN ('attempt.exposure','attempt.fact.exposure') LIMIT 1`,
+          [scope.learnerScopeId, input.operationId],
+        );
+        if (legacy.rows[0]) return { ok: false as const, error: "conflict" as const };
         const pinned = await client.query(
           `SELECT a.content_revision_id,a.modality,cr.family_id,sm.freshness_decision,transaction_timestamp() AS disclosed_at,
                 EXISTS(SELECT 1 FROM app.attempt_submissions s
@@ -958,6 +966,81 @@ export class PostgresAttemptRepository {
         ]);
         return { ok: true as const, value: { factId, exposureClass, preAttemptExposureClass } };
       }),
+    );
+  }
+
+  /**
+   * Major-1 compatibility for the former split index/fact command. This only acknowledges an
+   * already committed fact; even a transcript receipt grants no bytes or fresh authorization.
+   * Partial old writes remain an explicit conflict, never a guessed baseline or a second exposure.
+   */
+  public async readLegacyExposureReceipt(
+    scope: AuthorizedScope,
+    input: {
+      readonly attemptId: AttemptId;
+      readonly operationId: OperationId;
+      readonly contentFamilyId: string;
+      readonly factId: string;
+      readonly payloadDigest: string;
+    },
+  ): Promise<Result<{ readonly factId: string } | null, AttemptRepositoryError>> {
+    return inAttemptResultTransaction<{ readonly factId: string } | null>(
+      this.pool,
+      async (client) => {
+        if (!(await lockActiveLearnerScope(client, scope.learnerScopeId)))
+          return { ok: false as const, error: "not_available" as const };
+        const pin = await client.query(
+          `SELECT cr.family_id FROM app.attempts a
+           JOIN app.content_revisions cr ON cr.id=a.content_revision_id
+           JOIN app.serving_manifests sm ON sm.id=a.serving_manifest_id AND sm.learner_scope_id=a.learner_scope_id
+          WHERE a.learner_scope_id=$1 AND a.id=$2
+            AND EXISTS(SELECT 1 FROM app.serving_manifest_entries e
+                       WHERE e.serving_manifest_id=sm.id AND e.learner_scope_id=a.learner_scope_id
+                         AND e.content_revision_id=a.content_revision_id)`,
+          [scope.learnerScopeId, input.attemptId],
+        );
+        if (pin.rows[0]?.family_id !== input.contentFamilyId)
+          return { ok: false as const, error: "not_available" as const };
+        const receipts = await client.query(
+          `SELECT kind,canonicalization_version,payload_digest,status,resource_ref,result_ref
+           FROM app.operation_receipts WHERE learner_scope_id=$1 AND operation_id=$2
+            AND kind IN ('attempt.exposure','attempt.fact.exposure')`,
+          [scope.learnerScopeId, input.operationId],
+        );
+        const fact = await client.query(
+          `SELECT id,attempt_id,fact_type,digest FROM app.exposure_facts
+          WHERE learner_scope_id=$1 AND id=$2 AND fact_type='objective_exposure_v1'`,
+          [scope.learnerScopeId, input.factId],
+        );
+        if (receipts.rows.length === 0 && fact.rows.length === 0)
+          return { ok: true as const, value: null };
+        const indexReceipt = receipts.rows.find((row) => row.kind === "attempt.exposure");
+        const factReceipt = receipts.rows.find((row) => row.kind === "attempt.fact.exposure");
+        if (
+          receipts.rows.some(
+            (row) =>
+              row.payload_digest !== input.payloadDigest ||
+              row.canonicalization_version !== "canonical-json/v1",
+          ) ||
+          (indexReceipt && indexReceipt.resource_ref !== input.contentFamilyId) ||
+          (factReceipt &&
+            (factReceipt.resource_ref !== input.attemptId ||
+              factReceipt.result_ref !== input.factId))
+        )
+          return { ok: false as const, error: "idempotency_conflict" as const };
+        const original = fact.rows[0];
+        if (
+          !indexReceipt ||
+          !factReceipt ||
+          !original ||
+          indexReceipt.status !== "completed" ||
+          factReceipt.status !== "completed"
+        )
+          return { ok: false as const, error: "conflict" as const };
+        if (original.attempt_id !== input.attemptId || original.digest !== input.payloadDigest)
+          return { ok: false as const, error: "idempotency_conflict" as const };
+        return { ok: true as const, value: { factId: String(original.id) } };
+      },
     );
   }
 
