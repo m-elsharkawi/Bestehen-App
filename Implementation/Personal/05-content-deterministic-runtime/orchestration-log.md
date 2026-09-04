@@ -978,8 +978,9 @@ model/contracts/offline-handoff checkpoint before persisted runtime work.
 
 Draft review found an immutable identity conflict: the proposed fixture adapter
 retained the seed rendition ID while replacing its `seed/audio/` object key with
-a `tmp/non-speech/` key. The existing seed importer already stores the original
-ID/key. The worker must publish an explicit successor rendition and require a
+a `tmp/non-speech/` key. The orchestrator initially said that the seed importer
+already stored the audio row; that claim was wrong, as corrected below. The
+committed seed manifest does name the original ID/key. The worker must publish an explicit successor rendition and require a
 successor content payload pin, not overwrite the old record or silently retarget
 its payload. Master, transcript and aggregate revision identities must likewise
 remain stable for exact retry and change when their immutable facts change.
@@ -1007,3 +1008,79 @@ identity. Changing reveal policy, rights or a media association cannot mutate an
 old transcript revision merely because its text is unchanged. The worker must
 finish the current model checkpoint first; any storage correction requires a
 separate reviewed additive migration and keeps every committed source unchanged.
+
+### T5 model checkpoint accepted at `6de4d9a`, 2026-09-04
+
+The orchestrator read all six committed diffs. This checkpoint adds strict
+learner-safe Listening schemas, the private canonical media model and an offline
+non-speech handoff. It does not implement serving, database import or playback.
+Profile rules cover all H families and P0–P4, including lower bounds, assisted
+extras, required preceding ordinals and exact target opportunities. Canonical
+read validation refuses correctly byte-hashed noncanonical and duplicate-key
+JSON. Synthetic approved-speech metadata is a shape fixture only, with no audio
+or approval record. Non-speech fixtures retain draft/quarantined status, zero
+speakers and no learner admission.
+
+Draft review corrected source-ID spoofing of the successor check, incomplete
+profile bounds, codec/container inconsistency, invented fixture speaker count,
+and unstable exact identities. Stable seed IDs and object metadata now remain
+untouched while relocation explicitly names a successor rendition and required
+successor content pin.
+
+Correction to the orchestrator's earlier brief: inspection of
+`packages/infrastructure/src/content/seed-cli.ts` shows audio validation but no
+`media_assets` or `media_revisions` insertion. T6 persists content metadata that
+names the original media IDs; it does not persist the audio rows or bytes. The
+later offline importer must explicitly reconcile an absent predecessor row and
+create successor content/items before their composite bindings can be inserted.
+It cannot assume an existing row, invent approval, or retarget an old item.
+
+Independent gates on clean `6de4d9a` with pinned Node/pnpm:
+
+- Format, lint, root/web typechecks, boundaries, assets, lock, secrets, providers
+  and release checks: **PASS**, with the unchanged non-failing seed-size warning.
+  Commands were `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+  `pnpm exec tsc -p apps/web/tsconfig.json --noEmit`, `pnpm check:boundaries`,
+  `pnpm check:assets`, `pnpm check:lock`, `pnpm check:secrets`,
+  `pnpm check:providers`, and `pnpm test:release`.
+- `pnpm test:unit`: **1 failed / 808 passed (809)**, exactly the known coverage
+  parity failure. `pnpm check` stops at the same mismatch after passing scope.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **42/42 in
+  three consecutive independent runs**.
+- `pnpm build`, `pnpm check:web-budget`, `pnpm check:generated`: **PASS**.
+  Protected **198,157 B**, app-owned **41,980 B**, CSS **5,031 B**, fonts
+  **262,144 B**, icons/brand **1,863 B**. Protected headroom **6,643 B**.
+- `pnpm test:e2e`: **66 passed / 3 expected container-only skips**, all engines.
+- The first `pnpm test:process` overlapped the orchestrator's build and failed
+  its web startup wait on port 34002, with **2 passed / 1 failed**. Scheduling
+  these together was an orchestrator error. After build completion, two separate
+  reruns each passed **3/3**. Do not overlap any standalone-server gate with a
+  build or cleanup. No source or assertion was changed for those reruns.
+
+The orchestrator separately exercised the compiled handoff for all 22 actual
+seed entries. All exact retries were identical, all original seed metadata was
+unchanged, all 66 returned object buffers matched their declared keys/digests,
+and all 22 handoffs denied learner admission. No database write occurred.
+Output: `/tmp/p05-root-all-seed-handoff.log`. Other gate logs use prefix
+`/tmp/p05-6de4d9a-`, including the failed process run and both later passes.
+
+The pure-model checkpoint has no UI changes; raster and OCI are not newly
+claimed. After all processes ended, `.next` was moved to Trash and ports 3300
+and 34002 had no listeners. Host free space **36 GiB**; Docker **19 images /
+11.45 GB**, **28 containers / 34.02 MB**, **26 volumes / 7.031 GB**, zero build
+cache. No image/container/volume was removed. At this production boundary main
+is a strict fast-forward **109 commits ahead of stale origin/main**. No remote
+action occurred.
+
+The next bounded task is authorized to append 059 plus a terminal 060 for the
+reproduced transcript byte-digest uniqueness defect. It may remove only the
+identified digest uniqueness rule, preserving byte-digest validation, exact-ID
+primary key, media/rights foreign keys and immutability triggers. Preserve a
+non-unique digest index if needed for lookup. Test identical-byte successors
+with changed phase, rights and primary media, exact-ID duplicate rejection,
+unchanged old rows and an actual 058 upgrade. All twelve prior source checksums
+remain fixed, including 057
+`17069b8b64ae92130c771c4beb1a294e6f549e8779032b06f2cc07c9f28fd44a`
+and 058 `67751745126fd61feb0a300e222a865ee9c1f5d1ab5935332ffbaea8e5cb0b37`.
+Configuration stays T11-owned. The worker stops again after this correction;
+runtime authorization, persisted playback and browser integration remain open.
