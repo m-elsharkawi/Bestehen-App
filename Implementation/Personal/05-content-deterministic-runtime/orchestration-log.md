@@ -24,8 +24,8 @@ request has been opened, because the owner is holding GitHub Actions spend.
 | 5 | T8 attempt repo + evidence transaction | Opus | **Accepted** after one rejection | `e8a4522`,`5e75745`,`d2590ce`,`7474ae7` |
 | 6 | T6 seed corpus + boundary | Opus + continuation worker | **Accepted implementation**, seed remains draft/candidate | `a9bbec7` through `332559a` |
 | 7 | T9 design-system components | continuation model not retained in this log | **Accepted** | `cd23b55`, `7cd9f23`, `c3af737` |
-| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery, Terra high presentation correction | presentation/recovery verified; **reopened for exposure wiring** | `43a9251` through `7c380fe` |
-| 9 | T5 Listening | GPT-5.6 Sol high | paused before editing, pending shared exposure correction | dispatch `888c989` |
+| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery/exposure, Terra high presentation correction | **Accepted implementation**; T12 authenticated browser evidence remains | `43a9251` through `2ff7251` |
+| 9 | T5 Listening | GPT-5.6 Sol high | resumed with bounded server/media slice after exposure correction | dispatch `888c989`, resumed below |
 | 10 | T11 gate wiring | — | not started | |
 | 11 | T12 browser/a11y/responsive tests | — | not started | |
 | 12 | T13 handoff | orchestrator | not started | |
@@ -753,3 +753,64 @@ returned **7 failed / 2 passed (9)**. Exact retry, retry after stronger exposure
 changed timestamp/class/fact ID, index-only partial write and old transcript
 receipt acknowledgement failed. Wrong family and wrong scope were denied.
 This independently observed red run precedes authorization of the bounded fix.
+
+### T10 disclosure and compatibility accepted at `2ff7251`, 2026-09-04
+
+The orchestrator read the complete committed production diff and 318-line
+regression fixture. `2ff7251` recognizes the old receipt pair and verifies its
+canonical payload digest, pinned family, attempt and original fact ID. Complete
+exact retries return that original ID without another fact, receipt, index
+increment or baseline. Incomplete old writes and conflicting reuse fail closed.
+Acknowledging an already recorded transcript event neither reads nor authorizes
+transcript bytes. New transcript disclosure still belongs to T5's phase gate.
+
+The orchestrator also raised the negative-lookup race: an old writer can commit
+between the compatibility read and the new disclosure transaction. The worker
+added an in-transaction receipt recheck under the active-scope lock. A regression
+inserts the actual old write at that exact boundary, observes a conflict with no
+new write, then retries to obtain the original fact ID. The original nine-case
+red test expanded to thirteen cases, including an active other scope, another
+pinned attempt and a fact-only partial write. No assertion was weakened.
+
+Independent verification on clean `2ff7251`, pinned Node 24.19.0/pnpm 11.23.0:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+  `pnpm exec tsc -p apps/web/tsconfig.json --noEmit`, `pnpm check:boundaries`,
+  `pnpm check:assets`, `pnpm check:lock`, `pnpm check:secrets`,
+  `pnpm check:providers`, `pnpm test:release`: **PASS**. The existing oversized
+  generated seed JSON warning remains non-failing.
+- `pnpm test:unit`: **1 failed / 779 passed (780)**, exactly the known coverage
+  semantic-union parity failure. `pnpm check` stops at that same coverage mismatch.
+  Its later gates were run independently, never inferred from the chain.
+- `pnpm build`, `pnpm check:web-budget`, `pnpm check:generated`: **PASS**.
+  Protected first load **198,157 B gzip**, app-owned chunks **41,980 B gzip**,
+  CSS **5,031 B gzip**, fonts **262,144 B**, icons/brand **1,863 B gzip**.
+  Protected headroom remains **6,643 B**; no ceiling changed.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **34/34 in
+  three consecutive independent runs**, including all thirteen new regressions.
+- `pnpm test:e2e`: **66 passed / 3 skipped** across Chromium, Firefox and WebKit.
+  Only the container-only visual test is skipped, once per engine.
+- `pnpm test:process` against the disposable database: **3/3**.
+- `pnpm test:visual:container`: **1/1**, no snapshot regeneration. Pinned image
+  `sha256:4f04098bd8f299ba1e09de01a68eca7c0bb196006603de4b9ed17f754f00ca09`.
+- `pnpm exec vitest --run --config test-results/t10-recovery/vitest.config.ts`:
+  **1/1**, the ignored actual-island/IndexedDB recovery diagnostic. The rendered
+  review recorded above used the identical UI source before this server-only
+  compatibility change. Neither diagnostic substitutes for T12.
+
+T10 implementation is accepted with the scope above. T5, T11, T12, OCI and
+full-stage completion remain unclaimed. Seed approval and owner gates have not
+changed. The same Sol high worker resumes T5's server/media slice first; it must
+stop for review before browser playback integration and before any needed
+additive migration. No other implementation worker runs concurrently.
+
+After all gate processes ended, `.next` was moved recoverably to Trash. Ports
+3300 and 3306 have no listeners. Only Docker build cache and dangling images
+were pruned, reclaiming **2.553 GB** and **2.324 GB** respectively. Tagged images
+and every volume were preserved. Host `df -h` reports **460 GiB total, 401 GiB
+used, 32 GiB available**. Docker reports **19 images / 11.45 GB**, **28 containers
+/ 34.02 MB**, **26 volumes / 7.018 GB**, and **zero build cache**; its VM has
+**35 GB available of 59 GB**. The disposable PostgreSQL container on 55435 stays
+for T5; owner containers are untouched. Local main is a verified strict
+fast-forward, **101 commits ahead of stale origin/main** at this production
+boundary. No push, pull request or remote workflow occurred.
