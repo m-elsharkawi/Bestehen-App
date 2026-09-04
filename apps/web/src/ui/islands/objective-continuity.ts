@@ -129,7 +129,6 @@ export class ObjectiveContinuity {
     private readonly transport: typeof fetch,
     private readonly changed: () => void,
     initialValues: Readonly<Record<string, string>> = {},
-    private readonly digest: typeof formResponseDigest = formResponseDigest,
   ) {
     this.state = {
       key,
