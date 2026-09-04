@@ -916,3 +916,56 @@ over local HTTP by Chromium and Firefox, but not WebKit. The first HTTP-origin
 insertion was itself rejected by Chromium. Authenticated browser evidence must
 use local HTTPS instead of weakening the production cookie flags. This was a
 transport diagnostic, not an authenticated application or owner-login claim.
+
+### T5 migration checkpoint accepted at `fb8816d`, 2026-09-04
+
+The orchestrator reviewed the full committed correction. Migration 057 checks
+the exact old constraint name and columns before removing it; the manifest-aware
+primary key, foreign keys and immutability triggers remain. Migration 058 is the
+new terminal revision. All ten preceding source checksums, including 055/056,
+are unchanged. The repaired lineage test now inserts the successor binding,
+preserves every original binding field and rejects an exact successor duplicate.
+The 056 upgrade test compares the actual constraint catalogue before and after.
+
+Independent gates on the clean committed tree, using pinned Node/pnpm:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+  `pnpm exec tsc -p apps/web/tsconfig.json --noEmit`, `pnpm check:boundaries`,
+  `pnpm check:assets`, `pnpm check:lock`, `pnpm check:secrets`,
+  `pnpm check:providers`, `pnpm test:release`: **PASS**. The unchanged oversized
+  generated seed JSON warning is non-failing.
+- `pnpm test:unit`: **1 failed / 780 passed (781)**. The sole failure is the
+  known coverage semantic-union parity test. `pnpm check` passes its scope
+  checks and stops at that same coverage mismatch; no later gate is inferred.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **42/42 in
+  three consecutive independent runs**, including eight media migration tests.
+- `pnpm build`, `pnpm check:web-budget`, `pnpm check:generated`: **PASS**.
+  Protected first load remains **198,157 B gzip**, with **6,643 B** headroom.
+  App-owned chunks **41,980 B**, CSS **5,031 B**, fonts **262,144 B**, icons/brand
+  **1,863 B**; no budget changed.
+- `pnpm test:e2e`: **66 passed / 3 expected container-only skips**, across all
+  three browser projects. `pnpm test:process`: **3/3**.
+
+The separate orchestrator-owned old-054 database was upgraded using the new
+compiled runtime, not a reconstruction with today's migration callbacks.
+`node test-results/t5-media/root-upgrade-054.mjs` passed: exactly 055–058 applied,
+all eight original checksums and six populated relation snapshots are identical,
+all three new media tables remain empty, four exact-revision update/delete
+attempts are refused, and a second migration applies nothing. The new schema
+window accepts 058; the old maximum 054 fails closed. This ignored diagnostic's
+output is `/tmp/p05-fb8816d-real-054-upgrade.log`; gate logs share the
+`/tmp/p05-fb8816d-` prefix. The isolated database remains available for review.
+
+This accepts only the migration checkpoint, not the Listening runtime. The
+worker now restores its named contract stash and continues the bounded server,
+contracts and media slice, stopping before browser integration. Configuration
+remains T11-owned and still defaults to 054. OCI, full-stage completion and
+owner approvals remain unclaimed. No UI source changed in this checkpoint, so
+the pinned raster gate was not repeated; the last independent raster pass is
+recorded at `2ff7251`. No snapshot was regenerated.
+
+After all gate processes ended, `.next` was moved recoverably to Trash and port
+3300 had no listener. Docker build cache remains zero; this checkpoint created
+no image or container. Tagged images and volumes were not pruned. Main is a
+strict fast-forward **106 commits ahead of stale origin/main** at `fb8816d`.
+No remote action occurred.
