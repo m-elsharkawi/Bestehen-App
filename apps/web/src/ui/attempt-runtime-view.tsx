@@ -3,6 +3,8 @@ import { AttemptShell } from "@bestehen/design-system";
 import type { AttemptRuntimeState } from "@bestehen/domain";
 import { AttemptClockIsland } from "./islands/attempt-clock";
 import { ObjectiveResponseIsland } from "./islands/objective-response";
+import type { ObjectiveFormAction } from "./objective-form-state";
+import type { ResponseOperation } from "@bestehen/content";
 
 export function RuntimeAttemptView({
   action,
@@ -13,8 +15,10 @@ export function RuntimeAttemptView({
   resourceVersion,
   startedAt,
   state,
+  continuityScope,
+  restoredOperations,
 }: {
-  readonly action: (formData: FormData) => void | Promise<void>;
+  readonly action: ObjectiveFormAction;
   readonly attemptId: string;
   readonly kind: "reading" | "language";
   readonly learnerPayload: TaskFamily;
@@ -22,14 +26,20 @@ export function RuntimeAttemptView({
   readonly resourceVersion: number;
   readonly startedAt?: string;
   readonly state: AttemptRuntimeState;
+  readonly continuityScope?: string;
+  readonly restoredOperations?: readonly ResponseOperation[];
 }) {
   return (
     <AttemptShell
       action={null}
-      conditions={["Practice timing", "No answer-bearing help", "Server decides validity"]}
+      conditions={[
+        "Practice timing",
+        "Assistance is recorded when used",
+        "Server decides validity",
+      ]}
       title={kind === "language" ? "Language Elements" : "Reading"}
     >
-      {startedAt ? <AttemptClockIsland startedAt={startedAt} /> : null}
+      {startedAt ? <AttemptClockIsland attemptId={attemptId} startedAt={startedAt} /> : null}
       <ObjectiveResponseIsland
         action={action}
         attemptId={attemptId}
@@ -37,6 +47,8 @@ export function RuntimeAttemptView({
         payload={learnerPayload}
         sequence={nextSequence}
         startedAt={startedAt ?? new Date(0).toISOString()}
+        {...(continuityScope ? { continuityScope } : {})}
+        {...(restoredOperations ? { restoredOperations } : {})}
       />
       {state === "result_available" ? <p>The recorded result is ready for review.</p> : null}
     </AttemptShell>

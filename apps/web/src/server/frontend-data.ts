@@ -1,4 +1,5 @@
 import { databaseUrlFor, parseServerEnvironmentForService } from "@bestehen/configuration";
+import { assertNoKeyBearingFields } from "@bestehen/content";
 import { type AuthorizedScope, appId } from "@bestehen/domain";
 import {
   appSessionCookie,
@@ -109,7 +110,18 @@ export async function loadAttemptProjection(attemptId: string, returnPath: strin
     stableId,
     () => new Date(),
   ).readLearnerAttempt(scoped.scope, scoped.attempt.attemptId);
-  return loaded.ok ? loaded.value : undefined;
+  if (!loaded.ok) return undefined;
+  const recovery = await repositories().attempts.readObjectiveRecovery(
+    scoped.scope,
+    scoped.attempt.attemptId,
+  );
+  const projection = {
+    ...loaded.value,
+    recovery,
+    continuityScope: stableId("continuity", scoped.scope.learnerScopeId),
+  };
+  assertNoKeyBearingFields(projection, "active response recovery projection");
+  return projection;
 }
 
 export async function loadResultProjection(attemptId: string, returnPath: string) {

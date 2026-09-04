@@ -7,6 +7,7 @@ import {
 import { AttemptView } from "../../../../ui/archetypes";
 import { RuntimeAttemptView } from "../../../../ui/attempt-runtime-view";
 import { submitObjectiveForm } from "./actions";
+import type { ResponseOperation } from "@bestehen/content";
 
 export default async function AttemptPage({
   params,
@@ -27,12 +28,21 @@ export default async function AttemptPage({
       attemptId={id}
       kind={kind}
       learnerPayload={projection.material.learnerPayload}
-      nextSequence={projection.attempt.acknowledgedCheckpointSequence + 1}
-      resourceVersion={projection.attempt.resourceVersion}
+      nextSequence={
+        (projection.recovery?.acknowledgedCheckpointSequence ??
+          projection.attempt.acknowledgedCheckpointSequence) + 1
+      }
+      resourceVersion={projection.recovery?.resourceVersion ?? projection.attempt.resourceVersion}
       {...(projection.attempt.occurredAt
         ? { startedAt: projection.attempt.occurredAt.toISOString() }
         : {})}
       state={projection.attempt.state}
+      continuityScope={projection.continuityScope}
+      restoredOperations={
+        (projection.recovery?.checkpoints.find(
+          (c) => c.sequence === projection.recovery?.acknowledgedCheckpointSequence,
+        )?.operations ?? []) as readonly ResponseOperation[]
+      }
     />
   );
 }
