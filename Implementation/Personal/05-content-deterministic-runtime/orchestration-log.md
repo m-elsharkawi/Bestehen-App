@@ -708,7 +708,7 @@ Refreshing the first attempt preserves its original baseline. Result delivery
 records answer exposure without changing the committed outcome. Speculative
 prefetch and Listening instruction delivery do not record target exposure.
 
-Review required preserving `near_duplicate_exposed` as well as `answer_exposed`
+Review required preserving `near_duplicate_family` as well as `answer_exposed`
 when merging index entries. It also required an early, validated submission
 receipt lookup: old committed submissions must replay without today's new
 disclosure-baseline requirement or another key read. New written submissions
@@ -744,3 +744,12 @@ Build, budget, generated-output, full browser, visual and process gates at this
 commit are deferred until that correction; their older results are not a pass
 for this tree. Local main is 98 commits ahead of stale origin/main at this
 production boundary. No push, pull request or remote workflow occurred.
+
+The orchestrator then read the new `legacy-exposure-retry.integration.test.ts`
+in full and compared its fixture calls with `440086b^`'s actual old handler.
+With production still unchanged, the independent command
+`TEST_DATABASE_URL=<disposable-local-db> pnpm exec vitest --run --config vitest.workspace.ts --project integration apps/web/src/server/legacy-exposure-retry.integration.test.ts`
+returned **7 failed / 2 passed (9)**. Exact retry, retry after stronger exposure,
+changed timestamp/class/fact ID, index-only partial write and old transcript
+receipt acknowledgement failed. Wrong family and wrong scope were denied.
+This independently observed red run precedes authorization of the bounded fix.
