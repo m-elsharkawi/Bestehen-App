@@ -180,6 +180,7 @@ export function ObjectiveResponseIsland({
   const [status, setStatus] = useState<RecoveryStatus>("ready");
   const [invalid, setInvalid] = useState<readonly string[]>([]);
   const [conflict, setConflict] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const controller = useRef<ObjectiveContinuity | null>(null);
@@ -206,6 +207,7 @@ export function ObjectiveResponseIsland({
         setValues(runtime.state.values);
         setStatus(runtime.status);
         setConflict(Boolean(runtime.state.conflict));
+        setSubmitting(runtime.isSubmitting);
         if (runtime.status === "completed" && !navigating) {
           navigating = true;
           window.location.assign(`/attempt/${attemptId}/result`);
@@ -253,7 +255,7 @@ export function ObjectiveResponseIsland({
     value: displayed[name] ?? "",
     onChange: () => undefined,
     "aria-invalid": invalid.includes(name) || undefined,
-    disabled: controller.current?.isSubmitting,
+    disabled: submitting,
   });
   const noReuse =
     payload.kind === "SB2SharedBankLexicalCloze"
@@ -304,6 +306,7 @@ export function ObjectiveResponseIsland({
         void controller.current.submit(readClockObservation(attemptId));
       }}
       onKeyDown={(event) => {
+        if (controller.current?.isSubmitting) return;
         if (!/^[1-9]$/.test(event.key) || event.altKey || event.ctrlKey || event.metaKey) return;
         const target = event.target;
         if (target instanceof HTMLSelectElement) {
@@ -374,7 +377,7 @@ export function ObjectiveResponseIsland({
             >
               <input
                 id={`select:${question.itemRef}:${option.optionId}`}
-                disabled={controller.current?.isSubmitting}
+                disabled={submitting}
                 name={`select:${question.itemRef}`}
                 checked={displayed[`select:${question.itemRef}`] === option.optionId}
                 onChange={() => undefined}
@@ -390,7 +393,7 @@ export function ObjectiveResponseIsland({
           <label data-selected={!displayed[`select:${question.itemRef}`] || undefined}>
             <input
               id={`select:${question.itemRef}`}
-              disabled={controller.current?.isSubmitting}
+              disabled={submitting}
               name={`select:${question.itemRef}`}
               type="radio"
               value=""

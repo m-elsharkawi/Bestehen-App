@@ -9,7 +9,8 @@ import {
   type PinnedKey,
 } from "@bestehen/content";
 import { appId } from "@bestehen/domain";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { webcrypto } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { formOperations, responseFields, responseIssues } from "../objective-form";
 import { IndexedResponseStore, type RecoveryView } from "./objective-continuity";
@@ -188,6 +189,127 @@ function scored(payload: TaskFamily, values: Record<string, string>) {
 }
 
 describe("P05-EQUIV-001 rendered canonical input identity", () => {
+  it("restores once across rerenders with omitted operations and cloned device records", async () => {
+    let reads = 0;
+    const saved = {
+      key: "synthetic",
+      major: 1 as const,
+      updatedAt: Date.now(),
+      values: { "select:item-zzz": "choice-z" },
+      expectedVersion: 3,
+      sequence: 2,
+      pending: null,
+      conflict: null,
+      acknowledged: true,
+      captured: true,
+    };
+    const read = vi.spyOn(IndexedResponseStore.prototype, "read").mockImplementation(async () => {
+      reads++;
+      // Bound a broken effect loop so the regression reports a count instead of hanging the runner.
+      if (reads > 4) return new Promise(() => undefined);
+      return structuredClone(saved);
+    });
+    vi.spyOn(IndexedResponseStore.prototype, "write").mockResolvedValue();
+    const fetcher = vi.fn(async () =>
+      Response.json({
+        contract: { major: 1 },
+        resourceVersion: 3,
+        acknowledgedCheckpointSequence: 1,
+        checkpoints: [
+          { sequence: 1, responseDigest: "remote", operations: formOperations(saved.values) },
+        ],
+        submission: null,
+      }),
+    );
+    vi.stubGlobal("fetch", fetcher);
+    const element = () => (
+      <ObjectiveResponseIsland
+        payload={families[4] as TaskFamily}
+        action={async (state) => state}
+        attemptId="attempt"
+        expectedVersion={3}
+        sequence={2}
+        startedAt="2026-09-04T10:00:00Z"
+        continuityScope="owner"
+      />
+    );
+    const { rerender } = render(element());
+    await screen.findByText("Synced. Your answers are saved.");
+    for (let index = 0; index < 3; index++) {
+      rerender(element());
+      await act(async () => {
+        await Promise.resolve();
+      });
+    }
+    expect(read).toHaveBeenCalledTimes(1);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByRole("radio", { name: "Train" })[0]).toBeChecked();
+  });
+  it.each([families[0], families[4]])(
+    "visibly freezes $kind controls while submission transport is hung",
+    async (payload) => {
+      if (!payload) throw new Error("Missing synthetic family");
+      vi.stubGlobal("crypto", webcrypto);
+      vi.spyOn(IndexedResponseStore.prototype, "read").mockResolvedValue({
+        key: "synthetic",
+        major: 1,
+        updatedAt: Date.now(),
+        values: {},
+        expectedVersion: 3,
+        sequence: 2,
+        pending: null,
+        conflict: null,
+        acknowledged: true,
+        captured: true,
+      });
+      vi.spyOn(IndexedResponseStore.prototype, "write").mockResolvedValue();
+      let hang = false;
+      let finish!: () => void;
+      const deferred = new Promise<void>((done) => {
+        finish = done;
+      });
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => {
+          if (hang) {
+            await deferred;
+            return Response.json({}, { status: 404 });
+          }
+          return Response.json({
+            contract: { major: 1 },
+            resourceVersion: 3,
+            acknowledgedCheckpointSequence: 1,
+            checkpoints: [{ sequence: 1, responseDigest: "synthetic-blank", operations: [] }],
+            submission: null,
+          });
+        }),
+      );
+      const { container } = view(payload, "owner");
+      await screen.findByText("Synced. Your answers are saved.");
+      const form = container.querySelector("form");
+      const confirmation = screen.getByRole("checkbox", { name: /I confirm/ }) as HTMLInputElement;
+      // Avoid introducing a separate change/checkpoint; this regression isolates the submit render.
+      confirmation.checked = true;
+      hang = true;
+      if (!form) throw new Error("Missing native form");
+      fireEvent.submit(form);
+      const control = container.querySelector<HTMLSelectElement | HTMLInputElement>(
+        'select, input[type="radio"]',
+      );
+      if (!control) throw new Error("Missing answer control");
+      await waitFor(() => expect(control).toBeDisabled());
+      for (const answer of container.querySelectorAll('select, input[type="radio"]'))
+        expect(answer).toBeDisabled();
+      const before = snapshot(container, payload);
+      fireEvent.keyDown(control, { key: "1" });
+      expect(snapshot(container, payload)).toEqual(before);
+      await act(async () => {
+        finish();
+        await deferred;
+      });
+      await screen.findByText(/Pending answers remain saved on this device/);
+    },
+  );
   it.each(families)(
     "keeps $kind native, numeric and semantic activation identical by item and score",
     (payload) => {
