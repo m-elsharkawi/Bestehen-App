@@ -814,3 +814,52 @@ used, 32 GiB available**. Docker reports **19 images / 11.45 GB**, **28 containe
 for T5; owner containers are untouched. Local main is a verified strict
 fast-forward, **101 commits ahead of stale origin/main** at this production
 boundary. No push, pull request or remote workflow occurred.
+
+### T5 schema and exact-media decisions, 2026-09-04
+
+Before T5 edits, source review found that `media_assets.source_role` cannot
+truthfully represent the committed non-speech fixtures, and the schema has no
+non-answer-bearing item/stimulus/rendition relation. The orchestrator also found
+that `findEligibleServingRevision` gathers all current media for a family rather
+than the exact selected content revision. The worker is authorized to correct
+that narrow query during T5, preserving Reading/Language Elements behavior and
+refusing missing, unapproved or rights-invalid Listening media.
+
+The first T5 slice is reduced to an additive migration and its tests before the
+larger server/media implementation. Decisions of record:
+
+- Add the explicit `deterministic_non_speech_fixture` source role. It cannot
+  establish actual learner-approved content or audio quality. Seed approval
+  remains unchanged.
+- Preserve `media_assets.id` as the logical asset lineage. A proposed single
+  JSONB manifest on that row was rejected because it cannot hold immutable
+  successor manifests under a stable asset ID. Use append-only
+  `audio_asset_manifests` keyed by asset ID and manifest revision, plus an exact
+  `audio_manifest_renditions` membership relation. The existing asset row remains
+  the current projection. Do not invent or backfill missing old manifests.
+- Add immutable `content_item_media_bindings` with composite item/revision and
+  exact asset/manifest/rendition foreign keys. Multiple encodings are distinct
+  candidates for the same authored item/stimulus, never positional associations.
+  An offline authoring adapter supplies these mappings; acquisition must not
+  read answer keys to recover them.
+- Store canonical manifest text with a JSON projection and byte-digest check.
+  SQL identity checks must reject absent/null values, not accidentally accept
+  SQL UNKNOWN. A matching hash alone does not prove canonical JSON; the importer
+  and runtime still need the shared canonicalization/shape validation.
+- Keep always-available instructional text in the existing instruction payload.
+  Do not widen transcript phases. Target transcripts stay private and phase
+  gated; app-owned stable UUID mapping preserves opaque source IDs only in
+  private metadata.
+- Append new media and terminal compatibility sources. All eight inherited
+  migration sources/checksums remain immutable. Rehearse both P03 and existing
+  P05-054 upgrades. Configuration remains T11-owned; until T11 updates its
+  default maximum, intermediate new-schema runtime checks must set the explicit
+  new maximum. An old maximum must fail closed, not silently accept the schema.
+
+The orchestrator read the Cloudflare skill and its R2 configuration/API
+references, then checked the official [data-location documentation](https://developers.cloudflare.com/r2/reference/data-location/)
+and [presigned-URL documentation](https://developers.cloudflare.com/r2/api/s3/presigned-urls/)
+on 2026-09-04. The review keeps the EU-jurisdiction endpoint and app-controlled
+private delivery; generic public/bearer-URL examples do not override the
+architecture's authorization and transcript rules. No cloud account changed.
+These are implementation decisions, not evidence that T5 is complete.
