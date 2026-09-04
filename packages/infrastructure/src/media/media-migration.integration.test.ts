@@ -13,6 +13,7 @@ import {
   foundationMigrations,
   foundationRevision,
   migrationChecksums,
+  stage05MediaRevision,
   stage05Revision,
   stage05RuntimeRevision,
 } from "../postgres/migrations.js";
@@ -168,7 +169,7 @@ async function fixture(pool: Pool) {
 }
 
 describe.skipIf(!databaseUrl)("Listening additive migration on PostgreSQL 18", () => {
-  for (const predecessor of [foundationRevision, stage05RuntimeRevision]) {
+  for (const predecessor of [foundationRevision, stage05RuntimeRevision, stage05MediaRevision]) {
     it(`P05-MEDIA-001 rehearses ${predecessor} upgrade without rewriting inherited rows or checksums`, async () => {
       await withIsolatedDatabase(databaseUrl as string, async (url) => {
         const db = new Kysely<unknown>({
@@ -187,7 +188,7 @@ describe.skipIf(!databaseUrl)("Listening additive migration on PostgreSQL 18", (
         try {
           const inherited = Object.keys(migrationChecksums).slice(
             0,
-            predecessor === foundationRevision ? 4 : 8,
+            Object.keys(migrationChecksums).indexOf(predecessor) + 1,
           );
           // Reproduce predecessor's exact checksum set; current seed callbacks know future names.
           await pool.query("DELETE FROM app.schema_revisions WHERE revision <> ALL($1)", [
@@ -200,9 +201,32 @@ describe.skipIf(!databaseUrl)("Listening additive migration on PostgreSQL 18", (
             inherited.map((revision) => ({ revision, checksum: migrationChecksums[revision] })),
           );
           let oldAssetId: string | undefined;
+          let oldListening: Awaited<ReturnType<typeof fixture>> | undefined;
+          let oldBindings: unknown[] = [];
+          let oldConstraints: { name: string; definition: string }[] = [];
           if (predecessor === stage05RuntimeRevision) {
             const content = await contentFixture(pool);
             oldAssetId = await assetFixture(pool, content.familyId, true);
+          }
+          if (predecessor === stage05MediaRevision) {
+            oldListening = await fixture(pool);
+            await insertManifest(pool, oldListening.input);
+            await insertMembership(pool, oldListening.input, oldListening.mediaId);
+            await insertBinding(
+              pool,
+              oldListening.input,
+              oldListening.itemId,
+              oldListening.mediaId,
+            );
+            oldBindings = (await pool.query("SELECT * FROM app.content_item_media_bindings")).rows;
+            oldConstraints = (
+              await pool.query<{ name: string; definition: string }>(
+                "SELECT conname AS name,pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conrelid='app.content_item_media_bindings'::regclass ORDER BY conname",
+              )
+            ).rows;
+            expect(oldConstraints.map((row) => row.name)).toContain(
+              "content_item_media_bindings_content_revision_id_content_ite_key",
+            );
           }
           const result = await migrateDatabase(url);
           expect(result.fromRevision).toBe(predecessor);
@@ -217,6 +241,41 @@ describe.skipIf(!databaseUrl)("Listening additive migration on PostgreSQL 18", (
             ).rows,
           ).toEqual(before);
           expect((await migrateDatabase(url)).applied).toEqual([]);
+          if (oldListening) {
+            expect(
+              (await pool.query("SELECT * FROM app.content_item_media_bindings")).rows,
+            ).toEqual(oldBindings);
+            expect(
+              (
+                await pool.query(
+                  "SELECT conname AS name,pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conrelid='app.content_item_media_bindings'::regclass ORDER BY conname",
+                )
+              ).rows,
+            ).toEqual(
+              oldConstraints.filter(
+                (row) =>
+                  row.name !== "content_item_media_bindings_content_revision_id_content_ite_key",
+              ),
+            );
+            const successor = { ...oldListening.input, manifestRevision: "synthetic-m2" };
+            await insertManifest(pool, successor);
+            await insertMembership(pool, successor, oldListening.mediaId);
+            await insertBinding(pool, successor, oldListening.itemId, oldListening.mediaId);
+            expect(
+              (
+                await pool.query(
+                  "SELECT * FROM app.content_item_media_bindings WHERE manifest_revision=$1",
+                  [oldListening.input.manifestRevision],
+                )
+              ).rows,
+            ).toEqual(oldBindings);
+            await expect(
+              insertBinding(pool, successor, oldListening.itemId, oldListening.mediaId),
+            ).rejects.toMatchObject({
+              code: "23505",
+              constraint: "content_item_media_bindings_pkey",
+            });
+          }
           await expect(
             checkSchemaCompatibility(pool, foundationRevision, stage05RuntimeRevision),
           ).resolves.toMatchObject({ compatible: false });
@@ -262,22 +321,42 @@ describe.skipIf(!databaseUrl)("Listening additive migration on PostgreSQL 18", (
         await insertMembership(pool, first, id);
         await insertBinding(pool, first, itemId, id);
       }
+      const originalBindings = (
+        await pool.query(
+          "SELECT * FROM app.content_item_media_bindings WHERE content_item_id=$1 AND manifest_revision=$2 ORDER BY media_revision_id",
+          [itemId, first.manifestRevision],
+        )
+      ).rows;
       const successor = { ...input, manifestRevision: "synthetic-m2" };
       await insertManifest(pool, successor);
       await insertMembership(pool, successor, mediaId);
+      await insertBinding(pool, successor, itemId, mediaId);
       await pool.query("UPDATE app.media_assets SET manifest_revision=$2 WHERE id=$1", [
         input.assetId,
         successor.manifestRevision,
       ]);
       const bindings = await pool.query(
-        "SELECT manifest_revision,media_revision_id FROM app.content_item_media_bindings WHERE content_item_id=$1 ORDER BY media_revision_id",
+        "SELECT manifest_revision,media_revision_id FROM app.content_item_media_bindings WHERE content_item_id=$1 ORDER BY manifest_revision,media_revision_id",
         [itemId],
       );
-      expect(bindings.rows).toEqual(
-        [mediaId, alternate]
+      expect(bindings.rows).toEqual([
+        ...[mediaId, alternate]
           .sort()
           .map((id) => ({ manifest_revision: first.manifestRevision, media_revision_id: id })),
-      );
+        { manifest_revision: successor.manifestRevision, media_revision_id: mediaId },
+      ]);
+      expect(
+        (
+          await pool.query(
+            "SELECT * FROM app.content_item_media_bindings WHERE content_item_id=$1 AND manifest_revision=$2 ORDER BY media_revision_id",
+            [itemId, first.manifestRevision],
+          )
+        ).rows,
+      ).toEqual(originalBindings);
+      await expect(insertBinding(pool, successor, itemId, mediaId)).rejects.toMatchObject({
+        code: "23505",
+        constraint: "content_item_media_bindings_pkey",
+      });
       expect(
         (
           await pool.query(

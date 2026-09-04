@@ -19,6 +19,7 @@ import {
   migrationChecksums,
   migrationSources,
   reasonRegistryV1Frozen,
+  stage05MediaRevision,
   stage05Revision,
   stage05RuntimeRevision,
 } from "./postgres/migrations.js";
@@ -36,11 +37,13 @@ const stage05Revisions = [
   "20260901_053_content_impact",
   stage05RuntimeRevision,
   "20260904_055_listening_media",
+  stage05MediaRevision,
+  "20260904_057_listening_bindings",
   stage05Revision,
 ] as const;
 
 /**
- * The eight inherited sources are immutable. `verifyMigrationChecksums` reads changes as drift
+ * The ten inherited sources are immutable. `verifyMigrationChecksums` reads changes as drift
  * against every already-migrated database, so their digests are pinned here rather than merely
  * recomputed from whatever the file happens to say.
  */
@@ -57,6 +60,9 @@ const pinnedInheritedChecksums: Readonly<Record<string, string>> = {
     "f722b0b967e4ab24238292d6ebe84d24f4a531c417f8933dab6a51ae20539dfa",
   "20260901_053_content_impact": "9ff8eeec389baca2c554d8ebbb9d1b2b9e9f26facef231045651b544db3a3930",
   [stage05RuntimeRevision]: "5ac221927f00abb96c2e615b73a4b315d859e70b6e0c6a622343b58ba82710da",
+  "20260904_055_listening_media":
+    "1802231b3936d69745d67d377dd9ca92c888d4c9201322559366236def799baa",
+  [stage05MediaRevision]: "c84c0284e31baeadd3ad012453f2b96bec715bb5725739bab785bcee650ff190",
 };
 
 function source(revision: string): string {
@@ -76,7 +82,7 @@ describe("Stage 05 migration registration", () => {
     expect(Object.keys(migrationChecksums)).toEqual(registered);
   });
 
-  it("P05-MEDIA-001 leaves all eight inherited migration sources byte-identical", () => {
+  it("P05-MEDIA-001 leaves all ten inherited migration sources byte-identical", () => {
     for (const [revision, digest] of Object.entries(pinnedInheritedChecksums)) {
       expect(migrationChecksums[revision]).toBe(digest);
     }

@@ -36,7 +36,11 @@ import {
   migrationChecksums,
   stage05Revision,
 } from "./index.js";
-import { foundationMigrations, stage05RuntimeRevision } from "./migrations.js";
+import {
+  foundationMigrations,
+  stage05MediaRevision,
+  stage05RuntimeRevision,
+} from "./migrations.js";
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
 
@@ -1467,6 +1471,8 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 05 content and attempt ru
         "20260901_053_content_impact",
         stage05RuntimeRevision,
         "20260904_055_listening_media",
+        stage05MediaRevision,
+        "20260904_057_listening_bindings",
         stage05Revision,
       ]);
 
