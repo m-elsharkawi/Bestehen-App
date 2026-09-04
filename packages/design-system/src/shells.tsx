@@ -108,12 +108,15 @@ export function AttemptShell({
   children,
   action,
   embedded = false,
+  showActionBar = true,
 }: {
   readonly title: string;
   readonly conditions: readonly string[];
   readonly children: ReactNode;
   readonly action: ReactNode;
   readonly embedded?: boolean;
+  /** Opt out only when a runtime renders its own in-flow form actions. */
+  readonly showActionBar?: boolean;
 }) {
   return (
     <AppShell embedded={embedded} eyebrow="Focused practice" kind="focused" title={title}>
@@ -124,7 +127,7 @@ export function AttemptShell({
       </ul>
       {/* Assertion hook: keeps attempt content identifiable in the component gallery. */}
       <div className="attempt-content">{children}</div>
-      <div className="sticky-action">{action}</div>
+      {showActionBar ? <div className="sticky-action">{action}</div> : null}
     </AppShell>
   );
 }

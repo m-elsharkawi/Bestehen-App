@@ -34,7 +34,7 @@ const payload: TaskFamily = {
 
 describe("P05-COMPONENT-001 rendered objective response", () => {
   it("uses the tested primary action role for progressive submission", () => {
-    render(
+    const { container } = render(
       <RuntimeAttemptView
         action={async (state) => state}
         attemptId="22222222-2222-4222-8222-222222222222"
@@ -51,5 +51,6 @@ describe("P05-COMPONENT-001 rendered objective response", () => {
       "action",
       "action-primary",
     );
+    expect(container.querySelector(".sticky-action")).toBeNull();
   });
 });

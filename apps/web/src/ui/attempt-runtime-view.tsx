@@ -32,6 +32,7 @@ export function RuntimeAttemptView({
   return (
     <AttemptShell
       action={null}
+      showActionBar={false}
       conditions={[
         "Practice timing",
         "Assistance is recorded when used",
