@@ -1084,3 +1084,65 @@ remain fixed, including 057
 and 058 `67751745126fd61feb0a300e222a865ee9c1f5d1ab5935332ffbaea8e5cb0b37`.
 Configuration stays T11-owned. The worker stops again after this correction;
 runtime authorization, persisted playback and browser integration remain open.
+
+### T5 transcript migration accepted at `8436ba9`, 2026-09-04
+
+The orchestrator read all five committed diffs. Migration 059 removes only the
+named, single-column transcript byte-digest uniqueness constraint, replacing its
+lookup index with a non-unique index. Terminal revision is 060. All twelve prior
+source hashes are unchanged. Exact-ID uniqueness, digest length validation,
+media/rights foreign keys and immutable update/delete triggers remain intact.
+Tests cover same-byte successors with different phase, rights and primary media,
+and refusal when the expected constraint name belongs to different columns.
+
+Independent gates on clean `8436ba9`, using pinned Node/pnpm:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, web `tsc --noEmit`,
+  `pnpm check:boundaries`, `pnpm check:assets`, `pnpm check:lock`,
+  `pnpm check:secrets`, `pnpm check:providers`, `pnpm test:release`: **PASS**.
+  The seed-size warning remains non-failing.
+- `pnpm test:unit`: **808 passed / 1 failed (809)**. The sole failure is the
+  known semantic coverage parity mismatch. `pnpm check` stops at that mismatch.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **44/44**
+  in three consecutive independent runs.
+- `pnpm build`, `pnpm check:web-budget`, `pnpm check:generated`: **PASS**.
+  Protected first load **198,157 B**, headroom **6,643 B**; app-owned **41,980 B**,
+  CSS **5,031 B**, fonts **262,144 B**, icons/brand **1,863 B**.
+- `pnpm test:e2e`: **66 passed / 3 expected container-only skips**, all engines.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:process`: **3/3**.
+  The first process invocation omitted that variable and reported **1 passed /
+  2 skipped**. The orchestrator caught the omission and reran the complete suite.
+  Build, server suites and cleanup were not overlapped.
+
+The retained database, originally created by the genuinely old 054 compiled
+runtime and upgraded to 058, now passes an independent 058-to-060 rehearsal.
+Exactly 059/060 applied, twelve inherited hashes and all six populated relation
+snapshots remained identical, the exact constraint catalogue lost only the
+intended uniqueness constraint, and same-byte changed-policy insertion succeeded.
+Duplicate-ID insertion and update/delete were refused; diagnostic fixture writes
+were rolled back. Exact migration replay applies nothing. The new window accepts
+060, and the old maximum 058 fails closed.
+
+The first diagnostic stopped before migration because the orchestrator incorrectly
+expected the new runtime's readiness function to return 058 for an old checksum
+set. Its existing full-set checksum check reports `drifted` before migration.
+The corrected diagnostic verifies the actual migration table and twelve hashes
+directly, then runs the real migration. No production code or checksum was changed
+for this correction. Outputs are `/tmp/p05-8436ba9-real-058-upgrade.log` and
+`/tmp/p05-8436ba9-real-058-upgrade-corrected.log`; all gate logs share prefix
+`/tmp/p05-8436ba9-`.
+
+This accepts the schema correction only. Runtime, byte authorization, playback,
+transcript delivery, OCI and owner approvals remain unclaimed. No UI source or
+snapshot changed; no new raster claim is made. After all gate processes ended,
+`.next` was moved recoverably to Trash; ports 3300, 34001 and 34002 had no listener.
+Docker remains at 19 images / 11.45 GB, 28 containers / 34.02 MB, 26 volumes /
+7.031 GB and zero build cache. No image or volume was pruned. At this production
+boundary main is a strict fast-forward **111 commits ahead of stale origin/main**.
+No remote action occurred.
+
+Next bounded T5 checkpoint: persisted exact media catalogue and offline import,
+including explicit successor content/item pins, immutable retry/conflict behavior,
+and exact-revision eligibility. Preserve package dependency arrows. No new migration,
+browser integration, live provider access, configuration or gate wiring is authorized
+within that checkpoint. Stop for root review before byte authorizer and playback work.
