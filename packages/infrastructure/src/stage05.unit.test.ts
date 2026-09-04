@@ -20,6 +20,7 @@ import {
   migrationSources,
   reasonRegistryV1Frozen,
   stage05Revision,
+  stage05RuntimeRevision,
 } from "./postgres/migrations.js";
 
 const stage03Revisions = [
@@ -33,15 +34,17 @@ const stage05Revisions = [
   "20260901_051_content_graph",
   "20260901_052_attempt_runtime",
   "20260901_053_content_impact",
+  stage05RuntimeRevision,
+  "20260904_055_listening_media",
   stage05Revision,
 ] as const;
 
 /**
- * The Stage 03 sources are immutable. `verifyMigrationChecksums` reads any change to them as drift
+ * The eight inherited sources are immutable. `verifyMigrationChecksums` reads changes as drift
  * against every already-migrated database, so their digests are pinned here rather than merely
  * recomputed from whatever the file happens to say.
  */
-const pinnedStage03Checksums: Readonly<Record<string, string>> = {
+const pinnedInheritedChecksums: Readonly<Record<string, string>> = {
   "20260825_010_identity_release":
     "492696d82a1d71fc4d6a0fe2f040385c7e01da32588979f4a35fc4dfa04c6c5f",
   "20260825_020_learner_facts_evidence":
@@ -49,6 +52,11 @@ const pinnedStage03Checksums: Readonly<Record<string, string>> = {
   "20260825_030_jobs_audit_rights":
     "bdd9a303b9863d7f229783c6f7f695d33417a8926921c5047ba98204f2512a43",
   [foundationRevision]: "d1d7506c18586aa92b212eb326069fd1062248e10c792d68b8a8704b30037c34",
+  "20260901_051_content_graph": "3d0d1db7db03d80ff9b4e1e498ab670333c97aa3f5e2e2ce8e58e75bfcd685b3",
+  "20260901_052_attempt_runtime":
+    "f722b0b967e4ab24238292d6ebe84d24f4a531c417f8933dab6a51ae20539dfa",
+  "20260901_053_content_impact": "9ff8eeec389baca2c554d8ebbb9d1b2b9e9f26facef231045651b544db3a3930",
+  [stage05RuntimeRevision]: "5ac221927f00abb96c2e615b73a4b315d859e70b6e0c6a622343b58ba82710da",
 };
 
 function source(revision: string): string {
@@ -68,8 +76,8 @@ describe("Stage 05 migration registration", () => {
     expect(Object.keys(migrationChecksums)).toEqual(registered);
   });
 
-  it("leaves every Stage 03 source byte-identical", () => {
-    for (const [revision, digest] of Object.entries(pinnedStage03Checksums)) {
+  it("P05-MEDIA-001 leaves all eight inherited migration sources byte-identical", () => {
+    for (const [revision, digest] of Object.entries(pinnedInheritedChecksums)) {
       expect(migrationChecksums[revision]).toBe(digest);
     }
   });
@@ -255,6 +263,15 @@ const consistentRows: readonly StubRow[] = Object.entries(migrationChecksums).ma
 );
 
 describe("checksum verification at the Stage 05 revision", () => {
+  it("P05-MEDIA-001 fails closed with the unchanged pre-Listening maximum revision", async () => {
+    await expect(
+      checkSchemaCompatibility(
+        stubPool(stage05Revision, consistentRows),
+        foundationRevision,
+        stage05RuntimeRevision,
+      ),
+    ).resolves.toMatchObject({ compatible: false, observedRevision: stage05Revision });
+  });
   it("reports the Stage 05 revision compatible inside the P03..P05 window", async () => {
     await expect(
       checkSchemaCompatibility(

@@ -36,7 +36,7 @@ import {
   migrationChecksums,
   stage05Revision,
 } from "./index.js";
-import { foundationMigrations } from "./migrations.js";
+import { foundationMigrations, stage05RuntimeRevision } from "./migrations.js";
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
 
@@ -97,6 +97,8 @@ const stage05AppTables = [
   "approval_decisions",
   "assistance_events",
   "attempt_submissions",
+  "audio_asset_manifests",
+  "audio_manifest_renditions",
   "content_defect_reports",
   "content_exposure_index",
   "content_form_entries",
@@ -105,6 +107,7 @@ const stage05AppTables = [
   "content_impact_assertions",
   "content_impact_targets",
   "content_items",
+  "content_item_media_bindings",
   "content_release_entries",
   "content_releases",
   "corpus_bundles",
@@ -1462,6 +1465,8 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 05 content and attempt ru
         "20260901_051_content_graph",
         "20260901_052_attempt_runtime",
         "20260901_053_content_impact",
+        stage05RuntimeRevision,
+        "20260904_055_listening_media",
         stage05Revision,
       ]);
 

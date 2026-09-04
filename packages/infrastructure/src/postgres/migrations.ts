@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { reasonRegistryRelease, reasonRegistryV1 } from "@bestehen/domain";
 import { type Kysely, sql } from "kysely";
 import type { Migration } from "kysely/migration";
+import { listeningMediaSql } from "./listening-media-migration.js";
 
 export const foundationRevision = "20260825_040_p03_foundation";
 
@@ -10,7 +11,8 @@ export const foundationRevision = "20260825_040_p03_foundation";
  * `Object.keys(foundationMigrations)`, so insertion order — not the numeric prefix — is the
  * contract; the prefixes are numbered to agree with it anyway.
  */
-export const stage05Revision = "20260901_054_p05_content_runtime";
+export const stage05Revision = "20260904_056_p05_listening_media";
+export const stage05RuntimeRevision = "20260901_054_p05_content_runtime";
 
 /**
  * The frozen membership of `reason-registry/v1`, exactly as Stage 03 published it (43 codes).
@@ -884,6 +886,11 @@ INSERT INTO app.schema_revisions(revision,checksum) VALUES ('20260901_054_p05_co
   ON CONFLICT (revision) DO NOTHING;
 `;
 
+const listeningMediaCompatibilitySql = `
+INSERT INTO app.schema_revisions(revision,checksum) VALUES ('20260904_056_p05_listening_media', repeat('0',64))
+  ON CONFLICT (revision) DO NOTHING;
+`;
+
 function checksum(source: string): string {
   return createHash("sha256").update(source).digest("hex");
 }
@@ -915,7 +922,9 @@ export const migrationSources = {
   "20260901_051_content_graph": contentGraphSql,
   "20260901_052_attempt_runtime": attemptRuntimeSql,
   "20260901_053_content_impact": contentImpactSql,
-  [stage05Revision]: stage05CompatibilitySql,
+  [stage05RuntimeRevision]: stage05CompatibilitySql,
+  "20260904_055_listening_media": listeningMediaSql,
+  [stage05Revision]: listeningMediaCompatibilitySql,
 } as const;
 
 export const migrationChecksums: Readonly<Record<string, string>> = Object.fromEntries(
@@ -971,7 +980,11 @@ export const foundationMigrations: Readonly<Record<string, Migration>> = {
   // Stage 05 revision and re-upserts the WHOLE checksum map, because an existing Stage 03 database
   // never re-runs the P03 compatibility migration and `verifyMigrationChecksums` demands exact set
   // equality between `app.schema_revisions` and `migrationChecksums`.
-  [stage05Revision]: immutableMigration(stage05CompatibilitySql, async (db) => {
+  [stage05RuntimeRevision]: immutableMigration(stage05CompatibilitySql, async (db) => {
+    await upsertSchemaRevisions(db);
+  }),
+  "20260904_055_listening_media": immutableMigration(listeningMediaSql),
+  [stage05Revision]: immutableMigration(listeningMediaCompatibilitySql, async (db) => {
     await upsertSchemaRevisions(db);
   }),
 };
