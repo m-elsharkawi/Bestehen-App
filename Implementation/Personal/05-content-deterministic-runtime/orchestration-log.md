@@ -863,3 +863,56 @@ on 2026-09-04. The review keeps the EU-jurisdiction endpoint and app-controlled
 private delivery; generic public/bearer-URL examples do not override the
 architecture's authorization and transcript rules. No cloud account changed.
 These are implementation decisions, not evidence that T5 is complete.
+
+### T5 migration review returned at `fc14a0a`, 2026-09-04
+
+The orchestrator read the new 055 source, migration registration changes and
+complete PostgreSQL regression file. Review added missing immutability triggers
+for `media_revisions` and `transcript_revisions`; their exact IDs must not acquire
+different bytes, object keys or reveal phases. Logical asset status/current
+manifest pointers remain mutable projections. The new manifest insertion guard
+also refuses a different content family or an image asset.
+
+The first migration commit was not accepted. Its binding primary key includes
+manifest revision, but an extra `UNIQUE(content_revision_id, content_item_id,
+media_revision_id)` prevents an item retaining the same primary rendition under
+a successor manifest. The first lineage test created the successor manifest
+without inserting that successor binding, so it missed the real use case.
+
+The worker extended only the test, then froze. The orchestrator independently
+ran `TEST_DATABASE_URL=<disposable-local-db> pnpm exec vitest --run --config vitest.workspace.ts --project integration packages/infrastructure/src/media/media-migration.integration.test.ts -t 'retains stable lineage'`
+against unchanged `fc14a0a`: **1 failed / 6 filtered out**, with PostgreSQL 23505
+on `content_item_media_bindings_content_revision_id_content_ite_key` when
+inserting the m2 binding. The correction must retain both m1 and m2 rows while
+still refusing a duplicate exact tuple.
+
+Because 055/056 had just been committed, the orchestrator declined to edit their
+sources. A small 057 correction and 058 terminal source are authorized instead.
+Their predecessors' checksums remain fixed, including
+055 `1802231b3936d69745d67d377dd9ca92c888d4c9201322559366236def799baa`
+and 056 `c84c0284e31baeadd3ad012453f2b96bec715bb5725739bab785bcee650ff190`.
+The correction must also rehearse an already-applied 056 database. No broad gate
+pass or T5 runtime implementation is claimed at `fc14a0a`.
+
+For independent upgrade evidence, the orchestrator used the genuinely old
+compiled 054 module before the worker rebuilt it. The disposable database
+`bestehen_root_p05_054_0904` on the orchestrator's port 55435 has exactly eight
+original checksum rows and saved snapshots of six catalogue/media relations.
+Its audio metadata is an explicitly synthetic, quarantined schema fixture with
+no actual object, transcript bytes or approval. It remains at 054 for the later
+upgrade check. The worker's separate predecessor tests reconstruct the old
+checksum set explicitly because a prefix of today's migration callbacks alone
+would insert future checksum entries.
+
+The worker's two contract draft files are temporarily preserved in the named
+stash `40aba359caa1f7160d044af0487989b39c51f7b9`,
+`t5a-contract-draft-before-migration-review`. Only those worker-owned paths were
+stashed. They must be restored after migration acceptance and must not remain
+hidden at final cleanup.
+
+T12 environment finding from a separate isolated cookie diagnostic: a secure
+`__Host-bestehen_session` cookie inserted for the HTTPS loopback origin was sent
+over local HTTP by Chromium and Firefox, but not WebKit. The first HTTP-origin
+insertion was itself rejected by Chromium. Authenticated browser evidence must
+use local HTTPS instead of weakening the production cookie flags. This was a
+transport diagnostic, not an authenticated application or owner-login claim.
