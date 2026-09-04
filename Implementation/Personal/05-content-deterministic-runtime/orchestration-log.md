@@ -1146,3 +1146,19 @@ including explicit successor content/item pins, immutable retry/conflict behavio
 and exact-revision eligibility. Preserve package dependency arrows. No new migration,
 browser integration, live provider access, configuration or gate wiring is authorized
 within that checkpoint. Stop for root review before byte authorizer and playback work.
+
+The worker identified the package composition constraint before implementation.
+Root authorized a test-only `apps/web/src/server/media-catalogue.integration.test.ts`
+and, if needed, a narrow offline `apps/worker/src/media-import.ts` composition module
+plus a content-operations runbook addition. Both application roots may compose
+content validation with infrastructure; infrastructure must not import content,
+and content must not import application. A required validator port has no
+permissive fallback. Missing validation keeps Listening unavailable.
+
+The existing seed tool may commit a separately authored successor draft before
+atomic media import. If media import fails, that draft must remain unapproved,
+with no partial media writes or active publication; the result/runbook must say
+so, and exact retry must reconcile the same draft. This is a documented two-step
+offline operation, not a claim of one transaction across both steps. No main
+worker wiring, live calls, approval, new migration or configuration work is added
+to this checkpoint's authority.
