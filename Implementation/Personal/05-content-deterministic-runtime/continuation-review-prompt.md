@@ -52,6 +52,29 @@ frozen commit, then issue one bounded correction brief if needed.
 
 ## Snapshot and acceptance boundary
 
+Handoff snapshot, 2026-09-04: production checkpoint `6ee0bfc897468a2deea415e35be7780ec99cee4c`,
+preceded by `4ff1d12`; test-only repair `5d6957224b8386dd16168f4c91d81cb426ac4bc2`.
+The current catalogue checkpoint is accepted within its limited offline purpose.
+The outgoing orchestrator is stopping at the owner's request, not continuing T5.
+After the final documentation commit, local main is 125 commits ahead of stale
+origin/main and clean. Both implementation agents are stopped. `.next` was moved
+to Trash, Docker cache is zero, and host free space is 35 GiB. The disposable
+PostgreSQL container remains running. See the log for exact cleanup details.
+
+Independent verification on frozen `6ee0bfc`: formatting, lint, both TypeScript
+checks, dependency boundaries, assets, lock, secrets, provider checks, release,
+build, budget and generated checks passed. PostgreSQL passed 54/54 three times;
+process tests passed 3/3 with the database configured; browser tests passed 66
+across all three engines, with exactly three expected container-only visual skips.
+Protected first-load bytes stayed at 198157. No new raster or OCI claim.
+
+The full unit run initially found two failures: the known coverage failure and
+a test-double routing collision. The latter was corrected in `5d69572` without
+production edits or weakened assertions. Root read the correction and reran the
+full unit suite: 816 passed, exactly the one known coverage failure, 817 total.
+Gate logs are `/tmp/p05-6ee0bfc-root-*.log` and
+`/tmp/p05-5d69572-root-*.log`; durable summaries are in the orchestration log.
+
 The final checkpoint SHA, gate outcomes and cleanup state are recorded in the
 last section of `orchestration-log.md`. Read that section before running anything.
 Verify local HEAD, dirty files and active processes; do not rely on this prompt

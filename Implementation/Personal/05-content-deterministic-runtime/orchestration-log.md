@@ -1298,3 +1298,80 @@ Additional review requirements sent before the worker's final gate run:
   fixture must not invent an `ordinal` column on `content_release_entries`.
 
 These are draft review findings and required proofs, not accepted test results.
+
+### Catalogue checkpoint accepted; owner-requested stop, 2026-09-04
+
+The owner directed root to finish only the current checkpoint and prepare a fresh
+agent prompt because orchestration was consuming excessive quota. No transport
+security, player-policy or further Listening runtime task was started. The reused
+worker name `t10_finish_recovery` obscures that the current work is T5, not T10.
+
+Sol high committed `4ff1d12`, model/seed successor composition, and `6ee0bfc`,
+PostgreSQL catalogue, exact eligibility, offline composition and operations guide.
+Root read the actual changes, including all new production files and integration
+tests. This accepts the bounded offline catalogue only. It imports all 22 actual
+non-speech seed records into quarantined successor catalogues, preserves original
+content/items/keys/rights, validates exact approvals and bindings, and rejects
+unavailable media at new lease issuance. It does not store object bytes, create
+owner approvals or provide Listening playback. All 14 migration sources remain
+unchanged. Conditional delivery obligations remain for the byte authorizer.
+
+Root corrected the draft guide after independently reproducing
+ERR_MODULE_NOT_FOUND in its repository-root invocation. The committed worker-root
+invocation's imports were independently verified without opening a database.
+
+One independent frozen-tree batch at `6ee0bfc897468a2deea415e35be7780ec99cee4c`:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, web `tsc --noEmit`,
+  `pnpm check:boundaries`, `pnpm check:assets`, `pnpm check:lock`,
+  `pnpm check:secrets`, `pnpm check:providers`, `pnpm test:release`: exit 0.
+  Formatting/lint retain the existing oversized seed JSON warning.
+- `pnpm check`: stops at the documented semantic coverage mismatch, exit 1.
+- `pnpm test:unit`: initially 814 passed, 2 failed, 816 total. One is the known
+  coverage baseline; the new failure is described below and was not accepted.
+- `TEST_DATABASE_URL=<local port 55435 URL> pnpm test:integration`: **54/54
+  three times**, six files, no skips. Each run includes all ten new catalogue
+  tests and the controlled opposite-order concurrency regression.
+- `pnpm build`, `pnpm check:web-budget`, `pnpm check:generated`: exit 0.
+  Protected first load **198157 B**, owned chunks **41980 B**, CSS **5031 B**,
+  fonts **262144 B**, icons/brand **1863 B**. Headroom remains **6643 B**.
+- `TEST_DATABASE_URL=<same URL> pnpm test:process`: **3/3**, no skips.
+- `pnpm test:e2e`: **66 passed**, exactly three expected `P04-VISUAL-001`
+  container-only skips, Chromium/Firefox/WebKit. No new UI or snapshot changes,
+  no new raster or OCI claim, and no authenticated Stage 05 completion claim.
+
+The new unit failure came from `content-repository.test.ts`: its broad
+`/^SELECT cr\.id/` matcher returned written servability rows for the new
+Listening-only lookup. Root confirmed the collision in source. One bounded
+test-only repair, `5d6957224b8386dd16168f4c91d81cb426ac4bc2`, separates those
+routes and adds explicit no-validator Listening refusal coverage. Existing
+key-digest and no-key-leak assertions are unchanged. Root reviewed the actual
+diff and independently reran the full unit suite: **816 passed, exactly one
+known coverage failure, 817 total**. Production files are identical to the
+fully exercised `6ee0bfc`; database/build/browser suites were not repeated
+after this test-only correction. This was one repair cycle.
+
+Detailed batch logs use `/tmp/p05-6ee0bfc-root-`; final repair logs use
+`/tmp/p05-5d69572-root-`. The ignored gate aid captures direct command exits,
+serializes build/server suites and verified that HEAD/tree stayed frozen.
+
+The fresh-agent prompt is `continuation-review-prompt.md`. It explicitly asks
+for a consolidated audit of substantive defects versus orchestration overhead,
+stable checkpoint scope, a separate pending-findings list and at most two
+targeted repair cycles. Repeated acceptance reopenings and fragmented review
+were costly; this handoff does not assert that every earlier correction was
+unnecessary. The next agent must audit that question against commits/evidence.
+T5 runtime, T11, T12 and T13 remain. Owner gates remain unclaimed; `05E` stays
+unchecked. No push, PR, workflow or other remote action occurred.
+
+Final test-only repair checks at `5d69572`: root `pnpm format:check`, `pnpm lint`,
+`pnpm typecheck` and `pnpm test:release` all exit 0. After every gate ended,
+ports 3300/34001/34002 had no listener. `.next` was moved recoverably to
+`/Users/sharkawi/.Trash/bestehen-next-5d69572-20260904-1600`. Build-cache and
+dangling-image pruning each reclaimed 0 B. Final host disk: 460 GiB total,
+398 GiB used, **35 GiB available**. Docker: 19 images / 11.45 GB, 28 containers /
+34.02 MB, 26 volumes / 7.031 GB, **0 B build cache**. No tagged image, volume or
+owner container was removed. Docker and the disposable port-55435 test database
+remain running for continuation; both implementation agents are stopped.
+The final documentation commit leaves local main **125 commits ahead of stale
+origin/main**, with a clean tree and no Stage 05 completion claim.
