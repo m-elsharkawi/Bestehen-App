@@ -1257,3 +1257,15 @@ The catalogue checkpoint may refuse rights with delivery obligations it cannot
 yet enforce, but must state that limitation and avoid creating a second rights
 policy. Later byte delivery/preflight work must implement any claimed lease,
 purge and attribution behavior before conditional content is admitted.
+
+Further draft review caught a successor item whose outer identity changed but
+whose nested `scorable.itemId` still named the predecessor. The worker must test
+the complete outer/scorable/key/payload identity set, not only foreign keys.
+
+Root corrected its own follow-up wording about a same-level approval successor:
+`canTransitionContentApproval` expressly rejects `from === to`. No direct
+training-to-training grant or weakened domain guard is authorized. Exact-media
+reapproval must follow the accepted review lifecycle; a real quarantine/retirement
+successor is sufficient for the stale-approval regression. The general catalogue
+must also use the existing class/approval eligibility rules, not hardcode C3 and
+thereby exclude valid C2 target content. Actual seeds remain C3 drafts throughout.
