@@ -1,3 +1,5 @@
+import { isDeepStrictEqual } from "node:util";
+import { allowedConditionsSchema } from "@bestehen/contracts";
 import type {
   AppId,
   AuthorizedScope,
@@ -28,6 +30,8 @@ import {
   reasonRegistryRelease,
 } from "@bestehen/domain";
 import type { Pool, PoolClient } from "pg";
+import type { AudioCatalogueValidator } from "@bestehen/application";
+import { PostgresMediaCatalogue } from "../media/catalogue.js";
 import { type ContentQueue, jobPolicyFor } from "../jobs/index.js";
 import { inTransaction, lockActiveLearnerScope } from "./foundation-repository.js";
 
@@ -218,7 +222,43 @@ export interface EligibleServingRevisionRecord {
   readonly mediaRevisionIds: readonly MediaRevisionId[];
   readonly keyRevisionDigests: readonly string[];
   readonly priorExposureClass?: ExposureClass;
+  /** Safe exact aggregate pins. Listening issuance requires these in allowedConditions.audioManifestPins. */
+  readonly audioManifestPins?: readonly AudioManifestPin[];
 }
+
+export interface AudioManifestPin {
+  readonly assetId: string;
+  readonly manifestRevision: string;
+  readonly digest: string;
+  readonly contentRevisionId: string;
+  readonly stimulusId: string;
+  readonly mediaRevisionIds: readonly string[];
+}
+
+function audioPins(
+  entries: Awaited<ReturnType<PostgresMediaCatalogue["readEligible"]>>,
+): readonly AudioManifestPin[] {
+  return entries
+    .map(({ record, manifest }) => ({
+      assetId: record.assetId,
+      manifestRevision: record.manifestRevision,
+      digest: record.digest,
+      contentRevisionId: record.contentRevisionId,
+      stimulusId: record.stimulusId,
+      mediaRevisionIds: manifest.learnerMediaRevisions
+        .map((rendition) => rendition.mediaRevisionId)
+        .sort(),
+    }))
+    .sort((left, right) =>
+      left.assetId < right.assetId ? -1 : left.assetId > right.assetId ? 1 : 0,
+    );
+}
+
+const listeningKinds = new Set([
+  "H1ShortAnnouncements",
+  "H2ConversationInterview",
+  "H3ShortFunctionalTexts",
+]);
 
 /** Exact server-only scoring input selected by the manifest's pinned key digests. */
 export interface PinnedScoringUnitRecord {
@@ -352,7 +392,15 @@ export interface ContentJobInput {
  *    the servable check, so an attempt already under way still finds its exact pinned material.
  */
 export class PostgresContentRepository {
-  public constructor(private readonly pool: Pool) {}
+  private readonly mediaCatalogue: PostgresMediaCatalogue | undefined;
+  public constructor(
+    private readonly pool: Pool,
+    mediaValidator?: AudioCatalogueValidator,
+  ) {
+    this.mediaCatalogue = mediaValidator
+      ? new PostgresMediaCatalogue(pool, mediaValidator)
+      : undefined;
+  }
 
   /* ---------------------------------------------------------------------------------------------
    * Defence in depth
@@ -707,6 +755,66 @@ export class PostgresContentRepository {
         },
       );
       if (defect) return { ok: false as const, error: defect };
+      const listening = await client.query(
+        `SELECT cr.id FROM app.content_revisions cr JOIN app.content_families cf ON cf.id=cr.family_id WHERE cr.id=ANY($1::uuid[]) AND cf.task_family_kind=ANY($2::text[]) ORDER BY cr.id`,
+        [
+          [...new Set(request.entries.map((entry) => entry.contentRevisionId))],
+          [...listeningKinds],
+        ],
+      );
+      if (listening.rows.length > 0) {
+        if (!this.mediaCatalogue)
+          return { ok: false as const, error: "content_unavailable" as const };
+        const expectedPins: AudioManifestPin[] = [];
+        try {
+          for (const row of listening.rows) {
+            const eligible = await this.mediaCatalogue.readEligible(
+              client,
+              String(row.id),
+              request.approvalRole,
+              new Date(),
+            );
+            // Lock mutable publication/rights projections through the actual lease write.
+            await client.query(
+              "SELECT cr.id FROM app.content_revisions cr JOIN app.rights_envelopes r ON r.id=cr.rights_envelope_id JOIN app.accessibility_manifests a ON a.id=cr.accessibility_manifest_id WHERE cr.id=$1 FOR SHARE OF cr,r,a",
+              [row.id],
+            );
+            await client.query(
+              "SELECT rel.id FROM app.content_releases rel JOIN app.content_release_entries e ON e.release_id=rel.id WHERE e.content_revision_id=$1 AND rel.state='active' FOR SHARE OF rel",
+              [row.id],
+            );
+            const lockedDefect = await this.assertServable(
+              client,
+              [appId<"content_revision">(String(row.id))],
+              request,
+            );
+            if (lockedDefect) return { ok: false as const, error: lockedDefect };
+            const pins = audioPins(eligible);
+            const mediaIds = pins.flatMap((pin) => pin.mediaRevisionIds).sort();
+            const requestedMediaIds = request.entries
+              .filter((entry) => entry.contentRevisionId === row.id)
+              .flatMap((entry) => (entry.mediaRevisionId ? [entry.mediaRevisionId] : []))
+              .sort();
+            if (JSON.stringify(mediaIds) !== JSON.stringify(requestedMediaIds))
+              return { ok: false as const, error: "content_unavailable" as const };
+            expectedPins.push(...pins);
+          }
+        } catch (error) {
+          if (error && typeof error === "object" && "code" in error) throw error;
+          return { ok: false as const, error: "content_unavailable" as const };
+        }
+        const conditions = allowedConditionsSchema.safeParse(request.allowedConditions);
+        if (
+          !conditions.success ||
+          !isDeepStrictEqual(
+            conditions.data.audioManifestPins,
+            expectedPins.sort((a, b) =>
+              a.assetId < b.assetId ? -1 : a.assetId > b.assetId ? 1 : 0,
+            ),
+          )
+        )
+          return { ok: false as const, error: "content_unavailable" as const };
+      }
       await client.query(
         `INSERT INTO app.serving_manifests(id,learner_scope_id,operation_id,form_id,content_class,
            approval_role,key_revision_digests,allowed_conditions,learner_safe_payload_digest,
@@ -844,8 +952,9 @@ export class PostgresContentRepository {
     taskFamilyKind: string,
     progressionProfile: string,
   ): Promise<EligibleServingRevisionRecord | undefined> {
-    const head = await this.pool.query(
-      `SELECT cr.id AS content_revision_id,cr.content_class,cr.instruction,cr.learner_payload,
+    return inTransaction(this.pool, async (client) => {
+      const head = await client.query(
+        `SELECT cr.id AS content_revision_id,cr.content_class,cr.instruction,cr.learner_payload,
               cr.progression_profile,cf.id AS content_family_id,cf.task_family_kind,
               ad.level AS approval_role,rel.release_identity,cei.exposure_class
          FROM app.content_revisions cr
@@ -861,46 +970,74 @@ export class PostgresContentRepository {
           AND rel.state='active' AND ad.outcome='granted'
           AND ad.level=ANY($4::text[]) AND rights.state='current'
           AND accessibility.gate_status='pass'
-        ORDER BY (cei.content_family_id IS NOT NULL),cf.family_key,cr.id
-        LIMIT 1`,
-      [scope.learnerScopeId, taskFamilyKind, progressionProfile, servableApprovalLevels],
-    );
-    const row = head.rows[0];
-    if (!row) return undefined;
-    const contentRevisionId = appId<"content_revision">(String(row.content_revision_id));
-    const items = await this.pool.query(
-      "SELECT id FROM app.content_items WHERE content_revision_id=$1 ORDER BY ordinal,id",
-      [contentRevisionId],
-    );
-    const media = await this.pool.query(
-      `SELECT DISTINCT mr.id
-         FROM app.media_revisions mr
-         JOIN app.media_assets ma ON ma.id=mr.asset_id
-        WHERE ma.content_family_id=$1 AND ma.status='current' ORDER BY mr.id`,
-      [String(row.content_family_id)],
-    );
-    const keys = await this.pool.query(
-      `SELECT k.digest
+        ORDER BY (cei.content_family_id IS NOT NULL),cf.family_key,cr.id`,
+        [scope.learnerScopeId, taskFamilyKind, progressionProfile, servableApprovalLevels],
+      );
+      for (const row of head.rows) {
+        const contentRevisionId = appId<"content_revision">(String(row.content_revision_id));
+        let pins: readonly AudioManifestPin[] | undefined;
+        if (listeningKinds.has(String(row.task_family_kind))) {
+          if (!this.mediaCatalogue) continue;
+          await client.query("SAVEPOINT media_candidate");
+          try {
+            pins = audioPins(
+              await this.mediaCatalogue.readEligible(
+                client,
+                contentRevisionId,
+                String(row.approval_role),
+                new Date(),
+              ),
+            );
+          } catch (error) {
+            if (error && typeof error === "object" && "code" in error) throw error;
+            await client.query("ROLLBACK TO SAVEPOINT media_candidate");
+            await client.query("RELEASE SAVEPOINT media_candidate");
+            continue;
+          }
+          await client.query("RELEASE SAVEPOINT media_candidate");
+        }
+        const items = await client.query(
+          "SELECT id FROM app.content_items WHERE content_revision_id=$1 ORDER BY ordinal,id",
+          [contentRevisionId],
+        );
+        const writtenMedia = pins
+          ? []
+          : (
+              await client.query(
+                `SELECT DISTINCT mr.id FROM app.media_revisions mr JOIN app.media_assets ma ON ma.id=mr.asset_id WHERE ma.content_family_id=$1 AND ma.status='current' ORDER BY mr.id`,
+                [String(row.content_family_id)],
+              )
+            ).rows.map((entry) => String(entry.id));
+        const keys = await client.query(
+          `SELECT k.digest
          FROM app.key_revisions k
          JOIN app.content_items i ON i.id=k.content_item_id
         WHERE i.content_revision_id=$1 ORDER BY i.ordinal,k.id`,
-      [contentRevisionId],
-    );
-    return {
-      contentFamilyId: appId<"content_family">(String(row.content_family_id)),
-      taskFamilyKind: String(row.task_family_kind),
-      contentRevisionId,
-      contentClass: row.content_class as ContentClass,
-      approvalRole: row.approval_role as ContentApprovalLevel,
-      contentReleaseIdentity: String(row.release_identity),
-      instruction: row.instruction,
-      learnerPayload: row.learner_payload,
-      progressionProfile: String(row.progression_profile),
-      itemIds: items.rows.map((item) => appId<"content_item">(String(item.id))),
-      mediaRevisionIds: media.rows.map((entry) => appId<"media_revision">(String(entry.id))),
-      keyRevisionDigests: keys.rows.map((entry) => String(entry.digest)),
-      ...(row.exposure_class ? { priorExposureClass: row.exposure_class as ExposureClass } : {}),
-    };
+          [contentRevisionId],
+        );
+        return {
+          contentFamilyId: appId<"content_family">(String(row.content_family_id)),
+          taskFamilyKind: String(row.task_family_kind),
+          contentRevisionId,
+          contentClass: row.content_class as ContentClass,
+          approvalRole: row.approval_role as ContentApprovalLevel,
+          contentReleaseIdentity: String(row.release_identity),
+          instruction: row.instruction,
+          learnerPayload: row.learner_payload,
+          progressionProfile: String(row.progression_profile),
+          itemIds: items.rows.map((item) => appId<"content_item">(String(item.id))),
+          mediaRevisionIds: (pins?.flatMap((pin) => pin.mediaRevisionIds) ?? writtenMedia).map(
+            (id) => appId<"media_revision">(id),
+          ),
+          ...(pins ? { audioManifestPins: pins } : {}),
+          keyRevisionDigests: keys.rows.map((entry) => String(entry.digest)),
+          ...(row.exposure_class
+            ? { priorExposureClass: row.exposure_class as ExposureClass }
+            : {}),
+        };
+      }
+      return undefined;
+    });
   }
 
   /**

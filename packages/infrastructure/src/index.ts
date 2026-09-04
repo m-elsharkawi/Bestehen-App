@@ -70,3 +70,11 @@ export * from "./postgres/foundation-repository.js";
 export * from "./postgres/index.js";
 export * from "./projection-checksum.js";
 export * from "./supervisor.js";
+export * from "./media/catalogue.js";
+export {
+  executePostgresSeedCommand,
+  validateSeedReleaseDocument,
+  seedDocumentDigest,
+  type SeedReleaseDocument,
+  type SeedSqlPool,
+} from "./content/seed-cli.js";
