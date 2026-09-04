@@ -18,6 +18,7 @@ export function RuntimeAttemptView({
   state,
   continuityScope,
   restoredOperations,
+  preAttemptExposureClass,
 }: {
   readonly action: ObjectiveFormAction;
   readonly attemptId: string;
@@ -30,6 +31,11 @@ export function RuntimeAttemptView({
   readonly state: AttemptRuntimeState;
   readonly continuityScope?: string;
   readonly restoredOperations?: readonly ResponseOperation[];
+  readonly preAttemptExposureClass?:
+    | "unseen"
+    | "exposed_family"
+    | "near_duplicate_family"
+    | "answer_exposed";
 }) {
   return (
     <AttemptShell
@@ -42,6 +48,9 @@ export function RuntimeAttemptView({
       ]}
       title={kind === "language" ? "Language Elements" : "Reading"}
     >
+      {preAttemptExposureClass && preAttemptExposureClass !== "unseen" ? (
+        <p>Seen before · practice only. This task is not a fresh independent check.</p>
+      ) : null}
       {startedAt ? <AttemptClockIsland attemptId={attemptId} startedAt={startedAt} /> : null}
       <ObjectiveResponseIsland
         action={action}

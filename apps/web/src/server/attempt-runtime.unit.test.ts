@@ -6,6 +6,7 @@ import type {
   ObjectiveSubmissionInput,
   PinnedLearnerMaterialRecord,
   PinnedScoringUnitRecord,
+  RecordedAttemptConditions,
   SubmissionCommit,
 } from "@bestehen/infrastructure";
 import { describe, expect, it, vi } from "vitest";
@@ -163,6 +164,7 @@ function dependencies() {
     submission: { attemptId },
   } as unknown as SubmissionCommit;
   const attempts = {
+    readSubmissionReplay: vi.fn(async () => ({ ok: true as const, value: null })),
     readAttempt: vi.fn(async () => attempt),
     readCanonicalCheckpoint: vi.fn(async () => ({
       sequence: 1,
@@ -176,7 +178,13 @@ function dependencies() {
       ok: true as const,
       value: { disposition: "created" as const, learnerSequence: 1 },
     })),
-    readRecordedAttemptConditions: vi.fn(async () => ({ assistance: [], clockObservation })),
+    readRecordedAttemptConditions: vi.fn(
+      async (): Promise<RecordedAttemptConditions> => ({
+        assistance: [],
+        clockObservation,
+        exposureClass: "unseen",
+      }),
+    ),
     submitObjectiveAttempt: vi.fn(
       async (_scope: AuthorizedScope, input: ObjectiveSubmissionInput) => {
         captured = input;
@@ -199,6 +207,19 @@ function dependencies() {
 }
 
 describe("P05-SECURITY-001 active learner projection", () => {
+  it("refuses a new written submission without a recorded disclosure baseline", async () => {
+    const fixture = dependencies();
+    fixture.attempts.readRecordedAttemptConditions.mockResolvedValue({ assistance: [] });
+    const result = await fixture.service.submitObjective(scope, {
+      operationId,
+      attemptId,
+      checkpointSequence: 1,
+      responseDigest: fixture.responseDigest,
+      clockObservation,
+    });
+    expect(result).toEqual({ ok: false, error: "not_available" });
+    expect(fixture.attempts.submitObjectiveAttempt).not.toHaveBeenCalled();
+  });
   it("loads the pinned learner payload without touching the key-bearing read", async () => {
     const fixture = dependencies();
     const result = await fixture.service.readLearnerAttempt(scope, attemptId);
@@ -299,6 +320,7 @@ describe("P05-SCORE-001 deterministic attempt composition", () => {
     const inconsistent = { ...clockObservation, monotonicElapsedMs: 1_000 };
     fixture.attempts.readRecordedAttemptConditions.mockResolvedValue({
       assistance: [],
+      exposureClass: "unseen",
       clockObservation: inconsistent,
     });
 
@@ -324,6 +346,7 @@ describe("P05-SCORE-001 deterministic attempt composition", () => {
     const observation = { ...clockObservation, ...extra };
     fixture.attempts.readRecordedAttemptConditions.mockResolvedValue({
       assistance: [],
+      exposureClass: "unseen",
       clockObservation: observation,
     });
     const result = await fixture.service.submitObjective(scope, {

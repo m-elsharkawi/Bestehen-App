@@ -15,7 +15,10 @@ import {
 import { withIsolatedDatabase } from "@bestehen/test-support";
 import type { Pool } from "pg";
 import { describe, expect, it, vi } from "vitest";
-import { createAttemptCommandFunctions } from "./attempt-command-runtime";
+import { createAttemptCommandFunctions, stableId } from "./attempt-command-runtime";
+import { DeterministicAttemptService } from "./attempt-runtime";
+import { readDisplayedAttempt, readDisplayedResult } from "./attempt-disclosure";
+import { handleAcquireServingManifest } from "./serving-manifest-commands";
 import {
   handleCheckpointAttempt,
   handleCreateAttempt,
@@ -27,7 +30,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
   "P05-RECOVERY-001 real pinned server composition",
   () => {
     it.each(["answered", "deliberate_blank"] as const)(
-      "preserves %s, replay and recovery using PostgreSQL with no external calls",
+      "P05-FRESH-001 P05-IDEMPOTENCY-001 P05-SECURITY-001 preserves %s, disclosure, replay and recovery with PostgreSQL",
       async (mode) => {
         await withIsolatedDatabase(process.env.TEST_DATABASE_URL as string, async (url) => {
           const pool = createPostgresPool(url);
@@ -184,6 +187,30 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
             );
             const attempts = new PostgresAttemptRepository(pool);
             const content = new PostgresContentRepository(pool);
+            // Isolated synthetic gate records make acquisition exercise the real repository. They
+            // do not promote or import any T6 artifact.
+            const approval = randomUUID();
+            await pool.query(
+              "INSERT INTO app.accessibility_manifests(id,manifest,language_tag,gate_status,digest) VALUES($1,'{}','de','pass',$2)",
+              [revision, canonicalDigest(`access:${revision}`)],
+            );
+            await pool.query(
+              `INSERT INTO app.approval_decisions(id,subject_kind,subject_id,content_class,level,outcome,author_ref,validator_ref,approver_ref,method_version,reason_registry_id,reason_code,evidence_ref,decided_at)
+              VALUES($1,'content_revision',$2,'C3','training','granted','synthetic','synthetic','synthetic','synthetic','reason-registry/v1','VALIDITY.CONTENT_APPROVAL','synthetic',$3)`,
+              [approval, revision, now],
+            );
+            await pool.query(
+              "UPDATE app.content_revisions SET current_approval_decision_id=$2,accessibility_manifest_id=$3 WHERE id=$1",
+              [revision, approval, revision],
+            );
+            await pool.query(
+              "INSERT INTO app.content_releases(id,release_identity,state,digest) VALUES($1,'content/synthetic','active',$2)",
+              [revision, canonicalDigest(`release:${revision}`)],
+            );
+            await pool.query(
+              "INSERT INTO app.content_release_entries(release_id,content_revision_id) VALUES($1::text,$1::text::uuid)",
+              [revision],
+            );
             const keys = vi.spyOn(content, "readPinnedScoringUnits");
             const dependencies = {
               authenticate: async () => scope,
@@ -200,6 +227,162 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
             expect(created.status).toBe(200);
             const attemptId = (await created.json()).resourceId as string;
             expect(keys).not.toHaveBeenCalled();
+            const runtime = new DeterministicAttemptService(
+              { attempts, content },
+              stableId,
+              () => now,
+            );
+            const acquisitionDeps = { ...dependencies, attempts, content, identity: stableId };
+            async function acquire(operationId: string) {
+              const response = await handleAcquireServingManifest(
+                acquisitionDeps,
+                "synthetic-session",
+                {
+                  contract: { major: 1, minor: 0 },
+                  operationId,
+                  expectedVersion: 0,
+                  payload: {
+                    taskFamily: "R2DetailedSelect",
+                    progressionProfile: "P2",
+                    activityOccurrenceId: activity,
+                  },
+                },
+              );
+              expect(response.status).toBe(200);
+              return response.json();
+            }
+            const secondLease = await acquire("acquire-before-display");
+            expect(secondLease.freshnessDecision).toBe("fresh");
+            await runtime.readLearnerAttempt(scope, appId(attemptId));
+            expect(await content.readExposureIndex(scope, [appId(family)])).toEqual([]);
+            const second = await dependencies.commands.create(scope, {
+              operationId: appId(randomUUID()),
+              servingManifestId: secondLease.servingManifestId,
+              activityOccurrenceId: appId(activity),
+            });
+            if (!second.ok) throw new Error(second.error);
+            const secondAttemptId = appId<"attempt">(second.value.attemptId);
+            expect(
+              await attempts.readRecordedAttemptConditions(scope, appId(attemptId)),
+            ).not.toHaveProperty("exposureClass");
+            expect(await readDisplayedResult(attempts, scope, appId(attemptId))).toBeUndefined();
+            // An injected SQL failure after the immutable fact insert must roll back its receipt
+            // too. Retrying the display then commits exactly one disclosure.
+            const failingPool = {
+              connect: async () => {
+                const client = await pool.connect();
+                return {
+                  release: () => client.release(),
+                  query: async (sql: string, values?: unknown[]) => {
+                    const result = await client.query(sql, values);
+                    if (sql.includes("INSERT INTO app.content_exposure_index"))
+                      throw new Error("synthetic late disclosure failure");
+                    return result;
+                  },
+                };
+              },
+            } as unknown as Pool;
+            await expect(
+              readDisplayedAttempt(
+                runtime,
+                new PostgresAttemptRepository(failingPool),
+                scope,
+                appId(attemptId),
+              ),
+            ).rejects.toThrow("synthetic late disclosure failure");
+            expect(
+              (
+                await pool.query(
+                  "SELECT count(*)::int AS n FROM app.exposure_facts WHERE fact_type='pinned_disclosure_v1'",
+                )
+              ).rows[0].n,
+            ).toBe(0);
+            expect(
+              (
+                await pool.query(
+                  "SELECT count(*)::int AS n FROM app.operation_receipts WHERE kind='attempt.disclosure'",
+                )
+              ).rows[0].n,
+            ).toBe(0);
+            expect(await content.readExposureIndex(scope, [appId(family)])).toEqual([]);
+            const originalDisclosure = await readDisplayedAttempt(
+              runtime,
+              attempts,
+              scope,
+              appId(attemptId),
+            );
+            expect(originalDisclosure?.preAttemptExposureClass).toBe("unseen");
+            expect(
+              (await readDisplayedAttempt(runtime, attempts, scope, secondAttemptId))
+                ?.preAttemptExposureClass,
+            ).toBe("exposed_family");
+            expect(
+              (await readDisplayedAttempt(runtime, attempts, scope, appId(attemptId)))
+                ?.preAttemptExposureClass,
+            ).toBe("unseen");
+            expect((await acquire("acquire-after-display")).freshnessDecision).toBe(
+              "exposed_review",
+            );
+            const exposureInput = {
+              attemptId,
+              contentFamilyId: family,
+              exposureEventId: randomUUID(),
+              revealedKind: "stimulus" as const,
+              exposureClass: "answer_exposed" as const,
+              phase: "during_response" as const,
+              occurredAt: "1900-01-01T00:00:00.000Z",
+            };
+            const exposureOperation = appId<"operation">(randomUUID());
+            const disclosureReceipt = await dependencies.commands.exposure(
+              scope,
+              exposureOperation,
+              exposureInput,
+            );
+            expect(disclosureReceipt.ok).toBe(true);
+            expect(
+              await dependencies.commands.exposure(scope, appId(randomUUID()), {
+                ...exposureInput,
+                contentFamilyId: randomUUID(),
+              }),
+            ).toEqual({ ok: false, error: "not_available" });
+            expect(
+              await dependencies.commands.exposure(
+                { ...scope, learnerScopeId: appId(randomUUID()) },
+                appId(randomUUID()),
+                exposureInput,
+              ),
+            ).toEqual({ ok: false, error: "not_available" });
+            expect((await content.readExposureIndex(scope, [appId(family)]))[0]).toMatchObject({
+              exposureClass: "exposed_family",
+              occurrenceCount: 2,
+            });
+            expect(keys).not.toHaveBeenCalled();
+            // Near-duplicate history is stronger than a plain stimulus disclosure and must not
+            // be downgraded when a third practice attempt displays this family.
+            await content.recordExposure(scope, {
+              operationId: appId(randomUUID()),
+              contentFamilyId: appId(family),
+              contentRevisionId: appId(revision),
+              exposureClass: "near_duplicate_family",
+              trigger: "learner_visible_stimulus",
+              occurredAt: now,
+              payloadDigest: canonicalDigest("synthetic-near-duplicate"),
+            });
+            const thirdLease = await acquire("acquire-near-duplicate");
+            const third = await dependencies.commands.create(scope, {
+              operationId: appId(randomUUID()),
+              servingManifestId: thirdLease.servingManifestId,
+              activityOccurrenceId: appId(activity),
+            });
+            if (!third.ok) throw new Error(third.error);
+            expect(
+              (await readDisplayedAttempt(runtime, attempts, scope, appId(third.value.attemptId)))
+                ?.preAttemptExposureClass,
+            ).toBe("near_duplicate_family");
+            expect((await content.readExposureIndex(scope, [appId(family)]))[0]).toMatchObject({
+              exposureClass: "near_duplicate_family",
+              occurrenceCount: 4,
+            });
             const operations = [
               ...(mode === "answered"
                 ? [{ kind: "set_selection" as const, itemId: item, optionId: "option-a" }]
@@ -367,6 +550,67 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
               }),
             ]);
             expect(outcome?.conditions).toMatchObject({ timerIntegrity: "insufficient" });
+            expect(outcome?.conditions).toMatchObject({ independenceClass: "first_attempt" });
+            const historical = JSON.stringify(outcome);
+            expect(await readDisplayedResult(attempts, scope, appId(attemptId))).toBeDefined();
+            expect(await readDisplayedResult(attempts, scope, appId(attemptId))).toBeDefined();
+            expect(
+              await dependencies.commands.exposure(scope, exposureOperation, exposureInput),
+            ).toEqual(disclosureReceipt);
+            expect(
+              await dependencies.commands.exposure(scope, exposureOperation, {
+                ...exposureInput,
+                revealedKind: "key_or_model",
+              }),
+            ).toEqual({ ok: false, error: "idempotency_conflict" });
+            expect((await content.readExposureIndex(scope, [appId(family)]))[0]).toMatchObject({
+              exposureClass: "answer_exposed",
+              occurrenceCount: 5,
+            });
+            expect(
+              (await readDisplayedAttempt(runtime, attempts, scope, appId(attemptId)))
+                ?.preAttemptExposureClass,
+            ).toBe("unseen");
+            expect(
+              JSON.stringify(await attempts.readCommittedSubmission(scope, appId(attemptId))),
+            ).toBe(historical);
+            // Recreate the pre-deploy database shape in this isolated fixture only. The original
+            // submission, operation receipt, outcome, and conditions stay byte-identical.
+            await pool.query(
+              "DELETE FROM app.exposure_facts WHERE attempt_id=$1 AND fact_type='pinned_disclosure_v1'",
+              [attemptId],
+            );
+            expect(
+              await attempts.readRecordedAttemptConditions(scope, appId(attemptId)),
+            ).not.toHaveProperty("exposureClass");
+            keys.mockClear();
+            const legacyReplay = await handleSubmitAttempt(
+              dependencies,
+              "synthetic-session",
+              attemptId,
+              submission,
+            );
+            expect(legacyReplay.status).toBe(200);
+            expect(keys).not.toHaveBeenCalled();
+            expect(
+              JSON.stringify(await attempts.readCommittedSubmission(scope, appId(attemptId))),
+            ).toBe(historical);
+            expect(
+              (
+                await handleSubmitAttempt(dependencies, "synthetic-session", attemptId, {
+                  ...submission,
+                  payload: { ...submission.payload, responseDigest: "f".repeat(64) },
+                })
+              ).status,
+            ).toBe(409);
+            expect(
+              (
+                await handleSubmitAttempt(dependencies, "synthetic-session", secondAttemptId, {
+                  ...submission,
+                  payload: { ...submission.payload, attemptId: secondAttemptId },
+                })
+              ).status,
+            ).toBe(409);
             const recovered = await handleAttemptRecovery(
               queryDeps,
               "synthetic-session",

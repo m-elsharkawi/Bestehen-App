@@ -11,6 +11,11 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { stableId } from "./attempt-command-runtime";
 import { DeterministicAttemptService } from "./attempt-runtime";
+import {
+  isSpeculativeDisclosure,
+  readDisplayedAttempt,
+  readDisplayedResult,
+} from "./attempt-disclosure";
 import { loadFoundationRoute, recordFoundationPreference } from "./foundation-runtime";
 import { getIdentityService } from "./identity";
 import { syntheticFixtureEnabled } from "./runtime";
@@ -118,20 +123,22 @@ export async function requireAttemptScope(attemptId: string, returnPath: string)
 }
 
 export async function loadAttemptProjection(attemptId: string, returnPath: string) {
+  if (isSpeculativeDisclosure(await headers())) return undefined;
   const scoped = await requireAttemptScope(attemptId, returnPath);
   if (!scoped) return undefined;
-  const loaded = await new DeterministicAttemptService(
-    repositories(),
-    stableId,
-    () => new Date(),
-  ).readLearnerAttempt(scoped.scope, scoped.attempt.attemptId);
-  if (!loaded.ok) return undefined;
+  const loaded = await readDisplayedAttempt(
+    new DeterministicAttemptService(repositories(), stableId, () => new Date()),
+    repositories().attempts,
+    scoped.scope,
+    scoped.attempt.attemptId,
+  );
+  if (!loaded) return undefined;
   const recovery = await repositories().attempts.readObjectiveRecovery(
     scoped.scope,
     scoped.attempt.attemptId,
   );
   const projection = {
-    ...loaded.value,
+    ...loaded,
     recovery,
     continuityScope: stableId("continuity", scoped.scope.learnerScopeId),
   };
@@ -140,27 +147,22 @@ export async function loadAttemptProjection(attemptId: string, returnPath: strin
 }
 
 export async function loadResultProjection(attemptId: string, returnPath: string) {
+  if (isSpeculativeDisclosure(await headers())) return undefined;
   const scoped = await requireAttemptScope(attemptId, returnPath);
   if (!scoped) return undefined;
-  const submission = await repositories().attempts.readCommittedSubmission(
+  const disclosed = await readDisplayedResult(
+    repositories().attempts,
     scoped.scope,
     scoped.attempt.attemptId,
   );
-  if (!submission) return undefined;
-  const evidence = await repositories().attempts.readDecisiveEvidence(
-    scoped.scope,
-    scoped.attempt.attemptId,
-  );
-  if (!evidence.ok) return undefined;
+  if (!disclosed) return undefined;
   const learner = await new DeterministicAttemptService(
     repositories(),
     stableId,
     () => new Date(),
   ).readLearnerAttempt(scoped.scope, scoped.attempt.attemptId);
   return {
-    attempt: scoped.attempt,
-    submission,
-    evidence: evidence.value,
+    ...disclosed,
     // A historical committed outcome remains available even if optional presentational material is
     // malformed after a deployment. The result projector has learner-safe labels for that case.
     learnerPayload: learner.ok ? learner.value.material.learnerPayload : undefined,

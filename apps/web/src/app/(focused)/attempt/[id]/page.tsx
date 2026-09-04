@@ -43,6 +43,9 @@ export default async function AttemptPage({
         : {})}
       state={projection.attempt.state}
       continuityScope={projection.continuityScope}
+      {...(projection.preAttemptExposureClass
+        ? { preAttemptExposureClass: projection.preAttemptExposureClass }
+        : {})}
       restoredOperations={
         (projection.recovery?.checkpoints.find(
           (c) => c.sequence === projection.recovery?.acknowledgedCheckpointSequence,

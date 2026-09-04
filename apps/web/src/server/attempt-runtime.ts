@@ -82,6 +82,7 @@ export interface AttemptRuntimeRepositories {
   readonly attempts: Pick<
     PostgresAttemptRepository,
     | "readAttempt"
+    | "readSubmissionReplay"
     | "readCanonicalCheckpoint"
     | "readRecordedAttemptConditions"
     | "recordCheckpoint"
@@ -491,6 +492,18 @@ export class DeterministicAttemptService {
     scope: AuthorizedScope,
     input: SubmitObjectiveInput,
   ): Promise<Result<SubmissionCommit, AttemptRuntimeFailure>> {
+    const replay = await this.repositories.attempts.readSubmissionReplay(scope, {
+      operationId: input.operationId,
+      attemptId: input.attemptId,
+      submissionId: this.identity("submission", `${input.operationId}:submission`),
+      responseDigest: input.responseDigest,
+    });
+    if (!replay.ok)
+      return {
+        ok: false,
+        error: replay.error === "idempotency_conflict" ? "idempotency_conflict" : "not_available",
+      };
+    if (replay.value) return { ok: true, value: replay.value };
     const projection = await this.readLearnerAttempt(scope, input.attemptId);
     if (!projection.ok) return projection;
     const { attempt, material } = projection.value;
@@ -585,6 +598,9 @@ export class DeterministicAttemptService {
       clockFactId,
     );
     if (!recorded) return { ok: false, error: "not_available" };
+    // A new written submission without a server disclosure fact cannot claim first exposure.
+    if (attempt.modality !== "listening" && !recorded.exposureClass)
+      return { ok: false, error: "not_available" };
     const now = this.now();
     const actualConditions = conditionsFor(
       attempt,

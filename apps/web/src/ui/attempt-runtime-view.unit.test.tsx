@@ -46,6 +46,25 @@ const instruction = {
 };
 
 describe("P05-COMPONENT-001 rendered objective response", () => {
+  it.each(["exposed_family", "near_duplicate_family", "answer_exposed"] as const)(
+    "P05-FRESH-001 labels %s as practice, not a fresh check",
+    (exposure) => {
+      render(
+        <RuntimeAttemptView
+          action={async (state) => state}
+          attemptId="test-attempt"
+          kind="reading"
+          instruction={instruction}
+          learnerPayload={payload}
+          nextSequence={1}
+          resourceVersion={2}
+          state="in_progress"
+          preAttemptExposureClass={exposure}
+        />,
+      );
+      expect(screen.getByText(/Seen before · practice only/)).toBeVisible();
+    },
+  );
   it("uses the tested primary action role for progressive submission", () => {
     const { container } = render(
       <RuntimeAttemptView

@@ -160,38 +160,18 @@ export function createAttemptCommandFunctions(
         : { ok: false, error: commandFailure(result.error) };
     },
     exposure: async (scope, operationId, payload) => {
-      const attempt = await attempts.readAttempt(scope, appId<"attempt">(payload.attemptId));
-      if (!attempt) return { ok: false, error: "not_available" };
-      const trigger =
-        payload.revealedKind === "stimulus"
-          ? ("learner_visible_stimulus" as const)
-          : payload.revealedKind === "transcript"
-            ? ("transcript" as const)
-            : payload.revealedKind === "decisive_information"
-              ? ("decisive_information" as const)
-              : ("key_or_rationale" as const);
-      const digest = canonicalDigest(payload);
-      const recorded = await content.recordExposure(scope, {
+      // Transcript disclosure belongs to the Listening phase gate. The legacy command cannot
+      // assert that bytes were authorized by supplying a phase/class/time of its own.
+      if (payload.revealedKind === "transcript") return { ok: false, error: "not_available" };
+      const recorded = await attempts.recordPinnedDisclosure(scope, {
         operationId,
-        contentFamilyId: appId<"content_family">(payload.contentFamilyId),
-        exposureClass: payload.exposureClass,
-        trigger,
-        contentRevisionId: attempt.contentRevisionId,
-        occurredAt: new Date(payload.occurredAt),
-        payloadDigest: digest,
+        attemptId: appId<"attempt">(payload.attemptId),
+        claimedFamilyId: payload.contentFamilyId,
+        kind: payload.revealedKind === "stimulus" ? "written_stimulus" : "committed_result",
       });
-      if (!recorded.ok) return { ok: false, error: commandFailure(recorded.error) };
-      const fact = await attempts.recordAttemptFact(scope, operationId, {
-        kind: "exposure",
-        factId: appId<"response_fact">(payload.exposureEventId),
-        attemptId: attempt.attemptId,
-        factType: "objective_exposure_v1",
-        envelope: { exposureClass: recorded.value.exposureClass, trigger, phase: payload.phase },
-        digest,
-      });
-      return fact.ok
-        ? { ok: true, value: { resourceId: payload.exposureEventId } }
-        : { ok: false, error: commandFailure(fact.error) };
+      return recorded.ok
+        ? { ok: true, value: { resourceId: recorded.value.factId } }
+        : { ok: false, error: commandFailure(recorded.error) };
     },
   };
   return commands;
