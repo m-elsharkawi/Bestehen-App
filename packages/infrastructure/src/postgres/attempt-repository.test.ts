@@ -1075,7 +1075,7 @@ describe("exact runtime composition reads", () => {
     const { repository, recorder } = repositoryOn([
       { when: /SELECT a\.id,a\.learner_scope_id/, rows: [attemptRow()] },
       { when: /^SELECT kind,phase,answer_bearing/, rows: [] },
-      { when: /^SELECT envelope->>'exposureClass'/, rows: [] },
+      { when: /^SELECT envelope->>'preAttemptExposureClass'/, rows: [] },
       { when: /^SELECT envelope\s+FROM app\.condition_facts/, rows: [{ envelope: observation }] },
     ]);
 

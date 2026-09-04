@@ -36,7 +36,7 @@
  *   byte-identical (`Architecture/06-…:228`).
  */
 
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   type AttemptConditionSummary,
   classifyInitialValidity,
@@ -766,11 +766,11 @@ export class PostgresAttemptRepository {
       [scope.learnerScopeId, attemptId],
     );
     const exposure = await this.pool.query(
-      `SELECT envelope->>'exposureClass' AS exposure_class
+      `SELECT envelope->>'preAttemptExposureClass' AS exposure_class
          FROM app.exposure_facts
-        WHERE learner_scope_id=$1 AND attempt_id=$2
-          AND fact_type='objective_exposure_v1'
-        ORDER BY learner_sequence DESC LIMIT 1`,
+        WHERE learner_scope_id=$1 AND attempt_id=$2 AND fact_type='pinned_disclosure_v1'
+          AND envelope->>'kind'='written_stimulus'
+        ORDER BY learner_sequence LIMIT 1`,
       [scope.learnerScopeId, attemptId],
     );
     const exposureClass = exposure.rows[0]?.exposure_class;
@@ -803,6 +803,162 @@ export class PostgresAttemptRepository {
       ...(exposureClass ? { exposureClass: exposureClass as ExposureClass } : {}),
       ...(clockObservation ? { clockObservation } : {}),
     };
+  }
+
+  /**
+   * The display boundary, not acquisition, records disclosure. One immutable fact per pinned
+   * attempt/kind and its family-index effect commit together. A retry returns that fact, never
+   * today's merged index. The first disclosure freezes its pre-disclosure baseline atomically.
+   */
+  public async recordPinnedDisclosure(
+    scope: AuthorizedScope,
+    input: {
+      readonly attemptId: AttemptId;
+      readonly operationId: OperationId;
+      readonly kind: "written_stimulus" | "committed_result";
+      readonly claimedFamilyId?: string;
+    },
+  ): Promise<
+    Result<
+      {
+        readonly factId: string;
+        readonly exposureClass: ExposureClass;
+        readonly preAttemptExposureClass: ExposureClass;
+      },
+      AttemptRepositoryError
+    >
+  > {
+    return this.guarded(async () =>
+      inAttemptResultTransaction(this.pool, async (client) => {
+        const learner = await lockActiveLearnerScope(client, scope.learnerScopeId);
+        if (!learner) return { ok: false as const, error: "not_available" as const };
+        const pinned = await client.query(
+          `SELECT a.content_revision_id,a.modality,cr.family_id,sm.freshness_decision,transaction_timestamp() AS disclosed_at,
+                EXISTS(SELECT 1 FROM app.attempt_submissions s
+                       WHERE s.learner_scope_id=a.learner_scope_id AND s.attempt_id=a.id) AS submitted
+           FROM app.attempts a
+           JOIN app.content_revisions cr ON cr.id=a.content_revision_id
+           JOIN app.serving_manifests sm ON sm.id=a.serving_manifest_id AND sm.learner_scope_id=a.learner_scope_id
+          WHERE a.learner_scope_id=$1 AND a.id=$2
+            AND EXISTS(SELECT 1 FROM app.serving_manifest_entries e
+                       WHERE e.serving_manifest_id=sm.id AND e.learner_scope_id=a.learner_scope_id
+                         AND e.content_revision_id=a.content_revision_id)`,
+          [scope.learnerScopeId, input.attemptId],
+        );
+        const pin = pinned.rows[0];
+        if (
+          !pin ||
+          (input.claimedFamilyId !== undefined && input.claimedFamilyId !== pin.family_id)
+        )
+          return { ok: false as const, error: "not_available" as const };
+        if (
+          input.kind === "written_stimulus"
+            ? !["reading", "language_elements"].includes(pin.modality)
+            : !pin.submitted
+        )
+          return { ok: false as const, error: "not_available" as const };
+        const exposureClass =
+          input.kind === "committed_result"
+            ? ("answer_exposed" as const)
+            : ("exposed_family" as const);
+        // This fixed-position array has canonical-json/v1 bytes without object-key ordering.
+        const digest = createHash("sha256")
+          .update(
+            JSON.stringify([
+              input.attemptId,
+              String(pin.content_revision_id),
+              String(pin.family_id),
+              input.kind,
+            ]),
+          )
+          .digest("hex");
+        const prior = await client.query(
+          "SELECT exposure_class FROM app.content_exposure_index WHERE learner_scope_id=$1 AND content_family_id=$2",
+          [scope.learnerScopeId, pin.family_id],
+        );
+        const preAttemptExposureClass = (prior.rows[0]?.exposure_class ??
+          "unseen") as ExposureClass;
+        const envelope = {
+          kind: input.kind,
+          contentRevisionId: String(pin.content_revision_id),
+          contentFamilyId: String(pin.family_id),
+          exposureClass,
+          preAttemptExposureClass,
+          disclosedAt: new Date(pin.disclosed_at).toISOString(),
+        };
+        const claimed = await client.query(
+          `INSERT INTO app.operation_receipts(learner_scope_id,operation_id,kind,canonicalization_version,
+           payload_digest,status,resource_ref,expiry_class)
+         VALUES($1,$2,'attempt.disclosure','canonical-json/v1',$3,'completed',$4,'semantic')
+         ON CONFLICT DO NOTHING RETURNING operation_id`,
+          [scope.learnerScopeId, input.operationId, digest, input.attemptId],
+        );
+        if (!claimed.rows[0]) {
+          const receipt = await client.query(
+            `SELECT payload_digest,resource_ref FROM app.operation_receipts
+            WHERE learner_scope_id=$1 AND operation_id=$2 AND kind='attempt.disclosure'`,
+            [scope.learnerScopeId, input.operationId],
+          );
+          if (
+            receipt.rows[0]?.payload_digest !== digest ||
+            receipt.rows[0]?.resource_ref !== input.attemptId
+          )
+            return { ok: false as const, error: "idempotency_conflict" as const };
+        }
+        const original = await client.query(
+          `SELECT id,envelope FROM app.exposure_facts
+          WHERE learner_scope_id=$1 AND attempt_id=$2 AND fact_type='pinned_disclosure_v1' AND digest=$3`,
+          [scope.learnerScopeId, input.attemptId, digest],
+        );
+        if (original.rows[0])
+          return {
+            ok: true as const,
+            value: {
+              factId: String(original.rows[0].id),
+              exposureClass: original.rows[0].envelope.exposureClass as ExposureClass,
+              preAttemptExposureClass: original.rows[0].envelope
+                .preAttemptExposureClass as ExposureClass,
+            },
+          };
+        const factId = appId<"response_fact">(randomUUID());
+        await this.insertFact(
+          client,
+          scope.learnerScopeId,
+          {
+            kind: "exposure",
+            factId,
+            attemptId: input.attemptId,
+            factType: "pinned_disclosure_v1",
+            envelope,
+            digest,
+          },
+          learner.nextSequence,
+        );
+        await client.query(
+          `INSERT INTO app.content_exposure_index(learner_scope_id,content_family_id,exposure_class,
+           last_trigger,last_content_revision_id,occurrence_count)
+         VALUES($1,$2,$3,$4,$5,1)
+         ON CONFLICT(learner_scope_id,content_family_id) DO UPDATE SET
+           exposure_class=CASE WHEN app.content_exposure_index.exposure_class IN ('answer_exposed','near_duplicate_family') AND EXCLUDED.exposure_class='exposed_family'
+                              THEN app.content_exposure_index.exposure_class ELSE EXCLUDED.exposure_class END,
+           last_trigger=EXCLUDED.last_trigger,last_content_revision_id=EXCLUDED.last_content_revision_id,
+           occurrence_count=app.content_exposure_index.occurrence_count+1,
+           last_exposed_at=transaction_timestamp()`,
+          [
+            scope.learnerScopeId,
+            pin.family_id,
+            exposureClass,
+            input.kind === "committed_result" ? "key_or_rationale" : "learner_visible_stimulus",
+            pin.content_revision_id,
+          ],
+        );
+        await client.query("UPDATE app.learner_scopes SET next_sequence=$2 WHERE id=$1", [
+          scope.learnerScopeId,
+          learner.nextSequence + 1,
+        ]);
+        return { ok: true as const, value: { factId, exposureClass, preAttemptExposureClass } };
+      }),
+    );
   }
 
   public async readCheckpoints(
@@ -858,6 +1014,26 @@ export class PostgresAttemptRepository {
     attemptId: AttemptId,
   ): Promise<CommittedObjectiveSubmission | undefined> {
     return this.readCommittedSubmissionOn(this.pool, scope.learnerScopeId, attemptId);
+  }
+
+  /** Validate the original operation before any new-release scoring/disclosure requirements. */
+  public async readSubmissionReplay(
+    scope: AuthorizedScope,
+    input: Pick<
+      ObjectiveSubmissionInput,
+      "operationId" | "attemptId" | "submissionId" | "responseDigest"
+    >,
+  ): Promise<Result<SubmissionCommit | null, AttemptRepositoryError>> {
+    return inAttemptResultTransaction<SubmissionCommit | null>(this.pool, async (client) => {
+      if (!(await lockActiveLearnerScope(client, scope.learnerScopeId)))
+        return { ok: false as const, error: "not_available" as const };
+      const exists = await client.query(
+        "SELECT 1 FROM app.operation_receipts WHERE learner_scope_id=$1 AND operation_id=$2 AND kind='attempt.submit'",
+        [scope.learnerScopeId, input.operationId],
+      );
+      if (!exists.rows[0]) return { ok: true as const, value: null };
+      return this.replaySubmission(client, scope.learnerScopeId, input);
+    });
   }
 
   private async readCommittedSubmissionOn(
@@ -1981,7 +2157,10 @@ export class PostgresAttemptRepository {
   private async replaySubmission(
     client: PoolClient,
     learnerScopeId: LearnerScopeId,
-    input: ObjectiveSubmissionInput,
+    input: Pick<
+      ObjectiveSubmissionInput,
+      "operationId" | "attemptId" | "submissionId" | "responseDigest"
+    >,
   ): Promise<Result<SubmissionCommit, AttemptRepositoryError>> {
     const receipt = await client.query(
       `SELECT payload_digest,resource_ref,result_ref FROM app.operation_receipts
