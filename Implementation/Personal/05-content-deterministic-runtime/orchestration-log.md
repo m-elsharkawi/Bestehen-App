@@ -25,7 +25,7 @@ request has been opened, because the owner is holding GitHub Actions spend.
 | 6 | T6 seed corpus + boundary | Opus + continuation worker | **Accepted implementation**, seed remains draft/candidate | `a9bbec7` through `332559a` |
 | 7 | T9 design-system components | continuation model not retained in this log | **Accepted** | `cd23b55`, `7cd9f23`, `c3af737` |
 | 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery, Terra high presentation correction | **Accepted implementation**, T12 end-to-end coverage remains | `43a9251` through `7c380fe` |
-| 9 | T5 Listening | — | not started | |
+| 9 | T5 Listening | GPT-5.6 Sol high | in progress, server/media slice first | starts after `126355a` |
 | 10 | T11 gate wiring | — | not started | |
 | 11 | T12 browser/a11y/responsive tests | — | not started | |
 | 12 | T13 handoff | orchestrator | not started | |
@@ -655,3 +655,19 @@ has 35 GB available of 59 GB. The orchestrator's disposable PostgreSQL container
 `bestehen-t10-orchestrator-0904` stays on port 55435 for T5; owner containers are
 untouched. Local main is 93 commits ahead of stale origin/main at the production
 boundary. No push, pull request or remote CI run occurred.
+
+### T5 dispatch boundary, 2026-09-04
+
+One existing Sol high worker continues with T5 after T10 acceptance. The first
+bounded slice covers media validation, Listening contracts, authorization and
+persisted plan/preflight/playback records with real-database tests. Browser
+playback and integration into the existing attempt runtime follow after review
+of that slice. This split limits review size without giving playback semantics
+to different workers. No other implementation agent runs concurrently.
+
+The worker must not mislabel non-speech fake audio as reviewed TTS to satisfy
+the existing SQL source-role constraint. It must resolve item/media scope by
+identity without reading answer keys during plan acquisition. Existing media
+migrations remain immutable. Any additional schema requirement returns to the
+orchestrator before implementation. Seed publication and all owner approvals
+remain unclaimed. These are dispatch constraints, not implementation evidence.
