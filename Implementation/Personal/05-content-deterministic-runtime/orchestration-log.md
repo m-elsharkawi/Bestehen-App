@@ -24,7 +24,7 @@ request has been opened, because the owner is holding GitHub Actions spend.
 | 5 | T8 attempt repo + evidence transaction | Opus | **Accepted** after one rejection | `e8a4522`,`5e75745`,`d2590ce`,`7474ae7` |
 | 6 | T6 seed corpus + boundary | Opus + continuation worker | **Accepted implementation**, seed remains draft/candidate | `a9bbec7` through `332559a` |
 | 7 | T9 design-system components | continuation model not retained in this log | **Accepted** | `cd23b55`, `7cd9f23`, `c3af737` |
-| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, then Sol high recovery | **Reopened**, recovery review in progress | `43a9251` through `d7979b9` |
+| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery, Terra high presentation correction | **Accepted implementation**, T12 end-to-end coverage remains | `43a9251` through `7c380fe` |
 | 9 | T5 Listening | — | not started | |
 | 10 | T11 gate wiring | — | not started | |
 | 11 | T12 browser/a11y/responsive tests | — | not started | |
@@ -566,3 +566,92 @@ also need separation using existing layout classes. A bounded presentation and
 route-compatibility task follows before T5. No T12 runtime end-to-end, OCI, owner
 approval or full-stage acceptance is claimed. Local main is 88 commits ahead of
 stale origin/main at this production boundary. Nothing was pushed.
+
+### T10 presentation and recovery reaccepted at `7c380fe`, 2026-09-04
+
+The orchestrator independently reviewed `9a5686b`, `916b53d`, `a5440a4` and
+`7c380fe`. GPT-5.6 Terra high handled this bounded presentation correction after
+Sol high completed the transactional recovery work. T10 implementation is now
+accepted. T12 still owns the full authenticated runtime browser evidence.
+
+`9a5686b` replaces the generic result reader with a projection of the importer's
+actual evidence references and rationale arrays. It joins committed item IDs to
+pinned learner labels, scopes repeated option IDs to their question, and keeps
+current validity separate from immutable outcome. The new ResultView branch is
+additive; the old call signature and default markup remain. It also restores the
+legacy non-UUID authentication return to `/attempt/current`, while real attempt
+IDs retain their exact destination and arbitrary query values are ignored.
+Pinned instructions now render after validation at the JSONB boundary.
+`916b53d` marks German authored feedback separately from English interface text.
+
+Review returned these defects rather than accepting the worker's first report:
+
+- The initial result patch changed the legacy ResultView contract and omitted
+  per-question context. It now uses an optional projection branch and labels
+  every known item. Raw authored cause mappings are not presented as diagnoses.
+- The R3 result mapper paired situations and bindings by position. It now joins
+  `binding.leftId` to `promptId`, with shuffled-order regression coverage.
+- German stimulus, question, option and result text initially lacked language
+  attributes. The English help sentence also sat under a German-language parent.
+- The tightened instruction parser exposed an incomplete integration fixture.
+  The fixture now contains the complete instruction contract; no assertion was
+  removed or weakened.
+- A styled 320 px / 400% check found the confirmation text overflowing to 360 px
+  in all three engines. `a5440a4` adds wrapping, associated confirmation text and
+  a 44 px target. Its test verifies accessible name and label activation.
+- A fresh WebKit resize still overflowed to 326 px at normal text size. The
+  question legend retained a 292.6 px intrinsic width after 390→320 and 1280→320
+  resizing. Two animation frames and a one-second wait did not resolve it.
+  Static legend/inner-span constraints did not reliably fix the fresh-source
+  case. The orchestrator rejected font-loading state effects and directed the
+  native fieldset to use `aria-labelledby` with an in-flow German question
+  paragraph. `7c380fe` contains only that naming/layout change and its regression;
+  no experimental effects, shared stylesheet changes or snapshot changes remain.
+
+Independent commands on clean `7c380fe`, pinned Node 24.19.0/pnpm 11.23.0:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+  `pnpm exec tsc -p apps/web/tsconfig.json --noEmit`, `pnpm check:boundaries`,
+  `pnpm check:assets`, `pnpm check:lock`, `pnpm check:secrets`,
+  `pnpm check:providers`, `pnpm test:release`: **PASS**. The existing oversized
+  generated seed JSON warning remains non-failing.
+- `pnpm test:unit`: **1 failed / 771 passed (772)**. The sole failure is exactly
+  the known coverage semantic-union parity test. `pnpm check` exits 1 at that
+  coverage mismatch after the preserved Stage 01–04 scope fixtures pass. Every
+  later command was therefore run separately, not inferred from the chain.
+- `pnpm build`, `pnpm check:web-budget`, `pnpm check:generated`: **PASS**.
+  Protected first load **198,157 B gzip**, app-owned chunks **41,980 B gzip**,
+  CSS **5,031 B gzip**, fonts **262,144 B**, icons/brand **1,863 B gzip**. The
+  protected ceiling remains 204,800 B; remaining headroom is 6,643 B.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **21/21 in
+  three consecutive independent runs**. `pnpm test:process` against that same
+  database: **3/3**.
+- `pnpm test:e2e`: **66 passed / 3 skipped**, all three engines. The skips are
+  the container-only visual case, one per engine. The legacy return-route
+  regression now passes in each engine.
+- `pnpm test:visual:container`: **1/1**, no regeneration. Pinned local image:
+  `sha256:e19cff183e18e06772ad1d184cf394017a030d83698b4e6281bc57fc889096a0`.
+- The ignored actual-island/IndexedDB diagnostic remains **1/1** in Chromium.
+  The rebuilt styled preview passed axe, label activation, keyboard activation
+  and no-page-error checks for ready, conflict and result states across all
+  three engines. Repeated 320/1280/320/390/320 resizing and 320 px / 400% text
+  all fit. Confirmation targets were 250×44 at 320 and 650×44 at 1280. The
+  orchestrator inspected the final dark 390 px screen and enlarged confirmation
+  screenshot. These diagnostics are supplemental, not T12 completion evidence.
+
+Earlier independent runs at `916b53d` and `a5440a4` also passed their release,
+build/budget/generated, browser and three repeated 21-test integration gates.
+Their unit totals were respectively 769 and 770 passes plus the same known red.
+Those green suites did not detect the rendered defects described above. OCI and
+full-stage acceptance remain unclaimed until T11/T12; owner gates remain open.
+
+After all gate processes finished, the orchestrator stopped preview port 3306,
+moved `apps/web/.next` recoverably to Trash, and pruned only Docker build cache
+and dangling images, reclaiming 2.467 GB and 2.366 GB respectively. The newly
+tagged visual image and all owner volumes remain. Host `df -h` reports 460 GiB
+total, 400 GiB used, 33 GiB available. Docker reports 19 images / 11.41 GB,
+28 containers / 34.02 MB, 26 volumes / 7.017 GB, and zero build cache. The VM
+has 35 GB available of 59 GB. The orchestrator's disposable PostgreSQL container
+`bestehen-t10-orchestrator-0904` stays on port 55435 for T5; owner containers are
+untouched. Local main is 93 commits ahead of stale origin/main at the production
+boundary. No push, pull request or remote CI run occurred.
