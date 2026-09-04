@@ -1269,3 +1269,32 @@ reapproval must follow the accepted review lifecycle; a real quarantine/retireme
 successor is sufficient for the stale-approval regression. The general catalogue
 must also use the existing class/approval eligibility rules, not hardcode C3 and
 thereby exclude valid C2 target content. Actual seeds remain C3 drafts throughout.
+
+Root authorized one narrow shared-contract addition after finding that the new
+`audioManifestPins` condition would otherwise be rejected by the existing strict
+`allowedConditionsSchema`. Its definition belongs in `contracts/listening.ts`,
+with an optional field in the existing conditions schema and compatibility tests.
+Old payloads remain unchanged. No production route or island is wired in this
+checkpoint.
+
+Additional review requirements sent before the worker's final gate run:
+
+- Failed media candidates must release their transaction locks before the next
+  candidate. Opposite learner exposure rankings can otherwise acquire two bad
+  families' locks in opposite order. Test concurrent selection, not only serial
+  first-run success.
+- Exact pin comparison must ignore JSON object property insertion order without
+  ignoring changed identities or digests. The test must send reordered properties
+  to the repository, not normalize them first and lose the regression stimulus.
+- A no-write exact import replay after media retirement must not resurrect the
+  current projection or fail solely because the former approval is no longer
+  current. New admission still requires current approval.
+- Creating an unapproved successor draft must not silently replace or disable a
+  currently approved aggregate.
+- Rights coverage must match both component identity and purpose. Transcript-only
+  rights cannot authorize an audio asset, nor audio-only rights a transcript.
+- Label digest tests must change only the label, not also remove release entries;
+  malformed-label tests must identify the relevant error. The synthetic database
+  fixture must not invent an `ordinal` column on `content_release_entries`.
+
+These are draft review findings and required proofs, not accepted test results.
