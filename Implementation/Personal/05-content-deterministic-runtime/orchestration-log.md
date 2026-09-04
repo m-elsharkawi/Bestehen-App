@@ -1184,3 +1184,12 @@ The importer worker was told not to mix in a fix. After that checkpoint, a bound
 correction must cover all new Stage 05 unsafe routes and their callers with
 negative and real same-origin positive evidence before new Listening commands
 reuse the boundary. Existing session cookie flags must not be weakened.
+
+Root also identified a pending player integration gap, not a claim about an
+already-running player. `ListeningRegionContract` has no `pauseAllowed` input,
+and `ListeningRegion` enables Pause whenever its presentation state is `playing`.
+The accepted Listening plan forbids pause for P4 and target probes. Before the
+audio island is wired, a small T9-owned additive policy input is required so the
+control honestly reflects that plan without faking player state or mutating its
+DOM imperatively. Existing call-site defaults must preserve the accepted DOM.
+T5 was told not to edit the design-system files or fold this into the importer.
