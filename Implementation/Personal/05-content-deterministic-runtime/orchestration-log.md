@@ -518,3 +518,51 @@ the disposable PostgreSQL container `bestehen-t10-orchestrator-0904` on port
 The temporary preview on 3306 was stopped. `.next` remains for the next review
 gates and must be removed at task cleanup. Local main is 83 commits ahead of stale
 origin/main at this production boundary; no push or pull request occurred.
+
+### Recovery corrections independently reviewed at `5d408fc`, 2026-09-04
+
+The orchestrator read the actual changes from `3ada955` through `5d408fc`.
+`e425e95` guards acknowledgement and restoration against a newer local draft
+revision inside the serialized write callback. `52b0850` adds an opt-out for the
+empty action bar, preserving the default shell DOM. `129b9cc` renders submission
+freeze state and tests stable restoration. `5d408fc` removes an unused digest
+override. The worker reported that the acknowledgement regressions fail against
+the old implementation; that mutation run was not independently observed.
+
+Independent evidence on the committed tree, pinned Node 24.19.0/pnpm 11.23.0:
+
+- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+  `pnpm exec tsc -p apps/web/tsconfig.json --noEmit`, `pnpm check:boundaries`,
+  `pnpm test:release`: PASS. The existing oversized generated JSON warning remains.
+- `pnpm test:unit`: **1 failed / 761 passed (762)**, exactly the known coverage
+  semantic-union parity failure.
+- `pnpm build`, `pnpm check:web-budget`, `pnpm check:generated`: PASS on the
+  independent serial rerun. The first build failed because `.next` was moved to
+  Trash during verification. Unit tests also ran concurrently with that first
+  build. No gate may be reported green from that run. Builds, unit tests and
+  artifact cleanup must not overlap.
+- Protected first load **198,157 B gzip**, app-owned chunks **41,753 B gzip**,
+  CSS **5,031 B gzip**. The ceiling remains 204,800 B.
+- `TEST_DATABASE_URL=<disposable-local-db> pnpm test:integration`: **21/21 in
+  three consecutive independent runs**. `pnpm test:process` with that same
+  database: **3/3** after the rebuild. Its earlier web timeout with incomplete
+  build output is not a pass.
+- The ignored actual-island/IndexedDB diagnostic: **1/1** in Chromium. Rebuilt
+  styled conflict preview in Chromium, Firefox and WebKit, light and dark at
+  390 px: no horizontal overflow, no empty sticky bar, three 44 px buttons and
+  no page errors. The orchestrator inspected the corrected dark screenshot.
+- `pnpm test:visual:container`: **1/1**, pinned Chromium, existing responsive
+  anchors unchanged. No snapshots were regenerated.
+- `pnpm test:e2e`: **3 failed / 63 passed / 3 skipped**. Every engine fails
+  `P04-ROUTE-001`: `/attempt/synthetic` now holds `/attempt/synthetic` through
+  authentication instead of the legacy `/attempt/current`. The skipped cases
+  are the container-only visual test. This is a real regression requiring a
+  compatibility decision and correction, not permission to weaken the test.
+
+T10 remains open. Besides the result importer/projection mismatch already noted,
+the attempt view omits the pinned instruction and does not mark German learning
+material with its language under the English document root. The conflict actions
+also need separation using existing layout classes. A bounded presentation and
+route-compatibility task follows before T5. No T12 runtime end-to-end, OCI, owner
+approval or full-stage acceptance is claimed. Local main is 88 commits ahead of
+stale origin/main at this production boundary. Nothing was pushed.
