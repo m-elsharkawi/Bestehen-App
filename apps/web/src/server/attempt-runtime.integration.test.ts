@@ -13,6 +13,7 @@ import {
   PostgresContentRepository,
 } from "@bestehen/infrastructure";
 import { withIsolatedDatabase } from "@bestehen/test-support";
+import type { Pool } from "pg";
 import { describe, expect, it, vi } from "vitest";
 import { createAttemptCommandFunctions } from "./attempt-command-runtime";
 import {
@@ -204,6 +205,45 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)(
                 observedAt: now.toISOString(),
               },
             };
+            // Commit immediately after the recovery statement's snapshot was taken. A legacy
+            // multi-query projection would return version 2 with sequence-1 response rows here.
+            let raced = false;
+            const snapshotRepository = new PostgresAttemptRepository({
+              query: async (text: string, values: unknown[]) => {
+                const result = await pool.query(text, values);
+                if (!raced) {
+                  raced = true;
+                  expect(
+                    (
+                      await handleCheckpointAttempt(
+                        dependencies,
+                        "synthetic-session",
+                        attemptId,
+                        checkpoint,
+                      )
+                    ).status,
+                  ).toBe(200);
+                }
+                return result;
+              },
+            } as unknown as Pool);
+            expect(await snapshotRepository.readObjectiveRecovery(scope, appId(attemptId))).toEqual(
+              expect.objectContaining({
+                resourceVersion: 2,
+                acknowledgedCheckpointSequence: 0,
+                checkpoints: [],
+                submission: null,
+              }),
+            );
+            expect(await attempts.readObjectiveRecovery(scope, appId(attemptId))).toEqual(
+              expect.objectContaining({
+                resourceVersion: 3,
+                acknowledgedCheckpointSequence: 1,
+                checkpoints: [
+                  expect.objectContaining({ sequence: 1, responseDigest: digest, operations }),
+                ],
+              }),
+            );
             expect(
               (
                 await handleCheckpointAttempt(

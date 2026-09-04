@@ -701,42 +701,51 @@ export class PostgresAttemptRepository {
 
   /** Learner-only recovery facts. No key/outcome join is reachable before submission. */
   public async readObjectiveRecovery(scope: AuthorizedScope, attemptId: AttemptId) {
-    const attempt = await this.readAttempt(scope, attemptId);
-    if (!attempt) return undefined;
-    const checkpoints = await this.pool.query(
-      `SELECT c.operation_id,c.sequence,c.stream,c.payload_digest,f.envelope
+    // One statement means one MVCC snapshot, including the version and acknowledged sequence.
+    // Separate pool reads can mix a pre-commit attempt with post-commit response facts.
+    const result = await this.pool.query(
+      `WITH recovery_attempt AS (
+         ${attemptProjection} WHERE a.learner_scope_id=$1 AND a.id=$2
+       ) SELECT a.*,
+       COALESCE((SELECT jsonb_agg(row_to_json(checkpoint) ORDER BY checkpoint.sequence,checkpoint.stream)
+         FROM (SELECT c.operation_id,c.sequence,c.stream,c.payload_digest,f.envelope
          FROM app.attempt_checkpoints c
          JOIN app.response_facts f ON f.learner_scope_id=c.learner_scope_id
           AND f.attempt_id=c.attempt_id AND f.digest=c.payload_digest
           AND f.fact_type='objective_response_checkpoint_v1'
           AND f.envelope->>'sequence'=c.sequence::text
           AND f.envelope->>'stream'=c.stream
-        WHERE c.learner_scope_id=$1 AND c.attempt_id=$2
-        ORDER BY c.sequence,c.stream`,
+        WHERE c.learner_scope_id=a.learner_scope_id AND c.attempt_id=a.id
+        ) checkpoint),'[]'::jsonb) AS recovery_checkpoints,
+       (SELECT row_to_json(submitted) FROM (
+         SELECT id,operation_id,response_digest FROM app.attempt_submissions
+         WHERE learner_scope_id=a.learner_scope_id AND attempt_id=a.id
+       ) submitted) AS recovery_submission
+       FROM recovery_attempt a`,
       [scope.learnerScopeId, attemptId],
     );
-    const submitted = await this.pool.query(
-      `SELECT id,operation_id,response_digest FROM app.attempt_submissions
-        WHERE learner_scope_id=$1 AND attempt_id=$2`,
-      [scope.learnerScopeId, attemptId],
-    );
+    const row = result.rows[0];
+    if (!row) return undefined;
+    const attempt = attemptFromRow(row);
+    const checkpoints = row.recovery_checkpoints as Row[];
+    const submitted = row.recovery_submission as Row | null;
     return {
       attemptId,
       resourceVersion: attempt.resourceVersion,
       state: attempt.state,
       acknowledgedCheckpointSequence: attempt.acknowledgedCheckpointSequence,
-      checkpoints: checkpoints.rows.map((row) => ({
+      checkpoints: checkpoints.map((row) => ({
         operationId: String(row.operation_id),
         sequence: Number(row.sequence),
         stream: String(row.stream),
         responseDigest: String(row.payload_digest),
         operations: (row.envelope as { operations: unknown }).operations,
       })),
-      submission: submitted.rows[0]
+      submission: submitted
         ? {
-            submissionId: String(submitted.rows[0].id),
-            operationId: String(submitted.rows[0].operation_id),
-            responseDigest: String(submitted.rows[0].response_digest),
+            submissionId: String(submitted.id),
+            operationId: String(submitted.operation_id),
+            responseDigest: String(submitted.response_digest),
           }
         : null,
     };
