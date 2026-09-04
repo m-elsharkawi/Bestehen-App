@@ -1162,3 +1162,25 @@ so, and exact retry must reconcile the same draft. This is a documented two-step
 offline operation, not a claim of one transaction across both steps. No main
 worker wiring, live calls, approval, new migration or configuration work is added
 to this checkpoint's authority.
+
+### Open transport security finding during T5 import work, 2026-09-04
+
+Root static review found that the new Stage 05 JSON mutation route handlers call
+`request.json()` and authenticated commands without checking content type,
+Origin, Fetch Metadata or CSRF proof. Concrete examples are
+`apps/web/src/app/api/v1/attempts/route.ts` and
+`apps/web/src/app/api/v1/serving-manifests/route.ts`. Their delegated command
+functions receive no request headers, so they cannot supply those missing checks.
+The existing application `validateUnsafeRequest` function and logout route show
+the intended boundary. The continuity client's JSON fetch currently sends only
+the content-type header.
+
+Architecture 23 D07 and its browser-baseline requirements explicitly require
+method/content-type, origin/Fetch Metadata and CSRF checks in addition to SameSite.
+Next Server Actions do not establish protection for separate Route Handlers.
+This is an unresolved source-level gap, not a claim of a demonstrated browser
+exploit. T10's earlier acceptance does not cover this missing transport proof.
+The importer worker was told not to mix in a fix. After that checkpoint, a bounded
+correction must cover all new Stage 05 unsafe routes and their callers with
+negative and real same-origin positive evidence before new Listening commands
+reuse the boundary. Existing session cookie flags must not be weakened.
