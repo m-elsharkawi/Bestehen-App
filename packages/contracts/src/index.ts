@@ -20,6 +20,7 @@ import {
 import { z } from "zod";
 
 export * from "./ui-projections.js";
+export * from "./listening.js";
 
 export const contractVersionSchema = z
   .object({

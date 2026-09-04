@@ -20,6 +20,7 @@ export * from "./scoring.js";
 export * from "./freshness.js";
 export * from "./impact.js";
 export * from "./corpus-request.js";
+export * from "./media.js";
 
 /**
  * The versioned publication boundary. Stage 05 is the first stage to produce content, so `produced`
