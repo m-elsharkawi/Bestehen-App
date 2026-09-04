@@ -24,8 +24,8 @@ request has been opened, because the owner is holding GitHub Actions spend.
 | 5 | T8 attempt repo + evidence transaction | Opus | **Accepted** after one rejection | `e8a4522`,`5e75745`,`d2590ce`,`7474ae7` |
 | 6 | T6 seed corpus + boundary | Opus + continuation worker | **Accepted implementation**, seed remains draft/candidate | `a9bbec7` through `332559a` |
 | 7 | T9 design-system components | continuation model not retained in this log | **Accepted** | `cd23b55`, `7cd9f23`, `c3af737` |
-| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery, Terra high presentation correction | **Accepted implementation**, T12 end-to-end coverage remains | `43a9251` through `7c380fe` |
-| 9 | T5 Listening | GPT-5.6 Sol high | in progress, server/media slice first | starts after `126355a` |
+| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery, Terra high presentation correction | presentation/recovery verified; **reopened for exposure wiring** | `43a9251` through `7c380fe` |
+| 9 | T5 Listening | GPT-5.6 Sol high | paused before editing, pending shared exposure correction | dispatch `888c989` |
 | 10 | T11 gate wiring | — | not started | |
 | 11 | T12 browser/a11y/responsive tests | — | not started | |
 | 12 | T13 handoff | orchestrator | not started | |
@@ -671,3 +671,29 @@ identity without reading answer keys during plan acquisition. Existing media
 migrations remain immutable. Any additional schema requirement returns to the
 orchestrator before implementation. Seed publication and all owner approvals
 remain unclaimed. These are dispatch constraints, not implementation evidence.
+
+### Exposure integration finding before T5 editing, 2026-09-04
+
+The orchestrator's T5 integration review found a further T10 omission before
+the Listening worker changed any source. `loadAttemptProjection`,
+`readLearnerAttempt`, the objective island and `loadResultProjection` do not
+record stimulus or result disclosure. Only the standalone exposure command
+exists. `acquireServingManifest` derives freshness from `content_exposure_index`,
+and submission falls back to `unseen` when no exposure fact exists. Thus the
+rendered path does not supply the fact that the next acquisition depends on.
+The existing composition tests do not prove that later acquisition changes.
+
+The exposure command also accepts a client-named family without checking it
+against the pinned attempt revision. Its two-step index/fact composition needs
+review: a receipt retry reads the index's current merged class, which may have
+increased since the original command, rather than an immutable original result.
+
+T10 acceptance above was still too broad. Its measured recovery, presentation
+and gate results remain true, but do not establish exposure/freshness completion.
+T5 implementation is paused before edits. The same Sol high worker is assigned
+this bounded correction first, preserving serial order. The fix must distinguish
+pre-attempt freshness from this attempt's first disclosure, record no-JS written
+stimulus and result disclosure safely, preserve immutable history, and deny
+wrong-family mutations. Listening acquisition/preflight must not itself record
+target exposure. Root will independently verify the resulting composition and
+real-database tests before accepting it or resuming T5.
