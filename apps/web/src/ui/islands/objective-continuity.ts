@@ -445,7 +445,7 @@ export class ObjectiveContinuity {
     try {
       response = await this.transport(`/api/v1/attempts/${this.attemptId}/${kind}`, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", "x-bestehen-csrf": "1" },
         body: JSON.stringify({
           contract: { major: 1, minor: 0 },
           operationId,

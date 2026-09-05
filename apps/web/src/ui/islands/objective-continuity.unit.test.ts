@@ -30,7 +30,8 @@ function fixture() {
   };
   let failure: "none" | "offline" | "expired" | "lost_checkpoint" | "lost_submit" | "refused" =
     "none";
-  const calls: { path: string; body: Record<string, unknown> }[] = [];
+  const calls: { path: string; body: Record<string, unknown>; headers: HeadersInit | undefined }[] =
+    [];
   const transport: typeof fetch = async (url, options) => {
     if (failure === "offline") throw new Error("network loss");
     if (failure === "expired") return Response.json({}, { status: 404 });
@@ -43,7 +44,7 @@ function fixture() {
           row.pending?.submitOperationId === body.operationId,
       ),
     ).toBe(true);
-    calls.push({ path: String(url), body });
+    calls.push({ path: String(url), body, headers: options.headers });
     if (failure === "refused")
       return Response.json({ code: "idempotency_conflict" }, { status: 409 });
     if (String(url).endsWith("checkpoint")) {
@@ -99,6 +100,18 @@ function fixture() {
 }
 
 describe("P05-RECOVERY-001 durable response protocol", () => {
+  it("sends the JSON content type and CSRF proof for checkpoint mutations", async () => {
+    const f = fixture();
+    const runtime = f.controller();
+
+    await runtime.change({ "select:item": "a" });
+
+    expect(f.calls[0]?.headers).toEqual({
+      "content-type": "application/json",
+      "x-bestehen-csrf": "1",
+    });
+  });
+
   it.each(["deferred_digest", "queued_write"] as const)(
     "acknowledges only the accepted draft revision across %s",
     async (mode) => {
