@@ -280,7 +280,7 @@ const consistentRows: readonly StubRow[] = Object.entries(migrationChecksums).ma
   ([revision, checksum]) => ({ revision, checksum }),
 );
 
-describe("checksum verification at the Stage 05 revision", () => {
+describe("P05-COMPAT-001 checksum verification at the Stage 05 revision", () => {
   it("P05-MEDIA-001 fails closed with the unchanged pre-Listening maximum revision", async () => {
     await expect(
       checkSchemaCompatibility(

@@ -220,7 +220,7 @@ function seededJob(overrides: Partial<SemanticJob> = {}): SemanticJob {
  * Dispatch
  * ---------------------------------------------------------------------------------------------- */
 
-describe("content job dispatch", () => {
+describe("P05-JOB-001 content job dispatch", () => {
   it("runs each content queue's own envelope through to a published effect", async () => {
     for (const queue of contentQueues) {
       const { store, runtime, calls } = harness();
@@ -286,7 +286,7 @@ describe("content job dispatch", () => {
  * Exactly-once
  * ---------------------------------------------------------------------------------------------- */
 
-describe("a content job effect happens exactly once", () => {
+describe("P05-JOB-001 a content job effect happens exactly once", () => {
   it("replays a redelivery of a published job without a second effect or a second receipt", async () => {
     const { store, runtime, calls } = harness();
     expect(await runContentJob(runtime, "content_publication_v1", envelope())).toBe("published");
@@ -341,7 +341,7 @@ describe("a content job effect happens exactly once", () => {
  * Retry
  * ---------------------------------------------------------------------------------------------- */
 
-describe("a failing content job retries within its budget and then stops", () => {
+describe("P05-JOB-001 a failing content job retries within its budget and then stops", () => {
   const retryable: ContentJobEffect = async () => ({ ok: false, error: "retryable" });
   const permanent: ContentJobEffect = async () => ({ ok: false, error: "permanent" });
 
@@ -425,7 +425,7 @@ describe("a failing content job retries within its budget and then stops", () =>
  * Cancel and quarantine
  * ---------------------------------------------------------------------------------------------- */
 
-describe("a content job is refused before any content work happens", () => {
+describe("P05-JOB-001 a content job is refused before any content work happens", () => {
   it("cancels a job whose cancellation was requested, and runs no effect", async () => {
     const { store, runtime, calls } = harness();
     store.seed(seededJob({ state: "cancel_requested" }));

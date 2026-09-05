@@ -999,7 +999,7 @@ async function seedObservation(
   return { observationId, assertionId };
 }
 
-describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 05 content and attempt runtime", () => {
+describe.skipIf(!testDatabaseUrl)("P05-SCHEMA-001 Stage 05 content and attempt runtime", () => {
   it("creates every Stage 05 relation with its immutability triggers, scope fences and closed unions", async () => {
     await withIsolatedDatabase(testDatabaseUrl as string, async (databaseUrl) => {
       await migrateDatabase(databaseUrl);
