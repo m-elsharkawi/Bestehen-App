@@ -12,7 +12,7 @@ pnpm db:migrate
 pnpm dev
 ```
 
-The explicit migrator is the only schema owner. Web and worker never migrate at startup. It applies the ordered Stage 03 App migrations, verifies their checksums, installs pg-boss's owned schema, and records revision `20260825_040_p03_foundation`. All adapters and provider-call flags remain fake/false locally.
+The explicit migrator is the only schema owner. Web and worker never migrate at startup. It applies the ordered App migrations from the Stage 03 foundation through the Stage 05 terminal revision `20260905_062_p05_listening_runtime`, verifies their checksums, and installs pg-boss's owned schema. All adapters and provider-call flags remain fake/false locally. Rolling back from the Stage 05 application to Stage 04 also requires restoring the database to the Stage 03 revision `20260825_040_p03_foundation`; the older application correctly fails closed on the newer schema.
 
 Useful checks:
 

@@ -86,7 +86,7 @@ function runtimeEnvironment(databaseHost = "postgres") {
     "-e",
     "BESTEHEN_RELEASE_DIRTY=false",
     "-e",
-    "BESTEHEN_SCHEMA_MAX_REVISION=20260825_040_p03_foundation",
+    "BESTEHEN_SCHEMA_MAX_REVISION=20260905_062_p05_listening_runtime",
     "-e",
     "BESTEHEN_SCHEMA_MIN_REVISION=20260825_040_p03_foundation",
     "-e",

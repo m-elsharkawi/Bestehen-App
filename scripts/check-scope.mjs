@@ -85,8 +85,11 @@ const stage04Allowed = [
   /^scripts\/(?:check-assets|check-design-coverage|check-generated|check-scope|check-web-budget|generate-design-coverage|test-release-manifest|test-scope)\.mjs$/,
 ];
 const stage05Allowed = [
+  // Newer owner correction (2026-09-05): permit only the local HTTPS browser harness and the
+  // terminal-revision configuration surfaces named in the frozen T11 correction brief.
   /^\.env\.example$/,
   /^\.github\/workflows\/(?:ci|release-candidate)\.yml$/,
+  /^compose\.yaml$/,
   /^apps\/web\/(?:package\.json|tsconfig\.json)$/,
   /^apps\/web\/src\/app\/\(focused\)\/(?:attempt|session)\//,
   /^apps\/web\/src\/app\/\(test\)\/ui-fixtures\/\[view\]\/page\.tsx$/,
@@ -98,7 +101,7 @@ const stage05Allowed = [
   /^apps\/worker\/(?:package\.json|tsconfig\.json)$/,
   /^apps\/worker\/src\/(?:index(?:\.unit\.test)?|media-import)\.ts$/,
   /^apps\/worker\/tests\/baseline\.process\.test\.ts$/,
-  /^docs\/(?:configuration|content-operations)\.md$/,
+  /^docs\/(?:configuration|content-operations|local-development)\.md$/,
   /^Implementation\/Personal\/05-content-deterministic-runtime\/handoff\.md$/,
   /^packages\/application\/src\/(?:index(?:\.test)?|listening-runtime|media-catalogue)\.ts$/,
   /^packages\/configuration\/src\/index(?:\.test)?\.ts$/,
@@ -120,9 +123,10 @@ const stage05Allowed = [
   /^packages\/infrastructure\/src\/postgres\/(?:attempt-repository|content-repository)(?:\.test)?\.ts$/,
   /^packages\/infrastructure\/src\/postgres\/(?:foundation-repository|index|listening-binding-migration|listening-media-migration|listening-runtime-migration|migrations|postgres\.integration\.test|transcript-lineage-migration)\.ts$/,
   /^pnpm-lock\.yaml$/,
+  /^playwright\.config\.ts$/,
   /^prompts\/implementation\/personal\/personal-implementation-checklist\.md$/,
   /^schemas\/release-manifest\.schema\.json$/,
-  /^scripts\/(?:check-boundaries|check-design-coverage|check-design-coverage-ids(?:\.test)?|check-web-budget|check-scope|release-manifest|test-release-manifest|test-scope)\.mjs$/,
+  /^scripts\/(?:check-boundaries|check-design-coverage|check-design-coverage-ids(?:\.test)?|check-web-budget|check-scope|release-manifest|serve-playwright-https|test-oci|test-release-manifest|test-scope)\.mjs$/,
 ];
 
 export function scopeRef({ githubHeadRef, githubRefName, localBranch }) {

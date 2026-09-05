@@ -134,6 +134,18 @@ assert.deepEqual(
 );
 assert.deepEqual(
   unexpectedStage05Paths([
+    ".env.example",
+    "compose.yaml",
+    "docs/local-development.md",
+    "playwright.config.ts",
+    "scripts/serve-playwright-https.mjs",
+    "scripts/test-oci.mjs",
+  ]),
+  [],
+  "Stage 05 accepts only the newer owner correction for HTTPS and terminal configuration",
+);
+assert.deepEqual(
+  unexpectedStage05Paths([
     "Implementation/Personal/05-content-deterministic-runtime/plan.md",
     "Implementation/Personal/05-content-deterministic-runtime/orchestration-log.md",
     "Architecture/16-listening-architecture.md",

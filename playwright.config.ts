@@ -1,6 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = 3300;
+const httpsPort = 3300;
+const upstreamPort = 3301;
+const publicOrigin = `https://127.0.0.1:${httpsPort}`;
+const testDatabaseUrl =
+  process.env.TEST_DATABASE_URL ?? "postgresql://synthetic:synthetic@127.0.0.1:5432/synthetic";
 
 export default defineConfig({
   testDir: "./apps/web/tests",
@@ -12,7 +16,8 @@ export default defineConfig({
   outputDir: "test-results/playwright",
   snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}{ext}",
   use: {
-    baseURL: `http://127.0.0.1:${port}`,
+    baseURL: publicOrigin,
+    ignoreHTTPSErrors: true,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "off",
@@ -32,7 +37,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "node apps/web/.next/standalone/apps/web/server.js",
+    command: "node scripts/serve-playwright-https.mjs apps/web/.next/standalone/apps/web/server.js",
     env: {
       ...process.env,
       BESTEHEN_AI_ADAPTER: "fake",
@@ -42,19 +47,20 @@ export default defineConfig({
       BESTEHEN_LOG_FORMAT: "json",
       BESTEHEN_LOG_LEVEL: "info",
       BESTEHEN_OBJECT_STORAGE_ADAPTER: "fake",
+      BESTEHEN_APPLICATION_BASE_URL: publicOrigin,
       BESTEHEN_RELEASE_COMMIT: "playwright-synthetic",
       BESTEHEN_RELEASE_DIRTY: "false",
-      BESTEHEN_SCHEMA_MAX_REVISION: "20260825_040_p03_foundation",
+      BESTEHEN_SCHEMA_MAX_REVISION: "20260905_062_p05_listening_runtime",
       BESTEHEN_SCHEMA_MIN_REVISION: "20260825_040_p03_foundation",
       BESTEHEN_STT_ADAPTER: "fake",
       BESTEHEN_TTS_ADAPTER: "fake",
-      DATABASE_URL:
-        process.env.TEST_DATABASE_URL ??
-        "postgresql://synthetic:synthetic@127.0.0.1:5432/synthetic",
-      HOSTNAME: "127.0.0.1",
-      PORT: String(port),
+      DATABASE_URL: testDatabaseUrl,
+      PLAYWRIGHT_HTTPS_PORT: String(httpsPort),
+      PLAYWRIGHT_UPSTREAM_PORT: String(upstreamPort),
+      TEST_DATABASE_URL: testDatabaseUrl,
     },
-    url: `http://127.0.0.1:${port}/api/health/live`,
+    ignoreHTTPSErrors: true,
+    url: `${publicOrigin}/api/health/live`,
     reuseExistingServer: false,
     timeout: 30_000,
   },

@@ -15,7 +15,9 @@ const executableStage05Checks = [
   "P05-FRESH-001",
   "P05-SCORE-001",
   "P05-SEED-001",
+  "P05-SCHEMA-001",
   "P05-IDEMPOTENCY-001",
+  "P05-JOB-001",
   "P05-EVIDENCE-001",
   "P05-CONTRACT-001",
   "P05-AUTHZ-001",
@@ -29,17 +31,12 @@ const executableStage05Checks = [
   "P05-COPY-001",
   "P05-EQUIV-001",
   "P05-RECOVERY-001",
+  "P05-COMPAT-001",
   "P05-PERF-001",
   "P05-SCOPE-001",
   "P05-RELEASE-001",
 ];
-const deferredStage05Checks = [
-  "P05-SCHEMA-001",
-  "P05-JOB-001",
-  "P05-A11Y-001",
-  "P05-RSP-001",
-  "P05-COMPAT-001",
-];
+const deferredStage05Checks = ["P05-A11Y-001", "P05-RSP-001"];
 
 function run(arguments_, expectedStatus, environment = {}) {
   const result = spawnSync(process.execPath, ["scripts/release-manifest.mjs", ...arguments_], {
@@ -70,8 +67,25 @@ if (deferredStage05Checks.some((check) => requiredChecks.includes(check))) {
 }
 const scriptProducedChecks = new Set(["P05-PERF-001", "P05-SCOPE-001", "P05-RELEASE-001"]);
 const executableTestIds = collectExecutableCoverageIds();
+const conditionalExecutableChecks = new Map([
+  [
+    "P05-SCHEMA-001",
+    {
+      path: "packages/infrastructure/src/postgres/postgres.integration.test.ts",
+      title: /describe\.skipIf\(!testDatabaseUrl\)\(\s*["']P05-SCHEMA-001\b/,
+    },
+  ],
+]);
+for (const [check, evidence] of conditionalExecutableChecks) {
+  if (!evidence.title.test(readFileSync(evidence.path, "utf8"))) {
+    throw new Error(`${check} is not bound to its conditional executable test title`);
+  }
+}
 const missingExecutableTestIds = executableStage05Checks.filter(
-  (check) => !scriptProducedChecks.has(check) && !executableTestIds.has(check),
+  (check) =>
+    !scriptProducedChecks.has(check) &&
+    !executableTestIds.has(check) &&
+    !conditionalExecutableChecks.has(check),
 );
 if (missingExecutableTestIds.length > 0) {
   throw new Error(`Release schema claims non-executable test IDs: ${missingExecutableTestIds}`);
