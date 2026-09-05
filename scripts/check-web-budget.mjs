@@ -179,5 +179,5 @@ if (iconAndLogoGzip > 40 * 1024)
   throw new Error(`Icon and logo sources exceed 40 KiB gzip: ${iconAndLogoGzip}`);
 
 process.stdout.write(
-  `P04-PERF-001 P05-PERF-001 passed: protected route first load (includes shared framework runtime) ${protectedGzip} B gzip <= 200 KiB, App-owned chunks (excludes shared framework runtime) ${productGzip} B gzip <= 90 KiB, Stage 05 island chunks ${stage05IslandChunks.map((chunk) => `${chunk.file} ${chunk.bytes}/${chunk.budget} B [${chunk.labels.join("+")}]`).join("; ")}, CSS ${cssGzip} B gzip, fonts ${fontBytes} B, icons/brand ${iconAndLogoGzip} B gzip.\n`,
+  `P04-PERF-001 passed; P05-PERF-001 passed: protected route first load (includes shared framework runtime) ${protectedGzip} B gzip <= 200 KiB, App-owned chunks (excludes shared framework runtime) ${productGzip} B gzip <= 90 KiB, Stage 05 island chunks ${stage05IslandChunks.map((chunk) => `${chunk.file} ${chunk.bytes}/${chunk.budget} B [${chunk.labels.join("+")}]`).join("; ")}, CSS ${cssGzip} B gzip, fonts ${fontBytes} B, icons/brand ${iconAndLogoGzip} B gzip.\n`,
 );
