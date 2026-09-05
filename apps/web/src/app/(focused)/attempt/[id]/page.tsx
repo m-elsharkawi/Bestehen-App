@@ -25,7 +25,12 @@ export default async function AttemptPage({
   }
   const projection = await loadAttemptProjection(id, returnPath);
   if (!projection) notFound();
-  const kind = projection.attempt.modality === "language_elements" ? "language" : "reading";
+  const kind =
+    projection.attempt.modality === "language_elements"
+      ? "language"
+      : projection.attempt.modality === "listening"
+        ? "listening"
+        : "reading";
   return (
     <RuntimeAttemptView
       action={submitObjectiveForm}

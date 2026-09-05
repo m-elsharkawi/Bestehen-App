@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { AccessibilityFixture } from "../../../../ui/a11y-fixture";
+import { ListeningRuntimeIsland } from "../../../../ui/islands/listening-runtime";
+import { ListeningTranscriptIsland } from "../../../../ui/islands/listening-transcript";
 import {
   AccountView,
   AttemptView,
@@ -32,6 +34,8 @@ const views = [
   "transfer",
   "session-expiry",
   "a11y",
+  "listening",
+  "listening-result",
 ] as const;
 type View = (typeof views)[number];
 
@@ -86,5 +90,27 @@ export default async function UiFixturePage({
       return <StateView name={view} />;
     case "a11y":
       return <AccessibilityFixture />;
+    case "listening":
+      return (
+        <>
+          <p>Technical non-speech Listening test fixture. Not approved learner content.</p>
+          <ListeningRuntimeIsland
+            attemptId="11111111-1111-4111-8111-111111111111"
+            continuityScope="technical-browser-test"
+          >
+            <label>
+              Test response <input name="test-response" />
+            </label>
+            <button type="submit">Test response submit</button>
+          </ListeningRuntimeIsland>
+        </>
+      );
+    case "listening-result":
+      return (
+        <>
+          <p>Technical test result phase. Not an authenticated owner flow.</p>
+          <ListeningTranscriptIsland attemptId="11111111-1111-4111-8111-111111111111" />
+        </>
+      );
   }
 }

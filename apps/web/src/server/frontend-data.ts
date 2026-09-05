@@ -1,5 +1,5 @@
 import { databaseUrlFor, parseServerEnvironmentForService } from "@bestehen/configuration";
-import { assertNoKeyBearingFields } from "@bestehen/content";
+import { assertNoKeyBearingFields, audioCatalogueValidator } from "@bestehen/content";
 import { type AuthorizedScope, appId } from "@bestehen/domain";
 import {
   appSessionCookie,
@@ -109,7 +109,7 @@ function repositories() {
   const pool = createPostgresPool(databaseUrlFor(environment, "web"));
   runtimeRepositories = {
     attempts: new PostgresAttemptRepository(pool),
-    content: new PostgresContentRepository(pool),
+    content: new PostgresContentRepository(pool, audioCatalogueValidator),
   };
   return runtimeRepositories;
 }

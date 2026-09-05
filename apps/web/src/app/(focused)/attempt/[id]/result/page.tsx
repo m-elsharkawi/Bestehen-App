@@ -6,6 +6,7 @@ import {
 } from "../../../../../server/frontend-data";
 import { ResultView } from "../../../../../ui/archetypes";
 import { projectLearnerResult } from "../../../../../ui/result-projection";
+import { ListeningTranscriptIsland } from "../../../../../ui/islands/listening-transcript";
 
 export default async function AttemptResultPage({
   params,
@@ -25,12 +26,17 @@ export default async function AttemptResultPage({
     projection.learnerPayload,
   );
   return (
-    <ResultView
-      backHref={
-        projection.attempt.sessionId ? `/session/${projection.attempt.sessionId}` : "/coach"
-      }
-      projection={result}
-      validity={projection.submission.validity.state}
-    />
+    <>
+      <ResultView
+        backHref={
+          projection.attempt.sessionId ? `/session/${projection.attempt.sessionId}` : "/coach"
+        }
+        projection={result}
+        validity={projection.submission.validity.state}
+      />
+      {projection.attempt.modality === "listening" ? (
+        <ListeningTranscriptIsland attemptId={id} />
+      ) : null}
+    </>
   );
 }
