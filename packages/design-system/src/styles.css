@@ -845,10 +845,16 @@ input[type="checkbox"] {
   margin: 0;
   padding: 0;
 }
-.listening-transport button:disabled,
 .cloze-shared-bank button:disabled {
   cursor: not-allowed;
   opacity: 0.62;
+}
+.listening-transport button:disabled {
+  background: var(--learning-control-neutral-fill);
+  border: 1px solid var(--learning-control-neutral-boundary);
+  color: var(--learning-control-neutral-label);
+  cursor: not-allowed;
+  opacity: 1;
 }
 .listening-status,
 .listening-transcript-gate {
@@ -892,6 +898,11 @@ input[type="checkbox"] {
     border-color: var(--learning-control-fill);
     color: var(--learning-control-label);
   }
+  :root:not([data-theme="light"]) .listening-transport button:disabled {
+    background: var(--learning-control-neutral-fill);
+    border: 1px solid var(--learning-control-neutral-boundary);
+    color: var(--learning-control-neutral-label);
+  }
 }
 :root[data-theme="dark"] .answer-choice,
 :root[data-theme="dark"] .matching-pair,
@@ -917,6 +928,11 @@ input[type="checkbox"] {
   background: var(--learning-control-fill);
   border-color: var(--learning-control-fill);
   color: var(--learning-control-label);
+}
+:root[data-theme="dark"] .listening-transport button:disabled {
+  background: var(--learning-control-neutral-fill);
+  border: 1px solid var(--learning-control-neutral-boundary);
+  color: var(--learning-control-neutral-label);
 }
 .cloze-option-key {
   color: var(--text-muted);

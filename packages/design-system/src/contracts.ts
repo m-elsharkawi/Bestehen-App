@@ -98,6 +98,8 @@ export interface ListeningRegionContract {
   readonly audio: { readonly src: string; readonly language?: string; readonly label: string };
   readonly state: ListeningPresentationState;
   readonly remainingPlays: number;
+  /** Omit to preserve the accepted player policy: Pause is available while playing. */
+  readonly pauseAllowed?: boolean;
   readonly unavailableReason?: string;
   readonly transcript:
     | { readonly phase: "unavailable"; readonly reason: string }

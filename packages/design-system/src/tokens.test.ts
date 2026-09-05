@@ -154,6 +154,16 @@ describe("P05-CONTRAST-001 runtime controls", () => {
   const contrast = (foreground: string, background: string) =>
     (Math.max(luminance(foreground), luminance(background)) + 0.05) /
     (Math.min(luminance(foreground), luminance(background)) + 0.05);
+  const composite = (foreground: string, background: string, opacity: number) => {
+    const channel = (offset: number) =>
+      Math.round(
+        Number.parseInt(foreground.slice(offset, offset + 2), 16) * opacity +
+          Number.parseInt(background.slice(offset, offset + 2), 16) * (1 - opacity),
+      )
+        .toString(16)
+        .padStart(2, "0");
+    return `#${channel(1)}${channel(3)}${channel(5)}`;
+  };
 
   const controls = [
     ["answer choice", ".answer-choice label", ".answer-choice,"],
@@ -243,5 +253,43 @@ describe("P05-CONTRAST-001 runtime controls", () => {
     );
     expect(drifted).not.toBe(styles);
     expect(() => assertActualContrast(drifted)).toThrow();
+  });
+
+  const assertForbiddenPauseContrast = (stylesheet: string) => {
+    for (const mode of ["light", "dark"] as const) {
+      const selector =
+        mode === "light"
+          ? ".listening-transport button:disabled {"
+          : ':root[data-theme="dark"] .listening-transport button:disabled {';
+      const colors = palette(stylesheet, mode, false);
+      const opacity = Number(
+        declaration(stylesheet, ".listening-transport button:disabled {", "opacity"),
+      );
+      const fill = color(declaration(stylesheet, selector, "background"), colors);
+      const label = color(declaration(stylesheet, selector, "color"), colors);
+      const boundary = color(declaration(stylesheet, selector, "border"), colors);
+      const surface = color(declaration(stylesheet, ".listening-region", "background"), colors);
+      const compositedFill = composite(fill, surface, opacity);
+      const compositedLabel = composite(label, surface, opacity);
+      const compositedBoundary = composite(boundary, surface, opacity);
+      expect(
+        contrast(compositedLabel, compositedFill),
+        `forbidden Pause ${mode} text`,
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        contrast(compositedBoundary, surface),
+        `forbidden Pause ${mode} UI`,
+      ).toBeGreaterThanOrEqual(3);
+    }
+  };
+
+  it("keeps a forbidden Pause control legible after its shipped disabled styling is composited", () => {
+    assertForbiddenPauseContrast(styles);
+    const drifted = styles.replace(
+      /(\.listening-transport button:disabled \{[\s\S]*?opacity: )1;/,
+      "$10.62;",
+    );
+    expect(drifted).not.toBe(styles);
+    expect(() => assertForbiddenPauseContrast(drifted)).toThrow();
   });
 });

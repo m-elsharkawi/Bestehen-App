@@ -1294,6 +1294,7 @@ export function ListeningRegion({ listening }: { readonly listening?: ListeningR
   if (listening) {
     const transportDisabled = listening.state === "preflight" || listening.state === "unavailable";
     const canPlay = listening.remainingPlays > 0 && !transportDisabled;
+    const pauseDisabled = listening.state !== "playing" || listening.pauseAllowed === false;
     const transcriptAvailable = listening.transcript.phase === "available";
     return (
       <section aria-labelledby={titleId} className="listening-region">
@@ -1312,7 +1313,7 @@ export function ListeningRegion({ listening }: { readonly listening?: ListeningR
             Play
           </button>
           <button
-            disabled={listening.state !== "playing"}
+            disabled={pauseDisabled}
             onClick={() => listening.onTransport?.("pause")}
             type="button"
           >

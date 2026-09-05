@@ -417,6 +417,83 @@ describe("P05-COMPONENT-001 deterministic learning primitives", () => {
     }
   });
 
+  it("keeps omitted-pause-policy player markup and native transport state unchanged", () => {
+    const legacyMarkup = {
+      ready:
+        '<section aria-labelledby=":r0:" class="listening-region"><h2 id=":r0:">Listening</h2><audio aria-label="German announcement" lang="de" preload="none" src="/media/announcement.mp3"></audio><p>German announcement</p><fieldset class="listening-transport"><legend>Audio transport</legend><button type="button">Play</button><button disabled="" type="button">Pause</button><button type="button">Replay</button></fieldset><p>Plays remaining: 1.</p><p aria-atomic="true" aria-live="polite" class="listening-status" role="status">Audio is ready to play.</p><p class="listening-transcript-gate">Transcript available after submission.</p></section>',
+      playing:
+        '<section aria-labelledby=":r0:" class="listening-region"><h2 id=":r0:">Listening</h2><audio aria-label="German announcement" lang="de" preload="none" src="/media/announcement.mp3"></audio><p>German announcement</p><fieldset class="listening-transport"><legend>Audio transport</legend><button type="button">Play</button><button type="button">Pause</button><button type="button">Replay</button></fieldset><p>Plays remaining: 1.</p><p aria-atomic="true" aria-live="polite" class="listening-status" role="status">Audio is playing.</p><p class="listening-transcript-gate">Transcript available after submission.</p></section>',
+      paused:
+        '<section aria-labelledby=":r0:" class="listening-region"><h2 id=":r0:">Listening</h2><audio aria-label="German announcement" lang="de" preload="none" src="/media/announcement.mp3"></audio><p>German announcement</p><fieldset class="listening-transport"><legend>Audio transport</legend><button type="button">Play</button><button disabled="" type="button">Pause</button><button type="button">Replay</button></fieldset><p>Plays remaining: 1.</p><p aria-atomic="true" aria-live="polite" class="listening-status" role="status">Audio is paused.</p><p class="listening-transcript-gate">Transcript available after submission.</p></section>',
+      unavailable:
+        '<section aria-labelledby=":r0:" class="listening-region"><h2 id=":r0:">Listening</h2><audio aria-label="German announcement" lang="de" preload="none" src="/media/announcement.mp3"></audio><p>German announcement</p><fieldset class="listening-transport"><legend>Audio transport</legend><button disabled="" type="button">Play</button><button disabled="" type="button">Pause</button><button disabled="" type="button">Replay</button></fieldset><p>Plays remaining: 0.</p><p aria-atomic="true" aria-live="polite" class="listening-status" role="status">Audio is unavailable for this activity.</p><p>This was a system problem, not a result about you.</p><p class="listening-transcript-gate">Transcript available after submission.</p></section>',
+    } as const;
+    for (const state of ["ready", "playing", "paused", "unavailable"] as const) {
+      const { container, unmount } = render(
+        <ListeningRegion
+          listening={{
+            audio: { label: "German announcement", src: "/media/announcement.mp3" },
+            remainingPlays: state === "unavailable" ? 0 : 1,
+            state,
+            transcript: {
+              phase: "unavailable",
+              reason: "Transcript available after submission.",
+            },
+          }}
+        />,
+      );
+      expect(container.innerHTML.replace(/(?:_r_[a-z0-9]+_|:r[a-z0-9]+:)/g, ":r0:"), state).toBe(
+        legacyMarkup[state],
+      );
+      unmount();
+    }
+  });
+
+  it("natively disables a forbidden Pause action without invoking transport", () => {
+    const onTransport = vi.fn();
+    render(
+      <ListeningRegion
+        listening={{
+          audio: { label: "German announcement", src: "/media/announcement.mp3" },
+          onTransport,
+          pauseAllowed: false,
+          remainingPlays: 1,
+          state: "playing",
+          transcript: { phase: "unavailable", reason: "Transcript available after submission." },
+        }}
+      />,
+    );
+    const pause = screen.getByRole("button", { name: "Pause" });
+    expect(pause).toBeDisabled();
+    fireEvent.click(pause);
+    expect(onTransport).not.toHaveBeenCalled();
+  });
+
+  it("keeps Pause enabled and callable when its policy is omitted or allowed", () => {
+    const renderPlayingPlayer = (pauseAllowed?: boolean) => {
+      const onTransport = vi.fn();
+      const { unmount } = render(
+        <ListeningRegion
+          listening={{
+            audio: { label: "German announcement", src: "/media/announcement.mp3" },
+            ...(pauseAllowed === undefined ? {} : { pauseAllowed }),
+            onTransport,
+            remainingPlays: 1,
+            state: "playing",
+            transcript: { phase: "unavailable", reason: "Transcript available after submission." },
+          }}
+        />,
+      );
+      const pause = screen.getByRole("button", { name: "Pause" });
+      expect(pause).toBeEnabled();
+      fireEvent.click(pause);
+      expect(onTransport).toHaveBeenCalledWith("pause");
+      unmount();
+    };
+    renderPlayingPlayer();
+    renderPlayingPlayer(true);
+  });
+
   it("provides native selection and named select-then-place matching without drag", () => {
     const selected: string[] = [];
     const selectedPrompt: string[] = [];
