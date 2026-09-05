@@ -41,6 +41,7 @@ import {
   stage05BindingRevision,
   stage05MediaRevision,
   stage05RuntimeRevision,
+  stage05TranscriptRevision,
 } from "./migrations.js";
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
@@ -98,6 +99,7 @@ const stage03AppTables = [
 ];
 
 const stage05AppTables = [
+  "listening_operation_facts",
   "accessibility_manifests",
   "approval_decisions",
   "assistance_events",
@@ -1476,6 +1478,8 @@ describe.skipIf(!testDatabaseUrl)("PostgreSQL 18 Stage 05 content and attempt ru
         "20260904_057_listening_bindings",
         stage05BindingRevision,
         "20260904_059_transcript_lineage",
+        stage05TranscriptRevision,
+        "20260905_061_listening_runtime",
         stage05Revision,
       ]);
 
