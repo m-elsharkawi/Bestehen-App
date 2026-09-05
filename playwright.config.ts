@@ -2,7 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 const httpsPort = 3300;
 const upstreamPort = 3301;
-const publicOrigin = `https://127.0.0.1:${httpsPort}`;
+const connectProxyPort = 3302;
+const publicOrigin = `https://app.bestehen.test:${httpsPort}`;
 const testDatabaseUrl =
   process.env.TEST_DATABASE_URL ?? "postgresql://synthetic:synthetic@127.0.0.1:5432/synthetic";
 
@@ -18,6 +19,7 @@ export default defineConfig({
   use: {
     baseURL: publicOrigin,
     ignoreHTTPSErrors: true,
+    proxy: { server: `http://127.0.0.1:${connectProxyPort}` },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "off",
@@ -55,12 +57,13 @@ export default defineConfig({
       BESTEHEN_STT_ADAPTER: "fake",
       BESTEHEN_TTS_ADAPTER: "fake",
       DATABASE_URL: testDatabaseUrl,
+      PLAYWRIGHT_CONNECT_PROXY_PORT: String(connectProxyPort),
       PLAYWRIGHT_HTTPS_PORT: String(httpsPort),
       PLAYWRIGHT_UPSTREAM_PORT: String(upstreamPort),
       TEST_DATABASE_URL: testDatabaseUrl,
     },
     ignoreHTTPSErrors: true,
-    url: `${publicOrigin}/api/health/live`,
+    url: `https://127.0.0.1:${httpsPort}/api/health/live`,
     reuseExistingServer: false,
     timeout: 30_000,
   },
