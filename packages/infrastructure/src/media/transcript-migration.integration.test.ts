@@ -134,7 +134,7 @@ describe.skipIf(!databaseUrl)("transcript lineage correction on PostgreSQL 18", 
       expect(result).toMatchObject({
         fromRevision: stage05BindingRevision,
         toRevision: stage05Revision,
-        applied: ["20260904_059_transcript_lineage", stage05Revision],
+        applied: Object.keys(migrationChecksums).slice(12),
       });
       expect(
         (

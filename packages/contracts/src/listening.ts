@@ -303,6 +303,8 @@ export const playbackOccurrenceCommandSchema = z
     clientSequence: z.number().int().positive(),
     event: z.enum(["start_intent", "started", "completed", "failed"]),
     localIntentId: id,
+    intentPersistedAt: instant,
+    intentDurability: z.literal("committed_and_read_back"),
     occurredAt: instant,
     positionMs: milliseconds,
     observations: z
@@ -329,6 +331,12 @@ export const playbackOccurrenceCommandSchema = z
   })
   .strict()
   .superRefine((event, context) => {
+    if (Date.parse(event.intentPersistedAt) > Date.parse(event.occurredAt))
+      context.addIssue({
+        code: "custom",
+        path: ["intentPersistedAt"],
+        message: "The durable intent must precede native playback",
+      });
     if ((event.event === "failed") !== (event.faultReason !== undefined))
       context.addIssue({
         code: "custom",

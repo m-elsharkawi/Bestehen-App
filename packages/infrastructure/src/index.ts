@@ -71,6 +71,7 @@ export * from "./postgres/index.js";
 export * from "./projection-checksum.js";
 export * from "./supervisor.js";
 export * from "./media/catalogue.js";
+export * from "./media/listening-runtime.js";
 export {
   executePostgresSeedCommand,
   validateSeedReleaseDocument,

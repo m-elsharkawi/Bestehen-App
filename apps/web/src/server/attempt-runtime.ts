@@ -357,13 +357,18 @@ function conditionsFor(
     entry.answerBearing === "yes" ? entry.affectedScope : [],
   );
   return {
-    nonLearnerFaultScope: accessibilityNarrowed ? scope : [],
+    nonLearnerFaultScope: [
+      ...new Set([
+        ...(accessibilityNarrowed ? scope : []),
+        ...(recorded.listening?.uncapturedItemIds ?? []),
+      ]),
+    ],
     continuityLostScope:
       timerIntegrity === "expired" ||
       timerIntegrity === "inconsistent" ||
       timerIntegrity === "insufficient"
         ? scope
-        : answerBearingAssistance,
+        : [...new Set([...answerBearingAssistance, ...(recorded.listening?.alteredItemIds ?? [])])],
     timerIntegrity,
     independenceClass:
       recorded.exposureClass && recorded.exposureClass !== "unseen"
@@ -569,6 +574,22 @@ export class DeterministicAttemptService {
     if (!policy) return { ok: false, error: "unsupported_scoring_policy" };
 
     const submissionId = this.identity("submission", `${input.operationId}:submission`);
+    const recorded = await this.repositories.attempts.readRecordedAttemptConditions(
+      scope,
+      input.attemptId,
+      clockFactId,
+    );
+    if (!recorded) return { ok: false, error: "not_available" };
+    const uncapturedItemIds =
+      attempt.modality === "listening" ? (recorded.listening?.uncapturedItemIds ?? []) : [];
+    // A setup failure or whole-scope audio fault is an interruption, never an empty/zero outcome.
+    if (
+      attempt.modality === "listening" &&
+      (!recorded.listening?.started ||
+        !recorded.listening.blockComplete ||
+        units.every((unit) => uncapturedItemIds.includes(unit.itemId)))
+    )
+      return { ok: false, error: "not_available" };
     const scored = scoreObjectiveSubmission(
       {
         submissionId,
@@ -581,7 +602,7 @@ export class DeterministicAttemptService {
         },
         units,
         canonicalResponse: canonical.response,
-        uncapturedItemIds: [],
+        uncapturedItemIds,
         ...(material.learnerPayload.kind === "SB2SharedBankLexicalCloze"
           ? { candidateReusePolicy: material.learnerPayload.candidateReusePolicy }
           : {}),
@@ -592,12 +613,6 @@ export class DeterministicAttemptService {
       objectiveScoringAlgorithmVersion,
     );
     if (!scored.ok) return { ok: false, error: "scoring_rejected" };
-    const recorded = await this.repositories.attempts.readRecordedAttemptConditions(
-      scope,
-      input.attemptId,
-      clockFactId,
-    );
-    if (!recorded) return { ok: false, error: "not_available" };
     // A new written submission without a server disclosure fact cannot claim first exposure.
     if (attempt.modality !== "listening" && !recorded.exposureClass)
       return { ok: false, error: "not_available" };
@@ -633,7 +648,7 @@ export class DeterministicAttemptService {
       responseDigest: input.responseDigest,
       conditions: actualConditions,
       exposureClass: recorded.exposureClass ?? "unseen",
-      uncapturedItemIds: [],
+      uncapturedItemIds,
       outcome: {
         algorithmVersion: scored.value.algorithmVersion,
         scoringPolicyRef: scored.value.scoringPolicyRef,

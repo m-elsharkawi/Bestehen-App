@@ -138,7 +138,8 @@ export async function handleAcquireServingManifest(
     progressionProfile: profile,
     timingMode: "practice",
     targetDurationMs: 1_200_000,
-    transcriptPhase: "after_attempt",
+    transcriptPhase: profile === "P4" ? "after_block" : "after_attempt",
+    ...(eligible.audioManifestPins ? { audioManifestPins: eligible.audioManifestPins } : {}),
     offerableAssistanceKinds: ["strategy_cue"],
   };
   const entries = [

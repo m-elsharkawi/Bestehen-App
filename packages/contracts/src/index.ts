@@ -226,6 +226,7 @@ export const allowedConditionsSchema = z
       .optional(),
     allowedPlays: z.number().int().min(0).max(8).optional(),
     audioManifestPins: audioManifestPinsSchema.optional(),
+    practiceKind: z.enum(["ordinary", "target_probe", "target_block"]).optional(),
     transcriptPhase: z.enum(["never", "after_attempt", "after_block"]),
     offerableAssistanceKinds: z.array(z.enum(assistanceKinds)).max(assistanceKinds.length),
   })

@@ -474,6 +474,7 @@ export class PostgresMediaCatalogue {
     client: PoolClient,
     manifest: CatalogueAudioManifest,
     at?: Date,
+    purposeOnly?: "audio" | "transcript",
   ): Promise<void> {
     for (const [rightsId, refs, purpose] of [
       [manifest.rightsEnvelopeRef, [manifest.assetId, manifest.contentRevisionId], "audio"],
@@ -483,6 +484,7 @@ export class PostgresMediaCatalogue {
         "transcript",
       ],
     ] as const) {
+      if (purposeOnly && purpose !== purposeOnly) continue;
       const rights = await client.query(
         "SELECT state,envelope,digest FROM app.rights_envelopes WHERE id=$1 FOR SHARE",
         [rightsId],
@@ -549,6 +551,7 @@ export class PostgresMediaCatalogue {
     contentRevisionId: string,
     approvalRole: string,
     at: Date,
+    purposeOnly?: "audio" | "transcript",
   ): Promise<
     readonly { readonly record: AudioCatalogueRecord; readonly manifest: CatalogueAudioManifest }[]
   > {
@@ -639,7 +642,7 @@ export class PostgresMediaCatalogue {
           same(current.generator, manifest.generator),
         "media_unavailable",
       );
-      await this.checkRights(client, manifest, at);
+      await this.checkRights(client, manifest, at, purposeOnly);
       requireFact(this.validator.permitsOfflinePlayback(current.envelope, at), "media_unavailable");
       for (const rendition of manifest.learnerMediaRevisions) {
         const facts = renditionFacts(manifest.assetId, rendition);

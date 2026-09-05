@@ -4,7 +4,7 @@ import {
   databaseUrlFor,
   parseServerEnvironmentForService,
 } from "@bestehen/configuration";
-import { canonicalDigest } from "@bestehen/content";
+import { audioCatalogueValidator, canonicalDigest } from "@bestehen/content";
 import { type AppId, appId } from "@bestehen/domain";
 import {
   AppIdentityService,
@@ -52,7 +52,7 @@ export function getServingManifestCommandDependencies(): ServingRuntimeDependenc
   servingDependencies = {
     authenticate: (token) => identity.authenticate(token),
     attempts: new PostgresAttemptRepository(pool),
-    content: new PostgresContentRepository(pool),
+    content: new PostgresContentRepository(pool, audioCatalogueValidator),
     identity: stableId,
     now: () => new Date(),
   };
@@ -64,7 +64,7 @@ export function getAttemptCommandDependencies(): AttemptCommandDependencies {
   const environment = parseServerEnvironmentForService(process.env, "web");
   const pool = createPostgresPool(databaseUrlFor(environment, "web"));
   const attempts = new PostgresAttemptRepository(pool);
-  const content = new PostgresContentRepository(pool);
+  const content = new PostgresContentRepository(pool, audioCatalogueValidator);
   const identity = new AppIdentityService(pool, environment, appSecuritySecret(environment));
   dependencies = {
     authenticate: (token) => identity.authenticate(token),
@@ -116,6 +116,8 @@ export function createAttemptCommandFunctions(
         occurredAt: now(),
       });
       if (!created.ok) return { ok: false, error: commandFailure(created.error) };
+      // Listening remains ready until verified preflight, durable Begin, and native started.
+      if (modality === "listening") return { ok: true, value: { attemptId } };
       if (created.value.disposition === "replayed" && created.value.attempt.state !== "ready") {
         return { ok: true, value: { attemptId } };
       }

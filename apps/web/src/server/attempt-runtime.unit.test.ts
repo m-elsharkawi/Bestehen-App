@@ -363,6 +363,113 @@ describe("P05-SCORE-001 deterministic attempt composition", () => {
   });
 });
 
+describe("Listening failure scoring boundary", () => {
+  function listeningFixture(partial = false) {
+    const fixture = dependencies();
+    const otherItem = appId<"content_item">("77777777-7777-4777-8777-777777777778");
+    const otherKey = appId<"key_revision">("88888888-8888-4888-8888-888888888889");
+    const question = payload.kind === "R2DetailedSelect" ? payload.questions[0] : undefined;
+    if (!question) throw new Error("missing question fixture");
+    const listening: TaskFamily = {
+      kind: "H2ConversationInterview",
+      conversation: {
+        stimulusId: "listening-stimulus",
+        mediaRevisionId: appId("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"),
+        language: "de",
+        genreDomainRegister: "synthetic",
+        writtenInstructionNodes: [],
+        evidenceAnchorIds: [],
+      },
+      questions: [
+        question,
+        ...(partial ? [{ ...question, itemRef: otherItem, questionId: "question-two" }] : []),
+      ],
+      allowedPlayCount: 2,
+    };
+    fixture.attempts.readAttempt.mockResolvedValue({
+      ...attempt,
+      modality: "listening",
+      directLane: "aural",
+    });
+    fixture.content.readPinnedLearnerMaterial.mockResolvedValue({
+      ...material,
+      taskFamilyKind: listening.kind,
+      learnerPayload: listening,
+      itemIds: partial ? [itemId, otherItem] : [itemId],
+    });
+    if (partial)
+      fixture.content.readPinnedScoringUnits.mockResolvedValue([
+        scoringUnit,
+        {
+          ...scoringUnit,
+          contentItemId: otherItem,
+          keyRevisionId: otherKey,
+          binding: { kind: "select", questionId: "question-two" },
+          scorable: { ...(scoringUnit.scorable as object), keyRevisionId: otherKey },
+        },
+      ]);
+    return { ...fixture, otherItem };
+  }
+  it.each(["not_started", "incomplete", "whole_fault"])(
+    "P05-PLAYBACK-001 %s cannot produce an empty or zero-score learner outcome",
+    async (kind) => {
+      const f = listeningFixture();
+      f.attempts.readRecordedAttemptConditions.mockResolvedValue({
+        assistance: [],
+        clockObservation,
+        exposureClass: "unseen",
+        listening: {
+          started: kind !== "not_started",
+          blockComplete: kind !== "incomplete",
+          uncapturedItemIds: kind === "whole_fault" ? [itemId] : [],
+          alteredItemIds: [],
+        },
+      });
+      expect(
+        await f.service.submitObjective(scope, {
+          operationId,
+          attemptId,
+          checkpointSequence: 1,
+          responseDigest: f.responseDigest,
+          clockObservation,
+        }),
+      ).toEqual({ ok: false, error: "not_available" });
+      expect(f.attempts.submitObjectiveAttempt).not.toHaveBeenCalled();
+    },
+  );
+  it("P05-PLAYBACK-001 passes only the server's fault partition to scoring and preserves an unaffected correct response", async () => {
+    const f = listeningFixture(true);
+    f.attempts.readRecordedAttemptConditions.mockResolvedValue({
+      assistance: [],
+      clockObservation,
+      exposureClass: "unseen",
+      listening: {
+        started: true,
+        blockComplete: true,
+        uncapturedItemIds: [f.otherItem],
+        alteredItemIds: [],
+      },
+    });
+    expect(
+      (
+        await f.service.submitObjective(scope, {
+          operationId,
+          attemptId,
+          checkpointSequence: 1,
+          responseDigest: f.responseDigest,
+          clockObservation,
+        })
+      ).ok,
+    ).toBe(true);
+    expect(f.captured()?.uncapturedItemIds).toEqual([f.otherItem]);
+    expect(f.captured()?.outcome.unitOutcomes).toEqual([
+      expect.objectContaining({ contentItemId: itemId, kind: "correct" }),
+    ]);
+    expect(f.captured()?.outcome.uncapturedScope).toEqual([f.otherItem]);
+    expect(f.captured()?.conditions.nonLearnerFaultScope).toEqual([f.otherItem]);
+  });
+});
+
 describe("closed scoring policy registry", () => {
   it("binds the seed policy to one deterministic point rule", () => {
     expect(resolveScoringPolicy("objective-scoring/v1")).toEqual({

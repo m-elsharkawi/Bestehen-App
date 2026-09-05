@@ -29,6 +29,7 @@ import {
 } from "@bestehen/domain";
 
 export * from "./media-catalogue.js";
+export * from "./listening-runtime.js";
 
 export interface Clock {
   now(): Date;

@@ -5,6 +5,7 @@ import type { Migration } from "kysely/migration";
 import { listeningBindingSql } from "./listening-binding-migration.js";
 import { listeningMediaSql } from "./listening-media-migration.js";
 import { transcriptLineageSql } from "./transcript-lineage-migration.js";
+import { listeningRuntimeSql } from "./listening-runtime-migration.js";
 
 export const foundationRevision = "20260825_040_p03_foundation";
 
@@ -13,7 +14,8 @@ export const foundationRevision = "20260825_040_p03_foundation";
  * `Object.keys(foundationMigrations)`, so insertion order — not the numeric prefix — is the
  * contract; the prefixes are numbered to agree with it anyway.
  */
-export const stage05Revision = "20260904_060_p05_transcript_lineage";
+export const stage05Revision = "20260905_062_p05_listening_runtime";
+export const stage05TranscriptRevision = "20260904_060_p05_transcript_lineage";
 export const stage05RuntimeRevision = "20260901_054_p05_content_runtime";
 export const stage05MediaRevision = "20260904_056_p05_listening_media";
 export const stage05BindingRevision = "20260904_058_p05_listening_bindings";
@@ -905,6 +907,11 @@ INSERT INTO app.schema_revisions(revision,checksum) VALUES ('20260904_060_p05_tr
   ON CONFLICT (revision) DO NOTHING;
 `;
 
+const listeningRuntimeCompatibilitySql = `
+INSERT INTO app.schema_revisions(revision,checksum) VALUES ('20260905_062_p05_listening_runtime', repeat('0',64))
+  ON CONFLICT (revision) DO NOTHING;
+`;
+
 function checksum(source: string): string {
   return createHash("sha256").update(source).digest("hex");
 }
@@ -942,7 +949,9 @@ export const migrationSources = {
   "20260904_057_listening_bindings": listeningBindingSql,
   [stage05BindingRevision]: listeningBindingCompatibilitySql,
   "20260904_059_transcript_lineage": transcriptLineageSql,
-  [stage05Revision]: transcriptLineageCompatibilitySql,
+  [stage05TranscriptRevision]: transcriptLineageCompatibilitySql,
+  "20260905_061_listening_runtime": listeningRuntimeSql,
+  [stage05Revision]: listeningRuntimeCompatibilitySql,
 } as const;
 
 export const migrationChecksums: Readonly<Record<string, string>> = Object.fromEntries(
@@ -1010,7 +1019,11 @@ export const foundationMigrations: Readonly<Record<string, Migration>> = {
     await upsertSchemaRevisions(db);
   }),
   "20260904_059_transcript_lineage": immutableMigration(transcriptLineageSql),
-  [stage05Revision]: immutableMigration(transcriptLineageCompatibilitySql, async (db) => {
+  [stage05TranscriptRevision]: immutableMigration(transcriptLineageCompatibilitySql, async (db) => {
+    await upsertSchemaRevisions(db);
+  }),
+  "20260905_061_listening_runtime": immutableMigration(listeningRuntimeSql),
+  [stage05Revision]: immutableMigration(listeningRuntimeCompatibilitySql, async (db) => {
     await upsertSchemaRevisions(db);
   }),
 };

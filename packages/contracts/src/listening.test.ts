@@ -249,6 +249,8 @@ describe("P05-LISTENING-001 exact profile playback contracts", () => {
       clientSequence: 1,
       event: "start_intent",
       localIntentId: randomUUID(),
+      intentPersistedAt: "2026-09-04T10:00:00.000Z",
+      intentDurability: "committed_and_read_back",
       occurredAt: "2026-09-04T10:00:00.000Z",
       positionMs: 0,
       observations: {

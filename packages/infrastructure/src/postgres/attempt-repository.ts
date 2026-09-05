@@ -282,6 +282,12 @@ export interface CanonicalCheckpointRecord {
 }
 
 export interface RecordedAttemptConditions {
+  readonly listening?: {
+    readonly started: boolean;
+    readonly blockComplete: boolean;
+    readonly uncapturedItemIds: readonly ContentItemId[];
+    readonly alteredItemIds: readonly string[];
+  };
   readonly assistance: readonly {
     readonly kind: AssistanceKind;
     readonly phase: AssistancePhase;
@@ -769,7 +775,7 @@ export class PostgresAttemptRepository {
       `SELECT envelope->>'preAttemptExposureClass' AS exposure_class
          FROM app.exposure_facts
         WHERE learner_scope_id=$1 AND attempt_id=$2 AND fact_type='pinned_disclosure_v1'
-          AND envelope->>'kind'='written_stimulus'
+          AND envelope->>'kind' IN ('written_stimulus','listening_stimulus')
         ORDER BY learner_sequence LIMIT 1`,
       [scope.learnerScopeId, attemptId],
     );
@@ -788,7 +794,66 @@ export class PostgresAttemptRepository {
       clockEnvelope && typeof clockEnvelope === "object"
         ? (clockEnvelope as NonNullable<RecordedAttemptConditions["clockObservation"]>)
         : undefined;
+    const listeningPlan = await this.pool.query(
+      "SELECT id,started_at,block_completed_at,plan_json FROM app.listening_plans WHERE learner_scope_id=$1 AND attempt_id=$2",
+      [scope.learnerScopeId, attemptId],
+    );
+    const listening = listeningPlan.rows[0];
+    const playback = listening
+      ? await this.pool.query(
+          `SELECT p.*,o.item_or_part_scope,o.allowed_play_count,o.pause_allowed,o.seeking_allowed,o.authored_speed_ratio
+       FROM app.playback_occurrences p JOIN app.listening_plan_occurrences o ON o.id=p.occurrence_id
+       WHERE p.learner_scope_id=$1 AND o.listening_plan_id=$2`,
+          [scope.learnerScopeId, listening.id],
+        )
+      : undefined;
+    const playbackRows = playback?.rows ?? [];
+    const uncapturedItemIds = [
+      ...new Set(
+        playbackRows
+          .filter((p) => p.state === "failed")
+          .flatMap((p) => textArray(p.item_or_part_scope)),
+      ),
+    ].map((value) => appId<"content_item">(value));
+    const observedPlayback = listening
+      ? (
+          await this.pool.query(
+            `SELECT f.command,o.id AS occurrence_id,o.item_or_part_scope,o.pause_allowed,o.authored_speed_ratio
+       FROM app.listening_operation_facts f JOIN app.listening_plan_occurrences o ON o.id=(f.command->>'occurrenceId')::uuid
+       WHERE f.learner_scope_id=$1 AND f.listening_plan_id=$2 AND f.kind='playback'`,
+            [scope.learnerScopeId, listening.id],
+          )
+        ).rows
+      : [];
+    const alteredItemIds = [
+      ...new Set(
+        observedPlayback
+          .filter((p) => {
+            const occurrence = listening?.plan_json?.occurrences?.find(
+              (o: { occurrenceId: string }) => o.occurrenceId === p.occurrence_id,
+            );
+            return (
+              Number(p.command.observations.speedActual) !== Number(p.authored_speed_ratio) ||
+              (!p.pause_allowed && Number(p.command.observations.learnerPauseMs) > 0) ||
+              occurrence?.ordinalPolicies?.find(
+                (o: { playOrdinal: number }) => o.playOrdinal === Number(p.command.playOrdinal),
+              )?.evidenceCondition === "assisted_extra"
+            );
+          })
+          .flatMap((p) => textArray(p.item_or_part_scope)),
+      ),
+    ];
     return {
+      ...(listening
+        ? {
+            listening: {
+              started: Boolean(listening.started_at),
+              blockComplete: Boolean(listening.block_completed_at),
+              uncapturedItemIds,
+              alteredItemIds,
+            },
+          }
+        : {}),
       assistance: assistance.rows.map((row) => ({
         kind: row.kind as AssistanceKind,
         phase: row.phase as AssistancePhase,
@@ -1395,7 +1460,7 @@ export class PostgresAttemptRepository {
             input.modality,
             input.directLane,
             input.operationId,
-            input.occurredAt,
+            input.modality === "listening" ? null : input.occurredAt,
             input.servingManifestId,
           ],
         );
@@ -1955,6 +2020,35 @@ export class PostgresAttemptRepository {
         if (!attempt) return { ok: false as const, error: "not_available" as const };
         if (!submittableStates.has(attempt.state)) {
           return { ok: false as const, error: "illegal_transition" as const };
+        }
+        if (attempt.modality === "listening") {
+          const plan = (
+            await client.query(
+              "SELECT id,started_at,block_completed_at FROM app.listening_plans WHERE learner_scope_id=$1 AND attempt_id=$2",
+              [scope.learnerScopeId, input.attemptId],
+            )
+          ).rows[0];
+          if (!plan?.started_at || !plan.block_completed_at)
+            return { ok: false as const, error: "illegal_transition" as const };
+          const playback = (
+            await client.query(
+              `SELECT p.state,o.item_or_part_scope FROM app.playback_occurrences p JOIN app.listening_plan_occurrences o ON o.id=p.occurrence_id WHERE p.learner_scope_id=$1 AND o.listening_plan_id=$2`,
+              [scope.learnerScopeId, plan.id],
+            )
+          ).rows;
+          const failedItems = [
+            ...new Set(
+              playback
+                .filter((p) => p.state === "failed")
+                .flatMap((p) => textArray(p.item_or_part_scope)),
+            ),
+          ].sort();
+          if (
+            playback.some((p) => p.state === "authorized" || p.state === "started") ||
+            JSON.stringify(failedItems) !== JSON.stringify([...input.uncapturedItemIds].sort()) ||
+            input.outcome.supportedScope.length === 0
+          )
+            return { ok: false as const, error: "conflict" as const };
         }
         if (
           attempt.servingManifestId !== undefined &&
