@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const testRuntime = vi.hoisted(() => ({
   status: "preflight",
   complete: false,
+  responseReady: false,
   startedAt: undefined as string | undefined,
   pauseAllowed: false,
   remainingPlays: 1,
@@ -24,6 +25,9 @@ vi.mock("./listening-controller", () => ({
     }
     get complete() {
       return testRuntime.complete;
+    }
+    get responseReady() {
+      return testRuntime.responseReady;
     }
     get startedAt() {
       return testRuntime.startedAt;
@@ -60,11 +64,13 @@ vi.mock("./attempt-clock", () => ({
 
 import { ListeningRuntimeIsland } from "./listening-runtime";
 import { ListeningTranscriptIsland } from "./listening-transcript";
+import { technicalListeningPlan } from "./listening.test-fixture";
 
 beforeEach(() => {
   Object.assign(testRuntime, {
     status: "preflight",
     complete: false,
+    responseReady: false,
     startedAt: undefined,
     pauseAllowed: false,
     remainingPlays: 1,
@@ -87,6 +93,24 @@ describe("Listening component boundaries", () => {
     expect(container.querySelector("[data-attempt-clock]")).toBeNull();
     await act(async () => {
       testRuntime.complete = true;
+      testRuntime.responseReady = true;
+      testRuntime.notify();
+    });
+    expect(screen.getByRole("button", { name: "Submit response" })).toBeEnabled();
+  });
+  it("P05-PLAYBACK-002 keeps a completed ordinary response disabled while an extra ordinal is active", async () => {
+    testRuntime.complete = true;
+    testRuntime.responseReady = false;
+    render(
+      <ListeningRuntimeIsland attemptId="test" continuityScope="scope">
+        <button type="submit">Submit response</button>
+      </ListeningRuntimeIsland>,
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Submit response" })).toBeDisabled(),
+    );
+    await act(async () => {
+      testRuntime.responseReady = true;
       testRuntime.notify();
     });
     expect(screen.getByRole("button", { name: "Submit response" })).toBeEnabled();
@@ -141,17 +165,12 @@ describe("Listening component boundaries", () => {
     expect(transport).toHaveBeenCalledTimes(1);
   });
   it("P05-TRANSCRIPT-001 reveals only server-gated exact-media transcript bytes after explicit request", async () => {
-    const mediaId = "22222222-2222-4222-8222-000000000007";
+    const plan = technicalListeningPlan("a".repeat(64), 1);
+    const mediaId = plan.plan.occurrences[0]?.candidates[0]?.mediaRevisionId;
+    if (!mediaId) throw new Error("missing technical candidate");
     const transport = vi
       .fn()
-      .mockResolvedValueOnce(
-        Response.json({
-          plan: {
-            listeningPlanId: "plan",
-            occurrences: [{ candidates: [{ mediaRevisionId: mediaId }] }],
-          },
-        }),
-      )
+      .mockResolvedValueOnce(Response.json(plan))
       .mockResolvedValueOnce(
         Response.json({
           transcriptRevisionId: "33333333-3333-4333-8333-333333333333",
@@ -170,7 +189,7 @@ describe("Listening component boundaries", () => {
     fireEvent.click(screen.getByRole("button", { name: "Request authorized transcript" }));
     await waitFor(() => expect(screen.getByText("Private authorized words")).toBeVisible());
     expect(transport).toHaveBeenLastCalledWith(
-      `/api/v1/listening-plans/plan/transcripts/${mediaId}`,
+      `/api/v1/listening-plans/${plan.plan.listeningPlanId}/transcripts/${mediaId}`,
       { credentials: "same-origin", cache: "no-store" },
     );
   });

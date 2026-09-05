@@ -26,17 +26,17 @@ export default async function AttemptResultPage({
     projection.learnerPayload,
   );
   return (
-    <>
-      <ResultView
-        backHref={
-          projection.attempt.sessionId ? `/session/${projection.attempt.sessionId}` : "/coach"
-        }
-        projection={result}
-        validity={projection.submission.validity.state}
-      />
-      {projection.attempt.modality === "listening" ? (
-        <ListeningTranscriptIsland attemptId={id} />
-      ) : null}
-    </>
+    <ResultView
+      backHref={
+        projection.attempt.sessionId ? `/session/${projection.attempt.sessionId}` : "/coach"
+      }
+      projection={result}
+      validity={projection.submission.validity.state}
+      resultChild={
+        projection.attempt.modality === "listening" ? (
+          <ListeningTranscriptIsland attemptId={id} />
+        ) : undefined
+      }
+    />
   );
 }

@@ -276,4 +276,162 @@ describe("Listening island controller", () => {
       },
     });
   });
+  it("P05-PREFLIGHT-002 uses an exact approved successor after a supported candidate fails verification", async () => {
+    const f = await setup();
+    const current = f.controller.record;
+    const occurrence = current?.view.plan.occurrences[0];
+    const candidate = occurrence?.candidates[0];
+    if (!current || !occurrence || !candidate) throw new Error("missing fixture candidate");
+    const corrupt = {
+      ...candidate,
+      mediaRevisionId: "22222222-2222-4222-8222-000000000009",
+      digest: "b".repeat(64),
+    };
+    f.controller.record = {
+      ...current,
+      view: {
+        ...current.view,
+        plan: {
+          ...current.view.plan,
+          occurrences: [
+            {
+              ...occurrence,
+              candidates: [corrupt, candidate],
+            },
+          ],
+        },
+      },
+    };
+    await f.controller.prepare();
+    expect(f.controller.status).toBe("confirm");
+    expect(f.controller.record?.media[0]?.candidate.mediaRevisionId).toBe(
+      candidate.mediaRevisionId,
+    );
+    expect(f.transport.mock.calls.filter(([url]) => String(url).includes("/media/"))).toHaveLength(
+      2,
+    );
+    expect(f.audio.decode).toHaveBeenCalledTimes(1);
+  });
+  it("P05-PLAYBACK-003 skips a terminal failed occurrence without another fetch or native replay", async () => {
+    const f = await setup();
+    const current = f.controller.record;
+    const first = current?.view.plan.occurrences[0];
+    const candidate = first?.candidates[0];
+    if (!current || !first || !candidate) throw new Error("missing fixture occurrence");
+    const second = {
+      ...first,
+      occurrenceId: "22222222-2222-4222-8222-000000000010",
+      ordinal: 2,
+      contentRevisionId: "22222222-2222-4222-8222-000000000011",
+      itemIds: ["22222222-2222-4222-8222-000000000012"],
+      candidates: [
+        {
+          ...candidate,
+          assetId: "22222222-2222-4222-8222-000000000013",
+          mediaRevisionId: "22222222-2222-4222-8222-000000000014",
+        },
+      ],
+    };
+    f.controller.record = {
+      ...current,
+      view: {
+        ...current.view,
+        plan: { ...current.view.plan, occurrences: [first, second] },
+      },
+    };
+    await f.controller.prepare();
+    await f.controller.confirmOutput();
+    const failed = {
+      operationId: "22222222-2222-4222-8222-000000000015",
+      listeningPlanId: current.view.plan.listeningPlanId,
+      occurrenceId: first.occurrenceId,
+      playOrdinal: 1,
+      resourceVersion: f.controller.record?.view.resourceVersion ?? 1,
+      event: "failed" as const,
+      localIntentId: "22222222-2222-4222-8222-000000000016",
+      recordedAt: new Date().toISOString(),
+      mayStartNow: false,
+      authorizationExpiresAt: current.view.plan.expiresAt,
+      affectedItemIds: first.itemIds,
+      phase: "ready" as const,
+    };
+    const updated = f.controller.record;
+    if (!updated) throw new Error("missing prepared record");
+    f.controller.record = {
+      ...updated,
+      view: { ...updated.view, playback: [...updated.view.playback, failed] },
+    };
+    expect(f.controller.current?.occurrenceId).toBe(second.occurrenceId);
+    expect(f.controller.remainingPlays).toBe(1);
+    const mediaRequests = f.transport.mock.calls.filter(([url]) =>
+      String(url).includes("/media/"),
+    ).length;
+    await f.controller.begin();
+    expect(f.transport.mock.calls.filter(([url]) => String(url).includes("/media/"))).toHaveLength(
+      mediaRequests,
+    );
+    expect(f.audio.play).toHaveBeenCalledTimes(1);
+    const started = f
+      .stored()
+      ?.facts.find((fact) => "event" in fact.command && fact.command.event === "start_intent");
+    expect(started?.command).toMatchObject({ occurrenceId: second.occurrenceId });
+  });
+  it("P05-PLAYBACK-002 blocks response submission during an ordinary extra ordinal until its terminal receipt", async () => {
+    const f = await setup(true);
+    const current = f.controller.record;
+    const occurrence = current?.view.plan.occurrences[0];
+    if (!current || !occurrence) throw new Error("missing ordinary fixture");
+    const original = f.transport.getMockImplementation();
+    f.transport.mockImplementation(async (...args) => {
+      const response = await (original as typeof fetch)(...args);
+      if (!args[1]?.body) return response;
+      const body = await response.json();
+      return Response.json(
+        body.event === "start_intent" && body.playOrdinal === 2
+          ? { ...body, phase: "block_complete" }
+          : body,
+      );
+    });
+    await f.controller.prepare();
+    await f.controller.confirmOutput();
+    const ready = f.controller.record;
+    if (!ready) throw new Error("missing ready record");
+    f.controller.record = {
+      ...ready,
+      view: {
+        ...ready.view,
+        plan: {
+          ...ready.view.plan,
+          occurrences: [
+            {
+              ...occurrence,
+              allowedPlayCount: 2,
+              ordinalPolicies: [
+                {
+                  playOrdinal: 1,
+                  evidenceCondition: "authored_opportunity",
+                  requiresCompletedOrdinal: null,
+                },
+                {
+                  playOrdinal: 2,
+                  evidenceCondition: "assisted_extra",
+                  requiresCompletedOrdinal: 1,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+    await f.controller.begin();
+    expect(f.controller.status).toBe("ready");
+    await f.controller.native("completed", 1000);
+    expect(f.controller.complete).toBe(true);
+    expect(f.controller.responseReady).toBe(true);
+    await f.controller.begin();
+    expect(f.controller.complete).toBe(true);
+    expect(f.controller.responseReady).toBe(false);
+    await f.controller.native("completed", 1000);
+    expect(f.controller.responseReady).toBe(true);
+  });
 });

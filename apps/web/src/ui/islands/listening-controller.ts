@@ -1,16 +1,18 @@
-import type { ListeningPlanView, PlaybackReceipt } from "@bestehen/application";
+import type { MediaPreflightObservation, PlaybackOccurrenceCommand } from "@bestehen/contracts";
 import {
-  listeningPlanSchema,
-  mediaPreflightReceiptSchema,
-  type ListeningOccurrence,
-  type MediaPreflightObservation,
-  type MediaPreflightReceipt,
-  type PlaybackOccurrenceCommand,
-} from "@bestehen/contracts";
+  parseBoundPlaybackReceipt,
+  parseBoundPreflightReceipt,
+  parseListeningPlanView,
+  type ClientListeningCandidate,
+  type ClientListeningContext,
+  type ClientListeningPlanView,
+  type ClientMediaPreflightReceipt,
+  type ClientPlaybackReceipt,
+} from "./listening-client-parsers";
 
-type Candidate = ListeningOccurrence["candidates"][number];
+type Candidate = ClientListeningCandidate;
 type Command = MediaPreflightObservation | PlaybackOccurrenceCommand;
-type Receipt = MediaPreflightReceipt | PlaybackReceipt;
+type Receipt = ClientMediaPreflightReceipt | ClientPlaybackReceipt;
 export interface RetainedListeningMedia {
   occurrenceId: string;
   candidate: Candidate;
@@ -21,8 +23,8 @@ export interface RetainedListeningMedia {
 export interface LocalListening {
   key: string;
   revision: number;
-  view: ListeningPlanView;
-  context: MediaPreflightObservation["context"];
+  view: ClientListeningPlanView;
+  context: ClientListeningContext;
   media: RetainedListeningMedia[];
   pending: Command[];
   facts: { command: Command; receipt: Receipt }[];
@@ -160,6 +162,16 @@ export class ListeningController {
   get complete() {
     return this.record?.view.phase === "block_complete";
   }
+  get responseReady() {
+    return Boolean(
+      this.complete &&
+        this.record &&
+        !this.active &&
+        !this.preparing &&
+        !this.state.pending.some(isPlayback) &&
+        !["retry", "playing", "paused"].includes(this.status),
+    );
+  }
   get current(): RetainedListeningMedia | undefined {
     if (!this.record) return undefined;
     if (this.active)
@@ -171,7 +183,10 @@ export class ListeningController {
       const finished = this.record?.view.playback.filter(
         (f) => f.occurrenceId === media.occurrenceId && f.event === "completed",
       ).length;
-      return occurrence && (finished ?? 0) < occurrence.allowedPlayCount;
+      const terminalFault = this.record?.view.playback.some(
+        (f) => f.occurrenceId === media.occurrenceId && f.event === "failed",
+      );
+      return occurrence && !terminalFault && (finished ?? 0) < occurrence.allowedPlayCount;
     });
   }
   get occurrence() {
@@ -194,10 +209,9 @@ export class ListeningController {
     try {
       const saved = await this.store.read(this.key);
       this.record = saved;
-      let view = (await this.json(
-        `/api/v1/attempts/${this.attemptId}/listening-plan`,
-      )) as ListeningPlanView;
-      view = { ...view, plan: listeningPlanSchema.parse(view.plan) };
+      let view = parseListeningPlanView(
+        await this.json(`/api/v1/attempts/${this.attemptId}/listening-plan`),
+      );
       if (view.plan.attemptId !== this.attemptId) fail();
       if (saved) {
         if (!same({ ...saved.view.plan, revocationState: view.plan.revocationState }, view.plan))
@@ -206,9 +220,9 @@ export class ListeningController {
         await this.drain();
         if (this.state.pending.length) return;
         if (hadPending)
-          view = (await this.json(
-            `/api/v1/attempts/${this.attemptId}/listening-plan`,
-          )) as ListeningPlanView;
+          view = parseListeningPlanView(
+            await this.json(`/api/v1/attempts/${this.attemptId}/listening-plan`),
+          );
         if (this.state.view.resourceVersion !== view.resourceVersion) fail();
         await this.save((r) => {
           r.view = view;
@@ -300,28 +314,37 @@ export class ListeningController {
       this.changed();
       const media: RetainedListeningMedia[] = [];
       for (const occurrence of this.state.view.plan.occurrences) {
-        const candidate = occurrence.candidates.find((c) => this.audio.supports(c.mime));
-        if (!candidate) fail();
-        const chosen = candidate as Candidate;
-        const retained = this.state.media.find(
-          (m) => m.occurrenceId === occurrence.occurrenceId && same(m.candidate, chosen),
-        );
-        const response = retained
-          ? undefined
-          : await this.transport(this.planUrl(`media/${chosen.mediaRevisionId}`), {
-              credentials: "same-origin",
-              cache: "no-store",
-            });
-        if (response && !response.ok) fail();
-        const entry: RetainedListeningMedia = retained ?? {
-          occurrenceId: occurrence.occurrenceId,
-          candidate: chosen,
-          bytes: await (response as Response).arrayBuffer(),
-          handleId: crypto.randomUUID(),
-          observedAt: this.now().toISOString(),
-        };
-        await this.verifyAndRetain(entry);
-        media.push(entry);
+        let verified: RetainedListeningMedia | undefined;
+        for (const candidate of occurrence.candidates) {
+          if (!this.audio.supports(candidate.mime)) continue;
+          try {
+            const retained = this.state.media.find(
+              (media) =>
+                media.occurrenceId === occurrence.occurrenceId && same(media.candidate, candidate),
+            );
+            const response = retained
+              ? undefined
+              : await this.transport(this.planUrl(`media/${candidate.mediaRevisionId}`), {
+                  credentials: "same-origin",
+                  cache: "no-store",
+                });
+            if (response && !response.ok) throw new Error("Candidate unavailable");
+            const entry: RetainedListeningMedia = retained ?? {
+              occurrenceId: occurrence.occurrenceId,
+              candidate,
+              bytes: await (response as Response).arrayBuffer(),
+              handleId: crypto.randomUUID(),
+              observedAt: this.now().toISOString(),
+            };
+            await this.verifyAndRetain(entry);
+            verified = entry;
+            break;
+          } catch {
+            // Another exact, approved encoding may still establish readiness for this occurrence.
+          }
+        }
+        if (!verified) fail();
+        media.push(verified);
       }
       await this.save((r) => {
         r.media = media;
@@ -425,38 +448,17 @@ export class ListeningController {
           throw error;
         }
         const receipt = isPlayback(command)
-          ? (raw as PlaybackReceipt)
-          : mediaPreflightReceiptSchema.parse(raw);
-        if (
-          receipt.operationId !== command.operationId ||
-          receipt.listeningPlanId !== command.listeningPlanId ||
-          receipt.resourceVersion !== command.expectedVersion + 1
-        )
-          fail();
-        if (
-          isPlayback(command) &&
-          (!same((receipt as PlaybackReceipt).localIntentId, command.localIntentId) ||
-            (receipt as PlaybackReceipt).occurrenceId !== command.occurrenceId ||
-            (receipt as PlaybackReceipt).playOrdinal !== command.playOrdinal ||
-            (receipt as PlaybackReceipt).event !== command.event)
-        )
-          fail();
-        if (
-          !isPlayback(command) &&
-          ((receipt as MediaPreflightReceipt).observationDigest !==
-            (await listeningDigest(canonical(command))) ||
-            !same((receipt as MediaPreflightReceipt).context, command.context))
-        )
-          fail();
+          ? parseBoundPlaybackReceipt(raw, command)
+          : await parseBoundPreflightReceipt(raw, command, listeningDigest, canonical(command));
         await this.save((r) => {
           r.pending.shift();
           r.facts.push({ command, receipt });
           r.view = { ...r.view, resourceVersion: receipt.resourceVersion };
           if (isPlayback(command)) {
-            const played = receipt as PlaybackReceipt;
+            const played = receipt as ClientPlaybackReceipt;
             r.view = { ...r.view, phase: played.phase, playback: [...r.view.playback, played] };
             if (command.event === "started") this.startedAt ??= command.occurredAt;
-          } else r.view = { ...r.view, latestPreflight: receipt as MediaPreflightReceipt };
+          } else r.view = { ...r.view, latestPreflight: receipt as ClientMediaPreflightReceipt };
         });
       }
     })();
@@ -519,7 +521,7 @@ export class ListeningController {
       await this.drain();
       if (this.state.pending.length) return;
       const receipt = this.state.facts.find((f) => f.command.operationId === command.operationId)
-        ?.receipt as PlaybackReceipt | undefined;
+        ?.receipt as ClientPlaybackReceipt | undefined;
       if (
         !receipt?.mayStartNow ||
         Date.parse(receipt.authorizationExpiresAt) <= this.now().getTime() ||

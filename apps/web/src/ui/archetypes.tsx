@@ -178,6 +178,7 @@ export function ResultView({
   decisiveEvidence = [],
   details,
   projection,
+  resultChild,
 }: {
   readonly backHref?: string;
   readonly validity?: EvidenceValidityState;
@@ -212,6 +213,8 @@ export function ResultView({
     readonly causes: readonly { readonly id: string; readonly text: string }[];
     readonly repair: string;
   };
+  /** Result-only feature content stays in the focused result landmark. */
+  readonly resultChild?: ReactNode;
 }) {
   if (projection) {
     const renderProjectionEntry = (entry: {
@@ -270,6 +273,7 @@ export function ResultView({
         <SemanticCard title="Repair">
           <p>{projection.repair}</p>
         </SemanticCard>
+        {resultChild}
       </AppShell>
     );
   }
@@ -322,6 +326,7 @@ export function ResultView({
             "Check the connector in the second paragraph, then try one fresh item."}
         </p>
       </SemanticCard>
+      {resultChild}
     </AppShell>
   );
 }

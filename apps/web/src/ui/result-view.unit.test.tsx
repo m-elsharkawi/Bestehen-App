@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { ResultView } from "./archetypes";
 
@@ -36,5 +36,17 @@ describe("P05-RESULT-A11Y-001 authored language segments", () => {
     expect(screen.getByText("Beleg A")).toHaveAttribute("lang", "de");
     expect(screen.getByText(/Antwort A/)).toHaveAttribute("lang", "de");
     expect(screen.getByText("Decisive evidence.")).not.toHaveAttribute("lang");
+  });
+  it("P05-TRANSCRIPT-002 places a Listening-only result child in the focused main landmark", () => {
+    const { rerender } = render(
+      <ResultView
+        resultChild={<section aria-label="Listening transcript">Authorized transcript</section>}
+      />,
+    );
+    expect(
+      within(screen.getByRole("main")).getByRole("region", { name: "Listening transcript" }),
+    ).toBeVisible();
+    rerender(<ResultView />);
+    expect(screen.queryByRole("region", { name: "Listening transcript" })).toBeNull();
   });
 });

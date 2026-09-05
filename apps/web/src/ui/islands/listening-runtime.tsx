@@ -85,6 +85,7 @@ export function ListeningRuntimeIsland({
   const controller = runtime.current;
   const state = controller?.status ?? "preflight";
   const complete = controller?.complete ?? false;
+  const responseReady = controller?.responseReady ?? false;
   const nativeStart = controller?.startedAt ?? startedAt;
   const expiresAt = controller?.record?.view.plan.expiresAt;
   useEffect(() => {
@@ -144,13 +145,13 @@ export function ListeningRuntimeIsland({
       {nativeStart ? <AttemptClockIsland attemptId={attemptId} startedAt={nativeStart} /> : null}
       <div
         onSubmitCapture={(event) => {
-          if (!complete) event.preventDefault();
+          if (!responseReady) event.preventDefault();
         }}
       >
-        {!complete ? (
+        {!responseReady ? (
           <p>Responses stay on this device. Submission waits for the recorded Listening block.</p>
         ) : null}
-        <fieldset disabled={!complete}>
+        <fieldset disabled={!responseReady}>
           <legend>Listening response</legend>
           {children}
         </fieldset>

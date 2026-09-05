@@ -1,10 +1,9 @@
 "use client";
 
-import type { ListeningPlanView } from "@bestehen/application";
-import { transcriptRevealSchema } from "@bestehen/contracts";
 import { NativeButton } from "@bestehen/design-system";
 import { useState } from "react";
 import { listeningDigest } from "./listening-controller";
+import { parseListeningPlanView, parseTranscriptReveal } from "./listening-client-parsers";
 
 /** Result-only entry point. Neither plans nor transcripts are prefetched. */
 export function ListeningTranscriptIsland({ attemptId }: { readonly attemptId: string }) {
@@ -19,7 +18,7 @@ export function ListeningTranscriptIsland({ attemptId }: { readonly attemptId: s
       const options = { credentials: "same-origin", cache: "no-store" } as const;
       const response = await fetch(`/api/v1/attempts/${attemptId}/listening-plan`, options);
       if (!response.ok) throw new Error("Unavailable");
-      const view = (await response.json()) as ListeningPlanView;
+      const view = parseListeningPlanView(await response.json());
       const revealed: { id: string; text: string }[] = [];
       for (const occurrence of view.plan.occurrences) {
         const candidate = occurrence.candidates[0];
@@ -29,7 +28,7 @@ export function ListeningTranscriptIsland({ attemptId }: { readonly attemptId: s
           options,
         );
         if (!result.ok) throw new Error("Phase unavailable");
-        const transcript = transcriptRevealSchema.parse(await result.json());
+        const transcript = parseTranscriptReveal(await result.json());
         if (
           transcript.mediaRevisionId !== candidate.mediaRevisionId ||
           (await listeningDigest(transcript.text)) !== transcript.digest
