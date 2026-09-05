@@ -49,7 +49,7 @@
       "properties": {
         "postgres": { "const": "18.6" },
         "minimumRevision": { "const": "20260825_040_p03_foundation" },
-        "maximumRevision": { "const": "20260825_040_p03_foundation" },
+        "maximumRevision": { "const": "20260905_062_p05_listening_runtime" },
         "migrationOwner": { "const": "explicit-migrator" }
       }
     },
@@ -110,8 +110,8 @@
       "additionalProperties": false,
       "required": ["application", "content", "evaluation", "model"],
       "properties": {
-        "application": { "const": "stage-03-foundation" },
-        "content": { "const": "not-produced" },
+        "application": { "const": "stage-05-runtime" },
+        "content": { "const": "stage-05-content-v1" },
         "evaluation": { "const": "not-produced" },
         "model": { "const": "not-produced" }
       }
@@ -189,7 +189,31 @@
         "P04-SECURITY-001",
         "P04-PERF-001",
         "P04-COMPAT-001",
-        "P04-SCOPE-001"
+        "P04-SCOPE-001",
+        "P05-DOMAIN-001",
+        "P05-CONTENT-001",
+        "P05-KEY-001",
+        "P05-RIGHTS-001",
+        "P05-FRESH-001",
+        "P05-SCORE-001",
+        "P05-SEED-001",
+        "P05-IDEMPOTENCY-001",
+        "P05-EVIDENCE-001",
+        "P05-CONTRACT-001",
+        "P05-AUTHZ-001",
+        "P05-SECURITY-001",
+        "P05-BOUNDARY-001",
+        "P05-LISTENING-001",
+        "P05-MEDIA-001",
+        "P05-FOUNDATION-001",
+        "P05-COMPONENT-001",
+        "P05-CONTRAST-001",
+        "P05-COPY-001",
+        "P05-EQUIV-001",
+        "P05-RECOVERY-001",
+        "P05-PERF-001",
+        "P05-SCOPE-001",
+        "P05-RELEASE-001"
       ],
       "properties": {
         "P01-BASE-001": { "type": "string", "minLength": 1 },
@@ -241,7 +265,31 @@
         "P04-SECURITY-001": { "type": "string", "minLength": 1 },
         "P04-PERF-001": { "type": "string", "minLength": 1 },
         "P04-COMPAT-001": { "type": "string", "minLength": 1 },
-        "P04-SCOPE-001": { "type": "string", "minLength": 1 }
+        "P04-SCOPE-001": { "type": "string", "minLength": 1 },
+        "P05-DOMAIN-001": { "type": "string", "minLength": 1 },
+        "P05-CONTENT-001": { "type": "string", "minLength": 1 },
+        "P05-KEY-001": { "type": "string", "minLength": 1 },
+        "P05-RIGHTS-001": { "type": "string", "minLength": 1 },
+        "P05-FRESH-001": { "type": "string", "minLength": 1 },
+        "P05-SCORE-001": { "type": "string", "minLength": 1 },
+        "P05-SEED-001": { "type": "string", "minLength": 1 },
+        "P05-IDEMPOTENCY-001": { "type": "string", "minLength": 1 },
+        "P05-EVIDENCE-001": { "type": "string", "minLength": 1 },
+        "P05-CONTRACT-001": { "type": "string", "minLength": 1 },
+        "P05-AUTHZ-001": { "type": "string", "minLength": 1 },
+        "P05-SECURITY-001": { "type": "string", "minLength": 1 },
+        "P05-BOUNDARY-001": { "type": "string", "minLength": 1 },
+        "P05-LISTENING-001": { "type": "string", "minLength": 1 },
+        "P05-MEDIA-001": { "type": "string", "minLength": 1 },
+        "P05-FOUNDATION-001": { "type": "string", "minLength": 1 },
+        "P05-COMPONENT-001": { "type": "string", "minLength": 1 },
+        "P05-CONTRAST-001": { "type": "string", "minLength": 1 },
+        "P05-COPY-001": { "type": "string", "minLength": 1 },
+        "P05-EQUIV-001": { "type": "string", "minLength": 1 },
+        "P05-RECOVERY-001": { "type": "string", "minLength": 1 },
+        "P05-PERF-001": { "type": "string", "minLength": 1 },
+        "P05-SCOPE-001": { "type": "string", "minLength": 1 },
+        "P05-RELEASE-001": { "type": "string", "minLength": 1 }
       }
     }
   }

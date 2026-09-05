@@ -7,7 +7,7 @@
 - `BESTEHEN_APP_ENV`: `local`, `test`, `preview`, `staging`, or `production`; required, server-only.
 - `BESTEHEN_RELEASE_COMMIT`: immutable release identity; required, server-only.
 - `BESTEHEN_RELEASE_DIRTY`: strict boolean; defaults false and releases refuse true.
-- `BESTEHEN_SCHEMA_MIN_REVISION`, `BESTEHEN_SCHEMA_MAX_REVISION`: compatibility range; both default to `20260825_040_p03_foundation`.
+- `BESTEHEN_SCHEMA_MIN_REVISION`, `BESTEHEN_SCHEMA_MAX_REVISION`: the Stage 05 runtime's inclusive compatibility range. They default to `20260825_040_p03_foundation` and `20260905_062_p05_listening_runtime`. This range supports Stage 05 rollout sequencing; it does not authorize a Stage 04 image against the newer database. Rolling the application back to Stage 04 also requires restoring the database to the Stage 03 revision.
 - `BESTEHEN_WEB_PORT`, `BESTEHEN_WORKER_PORT`: internal listeners; default `3000` and `3001`.
 - `BESTEHEN_SHUTDOWN_GRACE_MS`: bounded shutdown; default `5000`.
 - `BESTEHEN_LOG_LEVEL`: structured log level; default `info`.

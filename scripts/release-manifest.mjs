@@ -82,7 +82,7 @@ export function createManifest(options) {
     database: {
       postgres: "18.6",
       minimumRevision: "20260825_040_p03_foundation",
-      maximumRevision: "20260825_040_p03_foundation",
+      maximumRevision: "20260905_062_p05_listening_runtime",
       migrationOwner: "explicit-migrator",
     },
     runtime: { node: "24.19.0", pnpm: "11.23.0" },
@@ -106,8 +106,8 @@ export function createManifest(options) {
       postgres: "sha256:1c59e2c3c818eaa0f0628f695b36e7c9e362d6b219b36a54a32df645cbd7e1af",
     },
     releaseAxes: {
-      application: "stage-03-foundation",
-      content: "not-produced",
+      application: "stage-05-runtime",
+      content: "stage-05-content-v1",
       evaluation: "not-produced",
       model: "not-produced",
     },

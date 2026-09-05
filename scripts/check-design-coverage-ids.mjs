@@ -1,4 +1,4 @@
-const checkIdPattern = /P04-[A-Z0-9]+-001/g;
+const checkIdPattern = /P0[0-9]-[A-Z0-9]+-001/g;
 
 export function executableCheckIds(contents) {
   const ids = new Set();
@@ -24,7 +24,7 @@ export function executableCheckIds(contents) {
       }
       continue;
     }
-    const match = contents.slice(index).match(/^(test|describe)\s*\(\s*(["'`])/);
+    const match = contents.slice(index).match(/^(test|it|describe)\s*\(\s*(["'`])/);
     if (match) {
       index += match[0].length;
       const quote = match[2];

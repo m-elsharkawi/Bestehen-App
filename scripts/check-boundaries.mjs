@@ -98,6 +98,112 @@ async function inspectImports() {
   }
 }
 
+const workspaceEntryPoints = {
+  "@bestehen/application": "packages/application/src/index.ts",
+  "@bestehen/configuration": "packages/configuration/src/index.ts",
+  "@bestehen/content": "packages/content/src/index.ts",
+  "@bestehen/contracts": "packages/contracts/src/index.ts",
+  "@bestehen/design-system": "packages/design-system/src/index.ts",
+  "@bestehen/domain": "packages/domain/src/index.ts",
+  "@bestehen/infrastructure": "packages/infrastructure/src/index.ts",
+  "@bestehen/infrastructure/postgres": "packages/infrastructure/src/postgres/index.ts",
+  "@bestehen/test-support": "packages/test-support/src/index.ts",
+};
+const corpusRestrictedModules = [
+  "packages/content/src/corpus/client.ts",
+  "packages/content/src/corpus/bundle-reader.ts",
+];
+const importPattern = /(?:^|[\s;{(=])(?:import|export)\s+(?:[^'"]*?from\s*)?["']([^"']+)["']/gm;
+const dynamicImportPattern = /\b(?:import|require)\s*\(\s*["']([^"']+)["']\s*\)/g;
+
+function sourceCandidates(relativePath) {
+  const withoutJs = relativePath.replace(/\.(?:m?js)$/, "");
+  return [
+    relativePath,
+    `${withoutJs}.ts`,
+    `${withoutJs}.tsx`,
+    `${withoutJs}.mts`,
+    `${withoutJs}/index.ts`,
+    `${withoutJs}/index.tsx`,
+  ];
+}
+
+function resolveSourceSpecifier(fromRelative, specifier, sourceSet) {
+  const workspaceEntry = workspaceEntryPoints[specifier];
+  if (workspaceEntry) return sourceSet.has(workspaceEntry) ? workspaceEntry : undefined;
+  let unresolved;
+  if (specifier.startsWith("@/")) unresolved = `apps/web/src/${specifier.slice(2)}`;
+  else if (specifier.startsWith(".")) {
+    unresolved = path.posix.normalize(path.posix.join(path.posix.dirname(fromRelative), specifier));
+  } else return undefined;
+  return sourceCandidates(unresolved).find((candidate) => sourceSet.has(candidate));
+}
+
+async function buildSourceImportGraph() {
+  const absoluteFiles = (
+    await Promise.all(
+      ["apps", "packages"].map((directory) => sourceFiles(path.join(root, directory))),
+    )
+  ).flat();
+  const relativeByAbsolute = new Map(
+    absoluteFiles.map((file) => [file, path.relative(root, file).replaceAll(path.sep, "/")]),
+  );
+  const sourceSet = new Set(relativeByAbsolute.values());
+  const graph = new Map();
+  for (const absolute of absoluteFiles) {
+    const relative = relativeByAbsolute.get(absolute);
+    const source = await readFile(absolute, "utf8");
+    const dependencies = new Set();
+    for (const pattern of [importPattern, dynamicImportPattern]) {
+      pattern.lastIndex = 0;
+      for (const match of source.matchAll(pattern)) {
+        const resolved = resolveSourceSpecifier(relative, match[1] ?? "", sourceSet);
+        if (resolved) dependencies.add(resolved);
+      }
+    }
+    graph.set(relative, [...dependencies]);
+  }
+  return graph;
+}
+
+function reachableModules(graph, entry) {
+  const reached = new Set();
+  const pending = [entry];
+  while (pending.length > 0) {
+    const current = pending.shift();
+    if (!current || reached.has(current)) continue;
+    reached.add(current);
+    pending.push(...(graph.get(current) ?? []));
+  }
+  return reached;
+}
+
+async function inspectCorpusIsolation() {
+  const graph = await buildSourceImportGraph();
+  for (const restricted of corpusRestrictedModules) {
+    if (!graph.has(restricted))
+      throw new Error(`Corpus boundary names a missing module: ${restricted}`);
+  }
+  const positiveControl = reachableModules(graph, "packages/content/src/corpus/import.ts");
+  for (const restricted of corpusRestrictedModules) {
+    if (!positiveControl.has(restricted)) {
+      throw new Error(`Corpus boundary resolver missed its positive control: ${restricted}`);
+    }
+  }
+  const violations = [];
+  for (const module of graph.keys()) {
+    if (!module.startsWith("apps/web/")) continue;
+    for (const restricted of corpusRestrictedModules) {
+      if (reachableModules(graph, module).has(restricted)) {
+        violations.push(`${module} -> ${restricted}`);
+      }
+    }
+  }
+  if (violations.length > 0) {
+    throw new Error(`apps/web reaches a worker-only Corpus module: ${violations.join(", ")}`);
+  }
+}
+
 function runNegativeFixtures() {
   const forbidden = [
     ["domain", "infrastructure"],
@@ -119,7 +225,8 @@ function runNegativeFixtures() {
 
 await inspectManifests();
 await inspectImports();
+await inspectCorpusIsolation();
 runNegativeFixtures();
 process.stdout.write(
-  "Package manifests, public imports, negative fixtures, and dependency arrows are valid.\n",
+  "P05-BOUNDARY-001 passed: package arrows are valid and apps/web cannot transitively reach the Corpus client or bundle reader.\n",
 );

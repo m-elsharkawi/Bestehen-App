@@ -9,16 +9,21 @@ import {
 import { executableCheckIds } from "./check-design-coverage-ids.mjs";
 
 describe("executable coverage ID extraction", () => {
-  test("accepts IDs in test and describe titles", () => {
+  test("accepts P04 and P05 IDs in test, it, and describe titles", () => {
     expect([
       ...executableCheckIds(
-        "test(\"P04-DEMO-001 works\", () => {}); describe('P04-SAMPLE-001 tokens', () => {})",
+        "test(\"P04-DEMO-001 works\", () => {}); it('P05-RUNTIME-001 works', () => {}); describe(`P05-SAMPLE-001 tokens`, () => {})",
       ),
-    ]).toEqual(["P04-DEMO-001", "P04-SAMPLE-001"]);
+    ]).toEqual(["P04-DEMO-001", "P05-RUNTIME-001", "P05-SAMPLE-001"]);
   });
 
   it("rejects comments and unrelated strings", () => {
-    const source = '// P04-FAKE-001\nconst text = "P04-STRING-001";';
+    const source = '// P05-FAKE-001\nconst text = "P05-STRING-001";';
+    expect([...executableCheckIds(source)]).toEqual([]);
+  });
+
+  it("rejects malformed and unallocated future-stage IDs", () => {
+    const source = 'test("P5-SHORT-001 P05-lower-001 P05-MISSING-002 P99-FUTURE-001", () => {});';
     expect([...executableCheckIds(source)]).toEqual([]);
   });
 });
@@ -32,8 +37,8 @@ describe("semantic union parity with the product sources", () => {
 
   it("holds between the checker copy and the real contracts and domain unions", () => {
     expect(assertSemanticUnionParity(productUnions)).toEqual({
-      semanticStates: 42,
-      semanticReasons: 43,
+      semanticStates: 57,
+      semanticReasons: 54,
     });
   });
 

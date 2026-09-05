@@ -107,16 +107,15 @@ const serverEnvironmentSchema = z
     BESTEHEN_APP_ENV: z.enum(["local", "test", "preview", "staging", "production"]),
     BESTEHEN_RELEASE_COMMIT: z.string().min(1).max(64),
     BESTEHEN_RELEASE_DIRTY: strictBoolean,
-    // The window is an inclusive ordinal range over `Object.keys(foundationMigrations)`. The minimum
-    // stays at the Stage 03 revision deliberately: that is what keeps a migrate-then-deploy rollout
-    // and a deploy-rollback-without-database-rollback both legal (plan §8.1, §15.1). Narrowing it to
-    // the Stage 05 revision would make the previous image unready the instant the migration ran.
+    // The Stage 05 runtime accepts the inclusive P03..P05 range during its own rollout. This does
+    // not make a Stage 04 image compatible with a P05 database: rollback to that image also restores
+    // the database to the Stage 03 revision, as the owner correction to plan §15.1 requires.
     BESTEHEN_SCHEMA_MIN_REVISION: z.string().min(1).max(128).default("20260825_040_p03_foundation"),
     BESTEHEN_SCHEMA_MAX_REVISION: z
       .string()
       .min(1)
       .max(128)
-      .default("20260901_054_p05_content_runtime"),
+      .default("20260905_062_p05_listening_runtime"),
     BESTEHEN_WEB_PORT: positivePort.default(3000),
     BESTEHEN_WORKER_PORT: positivePort.default(3001),
     BESTEHEN_SHUTDOWN_GRACE_MS: z.coerce.number().int().min(100).max(60_000).default(5000),
@@ -456,8 +455,8 @@ export interface ReleaseMetadata {
   readonly dirty: boolean;
   readonly schema: { readonly minimum: string; readonly maximum: string };
   readonly flags: FeatureFlags;
-  readonly application: string;
-  readonly content: "not-produced";
+  readonly application: "stage-05-runtime";
+  readonly content: "stage-05-content-v1";
   readonly evaluation: "not-produced";
   readonly model: "not-produced";
 }
@@ -471,8 +470,8 @@ export function releaseMetadata(environment: ServerEnvironment): ReleaseMetadata
       maximum: environment.BESTEHEN_SCHEMA_MAX_REVISION,
     },
     flags: featureFlags(environment),
-    application: "stage-03-foundation",
-    content: "not-produced",
+    application: "stage-05-runtime",
+    content: "stage-05-content-v1",
     evaluation: "not-produced",
     model: "not-produced",
   };

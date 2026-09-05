@@ -12,6 +12,19 @@ export const p04CheckIds = [
   "P04-PERF-001",
   "P04-SECURITY-001",
   "P04-COMPAT-001",
+  "P05-BOUNDARY-001",
+  "P05-COMPONENT-001",
+  "P05-CONTRACT-001",
+  "P05-DOMAIN-001",
+  "P05-EQUIV-001",
+  "P05-FOUNDATION-001",
+  "P05-FRESH-001",
+  "P05-KEY-001",
+  "P05-LISTENING-001",
+  "P05-MEDIA-001",
+  "P05-RECOVERY-001",
+  "P05-RIGHTS-001",
+  "P05-SECURITY-001",
 ] as const;
 
 export const componentFamilies = [
@@ -155,6 +168,21 @@ export const semanticStates = [
   "compare",
   "select",
   "merge",
+  "available",
+  "loading_media",
+  "unavailable_no_fresh_family",
+  "unavailable_rights_or_target",
+  "quarantined_after_pin",
+  "media_failed_not_counted",
+  "replacement_ready",
+  "update_required",
+  "acquiring_manifest",
+  "in_progress",
+  "checkpointed",
+  "submission_unknown",
+  "submitted",
+  "scoring",
+  "result_available",
 ] as const;
 export const semanticReasons = [
   "VALIDITY.CONTENT_APPROVAL",
@@ -162,11 +190,17 @@ export const semanticReasons = [
   "VALIDITY.ACCESS_EQUIVALENCE",
   "VALIDITY.TECHNICAL_PREFLIGHT",
   "VALIDITY.IDENTITY_CLAIM_INVALID",
+  "VALIDITY.CONTENT_QUARANTINED_AFTER_PIN",
+  "VALIDITY.MEDIA_INTEGRITY_FAILED",
+  "VALIDITY.TIMER_INTEGRITY_LOST",
+  "VALIDITY.RESPONSE_STRUCTURALLY_INVALID",
   "DIRECT.MISSING_WRITTEN",
   "DIRECT.MISSING_ORAL",
   "DIRECT.TARGET_CONDITION_GAP",
   "DIRECT.ASSISTANCE_DEPENDENT",
   "DIRECT.STALE_DIRECT_SAMPLE",
+  "DIRECT.EXPOSED_FAMILY_PRACTICE",
+  "DIRECT.PLAYBACK_CONDITION_ALTERED",
   "RISK.WRITTEN_BLOCKER",
   "RISK.ORAL_BLOCKER",
   "RISK.BOOKED_DATE",
@@ -175,6 +209,7 @@ export const semanticReasons = [
   "UNCERTAINTY.CONTRADICTORY_EVIDENCE",
   "UNCERTAINTY.CAUSE_UNRESOLVED",
   "UNCERTAINTY.PROJECTION_UPDATING",
+  "UNCERTAINTY.KEY_VALIDATOR_DISAGREEMENT",
   "DUE.TRANSFER_WINDOW",
   "DUE.RETENTION_WINDOW",
   "DUE.POST_MOCK_CLARIFIER",
@@ -200,6 +235,10 @@ export const semanticReasons = [
   "FALLBACK.NO_FRESH_RETRY",
   "FALLBACK.AUTHORIZATION_DENIED",
   "FALLBACK.JOB_RETRY_EXHAUSTED",
+  "FALLBACK.MEDIA_UNAVAILABLE",
+  "FALLBACK.NO_ELIGIBLE_FAMILY",
+  "FALLBACK.SUBMISSION_OUTCOME_UNKNOWN",
+  "FALLBACK.CONTENT_UPDATE_REQUIRED",
 ] as const;
 export const responsiveLanes = ["compact", "tablet", "desktop"] as const;
 export const coverageStatuses = ["accepted", "corrected", "derived", "obsolete"] as const;
@@ -323,6 +362,36 @@ const draftConflictSemanticStates = [
   "select",
   "merge",
 ] as const satisfies readonly SemanticState[];
+const stage05ContentSemanticStates = [
+  "available",
+  "unavailable_no_fresh_family",
+  "unavailable_rights_or_target",
+  "quarantined_after_pin",
+  "media_failed_not_counted",
+  "replacement_ready",
+  "update_required",
+] as const satisfies readonly SemanticState[];
+const stage05AttemptSemanticStates = [
+  "acquiring_manifest",
+  "in_progress",
+  "checkpointed",
+  "submission_unknown",
+  "submitted",
+  "scoring",
+  "result_available",
+] as const satisfies readonly SemanticState[];
+const stage05ValidityReasonCodes = [
+  "VALIDITY.CONTENT_QUARANTINED_AFTER_PIN",
+  "VALIDITY.MEDIA_INTEGRITY_FAILED",
+  "VALIDITY.TIMER_INTEGRITY_LOST",
+  "VALIDITY.RESPONSE_STRUCTURALLY_INVALID",
+] as const satisfies readonly SemanticReason[];
+const stage05FallbackReasonCodes = [
+  "FALLBACK.MEDIA_UNAVAILABLE",
+  "FALLBACK.NO_ELIGIBLE_FAMILY",
+  "FALLBACK.SUBMISSION_OUTCOME_UNKNOWN",
+  "FALLBACK.CONTENT_UPDATE_REQUIRED",
+] as const satisfies readonly SemanticReason[];
 const validityReasonCodes = [
   "VALIDITY.CONTENT_APPROVAL",
   "VALIDITY.RIGHTS_COMPATIBILITY",
@@ -391,7 +460,7 @@ const boardChecks: Record<(typeof boardIds)[number], readonly CheckId[]> = {
   "01-s01": ["P04-TOKEN-001", "P04-ASSET-001", "P04-RSP-001"],
   "01-s02": ["P04-COVERAGE-001", "P04-COMPONENT-001", "P04-A11Y-001"],
   "01-s03": ["P04-SEMANTIC-001", "P04-A11Y-001"],
-  "02-a1": ["P04-ROUTE-001", "P04-SEMANTIC-001", "P04-VISUAL-001"],
+  "02-a1": ["P04-ROUTE-001", "P04-SEMANTIC-001", "P04-VISUAL-001", "P05-FOUNDATION-001"],
   "02-a2": ["P04-COMPONENT-001", "P04-ROUTE-001", "P04-VISUAL-001"],
   "02-a3": ["P04-COMPONENT-001", "P04-A11Y-001", "P04-RSP-001"],
   "02-a4": ["P04-SEMANTIC-001", "P04-COMPONENT-001", "P04-VISUAL-001"],
@@ -422,8 +491,14 @@ const boardChecks: Record<(typeof boardIds)[number], readonly CheckId[]> = {
   "06-v5": ["P04-COMPONENT-001", "P04-A11Y-001", "P04-SECURITY-001"],
   "06-v6": ["P04-SEMANTIC-001", "P04-COMPONENT-001"],
   "06-v7": ["P04-SEMANTIC-001", "P04-A11Y-001", "P04-VISUAL-001"],
-  "06-v8": ["P04-ROUTE-001", "P04-SEMANTIC-001", "P04-RSP-001"],
-  "06-v9": ["P04-COVERAGE-001", "P04-SEMANTIC-001", "P04-COMPAT-001"],
+  "06-v8": ["P04-ROUTE-001", "P04-SEMANTIC-001", "P04-RSP-001", "P05-FOUNDATION-001"],
+  "06-v9": [
+    "P04-COVERAGE-001",
+    "P04-SEMANTIC-001",
+    "P04-COMPAT-001",
+    "P05-DOMAIN-001",
+    "P05-CONTRACT-001",
+  ],
 };
 
 type BoardTarget = readonly [
@@ -454,8 +529,8 @@ const boardTargets: Record<(typeof boardIds)[number], BoardTarget> = {
   ],
   "02-a1": [
     "entry",
-    "apps/web/src/ui/archetypes.tsx",
-    "SessionView",
+    "apps/web/src/ui/foundation-runtime-view.tsx",
+    "FoundationRuntimeView",
     ["C01", "C05", "C42"],
     ["I19"],
   ],
@@ -595,7 +670,12 @@ const boardTargets: Record<(typeof boardIds)[number], BoardTarget> = {
     ["C32"],
     ["I10"],
   ],
-  "06-v8": ["session", "apps/web/src/ui/archetypes.tsx", "SessionView", ["C02", "C05", "C19"]],
+  "06-v8": [
+    "session",
+    "apps/web/src/ui/foundation-runtime-view.tsx",
+    "FoundationRuntimeView",
+    ["C02", "C05", "C19"],
+  ],
   "06-v9": [
     "governance",
     "packages/design-system/src/coverage/source-anchors.ts",
@@ -618,13 +698,22 @@ const boardSemantics: Partial<Record<(typeof boardIds)[number], RowSemantics>> =
     [...validityReasonCodes, ...gateReasonCodes],
   ],
   "02-a5": [
-    ["interrupted", "not_counted", "stale_contradicted", "unavailable", "not_sent"],
+    [
+      "interrupted",
+      "not_counted",
+      "stale_contradicted",
+      "unavailable",
+      "not_sent",
+      ...stage05ContentSemanticStates,
+    ],
     [
       "DIRECT.STALE_DIRECT_SAMPLE",
       "CONTEXT.NO_AUDIO",
       "CONTEXT.NO_MIC",
       "CONTEXT.OFFLINE",
       "FALLBACK.TECHNICAL_FAULT",
+      ...stage05ValidityReasonCodes,
+      ...stage05FallbackReasonCodes,
     ],
   ],
   "03-d2": [readinessSemanticStates, gateReasonCodes],
@@ -659,7 +748,7 @@ const boardSemantics: Partial<Record<(typeof boardIds)[number], RowSemantics>> =
   "06-v6": [capabilitySemanticStates, capabilityReasonCodes],
   "06-v7": [readinessSemanticStates, gateReasonCodes],
   "06-v8": [
-    ["evidence_building"],
+    ["evidence_building", ...stage05AttemptSemanticStates],
     ["DIRECT.MISSING_WRITTEN", "DIRECT.MISSING_ORAL", "DIRECT.TARGET_CONDITION_GAP"],
   ],
   "06-v9": [semanticStates, semanticReasons],
@@ -737,6 +826,8 @@ type CompactDefinition = readonly [
 const mobile = "Design/Bestehen-02-Mobile-Screens.dc.html";
 const critical = "Design/Bestehen-06-Critical-View-Deltas.dc.html";
 const archetypes = "apps/web/src/ui/archetypes.tsx";
+const attemptRuntime = "apps/web/src/ui/attempt-runtime-view.tsx";
+const foundationRuntime = "apps/web/src/ui/foundation-runtime-view.tsx";
 const components = "packages/design-system/src/components.tsx";
 const shells = "packages/design-system/src/shells.tsx";
 const compactDefinitions: readonly CompactDefinition[] = [
@@ -764,7 +855,15 @@ const compactDefinitions: readonly CompactDefinition[] = [
     undefined,
     [],
   ],
-  ["CF-01-03", mobile, "1.3", "session", archetypes, "SessionView", ["C02", "C05"]],
+  [
+    "CF-01-03",
+    mobile,
+    "1.3",
+    "session",
+    foundationRuntime,
+    "FoundationRuntimeView",
+    ["C02", "C05"],
+  ],
   [
     "CF-01-04",
     mobile,
@@ -778,7 +877,18 @@ const compactDefinitions: readonly CompactDefinition[] = [
     ["DIRECT.MISSING_WRITTEN", "DIRECT.MISSING_ORAL"],
   ],
   ["CF-02-01", mobile, "2.1", "coach", archetypes, "CoachView", ["C01", "C18"], ["I01"]],
-  ["CF-02-02", mobile, "2.2", "attempt", archetypes, "AttemptView", ["C02", "C11"]],
+  [
+    "CF-02-02",
+    mobile,
+    "2.2",
+    "attempt",
+    attemptRuntime,
+    "RuntimeAttemptView",
+    ["C02", "C11"],
+    undefined,
+    stage05AttemptSemanticStates,
+    ["DIRECT.EXPOSED_FAMILY_PRACTICE", "FALLBACK.SUBMISSION_OUTCOME_UNKNOWN"],
+  ],
   [
     "CF-02-03",
     mobile,
@@ -792,9 +902,35 @@ const compactDefinitions: readonly CompactDefinition[] = [
     ["VALIDITY.CONTENT_APPROVAL", "VALIDITY.ACCESS_EQUIVALENCE"],
   ],
   ["CF-02-04", mobile, "2.4", "repair", components, "RepairCard", ["C21"]],
-  ["CF-02-05", mobile, "2.5", "attempt", components, "FreshCheckBanner", ["C23"]],
+  [
+    "CF-02-05",
+    mobile,
+    "2.5",
+    "attempt",
+    components,
+    "FreshCheckBanner",
+    ["C23"],
+    undefined,
+    ["unavailable_no_fresh_family", "replacement_ready"],
+    ["DIRECT.EXPOSED_FAMILY_PRACTICE", "FALLBACK.NO_ELIGIBLE_FAMILY"],
+  ],
   ["CF-02-06", mobile, "2.6", "result", components, "WhatChangedSummary", ["C24"]],
-  ["CF-03-01", mobile, "3.1", "skill-region", components, "ListeningRegion", ["C39"], ["I06"]],
+  [
+    "CF-03-01",
+    mobile,
+    "3.1",
+    "skill-region",
+    components,
+    "ListeningRegion",
+    ["C39"],
+    ["I06"],
+    ["available", "loading_media", "unavailable_rights_or_target"],
+    [
+      "VALIDITY.MEDIA_INTEGRITY_FAILED",
+      "DIRECT.PLAYBACK_CONDITION_ALTERED",
+      "FALLBACK.MEDIA_UNAVAILABLE",
+    ],
+  ],
   ["CF-03-02", mobile, "3.2", "skill-region", components, "WritingRegion", ["C40"], ["I07"]],
   ["CF-03-03", mobile, "3.3", "skill-region", components, "SpeakingRegion", ["C41"], ["I08"]],
   ["CF-03-04", mobile, "3.4", "skill-region", components, "SpeakingRegion", ["C41"], ["I08"]],
@@ -856,8 +992,13 @@ const compactDefinitions: readonly CompactDefinition[] = [
     "SystemFailureBanner",
     ["C29", "C39"],
     ["I17"],
-    ["not_counted"],
-    ["CONTEXT.NO_AUDIO", "FALLBACK.TECHNICAL_FAULT"],
+    ["not_counted", "media_failed_not_counted", "replacement_ready"],
+    [
+      "CONTEXT.NO_AUDIO",
+      "VALIDITY.MEDIA_INTEGRITY_FAILED",
+      "FALLBACK.MEDIA_UNAVAILABLE",
+      "FALLBACK.TECHNICAL_FAULT",
+    ],
   ],
   [
     "CF-05-03",
@@ -1035,7 +1176,7 @@ const compactDefinitions: readonly CompactDefinition[] = [
     ["C28", "C32"],
     ["I15"],
     ["pending"],
-    ["UNCERTAINTY.PENDING_EVALUATION"],
+    ["UNCERTAINTY.PENDING_EVALUATION", "UNCERTAINTY.KEY_VALIDATOR_DISAGREEMENT"],
   ],
   [
     "CF-06-13",
@@ -1054,8 +1195,8 @@ const compactDefinitions: readonly CompactDefinition[] = [
     critical,
     "6.14",
     "session",
-    archetypes,
-    "AttemptView",
+    foundationRuntime,
+    "FoundationRuntimeView",
     ["C02", "C05"],
     undefined,
     [],
@@ -1102,6 +1243,22 @@ const correctedCompactIds = new Set([
   "CF-06-15",
 ]);
 
+const compactStage05Checks: Partial<Record<string, readonly CheckId[]>> = {
+  "CF-01-03": ["P05-FOUNDATION-001"],
+  "CF-02-02": ["P05-COMPONENT-001", "P05-EQUIV-001", "P05-RECOVERY-001"],
+  "CF-02-05": ["P05-FRESH-001"],
+  "CF-03-01": [
+    "P05-COMPONENT-001",
+    "P05-LISTENING-001",
+    "P05-MEDIA-001",
+    "P05-RECOVERY-001",
+    "P05-SECURITY-001",
+  ],
+  "CF-05-02": ["P05-LISTENING-001", "P05-RECOVERY-001"],
+  "CF-06-12": ["P05-KEY-001"],
+  "CF-06-14": ["P05-FOUNDATION-001"],
+};
+
 export const compactFrames: readonly CoverageRow[] = compactDefinitions.map((definition) => {
   const [
     id,
@@ -1130,7 +1287,12 @@ export const compactFrames: readonly CoverageRow[] = compactDefinitions.map((def
     targetPath,
     targetAnchor,
     targetImplementationExports: [targetAnchor],
-    automatedTestIds: ["P04-ROUTE-001", "P04-RSP-001", "P04-SEMANTIC-001"],
+    automatedTestIds: [
+      "P04-ROUTE-001",
+      "P04-RSP-001",
+      "P04-SEMANTIC-001",
+      ...(compactStage05Checks[id] ?? []),
+    ],
     responsiveLanes: ["compact"],
     status,
     resolution:
@@ -1359,6 +1521,13 @@ const componentSemantics: Partial<Record<ComponentFamilyId, RowSemantics>> = {
   C42: [sessionSemanticStates, ["FALLBACK.AUTHORIZATION_DENIED"]],
   C43: [transferSemanticStates, ["DUE.TRANSFER_WINDOW", "FALLBACK.TECHNICAL_FAULT"]],
 };
+const componentStage05Checks: Partial<Record<ComponentFamilyId, readonly CheckId[]>> = {
+  C11: ["P05-COMPONENT-001", "P05-EQUIV-001"],
+  C12: ["P05-COMPONENT-001", "P05-EQUIV-001"],
+  C13: ["P05-COMPONENT-001", "P05-EQUIV-001"],
+  C19: ["P05-COMPONENT-001"],
+  C39: ["P05-COMPONENT-001", "P05-LISTENING-001", "P05-RECOVERY-001"],
+};
 
 export const componentRows: readonly CoverageRow[] = componentFamilies.map(([id, name]) => {
   const [sourcePath, sourceAnchor] = componentSourceAnchors[id];
@@ -1381,7 +1550,7 @@ export const componentRows: readonly CoverageRow[] = componentFamilies.map(([id,
     targetPath,
     targetAnchor: name,
     targetImplementationExports: [name],
-    automatedTestIds: ["P04-COMPONENT-001", "P04-A11Y-001"],
+    automatedTestIds: ["P04-COMPONENT-001", "P04-A11Y-001", ...(componentStage05Checks[id] ?? [])],
     status: "accepted",
     resolution: `${name} maps from its Design 01 section 2.14 or Design 05 delta token to one exported family`,
   });

@@ -5,6 +5,29 @@ import { pipeline } from "node:stream/promises";
 import { Readable, Writable } from "node:stream";
 import { appOwnedChunks, protectedRouteBudgetError, protectedRouteFiles } from "./web-budget.mjs";
 
+const stage05IslandEntries = [
+  {
+    label: "ObjectiveResponseIsland",
+    module: "/apps/web/src/ui/islands/objective-response.tsx",
+    budget: 14 * 1024,
+  },
+  {
+    label: "AudioPlaybackIsland",
+    module: "/apps/web/src/ui/islands/listening-runtime.tsx",
+    budget: 12 * 1024,
+  },
+  {
+    label: "AudioPlaybackIsland",
+    module: "/apps/web/src/ui/islands/listening-transcript.tsx",
+    budget: 12 * 1024,
+  },
+  {
+    label: "AttemptClockIsland",
+    module: "/apps/web/src/ui/islands/attempt-clock.tsx",
+    budget: 3 * 1024,
+  },
+];
+
 async function gzipBytes(path) {
   let bytes = 0;
   await pipeline(
@@ -18,6 +41,53 @@ async function gzipBytes(path) {
     }),
   );
   return bytes;
+}
+
+function filesUnder(directory, suffix) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = join(directory, entry.name);
+    return entry.isDirectory()
+      ? filesUnder(entryPath, suffix)
+      : entry.name.endsWith(suffix)
+        ? [entryPath]
+        : [];
+  });
+}
+
+function readClientReferenceManifest(file) {
+  const source = readFileSync(file, "utf8");
+  const assignment = source.indexOf(" = {");
+  if (assignment < 0) throw new Error(`Cannot parse client reference manifest: ${file}`);
+  return JSON.parse(source.slice(assignment + 3, source.lastIndexOf(";")));
+}
+
+function stage05IslandModuleIds(nextRoot) {
+  const manifests = filesUnder(join(nextRoot, "server/app"), "client-reference-manifest.js");
+  const moduleIds = new Map();
+  const protectedLeaks = [];
+  for (const manifestPath of manifests) {
+    const manifest = readClientReferenceManifest(manifestPath);
+    for (const [modulePath, reference] of Object.entries(manifest.clientModules ?? {})) {
+      const island = stage05IslandEntries.find((entry) => modulePath.endsWith(entry.module));
+      if (!island) continue;
+      moduleIds.set(island.module, { ...island, id: reference.id });
+      if (manifestPath.includes("/app/(protected)/")) {
+        protectedLeaks.push(`${manifestPath}: ${island.label}`);
+      }
+    }
+  }
+  if (protectedLeaks.length > 0) {
+    throw new Error(
+      `Stage 05 client island reached a protected route: ${protectedLeaks.join(", ")}`,
+    );
+  }
+  const missing = stage05IslandEntries.filter((entry) => !moduleIds.has(entry.module));
+  if (missing.length > 0) {
+    throw new Error(
+      `Stage 05 client island missing from rebuilt output: ${missing.map((entry) => entry.module).join(", ")}`,
+    );
+  }
+  return [...moduleIds.values()];
 }
 
 const nextRoot = "apps/web/.next";
@@ -64,6 +134,31 @@ for (const file of productChunks) {
   if (bytes > 60 * 1024) throw new Error(`Client island exceeds 60 KiB gzip: ${file} ${bytes}`);
 }
 
+const stage05Modules = stage05IslandModuleIds(nextRoot);
+const stage05IslandChunks = [];
+for (const file of productChunks) {
+  const source = readFileSync(file, "utf8");
+  const labels = new Map();
+  for (const module of stage05Modules) {
+    const definition = new RegExp(`(?:^|[,\\[])${module.id},[A-Za-z_$][A-Za-z0-9_$]*=>`);
+    if (definition.test(source)) labels.set(module.label, module.budget);
+  }
+  if (labels.size === 0) continue;
+  const bytes = await gzipBytes(file);
+  const budget = [...labels.values()].reduce((sum, value) => sum + value, 0);
+  if (bytes > budget) {
+    throw new Error(
+      `Stage 05 co-bundled island chunk exceeds its declared budgets: ${file} ${bytes} > ${budget}`,
+    );
+  }
+  stage05IslandChunks.push({ file, bytes, budget, labels: [...labels.keys()] });
+}
+for (const module of stage05Modules) {
+  if (!stage05IslandChunks.some((chunk) => chunk.labels.includes(module.label))) {
+    throw new Error(`No compiled chunk was attributed to ${module.label}`);
+  }
+}
+
 const cssFiles = readdirSync(chunksRoot)
   .filter((file) => file.endsWith(".css"))
   .map((file) => join(chunksRoot, file));
@@ -84,5 +179,5 @@ if (iconAndLogoGzip > 40 * 1024)
   throw new Error(`Icon and logo sources exceed 40 KiB gzip: ${iconAndLogoGzip}`);
 
 process.stdout.write(
-  `P04-PERF-001 passed: protected route first load (includes shared framework runtime) ${protectedGzip} B gzip <= 200 KiB, App-owned chunks (excludes shared framework runtime) ${productGzip} B gzip <= 90 KiB, CSS ${cssGzip} B gzip, fonts ${fontBytes} B, icons/brand ${iconAndLogoGzip} B gzip.\n`,
+  `P04-PERF-001 P05-PERF-001 passed: protected route first load (includes shared framework runtime) ${protectedGzip} B gzip <= 200 KiB, App-owned chunks (excludes shared framework runtime) ${productGzip} B gzip <= 90 KiB, Stage 05 island chunks ${stage05IslandChunks.map((chunk) => `${chunk.file} ${chunk.bytes}/${chunk.budget} B [${chunk.labels.join("+")}]`).join("; ")}, CSS ${cssGzip} B gzip, fonts ${fontBytes} B, icons/brand ${iconAndLogoGzip} B gzip.\n`,
 );

@@ -8,10 +8,13 @@ import {
   stage03ScopeApplies,
   stage04Branch,
   stage04ScopeApplies,
+  stage05Branch,
+  stage05ScopeApplies,
   unexpectedStage01Paths,
   unexpectedStage02Paths,
   unexpectedStage03Paths,
   unexpectedStage04Paths,
+  unexpectedStage05Paths,
 } from "./check-scope.mjs";
 
 const fixtures = [
@@ -105,6 +108,55 @@ assert.deepEqual(
 );
 
 for (const context of [
+  { localBranch: stage05Branch },
+  { githubHeadRef: stage05Branch, githubRefName: "17/merge" },
+]) {
+  assert.equal(stage05ScopeApplies(context), true, "Stage 05 branch enforces its allowlist");
+  assert.equal(stage04ScopeApplies(context), false, "Stage 04 scope stays branch-specific");
+}
+
+assert.deepEqual(
+  unexpectedStage05Paths([
+    "packages/domain/src/index.ts",
+    "packages/content/src/media.ts",
+    "packages/infrastructure/src/postgres/listening-runtime-migration.ts",
+    "apps/web/src/app/(focused)/attempt/[id]/page.tsx",
+    "apps/web/src/app/api/v1/listening-plans/[id]/playback/route.ts",
+    "apps/web/src/ui/islands/listening-runtime.tsx",
+    "apps/web/tests/p05-runtime.spec.ts",
+    "docs/content-operations.md",
+    "schemas/release-manifest.schema.json",
+    "scripts/check-design-coverage-ids.test.mjs",
+    "Implementation/Personal/05-content-deterministic-runtime/handoff.md",
+  ]),
+  [],
+  "Stage 05 accepts its bounded content and deterministic-runtime paths",
+);
+assert.deepEqual(
+  unexpectedStage05Paths([
+    "Implementation/Personal/05-content-deterministic-runtime/plan.md",
+    "Implementation/Personal/05-content-deterministic-runtime/orchestration-log.md",
+    "Architecture/16-listening-architecture.md",
+    "Design/Bestehen-06-Critical-View-Deltas.dc.html",
+    "apps/web/tests/p04-visual.spec.ts-snapshots/listening-320-chromium-linux.png",
+    "apps/web/src/ui/islands/writing-runtime.tsx",
+    "apps/web/src/ui/islands/speaking-runtime.tsx",
+    "apps/web/src/ui/mock-runtime.tsx",
+  ]),
+  [
+    "Implementation/Personal/05-content-deterministic-runtime/plan.md",
+    "Implementation/Personal/05-content-deterministic-runtime/orchestration-log.md",
+    "Architecture/16-listening-architecture.md",
+    "Design/Bestehen-06-Critical-View-Deltas.dc.html",
+    "apps/web/tests/p04-visual.spec.ts-snapshots/listening-320-chromium-linux.png",
+    "apps/web/src/ui/islands/writing-runtime.tsx",
+    "apps/web/src/ui/islands/speaking-runtime.tsx",
+    "apps/web/src/ui/mock-runtime.tsx",
+  ],
+  "Stage 05 rejects accepted-plan logs, source authority, snapshots, and later-skill drift",
+);
+
+for (const context of [
   { localBranch: stage03Branch },
   { githubHeadRef: stage03Branch, githubRefName: "6/merge" },
 ]) {
@@ -165,5 +217,5 @@ assert.deepEqual(
 );
 
 process.stdout.write(
-  "P04-SCOPE-001 passed alongside preserved Stage 01 through Stage 03 scope fixtures.\n",
+  "P05-SCOPE-001 passed alongside preserved Stage 01 through Stage 04 scope fixtures.\n",
 );

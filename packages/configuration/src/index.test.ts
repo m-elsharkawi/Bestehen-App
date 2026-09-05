@@ -6,6 +6,7 @@ import {
   featureFlags,
   parseServerEnvironment,
   parseServerEnvironmentForService,
+  releaseMetadata,
   sanitizeLogPayload,
 } from "./index.js";
 
@@ -15,7 +16,7 @@ function validEnvironment(): Record<string, string> {
     BESTEHEN_RELEASE_COMMIT: "synthetic-commit",
     BESTEHEN_RELEASE_DIRTY: "false",
     BESTEHEN_SCHEMA_MIN_REVISION: "20260825_040_p03_foundation",
-    BESTEHEN_SCHEMA_MAX_REVISION: "20260825_040_p03_foundation",
+    BESTEHEN_SCHEMA_MAX_REVISION: "20260905_062_p05_listening_runtime",
     DATABASE_URL: "postgresql://synthetic:synthetic@127.0.0.1:5432/synthetic",
     BESTEHEN_AUTH_ADAPTER: "fake",
     BESTEHEN_OBJECT_STORAGE_ADAPTER: "fake",
@@ -72,6 +73,23 @@ function configuredStagingEnvironment(): Record<string, string> {
 }
 
 describe("server configuration", () => {
+  it("defaults to the Stage 05 runtime axes and P03..062 compatibility window", () => {
+    const input = validEnvironment();
+    delete input.BESTEHEN_SCHEMA_MIN_REVISION;
+    delete input.BESTEHEN_SCHEMA_MAX_REVISION;
+    const metadata = releaseMetadata(parseServerEnvironment(input));
+    expect(metadata).toMatchObject({
+      application: "stage-05-runtime",
+      content: "stage-05-content-v1",
+      evaluation: "not-produced",
+      model: "not-produced",
+      schema: {
+        minimum: "20260825_040_p03_foundation",
+        maximum: "20260905_062_p05_listening_runtime",
+      },
+    });
+  });
+
   it("loads the closed fake-only local profile", () => {
     const environment = parseServerEnvironment(validEnvironment());
     expect(featureFlags(environment)).toEqual({
