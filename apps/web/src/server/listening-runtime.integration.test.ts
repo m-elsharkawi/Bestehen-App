@@ -296,6 +296,161 @@ async function fixture(pool: Pool, count = 1, profile: "P0" | "P1" | "P2" | "P3"
 }
 
 describe.skipIf(!process.env.TEST_DATABASE_URL)("Listening server runtime", () => {
+  it("P05-PREFLIGHT-001 P05-PLAYBACK-001 preserves exact operation UUIDs in receipt and occurrence rows", async () =>
+    setup(async (pool) => {
+      const f = await fixture(pool);
+      const { command, receipt } = await f.ready();
+      const intent = f.event(receipt, "start_intent");
+      const authorized = await f.play(intent);
+      expect(
+        (
+          await pool.query(
+            "SELECT operation_id::text FROM app.media_preflight_receipts WHERE learner_scope_id=$1 AND id=$2",
+            [f.scope.learnerScopeId, receipt.receiptId],
+          )
+        ).rows[0],
+      ).toEqual({ operation_id: command.operationId });
+      expect(
+        (
+          await pool.query(
+            "SELECT operation_id::text FROM app.playback_occurrences WHERE learner_scope_id=$1 AND occurrence_id=$2 AND play_ordinal=$3",
+            [f.scope.learnerScopeId, intent.occurrenceId, intent.playOrdinal],
+          )
+        ).rows[0],
+      ).toEqual({ operation_id: intent.operationId });
+      expect(await f.runtime.preflight(f.scope, command)).toEqual(receipt);
+      expect(await f.runtime.playback(f.scope, intent)).toEqual(authorized);
+      await expect(
+        f.runtime.preflight(f.scope, { ...command, expectedVersion: authorized.resourceVersion }),
+      ).rejects.toThrow("idempotency_conflict");
+      await expect(
+        f.runtime.playback(f.scope, { ...intent, expectedVersion: authorized.resourceVersion }),
+      ).rejects.toThrow("idempotency_conflict");
+      expect(
+        (
+          await pool.query(
+            "SELECT operation_id,receipt FROM app.listening_operation_facts WHERE learner_scope_id=$1 AND listening_plan_id=$2 ORDER BY (receipt->>'resourceVersion')::bigint",
+            [f.scope.learnerScopeId, f.view.plan.listeningPlanId],
+          )
+        ).rows,
+      ).toEqual([
+        { operation_id: command.operationId, receipt },
+        { operation_id: intent.operationId, receipt: authorized },
+      ]);
+    }));
+  it.each(["completed", "failed"] as const)(
+    "P05-RECOVERY-001 bounds actual native start by original authorization expiry but retains later %s facts",
+    async (terminalEvent) =>
+      setup(async (pool) => {
+        const f = await fixture(pool);
+        const { receipt } = await f.ready();
+        const intent = f.event(receipt, "start_intent");
+        const authorized = await f.play(intent);
+        f.advance(Date.parse(receipt.expiresAt) - f.now().getTime() + 2000);
+        const native = f.event(receipt, "started");
+        const tooLate = {
+          ...native,
+          occurredAt: new Date(Date.parse(receipt.expiresAt) + 1).toISOString(),
+        };
+        await expect(f.runtime.playback(f.scope, tooLate)).rejects.toThrow("not_available");
+        await expect(f.runtime.playback(f.scope, tooLate)).rejects.toThrow("not_available");
+        expect(
+          (
+            await pool.query("SELECT state,occurred_at FROM app.attempts WHERE id=$1", [
+              f.attemptId,
+            ])
+          ).rows[0],
+        ).toEqual({ state: "ready", occurred_at: null });
+        expect(
+          (
+            await pool.query(
+              "SELECT state,started_at,client_sequence FROM app.playback_occurrences WHERE learner_scope_id=$1 AND occurrence_id=$2 AND play_ordinal=$3",
+              [f.scope.learnerScopeId, intent.occurrenceId, intent.playOrdinal],
+            )
+          ).rows[0],
+        ).toEqual({ state: "authorized", started_at: null, client_sequence: "1" });
+        expect(
+          (
+            await pool.query(
+              "SELECT count(*)::int n FROM app.listening_operation_facts WHERE learner_scope_id=$1 AND listening_plan_id=$2",
+              [f.scope.learnerScopeId, f.view.plan.listeningPlanId],
+            )
+          ).rows[0].n,
+        ).toBe(2);
+        expect((await pool.query("SELECT count(*)::int n FROM app.exposure_facts")).rows[0].n).toBe(
+          0,
+        );
+        const withinAuthorization = {
+          ...native,
+          operationId: randomUUID(),
+          occurredAt: new Date(Date.parse(receipt.expiresAt) - 1).toISOString(),
+        };
+        const started = await f.play(withinAuthorization);
+        expect(started).toMatchObject({
+          event: "started",
+          mayStartNow: false,
+          authorizationExpiresAt: receipt.expiresAt,
+        });
+        expect(await f.runtime.playback(f.scope, withinAuthorization)).toEqual(started);
+        f.advance();
+        const terminal = f.event(receipt, terminalEvent);
+        expect(Date.parse(terminal.occurredAt)).toBeGreaterThan(Date.parse(receipt.expiresAt));
+        const recorded = await f.play(terminal);
+        expect(recorded.event).toBe(terminalEvent);
+        expect(recorded.mayStartNow).toBe(false);
+        expect(await f.runtime.playback(f.scope, terminal)).toEqual(recorded);
+        expect(await f.runtime.playback(f.scope, withinAuthorization)).toEqual(started);
+        expect(await f.runtime.playback(f.scope, intent)).toEqual(authorized);
+      }),
+  );
+  it.each(["revoked_before_start", "revoked_after_pin"] as const)(
+    "P05-LISTENING-001 projects effective manifest %s without new byte, preflight or play admission",
+    async (revocationState) =>
+      setup(async (pool) => {
+        const f = await fixture(pool);
+        const { command, receipt } = await f.ready();
+        await pool.query("UPDATE app.serving_manifests SET revocation_state=$2 WHERE id=$1", [
+          f.manifestId,
+          revocationState,
+        ]);
+        const revoked = await f.runtime.readPlan(f.scope, f.attemptId);
+        expect(revoked.plan).toEqual({ ...f.view.plan, revocationState });
+        expect(revoked.latestPreflight).toEqual(receipt);
+        // The immutable pin and receipt stay readable; admission uses current revocation.
+        expect(
+          (
+            await pool.query("SELECT revocation_state FROM app.listening_plans WHERE id=$1", [
+              f.view.plan.listeningPlanId,
+            ])
+          ).rows[0],
+        ).toEqual({ revocation_state: "active" });
+        await expect(
+          f.runtime.audio(f.scope, f.view.plan.listeningPlanId, required(f.speech[0]).mediaId),
+        ).rejects.toThrow("not_available");
+        expect(f.read).not.toHaveBeenCalled();
+        await expect(f.runtime.playback(f.scope, f.event(receipt, "start_intent"))).rejects.toThrow(
+          "not_available",
+        );
+        const unavailable = await f.runtime.preflight(f.scope, f.observation());
+        expect(unavailable.outcome).toBe("unavailable_affected_activity");
+        expect(unavailable.reasons).toContain("plan_expired");
+        expect(await f.runtime.preflight(f.scope, command)).toEqual(receipt);
+        const recovery = await f.runtime.readPlan(f.scope, f.attemptId);
+        expect(recovery.plan.revocationState).toBe(revocationState);
+        expect(recovery.latestPreflight).toEqual(unavailable);
+        expect(recovery.playback).toEqual([]);
+        expect(
+          (await pool.query("SELECT count(*)::int n FROM app.playback_occurrences")).rows[0].n,
+        ).toBe(0);
+        expect(
+          (
+            await pool.query("SELECT state,occurred_at FROM app.attempts WHERE id=$1", [
+              f.attemptId,
+            ])
+          ).rows[0],
+        ).toEqual({ state: "ready", occurred_at: null });
+      }),
+  );
   it("P05-LISTENING-001 P05-SECURITY-001 pins one exact plan, denies other learners and verifies private bytes without leaking keys", async () =>
     setup(async (pool) => {
       const f = await fixture(pool);

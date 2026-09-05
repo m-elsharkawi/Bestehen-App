@@ -393,7 +393,11 @@ export class PostgresListeningRuntime {
         .filter((f) => f.kind === "playback")
         .map((f) => f.receipt as PlaybackReceipt);
       return {
-        plan: { ...plan, revocationState: row.revocation_state },
+        plan: {
+          ...plan,
+          revocationState:
+            pin.revocation_state === "active" ? row.revocation_state : pin.revocation_state,
+        },
         resourceVersion: Number(row.resource_version),
         phase: this.phase(row, pin),
         outputProbeRevisionId: listeningOutputProbeRevisionId,
@@ -540,7 +544,7 @@ export class PostgresListeningRuntime {
           receipt.receiptId,
           scope.learnerScopeId,
           plan.listeningPlanId,
-          id(command.operationId),
+          command.operationId,
           command.policyVersions,
           JSON.stringify(command.candidates),
           "bounded_block",
@@ -724,7 +728,7 @@ export class PostgresListeningRuntime {
             occurrence.occurrenceId,
             scope.learnerScopeId,
             command.playOrdinal,
-            id(command.operationId),
+            command.operationId,
             digest(canonical(command)),
             candidate.mediaRevisionId,
             command.occurredAt,
@@ -769,6 +773,7 @@ export class PostgresListeningRuntime {
           "conflict",
         );
         if (command.event === "started") {
+          requireFact(Date.parse(command.occurredAt) < Date.parse(preflight.expiresAt));
           requireFact(command.positionMs === 0, "conflict");
           await client.query(
             "UPDATE app.listening_plans SET started_at=COALESCE(started_at,$3) WHERE learner_scope_id=$1 AND id=$2",
