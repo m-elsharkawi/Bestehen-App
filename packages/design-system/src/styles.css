@@ -348,8 +348,11 @@ summary,
   gap: var(--space-2);
   justify-content: center;
   min-height: var(--target-min);
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: var(--space-2) var(--space-4);
   text-decoration: none;
+  white-space: normal;
 }
 .action-primary {
   background: var(--surface-ink);
@@ -417,6 +420,12 @@ textarea {
   padding: var(--space-3);
   width: 100%;
 }
+/* WebKit does not consistently apply min-height to its native select renderer.
+   An explicit logical size keeps the control at the shared target minimum while
+   still growing with large text and spacing tokens. */
+select {
+  block-size: max(var(--target-min), calc(1em + 2 * var(--space-3)));
+}
 textarea {
   resize: vertical;
 }
@@ -426,6 +435,7 @@ fieldset {
   display: grid;
   gap: var(--space-2);
   margin-block: var(--space-4);
+  min-width: 0;
   padding: var(--space-4);
 }
 fieldset label {
@@ -433,10 +443,15 @@ fieldset label {
   display: flex;
   gap: var(--space-2);
   min-height: var(--target-min);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  width: 100%;
 }
 .field label,
 legend {
   font-weight: 650;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 input[type="radio"],
 input[type="checkbox"] {
@@ -526,6 +541,12 @@ input[type="checkbox"] {
   color: var(--text-secondary);
   display: inline-block;
   min-width: 6rem;
+}
+@media (max-width: 479px) {
+  .sequence span {
+    display: block;
+    min-width: 0;
+  }
 }
 .readiness-evidence {
   max-width: var(--measure-task);
