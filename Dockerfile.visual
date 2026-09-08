@@ -12,6 +12,9 @@ ENV COREPACK_HOME=/corepack \
     PATH=/pnpm:$PATH
 
 RUN corepack enable && corepack prepare pnpm@11.23.0 --activate
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
 RUN touch /etc/bestehen-visual-raster
 
 # Dependency layers are kept ahead of the source copy so that editing a component

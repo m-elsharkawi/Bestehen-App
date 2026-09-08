@@ -20,7 +20,7 @@ const build = spawnSync("docker", ["build", "--tag", image, "--file", "Dockerfil
 });
 if (build.status !== 0) process.exit(build.status ?? 1);
 
-const command = ["run", "--rm", "--init", "-e", "BESTEHEN_VISUAL_RASTER=pinned-container"];
+const command = ["run", "--rm", "--init", "-e", "PLAYWRIGHT_VISUAL_RASTER=pinned-container"];
 if (update.length === 1) {
   command.push(
     "--mount",

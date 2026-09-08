@@ -75,8 +75,9 @@ const openssl = spawnSync(
   { encoding: "utf8" },
 );
 if (openssl.status !== 0) {
+  const diagnostic = openssl.stderr?.trim() || openssl.error?.message || "unknown OpenSSL failure";
   rmSync(certificateDirectory, { force: true, recursive: true });
-  throw new Error(`Unable to create the disposable HTTPS certificate: ${openssl.stderr.trim()}`);
+  throw new Error(`Unable to create the disposable HTTPS certificate: ${diagnostic}`);
 }
 let tlsCredentials;
 try {

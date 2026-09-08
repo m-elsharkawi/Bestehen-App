@@ -1,9 +1,9 @@
-import { expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
+import { expect, test } from "@playwright/test";
 
 test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserName }) => {
   test.skip(
-    process.env.BESTEHEN_VISUAL_RASTER !== "pinned-container" ||
+    process.env.PLAYWRIGHT_VISUAL_RASTER !== "pinned-container" ||
       !existsSync("/etc/bestehen-visual-raster"),
     "Visual anchors compare only in the pinned raster container.",
   );
@@ -25,6 +25,8 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     // LG-D4 caps the focused mock at a 720px measure, which is the kind of
     // numeric contract that regresses silently without an anchor holding it.
     ["mock-1280", "/ui-fixtures/mock", 1280, 900, "light"],
+    ["listening-320", "/ui-fixtures/listening", 320, 900, "light"],
+    ["reading-720", "/ui-fixtures/reading", 1280, 900, "light"],
   ] as const;
   for (const [name, path, width, height, theme] of anchors) {
     await page.setViewportSize({ width, height });
@@ -40,6 +42,9 @@ test("P04-VISUAL-001 deterministic responsive anchors", async ({ page, browserNa
     await page.evaluate((selected) => {
       document.documentElement.dataset.theme = selected;
     }, theme);
+    if (name === "listening-320") {
+      await page.addStyleTag({ content: "html { font-size: 400% !important; }" });
+    }
     if (name === "writing-768") {
       await expect(
         page.getByText("Autosave status preview. No draft is saved by this fixture."),
