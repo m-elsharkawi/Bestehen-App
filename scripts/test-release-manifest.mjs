@@ -30,13 +30,14 @@ const executableStage05Checks = [
   "P05-CONTRAST-001",
   "P05-COPY-001",
   "P05-EQUIV-001",
+  "P05-A11Y-001",
+  "P05-RSP-001",
   "P05-RECOVERY-001",
   "P05-COMPAT-001",
   "P05-PERF-001",
   "P05-SCOPE-001",
   "P05-RELEASE-001",
 ];
-const deferredStage05Checks = ["P05-A11Y-001", "P05-RSP-001"];
 
 function run(arguments_, expectedStatus, environment = {}) {
   const result = spawnSync(process.execPath, ["scripts/release-manifest.mjs", ...arguments_], {
@@ -61,9 +62,6 @@ if (
   JSON.stringify(executableStage05Checks)
 ) {
   throw new Error("Release schema Stage 05 checks drifted from the currently executable set");
-}
-if (deferredStage05Checks.some((check) => requiredChecks.includes(check))) {
-  throw new Error("Release schema claims a deferred Stage 05 check without executable evidence");
 }
 const scriptProducedChecks = new Set(["P05-PERF-001", "P05-SCOPE-001", "P05-RELEASE-001"]);
 const executableTestIds = collectExecutableCoverageIds();
