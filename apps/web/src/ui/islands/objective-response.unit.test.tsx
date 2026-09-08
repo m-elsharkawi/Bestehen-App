@@ -222,6 +222,27 @@ describe("P05-EQUIV-001 rendered canonical input identity", () => {
     );
     expect(checkbox).toBeChecked();
   });
+  it("does not checkpoint the submission confirmation as an answer edit", async () => {
+    vi.spyOn(IndexedResponseStore.prototype, "read").mockResolvedValue(undefined);
+    vi.spyOn(IndexedResponseStore.prototype, "write").mockResolvedValue();
+    const fetcher = vi.fn(async () =>
+      Response.json({
+        contract: { major: 1 },
+        resourceVersion: 2,
+        acknowledgedCheckpointSequence: 0,
+        checkpoints: [],
+        submission: null,
+      }),
+    );
+    vi.stubGlobal("fetch", fetcher);
+    view(families[4] as TaskFamily, "owner");
+    await waitFor(() => expect(fetcher).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("checkbox", { name: /I confirm/ }));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
   it("restores once across rerenders with omitted operations and cloned device records", async () => {
     let reads = 0;
     const saved = {

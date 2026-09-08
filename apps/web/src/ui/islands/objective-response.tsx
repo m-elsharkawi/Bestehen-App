@@ -7,7 +7,7 @@ import type {
   TaskFamily,
 } from "@bestehen/content";
 import { NativeButton } from "@bestehen/design-system";
-import type { ReactNode } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { responseFields, responseIssues, valuesFromOperations } from "../objective-form";
 import { initialObjectiveFormState, type ObjectiveFormAction } from "../objective-form-state";
@@ -268,7 +268,9 @@ export function ObjectiveResponseIsland({
     }
   }, [formState]);
   const displayed = formState.status === "editing" || editedAfterForm ? values : formState.values;
-  const capture = () => {
+  const capture = (event?: FormEvent<HTMLFormElement>) => {
+    if (event?.target instanceof HTMLInputElement && event.target.name === "confirmBoundary")
+      return;
     if (controller.current?.isSubmitting) return;
     if (!formRef.current) return;
     const data = new FormData(formRef.current);
