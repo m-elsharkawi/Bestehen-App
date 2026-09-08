@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import AxeBuilder from "@axe-core/playwright";
 import { canonicalDigest } from "@bestehen/content";
 import { expect, test, type Page } from "@playwright/test";
 import {
@@ -23,7 +24,10 @@ async function technicalApi(page: Page, failure?: "digest" | "decode", durationM
   const thirdParty: string[] = [];
   let offline = false;
   page.on("request", (request) => {
-    if (request.url().startsWith("http") && new URL(request.url()).hostname !== "127.0.0.1")
+    if (
+      request.url().startsWith("http") &&
+      new URL(request.url()).origin !== "https://app.bestehen.test:3300"
+    )
       thirdParty.push(request.url());
   });
   await page.addInitScript(() => {
@@ -119,7 +123,7 @@ async function technicalApi(page: Page, failure?: "digest" | "decode", durationM
     }
     expect(request.headers()["content-type"]).toBe("application/json");
     expect(request.headers()["x-bestehen-csrf"]).toBe("1");
-    expect(request.headers().origin).toBe("http://127.0.0.1:3300");
+    expect(request.headers().origin).toBe("https://app.bestehen.test:3300");
     const command = request.postDataJSON() as MediaPreflightObservation | PlaybackOccurrenceCommand;
     commands.push(command);
     const existing = receipts.get(command.operationId);
@@ -153,24 +157,32 @@ async function technicalApi(page: Page, failure?: "digest" | "decode", durationM
     },
   };
 }
-async function ready(page: Page) {
+async function activate(page: Page, name: string, keyboard: boolean) {
+  const button = page.getByRole("button", { name, exact: true });
+  if (keyboard) await button.press("Enter");
+  else await button.click();
+}
+async function ready(page: Page, keyboard = false) {
   await page.goto("/ui-fixtures/listening");
   await expect(
     page.getByText("Technical non-speech Listening test fixture.", { exact: false }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Play", exact: true })).toBeDisabled();
-  await page.getByRole("button", { name: "Check audio and output" }).click();
-  await page.getByRole("button", { name: "I heard the output check" }).click();
+  await activate(page, "Check audio and output", keyboard);
+  await activate(page, "I heard the output check", keyboard);
   await expect(page.getByRole("button", { name: "Play", exact: true })).toBeEnabled();
 }
 
-test("P05-LISTENING-001 real browser digest/decode, explicit output confirmation, durable Begin and result-only transcript", async ({
+test("P05-LISTENING-001 P05-A11Y-001 keyboard-activated browser digest/decode, explicit output confirmation, durable Begin and result-only transcript", async ({
   page,
 }) => {
   const api = await technicalApi(page);
-  await ready(page);
+  await ready(page, true);
+  expect(
+    (await new AxeBuilder({ page }).include(".listening-region").analyze()).violations,
+  ).toEqual([]);
   expect(api.paths.some((p) => p.includes("/transcripts/"))).toBe(false);
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await page.getByRole("button", { name: "Play", exact: true }).press("Enter");
   await expect
     .poll(() => api.commands.some((c) => "event" in c && c.event === "started"))
     .toBe(true);
@@ -194,6 +206,9 @@ test("P05-LISTENING-001 real browser digest/decode, explicit output confirmation
   expect(metrics.plays).toBe(1);
   expect(metrics.durableBeforeNative).toBe(true);
   await expect(page.getByRole("button", { name: "Play", exact: true })).toBeDisabled();
+  expect(
+    (await new AxeBuilder({ page }).include(".listening-region").analyze()).violations,
+  ).toEqual([]);
   expect(api.paths.some((p) => p.includes("/transcripts/"))).toBe(false);
   await page.goto("/ui-fixtures/listening-result");
   expect(api.paths.some((p) => p.includes("/transcripts/"))).toBe(false);

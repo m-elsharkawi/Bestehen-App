@@ -203,7 +203,8 @@ test("P04-SECURITY-001 fixtures make no third-party UI request and avoid forbidd
 }) => {
   const external: string[] = [];
   page.on("request", (request) => {
-    if (new URL(request.url()).origin !== "http://127.0.0.1:3300") external.push(request.url());
+    if (new URL(request.url()).origin !== "https://app.bestehen.test:3300")
+      external.push(request.url());
   });
   for (const view of ["readiness", "account", "data", "session-expiry", "transfer"]) {
     await page.goto(`/ui-fixtures/${view}`);
