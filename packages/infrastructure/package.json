@@ -35,6 +35,6 @@
   "devDependencies": {
     "@bestehen/test-support": "workspace:*",
     "@types/pg": "8.23.1",
-    "tsx": "4.23.12"
+    "tsx": "4.23.13"
   }
 }
