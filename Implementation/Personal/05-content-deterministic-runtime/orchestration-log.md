@@ -23,12 +23,12 @@ request has been opened, because the owner is holding GitHub Actions spend.
 | 4c | T7c repo tests, worker handlers, content routes | Opus | **Accepted** | `3e1e750`,`4eafb8c`,`8c321a5`,`a7c3fa0`,`f1d5401` |
 | 5 | T8 attempt repo + evidence transaction | Opus | **Accepted** after one rejection | `e8a4522`,`5e75745`,`d2590ce`,`7474ae7` |
 | 6 | T6 seed corpus + boundary | Opus + continuation worker | **Accepted implementation**, seed remains draft/candidate | `a9bbec7` through `332559a` |
-| 7 | T9 design-system components | continuation model not retained in this log | **Accepted** | `cd23b55`, `7cd9f23`, `c3af737` |
-| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery/exposure, Terra high presentation correction | **Accepted implementation**; T12 authenticated browser evidence remains | `43a9251` through `2ff7251` |
-| 9 | T5 Listening | GPT-5.6 Sol high | resumed with bounded server/media slice after exposure correction | dispatch `888c989`, resumed below |
-| 10 | T11 gate wiring | — | not started | |
-| 11 | T12 browser/a11y/responsive tests | — | not started | |
-| 12 | T13 handoff | orchestrator | not started | |
+| 7 | T9 design-system components | continuation model not retained in this log | **Accepted**, including pause-policy correction | `cd23b55`, `7cd9f23`, `c3af737`, `2edd9c2` |
+| 8 | T10 routes + islands + archetypes | GPT-5.6 Terra high, Sol high recovery/exposure, Terra high presentation correction | **Accepted**, including unsafe-request correction | `43a9251` through `2ff7251`, `048f596` |
+| 9 | T5 Listening | GPT-5.6 Sol high | **Accepted**; seed audio/owner approval remain unclaimed | `fb8816d` through `9f14aa7` (see checkpoints below) |
+| 10 | T11 gate wiring | bounded mechanics worker; root corrections | **Accepted** | `aa2a596` through `1375eec`, `ac18652` |
+| 11 | T12 browser/a11y/responsive tests | browser-test worker; root visual correction | **Accepted** | `3207d74`, `cc764ae`, `043887e`, `465c31f` |
+| 12 | T13 handoff | orchestrator | **Accepted locally** | documentation/checklist commit |
 
 ## Orchestrator-run gate results
 
@@ -1375,3 +1375,57 @@ owner container was removed. Docker and the disposable port-55435 test database
 remain running for continuation; both implementation agents are stopped.
 The final documentation commit leaves local main **125 commits ahead of stale
 origin/main**, with a clean tree and no Stage 05 completion claim.
+
+## Fresh audit and Stage 05 completion, 2026-09-08
+
+The incoming orchestrator audited frozen catalogue code `6ee0bfc` plus test-only
+repair `5d69572`, and the accepted T10 recovery/disclosure commit `2ff7251`, before
+dispatching further work. Catalogue exact revision/approval/digest binding,
+purpose-scoped rights, immutable retry, deterministic ordering, advisory locks and
+savepoint rollback all reproduced. No catalogue blocker was found, so that bounded
+checkpoint was accepted without another implementation cycle. T10 recovery and
+exposure already had adequate regression evidence. The one remaining verified
+T10 defect was transport security on all eight unsafe JSON routes; it was fixed at
+`048f596`. Repeatedly mixing those three independent findings was a process issue,
+not evidence that every T10 correction was defective.
+
+The continuation then accepted the additive player policy at `2edd9c2`; Listening
+server/runtime commits `b69fdda`, `310a1d3`, `bbc65c8`, `9f14aa7`; T11 gate/HTTPS
+commits through `1375eec`; focused-route and reflow repairs `3207d74`, `cc764ae`;
+authenticated T12 browser evidence `043887e`; pinned visual evidence `465c31f`; and
+final evidence binding `ac18652`. Test-only `8f4be31` repaired exact database
+inventories without production changes. No live provider was used.
+
+One final serial batch on clean frozen `ac18652f605c8bb964c1528d95521be84595c470`:
+
+- `pnpm check`: exit 0, 868/868 unit tests; protected first load 198,702 B,
+  App-owned 66,761 B. The first wrapper lost the direct exit after completion by
+  assigning zsh's reserved `status`; it was not accepted, and this single gate was
+  rerun with a corrected wrapper and a captured exit 0.
+- configured `pnpm test:integration`: 71/71, no skips, exactly three times.
+- configured `pnpm test:process`: 3/3, no skips.
+- configured `pnpm test:e2e`: 129 passed across Chromium, Firefox and WebKit;
+  exactly three expected container-only raster skips.
+- `pnpm test:visual:container`: 1/1. Snapshot regeneration was explicitly approved
+  only after semantic cross-engine tests passed; the new Listening 320 px/400% and
+  Reading 720 px anchors were inspected, followed by separate non-update passes.
+- `pnpm test:oci`, `pnpm check:docs`, baseline-range `git diff --check`: exit 0.
+  OCI ran non-root/read-only images and a fresh 16-migration rehearsal to 062.
+- `pnpm check:advisories`: exit 0 at the critical threshold; four high advisories
+  below that configured threshold remain reported.
+
+Final logs use `/tmp/p05-ac18652-final-*.log`; durable details, digests, limitations,
+rollback and next-stage inputs are in `handoff.md`. The handoff/checklist commit is
+documentation-only, so unrelated build/browser/database gates are not rerun after
+it. `OWNER-05-A/B/C/E` and the Stage 10 network-egress denial remain unclaimed.
+
+Final cleanup ran only after every dependent gate. No Next/HTTPS listener remained;
+`.next` plus current transient Playwright/JUnit reports were moved recoverably to
+Trash, while ignored diagnostic aids were retained. Build-cache pruning removed
+2.83 GB; dangling-image pruning removed 2.367 GB; no volume, tagged image or owner
+container was removed. After Docker's accounting settled, final host free space is
+35 GiB. Docker reports 21 images / 11.77 GB, 28 containers / 34.02 MB, 27 volumes /
+7.116 GB and 33 cache records / 2.687 GB with 0 B reclaimable. The pinned visual
+tag, final OCI tags and the port-55435 disposable PostgreSQL container remain.
+Local main is 143 commits ahead of stale `origin/main` and clean after the
+documentation/checklist commit.

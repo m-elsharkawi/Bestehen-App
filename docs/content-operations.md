@@ -24,9 +24,8 @@ state, or report files.
 
 `apps/worker/src/media-import.ts` exports `importCommittedSeedMedia(pool, operationId)`. It is an
 explicit offline operation, not a registered worker job or startup hook. Apply the original T6 draft
-release first using the existing seed command. The database must have revision
-`20260904_060_p05_transcript_lineage`; this operation does not migrate it. The configured maximum
-schema revision remains a separate T11 gate and is not raised by this importer.
+release first using the existing seed command. The database must be migrated through the Stage 05
+terminal revision `20260905_062_p05_listening_runtime`; this operation does not migrate it.
 
 After building the workspace packages, an operator can invoke the composition with an already
 configured database URL. Use an isolated local database for rehearsal, never the owner's retained
@@ -91,13 +90,12 @@ leases must carry the optional, strict `audioManifestPins` condition, ordered by
 candidate IDs ordered by identity. Issuance rechecks the pins and current eligibility. Acquiring a
 lease does not record target audio exposure.
 
-Conditional rights, credits, audience restrictions, offline purge obligations and transcript reveal
-authorization still require the byte-delivery implementation. This checkpoint uses the shared rights
-evaluator and refuses conditional offline playback; it does not claim to enforce those obligations.
-Separate transcript envelopes must have the right component purpose and be current/effective at
-admission. No transcript body, key, provider URL or object key is included in a learner lease.
-Browser decoding, output confirmation, retained handles, preflight, play ordinals and actual playback
-are not implemented by this offline composition. OWNER-05-A/B/C/E and Stage 10 egress remain unclaimed.
+The runtime now supplies same-origin byte authorization, digest verification, browser decode and
+output confirmation, durable preflight, exact play ordinals, recovery facts and transcript-phase
+authorization. Separate transcript envelopes must have the right component purpose and be
+current/effective at admission. No transcript body, key, provider URL or object key is included in a
+learner lease. The offline importer itself still stores no bytes and grants no learner admission;
+conditional offline playback remains refused. OWNER-05-A/B/C/E and Stage 10 egress remain unclaimed.
 
 ## Regenerate and verify the release document
 
@@ -154,8 +152,9 @@ state-file fixtures deterministic; it cannot override the database-recorded life
 
 The PostgreSQL adapter uses one transaction and parameterized statements to write rights envelopes,
 accessibility manifests, content families and revisions, items, key revisions, recorded gate
-results, the candidate release, and its entries. It does not write audio-provider rows; T5 owns the
-media schema adapter and playback path. A database apply requires the Stage 05 migrations.
+results, the candidate release, and its entries. It does not write audio-provider rows; media
+catalogue import and Listening playback are separate operations. A database apply requires the
+Stage 05 migrations.
 
 The adapter records compact, audit-shaped immutable facts: one operation receipt plus one
 `content_revision` action event for every apply result. The events carry canonical digests, real
@@ -265,8 +264,8 @@ The PostgreSQL rollback path accepts only an active or retired approved release.
 The listening seed stores authored, unreviewed German draft scripts and deterministic PCM WAV
 fixture manifests.
 The fake renderer emits a short integer waveform. It is not speech. Do not play it to learners and
-do not promote it to Independent-B1, Readiness/P4, or Gold. T5 owns the final media model, object
-authorization, playback routes, and final media tests.
+do not promote it to Independent-B1, Readiness/P4, or Gold. The implemented media authorization and
+playback runtime continues to refuse these unapproved catalogue entries for learner use.
 
 No command in this guide calls a live synthesis service or another productive provider.
 
@@ -277,8 +276,10 @@ These gates remain open:
 - `OWNER-05-A`: live German voice audition, synthesis, and human audit of final speech bytes
 - `OWNER-05-B`: human sign-off for a complete P4 form and its final assets
 - `OWNER-05-C`: independent blind solution and key validation by a distinct reviewer
+- `OWNER-05-E`: manual VoiceOver/NVDA and real-device zoom/reflow completion
 
 There is also a separate launch human-review requirement from Architecture 09 §5.1. It is not an
 owner claim and has not happened. Until independent key validation and launch review are recorded,
 the corpus stays draft/candidate and the tool refuses a Training-bearing release. OWNER-05-A,
-OWNER-05-B and OWNER-05-C remain unclaimed.
+OWNER-05-B, OWNER-05-C and OWNER-05-E remain unclaimed. Deployment-level Corpus-host egress denial
+also remains a Stage 10 obligation.
