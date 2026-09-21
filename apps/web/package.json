@@ -16,15 +16,15 @@
     "@bestehen/design-system": "workspace:*",
     "@bestehen/domain": "workspace:*",
     "@bestehen/infrastructure": "workspace:*",
-    "next": "16.3.2",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "next": "16.3.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@bestehen/test-support": "workspace:*",
     "@types/node": "24.13.3",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "typescript": "5.9.3"
   }
 }
