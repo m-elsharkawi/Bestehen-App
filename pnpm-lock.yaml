@@ -215,8 +215,8 @@ importers:
         specifier: workspace:*
         version: link:../domain
       kysely:
-        specifier: 0.29.5
-        version: 0.29.5
+        specifier: 0.29.6
+        version: 0.29.6
       openid-client:
         specifier: 6.8.7
         version: 6.8.7
@@ -224,8 +224,8 @@ importers:
         specifier: 8.23.0
         version: 8.23.0
       pg-boss:
-        specifier: 12.27.0
-        version: 12.27.0
+        specifier: 12.33.1
+        version: 12.33.1
     devDependencies:
       '@bestehen/test-support':
         specifier: workspace:*
@@ -1100,8 +1100,8 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  cron-parser@5.10.0:
-    resolution: {integrity: sha512-izNAxJyRWUP8ljBoDSub5WyrVOUlT4SLGShswE7eoRBpp6QUsSycYxLBMJlbshgPBMcPT/nrfgjNY2918ayv2A==}
+  cron-parser@5.10.1:
+    resolution: {integrity: sha512-pKRrRagItwk9rGIStcUyMxFX34x56zoX3KDf9HJ4ttwkXIK1qxK63EvXvEDmlxI9AdPJ+Y7TEKRftRlW5eSS7A==}
     engines: {node: '>=18'}
 
   css-tree@3.2.1:
@@ -1294,8 +1294,8 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
 
-  kysely@0.29.5:
-    resolution: {integrity: sha512-ooa+eSbBNPTo3MycPEuW5jdrxQdQwdtB3LC3h43FiXQbIry5tR0C5lDG7eealK0E4D7XjrnOP5DIUg/LyjRMYQ==}
+  kysely@0.29.6:
+    resolution: {integrity: sha512-hHaB8C/rfzDDtr/t8YZwxAuPJTT0zHyaPoVzcXwDYhYNAgH/4sIfVhi/XLLIY+bL/FqaIJnjATDbi8ObSELmxg==}
     engines: {node: '>=22.0.0'}
 
   lightningcss-android-arm64@1.33.0:
@@ -1457,8 +1457,8 @@ packages:
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
-  pg-boss@12.27.0:
-    resolution: {integrity: sha512-DawcUffyDVJvxGYvaoc7B+G1yY86dJtvugVYMAt+CtO6Lg+RSyQuAU7IRfNyhqi0Bo/JeaxLqhqIy5+twpmYlg==}
+  pg-boss@12.33.1:
+    resolution: {integrity: sha512-u0DdaO4DsDV2TeuOeie2pXxmoYmO84CRlAX/7AEdzpf3y+NOEjt+As714UmzaCNTgnKdcvLItnN9AZklsjzOLQ==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -1613,6 +1613,9 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
+  rrule-temporal@2.2.6:
+    resolution: {integrity: sha512-izTnMn8pAFNLDuyRfF+H53YnWOF7tsA5+RcGrha4onVzOnXn8YXQ7tJE5StNZvAZXvxz0In3R/IQhbQJpi7EYQ==}
+
   safe-regex@2.1.1:
     resolution: {integrity: sha512-rx+x8AMzKb5Q5lQ95Zoi6ZbJqwCLkqi3XuJXp5P3rT8OEc6sZCJG5AE5dU3lsgRr/F4Bs31jSlVN+j5KrsGu9A==}
 
@@ -1707,6 +1710,9 @@ packages:
   tapable@2.3.3:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
+
+  temporal-spec@1.0.1:
+    resolution: {integrity: sha512-wxVoanmDeavXie1vu2JaQ3WIc3JZnWAOYFBsJyATaVsXsycKYUflGsyBmrRSnoCpZJpwPyr38VpgSUlQ8CbFxg==}
 
   thread-stream@4.2.0:
     resolution: {integrity: sha512-e2zZ96wSChazBsbENf/Pcm/4swHt2cEKQ92rhUjkL9GCKiTDJIaTBenjE/m9DXi0QBmTMDkFDdOomUy20A1tDQ==}
@@ -2497,7 +2503,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  cron-parser@5.10.0:
+  cron-parser@5.10.1:
     dependencies:
       luxon: 3.7.2
 
@@ -2706,7 +2712,7 @@ snapshots:
 
   kleur@3.0.3: {}
 
-  kysely@0.29.5: {}
+  kysely@0.29.6: {}
 
   lightningcss-android-arm64@1.33.0:
     optional: true
@@ -2832,10 +2838,11 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  pg-boss@12.27.0:
+  pg-boss@12.33.1:
     dependencies:
-      cron-parser: 5.10.0
+      cron-parser: 5.10.1
       pg: 8.23.0
+      rrule-temporal: 2.2.6
       serialize-error: 13.0.1
     transitivePeerDependencies:
       - pg-native
@@ -3002,6 +3009,10 @@ snapshots:
       '@rolldown/binding-win32-arm64-msvc': 1.2.5
       '@rolldown/binding-win32-x64-msvc': 1.2.5
 
+  rrule-temporal@2.2.6:
+    dependencies:
+      temporal-spec: 1.0.1
+
   safe-regex@2.1.1:
     dependencies:
       regexp-tree: 0.1.27
@@ -3093,6 +3104,8 @@ snapshots:
   tagged-tag@1.0.0: {}
 
   tapable@2.3.3: {}
+
+  temporal-spec@1.0.1: {}
 
   thread-stream@4.2.0:
     dependencies:
