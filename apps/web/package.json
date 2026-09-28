@@ -22,9 +22,9 @@
   },
   "devDependencies": {
     "@bestehen/test-support": "workspace:*",
-    "@types/node": "24.13.3",
+    "@types/node": "26.6.2",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
-    "typescript": "5.9.3"
+    "typescript": "7.0.2"
   }
 }
