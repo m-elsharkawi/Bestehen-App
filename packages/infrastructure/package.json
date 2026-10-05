@@ -27,10 +27,10 @@
     "@bestehen/configuration": "workspace:*",
     "@bestehen/contracts": "workspace:*",
     "@bestehen/domain": "workspace:*",
-    "kysely": "0.29.5",
+    "kysely": "0.29.6",
     "openid-client": "6.8.7",
-    "pg": "8.23.0",
-    "pg-boss": "12.27.0"
+    "pg": "8.23.1",
+    "pg-boss": "12.35.1"
   },
   "devDependencies": {
     "@bestehen/test-support": "workspace:*",
